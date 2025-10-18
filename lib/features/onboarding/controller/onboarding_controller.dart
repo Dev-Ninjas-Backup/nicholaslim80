@@ -39,9 +39,12 @@ class OnboardingController extends GetxController {
   void nextPage() {
     if (currentIndex.value < onboardingData.length - 1) {
       pageController.nextPage(
+        
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
+    }else {
+      Get.offNamed('/loginScreen');
     }
   }
 

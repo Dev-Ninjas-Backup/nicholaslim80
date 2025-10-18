@@ -14,4 +14,7 @@ class AppColors {
   static const Color onboardingIndicatorActive = Color(0xFFFFCC00);
   static const Color onboardingIndicatorNotActive = Color(0xFFE6E6E6);
 
+  //Button colors
+  static const Color primaryButtonColor = Color(0xFFFFCC00);
+
 }
