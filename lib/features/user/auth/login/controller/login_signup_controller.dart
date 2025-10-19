@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class LoginController extends GetxController {
+class LoginSignupController extends GetxController {
   var isLoginSelected = true.obs;
   var phoneNumber = ''.obs;
   var selectedCountry = '🇺🇸 +1'.obs;
   late TextEditingController phoneController;
+  late TextEditingController nameController;
+  late TextEditingController emailController;
 
   final List<String> countries = [
     '🇺🇸 +1',
@@ -26,6 +28,8 @@ class LoginController extends GetxController {
   void onInit() {
     super.onInit();
     phoneController = TextEditingController();
+    nameController = TextEditingController();
+    emailController = TextEditingController();
     phoneController.addListener(() {
       phoneNumber.value = phoneController.text;
     });
@@ -43,6 +47,8 @@ class LoginController extends GetxController {
   @override
   void onClose() {
     phoneController.dispose();
+    nameController.dispose();
+    emailController.dispose();
     super.onClose();
   }
 }
