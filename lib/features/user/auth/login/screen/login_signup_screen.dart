@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
 import 'package:nicholaslim80/core/utils/constants/image_path.dart';
 import 'package:nicholaslim80/features/user/auth/login/controller/login_signup_controller.dart';
@@ -271,7 +272,31 @@ class LoginSignupScreen extends StatelessWidget {
                             ],
                           ),
                         ),
-                        const SizedBox(height: 30),
+
+                        SizedBox(height: 10),
+
+                        GestureDetector(
+                          onTap: () {},
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              "Forgot Password?",
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: const Color.fromARGB(255, 152, 122, 2),
+                                decoration: TextDecoration.underline,
+                                decorationColor: Color.fromARGB(
+                                  255,
+                                  152,
+                                  122,
+                                  2,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        SizedBox(height: 30),
 
                         // Button
                         ElevatedButton(
