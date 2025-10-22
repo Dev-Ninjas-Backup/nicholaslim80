@@ -62,8 +62,7 @@ class VerificationController extends GetxController {
         'OTP verified successfully',
         snackPosition: SnackPosition.TOP,
       );
-      // Navigate to next page
-      // Get.offAllNamed('/login'); // example
+      // Get.toNamed(AppRoutes.gethomeScreen());
     } finally {
       isVerifying.value = false;
     }
