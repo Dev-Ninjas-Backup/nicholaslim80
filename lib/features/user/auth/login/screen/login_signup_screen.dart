@@ -232,6 +232,32 @@ class LoginSignupScreen extends StatelessWidget {
                             ],
                           ),
                         ),
+
+
+                        SizedBox(height: 10),
+
+                        GestureDetector(
+                          onTap: () {},
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              "Forgot Password?",
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: const Color.fromARGB(255, 152, 122, 2),
+                                decoration: TextDecoration.underline,
+                                decorationColor: Color.fromARGB(
+                                  255,
+                                  152,
+                                  122,
+                                  2,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+
+
                         SizedBox(height: 30),
 
                         // Button-------->
