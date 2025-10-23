@@ -1,6 +1,7 @@
 import 'package:get/get_navigation/src/routes/get_route.dart';
 import 'package:get/get_navigation/src/routes/transitions_type.dart';
 import 'package:nicholaslim80/features/onboarding/screen/onboarding_screen.dart';
+import 'package:nicholaslim80/features/rider/app_quiz/screen/app_quiz_screen.dart';
 import 'package:nicholaslim80/features/splash/screen/splash_screen.dart';
 import 'package:nicholaslim80/features/user/acoount/screen/account_screen.dart';
 import 'package:nicholaslim80/features/user/auth/login/screen/login_signup_screen.dart';
@@ -17,6 +18,7 @@ class AppRoutes {
   static String ordersScreen = '/ordersScreen';
   static String accountScreen = '/accountScreen';
   static String bottomNavbarScreen = '/bottomnavbarScreen';
+  static String appQuizScreen = '/appQuizScreen';
 
   static String getSplashScreen() => splashScreen;
   static String getOnboardingScreen() => onboardingScreen;
@@ -26,6 +28,7 @@ class AppRoutes {
   static String getordersScreen() => ordersScreen;
   static String getaccountScreen() => accountScreen;
   static String getbottomNavbarScreen() => bottomNavbarScreen;
+  static String getappQuizScreen() => appQuizScreen;
 
   static List<GetPage> routes = [
     GetPage(name: splashScreen, page: () => SplashScreen()),
@@ -58,6 +61,11 @@ class AppRoutes {
     GetPage(
       name: bottomNavbarScreen,
       page: () => BottomNavbarScreen(),
+      transition: Transition.fadeIn,
+    ),
+    GetPage(
+      name: appQuizScreen,
+      page: () => AppQuizScreen(),
       transition: Transition.fadeIn,
     ),
   ];
