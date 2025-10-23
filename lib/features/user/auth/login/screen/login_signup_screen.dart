@@ -23,12 +23,15 @@ class LoginSignupScreen extends StatelessWidget {
           ),
           Center(
             child: SingleChildScrollView(
-              padding: EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Material(
                 elevation: 3.0,
                 borderRadius: BorderRadius.circular(10),
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 20,
+                  ),
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -43,13 +46,13 @@ class LoginSignupScreen extends StatelessWidget {
                       children: [
                         Text(
                           isLogin ? 'Welcome Back!' : 'Welcome!',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w700,
                             color: Colors.black,
                           ),
                         ),
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
                         Text(
                           isLogin
                               ? 'Log in to continue delivering with ease.'
@@ -60,11 +63,11 @@ class LoginSignupScreen extends StatelessWidget {
                             color: AppColors.subtitleFontColor,
                           ),
                         ),
-                        SizedBox(height: 20),
+                        const SizedBox(height: 20),
 
                         // Login / Signup Toggle
                         AnimatedContainer(
-                          duration: Duration(milliseconds: 300),
+                          duration: const Duration(milliseconds: 300),
                           curve: Curves.easeInOut,
                           padding: EdgeInsets.fromLTRB(
                             isLogin ? 6 : 12,
@@ -85,9 +88,9 @@ class LoginSignupScreen extends StatelessWidget {
                               GestureDetector(
                                 onTap: () => controller.toggleSelection(true),
                                 child: AnimatedContainer(
-                                  duration: Duration(milliseconds: 300),
+                                  duration: const Duration(milliseconds: 300),
                                   curve: Curves.easeInOut,
-                                  padding: EdgeInsets.symmetric(
+                                  padding: const EdgeInsets.symmetric(
                                     horizontal: 18,
                                     vertical: 5,
                                   ),
@@ -107,13 +110,13 @@ class LoginSignupScreen extends StatelessWidget {
                                   ),
                                 ),
                               ),
-                              SizedBox(width: 12),
+                              const SizedBox(width: 12),
                               GestureDetector(
                                 onTap: () => controller.toggleSelection(false),
                                 child: AnimatedContainer(
-                                  duration: Duration(milliseconds: 300),
+                                  duration: const Duration(milliseconds: 300),
                                   curve: Curves.easeInOut,
-                                  padding: EdgeInsets.symmetric(
+                                  padding: const EdgeInsets.symmetric(
                                     horizontal: 18,
                                     vertical: 5,
                                   ),
@@ -123,7 +126,7 @@ class LoginSignupScreen extends StatelessWidget {
                                         : Colors.transparent,
                                     borderRadius: BorderRadius.circular(4),
                                   ),
-                                  child: Text(
+                                  child: const Text(
                                     'Sign Up',
                                     style: TextStyle(
                                       fontSize: 14,
@@ -136,127 +139,31 @@ class LoginSignupScreen extends StatelessWidget {
                             ],
                           ),
                         ),
-                        SizedBox(height: 40),
+                        const SizedBox(height: 40),
 
-                        // Signup fields
-                        if (!isLogin) ...[
-                          buildTextField(
-                            controller.nameController,
-                            'Your Name',
-                          ),
-                          SizedBox(height: 20),
-                          buildTextField(
-                            controller.emailController,
-                            'Your e-mail address',
-                            keyboardType: TextInputType.emailAddress,
-                          ),
-                          SizedBox(height: 20),
-                        ],
-
-                        if (isLogin)
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              'Login with your phone number',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w400,
-                                color: Colors.black,
+                        // Animated section for Login / Signup fields
+                        AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 400),
+                          switchInCurve: Curves.easeInOut,
+                          switchOutCurve: Curves.easeInOut,
+                          transitionBuilder: (child, animation) {
+                            return FadeTransition(
+                              opacity: animation,
+                              child: SlideTransition(
+                                position: Tween<Offset>(
+                                  begin: const Offset(0.0, 0.2),
+                                  end: Offset.zero,
+                                ).animate(animation),
+                                child: child,
                               ),
-                            ),
-                          ),
-                        if (isLogin) SizedBox(height: 10),
-
-                        Container(
-                          height: 52,
-                          width: double.infinity,
-                          padding: EdgeInsets.symmetric(horizontal: 12),
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: AppColors.subtitleFontColor,
-                              width: 1,
-                            ),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Row(
-                            children: [
-                              DropdownButtonHideUnderline(
-                                child: DropdownButton<String>(
-                                  value: controller.selectedCountry.value,
-                                  items: controller.countries
-                                      .map(
-                                        (country) => DropdownMenuItem(
-                                          value: country,
-                                          child: Text(
-                                            country,
-                                            style: TextStyle(fontSize: 16),
-                                          ),
-                                        ),
-                                      )
-                                      .toList(),
-                                  onChanged: (value) {
-                                    if (value != null) {
-                                      controller.selectCountry(value);
-                                    }
-                                  },
-                                  icon: Icon(Icons.arrow_drop_down),
-                                ),
-                              ),
-                              SizedBox(width: 12),
-                              Expanded(
-                                child: Obx(
-                                  () => TextField(
-                                    controller: controller.phoneController,
-                                    keyboardType: TextInputType.phone,
-                                    decoration: InputDecoration(
-                                      hintText: 'Enter phone number',
-                                      border: InputBorder.none,
-                                      isDense: true,
-                                      suffixIcon:
-                                          controller
-                                              .phoneNumber
-                                              .value
-                                              .isNotEmpty
-                                          ? GestureDetector(
-                                              onTap: controller.clearPhone,
-                                              child: Icon(
-                                                Icons.clear_outlined,
-                                                size: 20,
-                                              ),
-                                            )
-                                          : null,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+                            );
+                          },
+                          child: isLogin
+                              ? buildLoginFields(controller)
+                              : buildSignupFields(controller),
                         ),
 
-                        SizedBox(height: 10),
-
-                        GestureDetector(
-                          onTap: () {},
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              "Forgot Password?",
-                              style: TextStyle(
-                                fontSize: 11,
-                                color: const Color.fromARGB(255, 152, 122, 2),
-                                decoration: TextDecoration.underline,
-                                decorationColor: Color.fromARGB(
-                                  255,
-                                  152,
-                                  122,
-                                  2,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-
-                        SizedBox(height: 30),
+                        const SizedBox(height: 30),
 
                         // Button-------->
                         ElevatedButton(
@@ -269,14 +176,14 @@ class LoginSignupScreen extends StatelessWidget {
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.primaryButtonColor,
-                            minimumSize: Size(double.infinity, 50),
+                            minimumSize: const Size(double.infinity, 50),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
                           ),
                           child: Text(
                             isLogin ? 'Login' : 'Continue',
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
                               color: Colors.black,
@@ -295,6 +202,151 @@ class LoginSignupScreen extends StatelessWidget {
     );
   }
 
+  // Build login fields
+  Widget buildLoginFields(LoginSignupController controller) {
+    return Column(
+      key: const ValueKey('loginFields'),
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Login with your phone number',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w400,
+            color: Colors.black,
+          ),
+        ),
+        const SizedBox(height: 10),
+        _buildPhoneField(controller),
+        const SizedBox(height: 10),
+        GestureDetector(
+          onTap: () {},
+          child: const Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              "Forgot Password?",
+              style: TextStyle(
+                fontSize: 11,
+                color: Color.fromARGB(255, 152, 122, 2),
+                decoration: TextDecoration.underline,
+                decorationColor: Color.fromARGB(255, 152, 122, 2),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // Build signup fields
+  Widget buildSignupFields(LoginSignupController controller) {
+    return Column(
+      key: const ValueKey('signupFields'),
+      children: [
+        buildTextField(controller.nameController, 'Your Name'),
+        const SizedBox(height: 20),
+        buildTextField(
+          controller.emailController,
+          'Your e-mail address',
+          keyboardType: TextInputType.emailAddress,
+        ),
+        const SizedBox(height: 20),
+        _buildPhoneField(controller),
+        const SizedBox(height: 20),
+
+        // 👇 New Dropdown for USER / RIDER
+        Obx(
+          () => Container(
+            height: 52,
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            decoration: BoxDecoration(
+              border: Border.all(color: AppColors.subtitleFontColor, width: 1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<String>(
+                value: controller.selectedUserType.value,
+                items: controller.userTypes
+                    .map(
+                      (type) => DropdownMenuItem(
+                        value: type,
+                        child: Text(type, style: const TextStyle(fontSize: 16)),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (value) {
+                  if (value != null) {
+                    controller.selectUserType(value);
+                  }
+                },
+                icon: const Icon(Icons.arrow_drop_down),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPhoneField(LoginSignupController controller) {
+    return Container(
+      height: 52,
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      decoration: BoxDecoration(
+        border: Border.all(color: AppColors.subtitleFontColor, width: 1),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        children: [
+          DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              value: controller.selectedCountry.value,
+              items: controller.countries
+                  .map(
+                    (country) => DropdownMenuItem(
+                      value: country,
+                      child: Text(
+                        country,
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  )
+                  .toList(),
+              onChanged: (value) {
+                if (value != null) {
+                  controller.selectCountry(value);
+                }
+              },
+              icon: const Icon(Icons.arrow_drop_down),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Obx(
+              () => TextField(
+                controller: controller.phoneController,
+                keyboardType: TextInputType.phone,
+                decoration: InputDecoration(
+                  hintText: 'Enter phone number',
+                  border: InputBorder.none,
+                  isDense: true,
+                  suffixIcon: controller.phoneNumber.value.isNotEmpty
+                      ? GestureDetector(
+                          onTap: controller.clearPhone,
+                          child: const Icon(Icons.clear_outlined, size: 20),
+                        )
+                      : null,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget buildTextField(
     TextEditingController controller,
     String hintText, {
@@ -303,7 +355,7 @@ class LoginSignupScreen extends StatelessWidget {
     return Container(
       height: 52,
       width: double.infinity,
-      padding: EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
         border: Border.all(color: AppColors.subtitleFontColor, width: 1),
         borderRadius: BorderRadius.circular(8),
