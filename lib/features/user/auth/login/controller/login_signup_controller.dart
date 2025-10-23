@@ -60,7 +60,25 @@ class LoginSignupController extends GetxController {
     }
 
     // Navigate to VerifyScreen
-    Get.toNamed(AppRoutes.verificationScreen, arguments: phoneNumber.value);
+    Get.offAllNamed(AppRoutes.verificationScreen, arguments: phoneNumber.value);
+  }
+
+  void onSignUpContinuePressed() {
+    if (nameController.text.isEmpty ||
+        emailController.text.isEmpty ||
+        phoneController.text.isEmpty) {
+      Get.snackbar(
+        'Error',
+        'Please fill all fields',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red.withOpacity(0.8),
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    // Navigate directly to HomeScreen
+    Get.offAllNamed(AppRoutes.bottomNavbarScreen);
   }
 
   @override

@@ -233,7 +233,6 @@ class LoginSignupScreen extends StatelessWidget {
                           ),
                         ),
 
-
                         SizedBox(height: 10),
 
                         GestureDetector(
@@ -257,7 +256,6 @@ class LoginSignupScreen extends StatelessWidget {
                           ),
                         ),
 
-
                         SizedBox(height: 30),
 
                         // Button-------->
@@ -266,7 +264,7 @@ class LoginSignupScreen extends StatelessWidget {
                             if (controller.isLoginSelected.value) {
                               controller.onLoginPressed();
                             } else {
-                              // Handle signup logic here later
+                              controller.onSignUpContinuePressed();
                             }
                           },
                           style: ElevatedButton.styleFrom(
