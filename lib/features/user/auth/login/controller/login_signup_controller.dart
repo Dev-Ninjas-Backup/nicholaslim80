@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:nicholaslim80/features/user/bottom_navbar/screen/bottom_navbar_screen.dart';
 import 'package:nicholaslim80/routes/app_routes.dart';
 
 class LoginSignupController extends GetxController {
   var isLoginSelected = true.obs;
   var phoneNumber = ''.obs;
   var selectedCountry = '🇺🇸 +1'.obs;
+
+  // New: selected user type
+  var selectedUserType = 'USER'.obs;
 
   late TextEditingController phoneController;
   late TextEditingController nameController;
@@ -21,6 +25,9 @@ class LoginSignupController extends GetxController {
     '🇫🇷 +33',
     '🇯🇵 +81',
   ].obs;
+
+  // New: user type options
+  final List<String> userTypes = ['USER', 'RIDER'];
 
   void toggleSelection(bool isLogin) {
     isLoginSelected.value = isLogin;
@@ -45,6 +52,11 @@ class LoginSignupController extends GetxController {
 
   void selectCountry(String country) {
     selectedCountry.value = country;
+  }
+
+  // New: select user type
+  void selectUserType(String type) {
+    selectedUserType.value = type;
   }
 
   void onLoginPressed() {
@@ -77,8 +89,12 @@ class LoginSignupController extends GetxController {
       return;
     }
 
-    // Navigate directly to HomeScreen
-    Get.offAllNamed(AppRoutes.bottomNavbarScreen);
+    // Navigate based on user type
+    if (selectedUserType.value == 'USER') {
+      Get.offAll(BottomNavbarScreen());
+    } else {
+      // Get.offAllNamed(AppRoutes.riderHomeScreen);
+    }
   }
 
   @override
