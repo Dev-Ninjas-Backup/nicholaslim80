@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
@@ -17,38 +18,41 @@ class BottomNavbarScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(
-      () => Scaffold(
-        body: SafeArea(child: _screens[controller.currentIndex.value]),
-        bottomNavigationBar: BottomNavigationBar(
-          backgroundColor: AppColors.backgroungColor,
-          currentIndex: controller.currentIndex.value,
-          onTap: controller.changeTab,
-          type: BottomNavigationBarType.fixed,
-          selectedItemColor: AppColors.onboardingIndicatorActive,
-          unselectedItemColor: AppColors.subtitleFontColor,
-          showUnselectedLabels: true,
-          selectedLabelStyle: getTextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 14,
+      () => AnnotatedRegion<SystemUiOverlayStyle>(
+        value: SystemUiOverlayStyle.dark,
+        child: Scaffold(
+          body: _screens[controller.currentIndex.value],
+          bottomNavigationBar: BottomNavigationBar(
+            backgroundColor: AppColors.backgroungColor,
+            currentIndex: controller.currentIndex.value,
+            onTap: controller.changeTab,
+            type: BottomNavigationBarType.fixed,
+            selectedItemColor: AppColors.onboardingIndicatorActive,
+            unselectedItemColor: AppColors.subtitleFontColor,
+            showUnselectedLabels: true,
+            selectedLabelStyle: getTextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+            ),
+            items: [
+              BottomNavigationBarItem(
+                backgroundColor: AppColors.backgroungColor,
+                icon: Icon(Icons.home_outlined),
+                activeIcon: Icon(Icons.home),
+                label: 'Home',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.inventory_2_outlined),
+                activeIcon: Icon(Icons.inventory_2),
+                label: 'Orders',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.person_outline),
+                activeIcon: Icon(Icons.person),
+                label: 'Account',
+              ),
+            ],
           ),
-          items: [
-            BottomNavigationBarItem(
-              backgroundColor: AppColors.backgroungColor,
-              icon: Icon(Icons.home_outlined),
-              activeIcon: Icon(Icons.home),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.inventory_2_outlined),
-              activeIcon: Icon(Icons.inventory_2),
-              label: 'Orders',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person_outline),
-              activeIcon: Icon(Icons.person),
-              label: 'Account',
-            ),
-          ],
         ),
       ),
     );
