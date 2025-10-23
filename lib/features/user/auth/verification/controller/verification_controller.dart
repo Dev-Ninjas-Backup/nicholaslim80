@@ -59,7 +59,7 @@ class VerificationController extends GetxController {
     try {
       await Future.delayed(Duration(seconds: 1));
 
-      Get.toNamed(AppRoutes.getbottomNavbarScreen());
+      Get.offAllNamed(AppRoutes.getbottomNavbarScreen());
     } finally {
       isVerifying.value = false;
     }
