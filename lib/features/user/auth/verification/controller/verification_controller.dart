@@ -2,6 +2,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:nicholaslim80/routes/app_routes.dart';
 
 class VerificationController extends GetxController {
   final List<TextEditingController> pinControllers = List.generate(
@@ -57,12 +58,8 @@ class VerificationController extends GetxController {
     isVerifying.value = true;
     try {
       await Future.delayed(Duration(seconds: 1));
-      Get.snackbar(
-        'Verified',
-        'OTP verified successfully',
-        snackPosition: SnackPosition.TOP,
-      );
-      // Get.toNamed(AppRoutes.gethomeScreen());
+
+      Get.toNamed(AppRoutes.getbottomNavbarScreen());
     } finally {
       isVerifying.value = false;
     }
