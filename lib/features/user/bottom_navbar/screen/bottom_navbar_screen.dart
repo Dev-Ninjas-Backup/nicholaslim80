@@ -20,6 +20,7 @@ class BottomNavbarScreen extends StatelessWidget {
       () => Scaffold(
         body: SafeArea(child: _screens[controller.currentIndex.value]),
         bottomNavigationBar: BottomNavigationBar(
+          backgroundColor: AppColors.backgroungColor,
           currentIndex: controller.currentIndex.value,
           onTap: controller.changeTab,
           type: BottomNavigationBarType.fixed,
@@ -27,11 +28,12 @@ class BottomNavbarScreen extends StatelessWidget {
           unselectedItemColor: AppColors.subtitleFontColor,
           showUnselectedLabels: true,
           selectedLabelStyle: getTextStyle(
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeight.w600,
             fontSize: 14,
           ),
           items: [
             BottomNavigationBarItem(
+              backgroundColor: AppColors.backgroungColor,
               icon: Icon(Icons.home_outlined),
               activeIcon: Icon(Icons.home),
               label: 'Home',
