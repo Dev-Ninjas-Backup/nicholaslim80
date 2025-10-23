@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   //Gradient background colors
+  static const Color backgroungColor = Color(0xFFFFF8DC);
 
   //Font colors
   static const Color primaryFontColor = Color(0xFF141414);
