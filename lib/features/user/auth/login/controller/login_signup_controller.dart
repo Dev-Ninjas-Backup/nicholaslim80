@@ -93,7 +93,7 @@ class LoginSignupController extends GetxController {
     if (selectedUserType.value == 'USER') {
       Get.offAll(BottomNavbarScreen());
     } else {
-      // Get.offAllNamed(AppRoutes.riderHomeScreen);
+      Get.offAllNamed("/appQuizScreen");
     }
   }
 
