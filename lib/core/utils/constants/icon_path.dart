@@ -7,4 +7,7 @@ class IconPath {
   static String points = "assets/icons/points.png";
   static String select = "assets/icons/select.png";
   static String stacked = "assets/icons/stacked.png";
+  static String timer = "assets/icons/timerIcon.png";
+  static String star = "assets/icons/starIcon.png";
+  static String file = "assets/icons/fileIcon.png";
 }
