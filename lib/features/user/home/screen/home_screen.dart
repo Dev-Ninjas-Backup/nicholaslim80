@@ -150,7 +150,7 @@ class HomeScreen extends StatelessWidget {
               ],
             ),
 
-            SizedBox(height: 12),
+            SizedBox(height: 14),
 
             serviceCardStacked(
               title: 'Stacked',
@@ -179,12 +179,12 @@ class HomeScreen extends StatelessWidget {
 
             SizedBox(height: 8),
 
-            // Vehicle Cards Horizontal List
+            // Vehicle Cards Horizontal List------->>
             VehicleCards(ctrl: ctrl),
 
             SizedBox(height: 30),
 
-            // Small Horizontal Slider
+            // Small Horizontal Slider------>>
             SmallHorizontalSlider(width: width),
 
             SizedBox(height: 30),
