@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
+import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
 import 'package:nicholaslim80/features/user/home/controller/home_controller.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -54,12 +55,21 @@ class HomeScreen extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.local_shipping, size: 16, color: Colors.blue),
+                  Image.asset(
+                    IconPath.parcel,
+                    color: Colors.blue,
+                    height: 26,
+                    width: 26,
+                  ),
                   SizedBox(width: 6),
                   Obx(
                     () => Text(
                       ctrl.parcelStatus.value,
-                      style: TextStyle(fontSize: 12, color: Colors.blue),
+                      style: getTextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.blue,
+                      ),
                     ),
                   ),
                 ],
@@ -84,15 +94,15 @@ class HomeScreen extends StatelessWidget {
                     title: 'Wallet Balance',
                     valueBuilder: () =>
                         '\$${ctrl.walletBalance.value.toStringAsFixed(2)}',
-                    icon: Icons.account_balance_wallet_outlined,
+                    iconPath: IconPath.wallet,
                   ),
                 ),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
                 Expanded(
                   child: borderedInfoCard(
                     title: 'Available Points',
                     valueBuilder: () => '${ctrl.availablePoints.value}',
-                    icon: Icons.stars_outlined,
+                    iconPath: IconPath.points,
                   ),
                 ),
               ],
@@ -116,7 +126,7 @@ class HomeScreen extends StatelessWidget {
                       title: 'Express',
                       subtitle:
                           'Courier takes only your package and delivers instantly',
-                      icon: Icons.flash_on,
+                      iconPath: IconPath.parcel,
                       selected: ctrl.selectedService.value == 'Express',
                       onTap: () => ctrl.selectService('Express'),
                     ),
@@ -129,7 +139,7 @@ class HomeScreen extends StatelessWidget {
                       title: 'Standard',
                       subtitle:
                           'Choose available time with flexible delivery charges',
-                      icon: Icons.check_circle_outline,
+                      iconPath: IconPath.select,
                       selected: ctrl.selectedService.value == 'Standard',
                       onTap: () => ctrl.selectService('Standard'),
                     ),
@@ -142,8 +152,9 @@ class HomeScreen extends StatelessWidget {
 
             serviceCardStacked(
               title: 'Stacked',
-              subtitle: 'Courier takes all bundle package and deliver together',
-              icon: Icons.layers,
+              subtitle:
+                  'Courier takes all bundle packages and delivers together',
+              iconPath: IconPath.stacked,
               onTap: () => ctrl.selectService('Stacked'),
             ),
 
@@ -337,7 +348,10 @@ class HomeScreen extends StatelessWidget {
   Widget borderedInfoCard({
     required String title,
     required String Function() valueBuilder,
-    required IconData icon,
+    IconData? icon,
+    String? iconPath,
+    Color? iconBgColor,
+    double iconSize = 20,
   }) {
     return Container(
       padding: EdgeInsets.all(16),
@@ -349,8 +363,18 @@ class HomeScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 22, color: Colors.orange.shade800),
-          SizedBox(height: 8),
+          Container(
+            padding: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: iconBgColor ?? Colors.white,
+              shape: BoxShape.circle,
+            ),
+            child: iconPath != null
+                ? Image.asset(iconPath, height: iconSize, width: iconSize)
+                : Icon(icon, size: iconSize, color: Colors.white),
+          ),
+
+          SizedBox(height: 10),
           Text(
             title,
             style: getTextStyle(
@@ -372,23 +396,36 @@ class HomeScreen extends StatelessWidget {
   Widget serviceCardCompact({
     required String title,
     required String subtitle,
-    required IconData icon,
+    IconData? icon,
+    String? iconPath,
     required bool selected,
     required VoidCallback onTap,
+    double iconSize = 28,
   }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 18, horizontal: 14),
         decoration: BoxDecoration(
-          color: AppColors.onboardingIndicatorActive,
+          color: selected
+              // ignore: deprecated_member_use
+              ? AppColors.primaryButtonColor.withOpacity(0.15)
+              : AppColors.onboardingIndicatorActive,
           borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: selected
+                ? AppColors.primaryButtonColor
+                // ignore: deprecated_member_use
+                : AppColors.subtitleFontColor.withOpacity(0.4),
+          ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(icon, size: 28, color: Colors.orange.shade800),
-            SizedBox(height: 8),
+            if (iconPath != null)
+              Image.asset(iconPath, height: iconSize, width: iconSize)
+            else if (icon != null)
+              SizedBox(height: 8),
             Text(
               title,
               style: getTextStyle(fontSize: 18, fontWeight: FontWeight.w500),
@@ -408,8 +445,10 @@ class HomeScreen extends StatelessWidget {
   Widget serviceCardStacked({
     required String title,
     required String subtitle,
-    required IconData icon,
+    IconData? icon,
+    String? iconPath,
     required VoidCallback onTap,
+    double iconSize = 24,
   }) {
     return GestureDetector(
       onTap: onTap,
@@ -420,31 +459,27 @@ class HomeScreen extends StatelessWidget {
           color: AppColors.onboardingIndicatorActive,
           borderRadius: BorderRadius.circular(12),
         ),
-        child: Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(icon, size: 28, color: Colors.orange.shade800),
-                  SizedBox(height: 8),
-                  Text(
-                    title,
-                    style: getTextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  SizedBox(height: 6),
-                  Text(
-                    subtitle,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                      color: AppColors.primaryFontColor,
-                    ),
-                  ),
-                ],
+            if (iconPath != null)
+              Image.asset(iconPath, height: iconSize, width: iconSize)
+            else if (icon != null)
+              Icon(icon, size: iconSize),
+
+            SizedBox(height: 12),
+
+            Text(
+              title,
+              style: getTextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+            ),
+            SizedBox(height: 6),
+            Text(
+              subtitle,
+              style: getTextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w400,
+                color: AppColors.primaryFontColor,
               ),
             ),
           ],

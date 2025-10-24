@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
+import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
 import 'package:nicholaslim80/features/user/acoount/screen/account_screen.dart';
 import 'package:nicholaslim80/features/user/bottom_navbar/controller/bottom_navabr_cotroller.dart';
 import 'package:nicholaslim80/features/user/home/screen/home_screen.dart';
@@ -37,7 +38,7 @@ class BottomNavbarScreen extends StatelessWidget {
             items: [
               BottomNavigationBarItem(
                 backgroundColor: AppColors.backgroungColor,
-                icon: Icon(Icons.home_outlined),
+                icon: Image.asset(IconPath.home),
                 activeIcon: Icon(Icons.home),
                 label: 'Home',
               ),
