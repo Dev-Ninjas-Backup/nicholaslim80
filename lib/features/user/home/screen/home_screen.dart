@@ -299,7 +299,7 @@ class HomeScreen extends StatelessWidget {
                         vertical: 28,
                       ),
                       decoration: BoxDecoration(
-                        color: AppColors.primaryButtonColor,
+                        color: Color(0xFFFFE16B),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Row(
@@ -328,7 +328,12 @@ class HomeScreen extends StatelessWidget {
                             ),
                           ),
                           SizedBox(width: 8),
-                          Icon(Icons.arrow_forward_ios, size: 18),
+                          Image.asset(
+                            IconPath.mappin,
+                            height: 70,
+                            width: 70,
+                            fit: BoxFit.contain,
+                          ),
                         ],
                       ),
                     ),
@@ -400,7 +405,7 @@ class HomeScreen extends StatelessWidget {
     String? iconPath,
     required bool selected,
     required VoidCallback onTap,
-    double iconSize = 28,
+    double iconSize = 24,
   }) {
     return GestureDetector(
       onTap: onTap,
