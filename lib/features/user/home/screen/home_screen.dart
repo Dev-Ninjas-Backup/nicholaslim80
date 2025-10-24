@@ -4,6 +4,8 @@ import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
 import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
 import 'package:nicholaslim80/features/user/home/controller/home_controller.dart';
+import 'package:nicholaslim80/features/user/home/widgets/small_horizontal_slider_widget.dart';
+import 'package:nicholaslim80/features/user/home/widgets/vehicle_cards_widget.dart';
 
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
@@ -97,7 +99,7 @@ class HomeScreen extends StatelessWidget {
                     iconPath: IconPath.wallet,
                   ),
                 ),
-                const SizedBox(width: 16),
+                SizedBox(width: 16),
                 Expanded(
                   child: borderedInfoCard(
                     title: 'Available Points',
@@ -178,169 +180,12 @@ class HomeScreen extends StatelessWidget {
             SizedBox(height: 8),
 
             // Vehicle Cards Horizontal List
-            SizedBox(
-              height: 315,
-              child: Obx(() {
-                return ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: ctrl.vehicles.length,
-                  separatorBuilder: (_, __) => SizedBox(width: 12),
-                  itemBuilder: (context, index) {
-                    final v = ctrl.vehicles[index];
-
-                    return SizedBox(
-                      width: 220,
-                      child: Container(
-                        padding: EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: AppColors.subtitleFontColor,
-                          ),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (v['image'] != null)
-                              Container(
-                                height: 130,
-                                width: double.infinity,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8),
-                                  image: DecorationImage(image: v['image']),
-                                ),
-                              ),
-                            SizedBox(height: 6),
-                            Text(
-                              v['title'],
-                              style: getTextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w500,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            SizedBox(height: 4),
-                            Text(
-                              v['subtitle'],
-                              style: getTextStyle(
-                                fontSize: 12,
-                                color: AppColors.primaryFontColor,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            SizedBox(height: 18),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    v['weight'],
-                                    style: getTextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                                Text(
-                                  "\$${v['priceFrom']}",
-                                  style: getTextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 18),
-                            SizedBox(
-                              width: double.infinity,
-                              height: 36,
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppColors.primaryButtonColor,
-                                  padding: EdgeInsets.zero,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                ),
-                                onPressed: () {},
-                                child: Text(
-                                  'Select Vehicle',
-                                  style: getTextStyle(fontSize: 12),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                );
-              }),
-            ),
+            VehicleCards(ctrl: ctrl),
 
             SizedBox(height: 30),
 
             // Small Horizontal Slider
-            SizedBox(
-              height: 125,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: 4,
-                separatorBuilder: (_, __) => SizedBox(width: 12),
-                itemBuilder: (context, index) {
-                  return SizedBox(
-                    width: width * 0.9,
-                    child: Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 18,
-                        vertical: 28,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Color(0xFFFFE16B),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Buy GPS',
-                                  style: getTextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                SizedBox(height: 6),
-                                Text(
-                                  'Invite friends and get 10 credit for every\n successful signup',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
-                                    color: AppColors.subtitleFontColor,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(width: 8),
-                          Image.asset(
-                            IconPath.mappin,
-                            height: 70,
-                            width: 70,
-                            fit: BoxFit.contain,
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
+            SmallHorizontalSlider(width: width),
 
             SizedBox(height: 30),
           ],
