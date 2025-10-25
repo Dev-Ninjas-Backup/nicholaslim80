@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
 import 'package:nicholaslim80/core/utils/constants/image_path.dart';
+import 'package:nicholaslim80/features/user/auth/login/controller/login_signup_controller.dart';
+import 'package:nicholaslim80/features/user/home/model/drawer_model.dart';
+import 'package:nicholaslim80/routes/app_routes.dart';
 
 class HomeController extends GetxController {
+var controller=Get.put(LoginSignupController());
   final userName = 'Good Morning!'.obs;
   final parcelStatus = 'Your parcel delivered to destination'.obs;
 
@@ -50,4 +55,54 @@ class HomeController extends GetxController {
 
   void selectService(String service) => selectedService.value = service;
   void selectVehicle(String id) => selectedVehicleId.value = id;
+
+  var drawerItem = [].obs;
+  @override
+  void onInit() {
+    drawerItem.addAll([
+      DrawerModel(
+        iconUrl: IconPath.notificationIcon2,
+        iconname: "Notifications",
+        ontap: () {Get.toNamed(AppRoutes.getUserNotification());},
+      ),
+      DrawerModel(
+        iconUrl: IconPath.savedIcon,
+        iconname: "Saved Places",
+        ontap: () {},
+      ),
+
+      DrawerModel(
+        iconUrl: IconPath.walletIcon,
+        iconname: "My Wallet",
+        ontap: () {},
+      ),
+
+      DrawerModel(
+        iconUrl: IconPath.referIcon,
+        iconname: "Refer & Earn",
+        ontap: () {},
+      ),
+
+      DrawerModel(
+        iconUrl: IconPath.ridersicon,
+        iconname: "My Riders",
+        ontap: () {},
+      ),
+
+      DrawerModel(
+        iconUrl: IconPath.supportIcon,
+        iconname: "Support",
+        ontap: () {},
+      ),
+
+      DrawerModel(
+        iconUrl: IconPath.logOutIcon,
+        iconname: "Logout",
+        ontap: () {
+        
+        controller.logout();},
+      ),
+    ]);
+    super.onInit();
+  }
 }

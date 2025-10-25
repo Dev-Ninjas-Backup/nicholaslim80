@@ -97,11 +97,27 @@ class LoginSignupController extends GetxController {
     }
   }
 
+
+
+    void logout() {
+    phoneNumber.value = '';
+    selectedUserType.value = 'USER';
+    isLoginSelected.value = true;
+
+    phoneController.clear();
+    nameController.clear();
+    emailController.clear();
+
+    Get.offAllNamed(AppRoutes.loginScreen);
+  }
+
   @override
   void onClose() {
-    phoneController.dispose();
-    nameController.dispose();
-    emailController.dispose();
+    // phoneController.dispose();
+    // nameController.dispose();
+    // emailController.dispose();
     super.onClose();
   }
+
+
 }

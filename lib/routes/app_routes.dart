@@ -13,7 +13,8 @@ import 'package:nicholaslim80/features/rider/rider_home/screen/rider_home_screen
 import 'package:nicholaslim80/features/rider/rider_incentives/screen/incentives_screen.dart';
 import 'package:nicholaslim80/features/rider/rider_records/screen/records_screen.dart';
 import 'package:nicholaslim80/features/splash/screen/splash_screen.dart';
-import 'package:nicholaslim80/features/user/acoount/screen/account_screen.dart';
+import 'package:nicholaslim80/features/user/notification/screen/user_notification1.dart';
+import 'package:nicholaslim80/features/user/profile/screen/profile_screen.dart';
 import 'package:nicholaslim80/features/user/auth/login/screen/login_signup_screen.dart';
 import 'package:nicholaslim80/features/user/auth/verification/screen/verification_screen.dart';
 import 'package:nicholaslim80/features/user/bottom_navbar/screen/bottom_navbar_screen.dart';
@@ -34,11 +35,16 @@ class AppRoutes {
   static String tryAginScreen = '/tryAginScreen';
   static String driverPreferenceScreen = '/driverPreferenceScreen';
   static String distanceRadiusScreen = '/distanceRadiusScreen';
+
   static String riderBottomNavbarScreen = '/riderBottomNavbarScreen';
   static String riderHomeScreen = '/riderHomeScreen';
   static String incentivesScreen = '/incentivesScreen';
   static String recordsScreen = '/recordsScreen';
   static String riderAccountScreen = '/riderAccountScreen';
+
+  //user notification
+  static String userNotification='/user/notification';
+
 
   static String getSplashScreen() => splashScreen;
   static String getOnboardingScreen() => onboardingScreen;
@@ -54,11 +60,16 @@ class AppRoutes {
   static String gettryAginScreen() => tryAginScreen;
   static String getdriverPreferenceScreen() => driverPreferenceScreen;
   static String getdistanceRadiusScreen() => distanceRadiusScreen;
+
   static String getriderBottomNavbarScreen() => riderBottomNavbarScreen;
   static String getriderHomeScreen() => riderHomeScreen;
   static String getincentivesScreen() => incentivesScreen;
   static String getrecordsScreen() => recordsScreen;
   static String getriderAccountScreen() => riderAccountScreen;
+
+  //user notification
+  static String getUserNotification()=>userNotification;
+
 
   static List<GetPage> routes = [
     GetPage(name: splashScreen, page: () => SplashScreen()),
@@ -85,7 +96,7 @@ class AppRoutes {
     ),
     GetPage(
       name: accountScreen,
-      page: () => AccountScreen(),
+      page: () => ProfileScreen(),
       transition: Transition.fadeIn,
     ),
     GetPage(
@@ -123,6 +134,7 @@ class AppRoutes {
       page: () => DistanceRadiusScreen(),
       transition: Transition.fadeIn,
     ),
+
     GetPage(
       name: riderBottomNavbarScreen,
       page: () => RiderBottomNavbarScreen(),
@@ -148,5 +160,9 @@ class AppRoutes {
       page: () => RiderAccountScreen(),
       transition: Transition.fadeIn,
     ),
+
+    //user notification
+    GetPage(name: userNotification, page: ()=>UserNotification())
+
   ];
 }
