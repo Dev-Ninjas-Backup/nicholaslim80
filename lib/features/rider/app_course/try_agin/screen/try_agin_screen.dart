@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
 import 'package:nicholaslim80/core/common/widgets/custom_app_bar.dart';
 import 'package:nicholaslim80/features/rider/app_course/try_agin/controller/try_agin_controller.dart';
+import 'package:nicholaslim80/routes/app_routes.dart';
 
 class TryAginScreen extends StatelessWidget {
   const TryAginScreen({super.key});
@@ -25,7 +26,7 @@ class TryAginScreen extends StatelessWidget {
             buildScoreCircle(ctrl),
             SizedBox(height: 30),
             buildMessage(ctrl),
-            SizedBox(height: 430),
+            Spacer(),
             buildTryAgainButton(ctrl),
           ],
         ),
@@ -33,7 +34,6 @@ class TryAginScreen extends StatelessWidget {
     );
   }
 
-  // Score Circle Widget
   Widget buildScoreCircle(TryAginController ctrl) {
     return Obx(
       () => Container(
@@ -42,7 +42,7 @@ class TryAginScreen extends StatelessWidget {
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: AppColors.subtitleFontColor,
-          border: Border.all(color: Colors.grey, width: 4),
+          border: Border.all(color: Colors.grey, width: 6),
         ),
         alignment: Alignment.center,
         child: Column(
@@ -70,7 +70,6 @@ class TryAginScreen extends StatelessWidget {
     );
   }
 
-  // Message Text
   Widget buildMessage(TryAginController ctrl) {
     return Obx(
       () => Text(
@@ -81,13 +80,14 @@ class TryAginScreen extends StatelessWidget {
     );
   }
 
-  // Try Again Button
   Widget buildTryAgainButton(TryAginController ctrl) {
     return SizedBox(
       width: double.infinity,
       height: 50,
       child: ElevatedButton(
-        onPressed: ctrl.tryAgain,
+        onPressed: () {
+          Get.offAllNamed(AppRoutes.getappCouresScreen());
+        },
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.subtitleFontColor,
           shape: RoundedRectangleBorder(

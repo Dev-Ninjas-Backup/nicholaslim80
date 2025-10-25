@@ -4,6 +4,7 @@ import 'package:nicholaslim80/core/common/widgets/custom_app_bar.dart';
 import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
 import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
 import 'package:nicholaslim80/features/rider/app_course/quiz_congratulation/controller/quiz_congratulation_controller.dart';
+import 'package:nicholaslim80/routes/app_routes.dart';
 
 class QuizCongratulationScreen extends StatelessWidget {
   final QuizCongratulationController ctrl = Get.put(
@@ -76,7 +77,7 @@ class QuizCongratulationScreen extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                        color: AppColors.primaryFontColor,
                       ),
                     ),
                     SizedBox(height: 6),
@@ -95,7 +96,7 @@ class QuizCongratulationScreen extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
-                        color: Colors.black,
+                        color: AppColors.primaryFontColor,
                       ),
                     ),
                     SizedBox(height: 10),
@@ -142,7 +143,7 @@ class QuizCongratulationScreen extends StatelessWidget {
                         children: [
                           Image.asset(
                             IconPath.massage,
-                            color: Colors.black54,
+                            color: AppColors.primaryFontColor,
                             height: 20,
                             width: 20,
                           ),
@@ -152,7 +153,7 @@ class QuizCongratulationScreen extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w500,
-                              color: Colors.black87,
+                              color: AppColors.primaryFontColor,
                             ),
                           ),
                         ],
@@ -172,11 +173,10 @@ class QuizCongratulationScreen extends StatelessWidget {
                 height: 55,
                 child: ElevatedButton(
                   onPressed: () {
-                    ctrl.submitResult();
-                    Navigator.pop(context);
+                    Get.toNamed(AppRoutes.getdriverPreferenceScreen());
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
+                    backgroundColor: AppColors.primaryFontColor,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),

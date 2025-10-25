@@ -190,7 +190,6 @@ class AppCouresScreen extends StatelessWidget {
                         ? () {
                             if (ctrl.currentIndex.value ==
                                 ctrl.questions.length - 1) {
-                              // Last question logic: check all answers
                               int correctAnswers = 0;
                               for (var i = 0; i < ctrl.questions.length; i++) {
                                 if (ctrl.selectedOptions.length > i &&
@@ -201,16 +200,13 @@ class AppCouresScreen extends StatelessWidget {
                               }
 
                               if (correctAnswers == ctrl.questions.length) {
-                                // All answers correct → green → Congratulations
                                 Get.toNamed(
                                   AppRoutes.getquizCongratulationScreen(),
                                 );
                               } else {
-                                // Any wrong answer → amber → Try Again
                                 Get.toNamed(AppRoutes.gettryAginScreen());
                               }
                             } else {
-                              // Not last question → next question
                               ctrl.nextQuestion();
                             }
                           }
@@ -222,7 +218,7 @@ class AppCouresScreen extends StatelessWidget {
                       ),
                       minimumSize: Size(164, 45),
                       backgroundColor: ctrl.selectedOption.value.isNotEmpty
-                          ? Colors.amber
+                          ? AppColors.onboardingIndicatorActive
                           : Colors.white,
                     ),
                     child: Text(
