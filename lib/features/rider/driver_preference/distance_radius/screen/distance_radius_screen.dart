@@ -185,7 +185,9 @@ class DistanceRadiusScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    onPressed: () => ctrl.saveRadius(context),
+                    onPressed: () {
+                      Get.back();
+                    },
                     child: Text(
                       'Save',
                       style: TextStyle(

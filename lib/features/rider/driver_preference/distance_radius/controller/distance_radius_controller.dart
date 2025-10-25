@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class DistanceRadiusController extends GetxController {
@@ -16,11 +15,5 @@ class DistanceRadiusController extends GetxController {
 
   void decreaseRadius() {
     if (radiusKm.value > 1) radiusKm.value -= 1;
-  }
-
-  void saveRadius(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Radius saved: ${radiusKm.value.toInt()} Km')),
-    );
   }
 }
