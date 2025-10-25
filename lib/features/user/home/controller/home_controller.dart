@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
 import 'package:nicholaslim80/core/utils/constants/image_path.dart';
+import 'package:nicholaslim80/features/user/auth/login/controller/login_signup_controller.dart';
 import 'package:nicholaslim80/features/user/home/model/drawer_model.dart';
 import 'package:nicholaslim80/routes/app_routes.dart';
 
 class HomeController extends GetxController {
+var controller=Get.put(LoginSignupController());
   final userName = 'Good Morning!'.obs;
   final parcelStatus = 'Your parcel delivered to destination'.obs;
 
@@ -96,7 +98,9 @@ class HomeController extends GetxController {
       DrawerModel(
         iconUrl: IconPath.logOutIcon,
         iconname: "Logout",
-        ontap: () {},
+        ontap: () {
+        
+        controller.logout();},
       ),
     ]);
     super.onInit();
