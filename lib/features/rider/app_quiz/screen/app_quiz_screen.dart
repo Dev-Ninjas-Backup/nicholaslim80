@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:nicholaslim80/core/common/widgets/custom_app_bar.dart';
 import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
 import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
 import 'package:nicholaslim80/features/rider/app_quiz/widget/large_box.dart';
 import 'package:nicholaslim80/features/rider/app_quiz/widget/small_box.dart';
+import 'package:nicholaslim80/routes/app_routes.dart';
 
 class AppQuizScreen extends StatelessWidget {
   const AppQuizScreen({super.key});
@@ -16,7 +18,7 @@ class AppQuizScreen extends StatelessWidget {
         children: [
           CustomAppBar(lable: 'App Quiz'),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -109,17 +111,19 @@ class AppQuizScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 80),
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Get.toNamed(AppRoutes.appCouresScreen);
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primaryButtonColor,
-                    minimumSize: const Size(double.infinity, 50),
+                    minimumSize: Size(double.infinity, 50),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
                   child: Text(
                     'Continue Quiz',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
                       color: Colors.black,

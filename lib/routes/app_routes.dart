@@ -1,6 +1,9 @@
 import 'package:get/get_navigation/src/routes/get_route.dart';
 import 'package:get/get_navigation/src/routes/transitions_type.dart';
 import 'package:nicholaslim80/features/onboarding/screen/onboarding_screen.dart';
+import 'package:nicholaslim80/features/rider/app_course/quiz_congratulation/screen/quiz_congratulation_screen.dart';
+import 'package:nicholaslim80/features/rider/app_course/screen/app_coures_screen.dart';
+import 'package:nicholaslim80/features/rider/app_course/try_agin/screen/try_agin_screen.dart';
 import 'package:nicholaslim80/features/rider/app_quiz/screen/app_quiz_screen.dart';
 import 'package:nicholaslim80/features/splash/screen/splash_screen.dart';
 import 'package:nicholaslim80/features/user/acoount/screen/account_screen.dart';
@@ -19,6 +22,9 @@ class AppRoutes {
   static String accountScreen = '/accountScreen';
   static String bottomNavbarScreen = '/bottomnavbarScreen';
   static String appQuizScreen = '/appQuizScreen';
+  static String appCouresScreen = '/appCouresScreen';
+  static String quizCongratulationScreen = '/quizCongratulationScreen';
+  static String tryAginScreen = '/tryAginScreen';
 
   static String getSplashScreen() => splashScreen;
   static String getOnboardingScreen() => onboardingScreen;
@@ -29,7 +35,9 @@ class AppRoutes {
   static String getaccountScreen() => accountScreen;
   static String getbottomNavbarScreen() => bottomNavbarScreen;
   static String getappQuizScreen() => appQuizScreen;
-
+  static String getappCouresScreen() => appCouresScreen;
+  static String getquizCongratulationScreen() => quizCongratulationScreen;
+  static String gettryAginScreen() => tryAginScreen;
   static List<GetPage> routes = [
     GetPage(name: splashScreen, page: () => SplashScreen()),
     GetPage(name: onboardingScreen, page: () => OnboardingScreen()),
@@ -66,6 +74,21 @@ class AppRoutes {
     GetPage(
       name: appQuizScreen,
       page: () => AppQuizScreen(),
+      transition: Transition.fadeIn,
+    ),
+    GetPage(
+      name: appCouresScreen,
+      page: () => AppCouresScreen(),
+      transition: Transition.fadeIn,
+    ),
+    GetPage(
+      name: quizCongratulationScreen,
+      page: () => QuizCongratulationScreen(),
+      transition: Transition.fadeIn,
+    ),
+    GetPage(
+      name: tryAginScreen,
+      page: () => TryAginScreen(),
       transition: Transition.fadeIn,
     ),
   ];
