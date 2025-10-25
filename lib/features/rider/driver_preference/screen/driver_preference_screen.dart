@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
 import 'package:nicholaslim80/core/utils/constants/image_path.dart';
 import 'package:nicholaslim80/features/rider/driver_preference/controller/driver_preference_controller.dart';
+import 'package:nicholaslim80/features/rider/driver_preference/widget/button_widget.dart';
 
 class DriverPreferenceScreen extends StatelessWidget {
   DriverPreferenceScreen({super.key});
@@ -190,57 +191,7 @@ class DriverPreferenceScreen extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 70),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: OutlinedButton(
-                          onPressed: () {
-                            ctrl.cancelOrder();
-                          },
-                          style: OutlinedButton.styleFrom(
-                            side: BorderSide(color: Colors.red, width: 1),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            padding: EdgeInsets.symmetric(vertical: 8),
-                          ),
-                          child: Text(
-                            "Cancel Order",
-                            style: TextStyle(
-                              color: Colors.red,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 75),
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () {
-                            ctrl.markAsDone();
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                AppColors.onboardingIndicatorActive,
-                            foregroundColor: AppColors.primaryFontColor,
-                            elevation: 2,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            padding: EdgeInsets.symmetric(vertical: 6),
-                          ),
-                          child: Text(
-                            "Done",
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                  TowButtonSection(ctrl: ctrl),
                 ],
               ),
             ),
