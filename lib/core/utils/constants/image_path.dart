@@ -7,4 +7,5 @@ class ImagePath {
   static String vehicles1 = 'assets/images/vehicles1.png';
   static String vehicles2 = 'assets/images/vehicles2.png';
   static String profileImage = "assets/images/profileImage.jpg";
+  static String trackmap="assets/images/trackmap.png";
 }
