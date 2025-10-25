@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
 import 'package:nicholaslim80/core/utils/constants/image_path.dart';
 import 'package:nicholaslim80/features/user/home/model/drawer_model.dart';
+import 'package:nicholaslim80/routes/app_routes.dart';
 
 class HomeController extends GetxController {
   final userName = 'Good Morning!'.obs;
@@ -60,7 +61,7 @@ class HomeController extends GetxController {
       DrawerModel(
         iconUrl: IconPath.notificationIcon2,
         iconname: "Notifications",
-        ontap: () {},
+        ontap: () {Get.toNamed(AppRoutes.getUserNotification());},
       ),
       DrawerModel(
         iconUrl: IconPath.savedIcon,
