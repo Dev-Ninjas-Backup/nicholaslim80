@@ -6,7 +6,7 @@ import 'package:nicholaslim80/features/rider/app_course/screen/app_coures_screen
 import 'package:nicholaslim80/features/rider/app_course/try_agin/screen/try_agin_screen.dart';
 import 'package:nicholaslim80/features/rider/app_quiz/screen/app_quiz_screen.dart';
 import 'package:nicholaslim80/features/splash/screen/splash_screen.dart';
-import 'package:nicholaslim80/features/user/acoount/screen/account_screen.dart';
+import 'package:nicholaslim80/features/user/profile/screen/profile_screen.dart';
 import 'package:nicholaslim80/features/user/auth/login/screen/login_signup_screen.dart';
 import 'package:nicholaslim80/features/user/auth/verification/screen/verification_screen.dart';
 import 'package:nicholaslim80/features/user/bottom_navbar/screen/bottom_navbar_screen.dart';
@@ -63,7 +63,7 @@ class AppRoutes {
     ),
     GetPage(
       name: accountScreen,
-      page: () => AccountScreen(),
+      page: () => ProfileScreen(),
       transition: Transition.fadeIn,
     ),
     GetPage(
