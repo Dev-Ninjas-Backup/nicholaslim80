@@ -4,6 +4,7 @@ import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
 import 'package:nicholaslim80/core/utils/constants/image_path.dart';
 import 'package:nicholaslim80/features/rider/driver_preference/controller/driver_preference_controller.dart';
 import 'package:nicholaslim80/features/rider/driver_preference/widget/button_widget.dart';
+import 'package:nicholaslim80/routes/app_routes.dart';
 
 class DriverPreferenceScreen extends StatelessWidget {
   DriverPreferenceScreen({super.key});
@@ -55,7 +56,7 @@ class DriverPreferenceScreen extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
               image: DecorationImage(
-                image: AssetImage(ImagePath.map),
+                image: AssetImage(ImagePath.trackmap),
                 fit: BoxFit.cover,
               ),
             ),
@@ -156,40 +157,48 @@ class DriverPreferenceScreen extends StatelessWidget {
                   SizedBox(height: 20),
 
                   // Distance Radius Row
-                  InkWell(
-                    onTap: () {},
-                    child: Row(
+                  SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: AppColors.onboardingIndicatorActive,
-                            shape: BoxShape.circle,
-                          ),
-                          padding: EdgeInsets.all(6),
-                          child: Icon(
-                            Icons.location_on,
-                            color: AppColors.primaryFontColor,
-                          ),
-                        ),
-                        SizedBox(width: 12),
-                        Expanded(
-                          child: Obx(
-                            () => Text(
-                              "Distance Radius",
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 16,
+                        InkWell(
+                          onTap: () {
+                            Get.toNamed(AppRoutes.getdistanceRadiusScreen());
+                          },
+                          child: Row(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: AppColors.onboardingIndicatorActive,
+                                  shape: BoxShape.circle,
+                                ),
+                                padding: EdgeInsets.all(6),
+                                child: Icon(
+                                  Icons.location_on,
+                                  color: AppColors.primaryFontColor,
+                                ),
                               ),
-                            ),
+                              SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  "Distance Radius",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ),
+                              Icon(
+                                Icons.chevron_right,
+                                color: AppColors.primaryFontColor,
+                              ),
+                            ],
                           ),
-                        ),
-                        Icon(
-                          Icons.chevron_right,
-                          color: AppColors.primaryFontColor,
                         ),
                       ],
                     ),
                   ),
+
                   SizedBox(height: 70),
                   TowButtonSection(ctrl: ctrl),
                 ],

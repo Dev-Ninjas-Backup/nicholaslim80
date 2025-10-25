@@ -5,6 +5,7 @@ import 'package:nicholaslim80/features/rider/app_course/quiz_congratulation/scre
 import 'package:nicholaslim80/features/rider/app_course/screen/app_coures_screen.dart';
 import 'package:nicholaslim80/features/rider/app_course/try_agin/screen/try_agin_screen.dart';
 import 'package:nicholaslim80/features/rider/app_quiz/screen/app_quiz_screen.dart';
+import 'package:nicholaslim80/features/rider/driver_preference/distance_radius/screen/distance_radius_screen.dart';
 import 'package:nicholaslim80/features/rider/driver_preference/screen/driver_preference_screen.dart';
 import 'package:nicholaslim80/features/splash/screen/splash_screen.dart';
 import 'package:nicholaslim80/features/user/acoount/screen/account_screen.dart';
@@ -27,6 +28,7 @@ class AppRoutes {
   static String quizCongratulationScreen = '/quizCongratulationScreen';
   static String tryAginScreen = '/tryAginScreen';
   static String driverPreferenceScreen = '/driverPreferenceScreen';
+  static String distanceRadiusScreen = '/distanceRadiusScreen';
 
   static String getSplashScreen() => splashScreen;
   static String getOnboardingScreen() => onboardingScreen;
@@ -41,6 +43,7 @@ class AppRoutes {
   static String getquizCongratulationScreen() => quizCongratulationScreen;
   static String gettryAginScreen() => tryAginScreen;
   static String getdriverPreferenceScreen() => driverPreferenceScreen;
+  static String getdistanceRadiusScreen() => distanceRadiusScreen;
 
   static List<GetPage> routes = [
     GetPage(name: splashScreen, page: () => SplashScreen()),
@@ -98,6 +101,11 @@ class AppRoutes {
     GetPage(
       name: driverPreferenceScreen,
       page: () => DriverPreferenceScreen(),
+      transition: Transition.fadeIn,
+    ),
+    GetPage(
+      name: distanceRadiusScreen,
+      page: () => DistanceRadiusScreen(),
       transition: Transition.fadeIn,
     ),
   ];
