@@ -104,4 +104,16 @@ class LoginSignupController extends GetxController {
     emailController.dispose();
     super.onClose();
   }
+
+  void logout() {
+    phoneNumber.value = '';
+    selectedUserType.value = 'USER';
+    isLoginSelected.value = true;
+
+    phoneController.clear();
+    nameController.clear();
+    emailController.clear();
+
+    Get.offAllNamed(AppRoutes.loginScreen);
+  }
 }
