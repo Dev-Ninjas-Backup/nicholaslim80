@@ -4,12 +4,13 @@ import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
 import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
 import 'package:nicholaslim80/features/user/home/controller/home_controller.dart';
+import 'package:nicholaslim80/features/user/home/widgets/drawer.dart';
 import 'package:nicholaslim80/features/user/home/widgets/small_horizontal_slider_widget.dart';
 import 'package:nicholaslim80/features/user/home/widgets/vehicle_cards_widget.dart';
 
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
-
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final HomeController ctrl = Get.put(HomeController());
 
   @override
@@ -19,6 +20,8 @@ class HomeScreen extends StatelessWidget {
     final width = media.size.width;
 
     return Scaffold(
+      key: _scaffoldKey,
+
       backgroundColor: AppColors.backgroungColor,
       appBar: AppBar(
         elevation: 0,
@@ -27,7 +30,9 @@ class HomeScreen extends StatelessWidget {
 
         leading: IconButton(
           icon: Icon(Icons.menu, color: AppColors.primaryFontColor),
-          onPressed: () {},
+          onPressed: () {
+            _scaffoldKey.currentState?.openDrawer();
+          },
         ),
         title: Obx(
           () => Text(
@@ -80,6 +85,8 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
       ),
+
+      drawer: drawer(ctrl),
 
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: padding, vertical: 12),

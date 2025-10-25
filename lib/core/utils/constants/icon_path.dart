@@ -12,4 +12,16 @@ class IconPath {
   static String file = "assets/icons/fileIcon.png";
   static String mappin = "assets/icons/mappin.png";
   static String massage = "assets/icons/message.png";
+  static String arrowBackIcon="assets/icons/arrow_back_icon.png";
+  static String editIcon="assets/icons/editIcon.png";
+  static String notificationIcon2="assets/icons/notificationIcon.png";
+    static String savedIcon="assets/icons/saveIcon.png";
+    static String walletIcon="assets/icons/walletIcon.png";
+    static String referIcon="assets/icons/referIcon.png";
+    static String ridersicon="assets/icons/myRidericon.png";
+    static String supportIcon="assets/icons/support.png";
+    static String logOutIcon="assets/icons/logOutIcon.png";
+    static String carIcon="assets/icons/carIcon.png";
+
+
 }

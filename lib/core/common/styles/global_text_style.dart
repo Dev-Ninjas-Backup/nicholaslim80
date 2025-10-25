@@ -9,7 +9,7 @@ TextStyle getTextStyle({
   TextAlign textAlign = TextAlign.center,
   Color color = Colors.black,
 }) {
-  return GoogleFonts.poppins(
+  return GoogleFonts.nunitoSans(
     fontSize: fontSize.sp,
     fontWeight: fontWeight,
     color: color,
