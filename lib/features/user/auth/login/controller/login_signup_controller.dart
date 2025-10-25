@@ -97,15 +97,9 @@ class LoginSignupController extends GetxController {
     }
   }
 
-  @override
-  void onClose() {
-    phoneController.dispose();
-    nameController.dispose();
-    emailController.dispose();
-    super.onClose();
-  }
 
-  void logout() {
+
+    void logout() {
     phoneNumber.value = '';
     selectedUserType.value = 'USER';
     isLoginSelected.value = true;
@@ -116,4 +110,14 @@ class LoginSignupController extends GetxController {
 
     Get.offAllNamed(AppRoutes.loginScreen);
   }
+
+  @override
+  void onClose() {
+    // phoneController.dispose();
+    // nameController.dispose();
+    // emailController.dispose();
+    super.onClose();
+  }
+
+
 }
