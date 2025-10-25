@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nicholaslim80/core/common/widgets/custom_app_bar.dart';
 import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
 import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
 import 'package:nicholaslim80/features/rider/app_course/quiz_congratulation/controller/quiz_congratulation_controller.dart';
@@ -18,13 +17,42 @@ class QuizCongratulationScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset: true,
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(kToolbarHeight),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                // ignore: deprecated_member_use
+                color: Colors.black.withOpacity(0.1),
+                offset: Offset(0, 3),
+                blurRadius: 8,
+              ),
+            ],
+          ),
+          child: AppBar(
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back_ios_new_rounded, color: Colors.black),
+              onPressed: () => Get.back(),
+            ),
+            backgroundColor: Colors.white,
+            centerTitle: true,
+            elevation: 0, // Remove default AppBar shadow
+            title: Text(
+              "Online",
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.w700,
+                fontSize: 20,
+              ),
+            ),
+          ),
+        ),
+      ),
       body: SafeArea(
         child: Column(
           children: [
-            Align(
-              alignment: Alignment.center,
-              child: CustomAppBar(lable: 'App Quiz'),
-            ),
             Expanded(
               child: SingleChildScrollView(
                 padding: EdgeInsets.symmetric(horizontal: 20, vertical: 14),
