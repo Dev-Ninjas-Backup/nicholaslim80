@@ -27,47 +27,45 @@ Drawer drawer(HomeController controller) {
 
               Padding(
                 padding: EdgeInsets.only(top: 30),
-                child: Expanded(
-                  child: ListView.builder(
-                    itemCount: controller.drawerItem.length,
-                    padding: EdgeInsets.zero,
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    itemBuilder: (_, index) {
-                      var item = controller.drawerItem[index];
-                      return Padding(
-                        padding: EdgeInsets.only(bottom: 38),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                Image.asset(
-                                  item.iconUrl,
-                                  height: 24,
-                                  width: 24,
+                child: ListView.builder(
+                  itemCount: controller.drawerItem.length,
+                  padding: EdgeInsets.zero,
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemBuilder: (_, index) {
+                    var item = controller.drawerItem[index];
+                    return Padding(
+                      padding: EdgeInsets.only(bottom: 38),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Image.asset(
+                                item.iconUrl,
+                                height: 24,
+                                width: 24,
+                              ),
+                              SizedBox(width: 10),
+                              Text(
+                                item.iconname,
+                                style: getTextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
                                 ),
-                                SizedBox(width: 10),
-                                Text(
-                                  item.iconname,
-                                  style: getTextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
-                            ),
-
-                            GestureDetector(
-                              onTap: item.ontap,
-
-                              child: Icon(Icons.arrow_forward_ios, size: 24),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
+                              ),
+                            ],
+                          ),
+                
+                          GestureDetector(
+                            onTap: item.ontap,
+                
+                            child: Icon(Icons.arrow_forward_ios, size: 24),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
                 ),
               ),
             ],

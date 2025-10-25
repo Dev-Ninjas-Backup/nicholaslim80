@@ -22,6 +22,7 @@ class IconPath {
     static String supportIcon="assets/icons/support.png";
     static String logOutIcon="assets/icons/logOutIcon.png";
     static String carIcon="assets/icons/carIcon.png";
+    static String ellipsIcon="assets/icons/ellipse.png";
 
 
 }

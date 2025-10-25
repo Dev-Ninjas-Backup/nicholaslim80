@@ -1,6 +1,6 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
-import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
 
 class CustomAppBarUser extends StatelessWidget {
   final String title;
@@ -15,19 +15,23 @@ class CustomAppBarUser extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            children: [
-              Image.asset(IconPath.arrowBackIcon, height: 18, width: 18),
+          GestureDetector(
+            onTap: () {
+              Get.back();
+            },
+            child: Icon(Icons.arrow_back_ios, size: 18),
+          ),
 
-              SizedBox(width: 17),
-
-              Text(
+          Expanded(
+            child: Center(
+              child: Text(
                 title,
                 style: getTextStyle(fontSize: 16, fontWeight: FontWeight.w700),
               ),
-            ],
+            ),
           ),
-          ?action,
+
+          action ?? const SizedBox(width: 18),
         ],
       ),
     );
