@@ -11,4 +11,5 @@ class IconPath {
   static String star = "assets/icons/starIcon.png";
   static String file = "assets/icons/fileIcon.png";
   static String mappin = "assets/icons/mappin.png";
+  static String massage = "assets/icons/message.png";
 }
