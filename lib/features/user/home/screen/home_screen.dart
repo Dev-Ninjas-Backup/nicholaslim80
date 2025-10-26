@@ -7,6 +7,7 @@ import 'package:nicholaslim80/features/user/home/controller/home_controller.dart
 import 'package:nicholaslim80/features/user/home/widgets/drawer.dart';
 import 'package:nicholaslim80/features/user/home/widgets/small_horizontal_slider_widget.dart';
 import 'package:nicholaslim80/features/user/home/widgets/vehicle_cards_widget.dart';
+import 'package:nicholaslim80/routes/app_routes.dart';
 
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
@@ -50,7 +51,9 @@ class HomeScreen extends StatelessWidget {
               Icons.notifications_none,
               color: AppColors.primaryFontColor,
             ),
-            onPressed: () {},
+            onPressed: () {
+              Get.toNamed(AppRoutes.getUserNotification());
+            },
           ),
         ],
 
