@@ -19,6 +19,7 @@ import 'package:nicholaslim80/features/user/auth/login/screen/login_signup_scree
 import 'package:nicholaslim80/features/user/auth/verification/screen/verification_screen.dart';
 import 'package:nicholaslim80/features/user/bottom_navbar/screen/bottom_navbar_screen.dart';
 import 'package:nicholaslim80/features/user/home/screen/home_screen.dart';
+import 'package:nicholaslim80/features/user/saved_places/screen/saved_place_screenn.dart';
 
 class AppRoutes {
   static String splashScreen = '/splashScreen';
@@ -45,6 +46,7 @@ class AppRoutes {
   //user notification
   static String userNotification = '/user/notification';
   static String userOrderDetails = '/userOrderDetails';
+  static String savedPlaces = '/savedPlaces';
 
   static String getSplashScreen() => splashScreen;
   static String getOnboardingScreen() => onboardingScreen;
@@ -69,6 +71,7 @@ class AppRoutes {
 
   //user notification
   static String getUserNotification() => userNotification;
+  static String getSavedPlaces() => savedPlaces;
 
   static List<GetPage> routes = [
     GetPage(name: splashScreen, page: () => SplashScreen()),
@@ -162,5 +165,6 @@ class AppRoutes {
 
     //user notification
     GetPage(name: userNotification, page: () => UserNotification()),
+    GetPage(name: savedPlaces, page: () => SavedPlaceScreen()),
   ];
 }
