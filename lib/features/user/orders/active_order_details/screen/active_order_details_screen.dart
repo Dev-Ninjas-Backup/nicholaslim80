@@ -1,23 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
+import 'package:nicholaslim80/core/common/widgets/custom_button.dart';
 import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
+import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
+import 'package:nicholaslim80/features/user/orders/active_order_details/widget/price_and_payment.dart';
+import 'package:nicholaslim80/features/user/orders/active_order_details/widget/reviews_widget.dart';
+import 'package:nicholaslim80/features/user/orders/active_order_details/widget/rider_details.dart';
+import 'package:nicholaslim80/features/user/orders/active_order_details/widget/stop_item_widget.dart';
 
 class ActiveOrderDetailsScreen extends StatelessWidget {
   const ActiveOrderDetailsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    //TODO: REFINE THE DESIGN
     return Scaffold(
       backgroundColor: AppColors.backgroungColor,
       body: SafeArea(
         child: Column(
           children: [
-            // Top bar
             Container(
               width: double.infinity,
-              color: Colors.amber,
+              color: Color(0XFFFFCC00),
               padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
               child: Row(
                 children: [
@@ -42,10 +47,9 @@ class ActiveOrderDetailsScreen extends StatelessWidget {
               width: double.infinity,
               color: Colors.grey.shade300,
               alignment: Alignment.center,
-              child: Text("Map View", style: getTextStyle()),
+              child: Text("Needs Google Map API", style: getTextStyle()),
             ),
 
-            // Details Section
             Expanded(
               child: SingleChildScrollView(
                 child: Container(
@@ -53,7 +57,7 @@ class ActiveOrderDetailsScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(20),
+                      top: Radius.circular(22),
                     ),
                     boxShadow: [
                       BoxShadow(
@@ -66,43 +70,7 @@ class ActiveOrderDetailsScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        children: [
-                          CircleAvatar(
-                            radius: 28,
-                            backgroundImage: AssetImage(
-                              'assets/images/profile_placeholder.png',
-                            ),
-                          ),
-                          SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Christine Jason",
-                                  style: getTextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                Text(
-                                  "Vehicle type: Motorbike",
-                                  style: getTextStyle(fontSize: 13),
-                                ),
-                                Text(
-                                  "Order 1266",
-                                  style: getTextStyle(fontSize: 13),
-                                ),
-                                Text(
-                                  "Scheduled to your pick-up time",
-                                  style: getTextStyle(fontSize: 13),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
+                      RiderDetails(),
                       SizedBox(height: 12),
 
                       Row(
@@ -110,51 +78,37 @@ class ActiveOrderDetailsScreen extends StatelessWidget {
                         children: [
                           OutlinedButton.icon(
                             onPressed: () {},
-                            icon: Icon(Icons.message_outlined),
-                            label: Text("Message", style: getTextStyle()),
+                            icon: Image.asset(
+                              IconPath.message,
+                              height: 20.h,
+                              width: 20.w,
+                            ),
+                            label: Text(
+                              "Message",
+                              style: getTextStyle(fontWeight: FontWeight.w500),
+                            ),
                           ),
                           OutlinedButton.icon(
                             onPressed: () {},
-                            icon: Icon(Icons.call_outlined),
-                            label: Text("Call", style: getTextStyle()),
+                            icon: Image.asset(
+                              IconPath.call,
+                              height: 20.h,
+                              width: 20.w,
+                            ),
+                            label: Text(
+                              "Call",
+                              style: getTextStyle(fontWeight: FontWeight.w500),
+                            ),
                           ),
                         ],
                       ),
 
                       SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Icon(Icons.star, color: Colors.amber, size: 18),
-                          Icon(Icons.star, color: Colors.amber, size: 18),
-                          Icon(Icons.star, color: Colors.amber, size: 18),
-                          Icon(Icons.star, color: Colors.amber, size: 18),
-                          Icon(Icons.star, color: Colors.amber, size: 18),
-                          SizedBox(width: 6),
-                          Text("5/5", style: getTextStyle()),
-                          SizedBox(width: 6),
-                          Text(
-                            "(243 Reviews)",
-                            style: getTextStyle(color: Colors.blue),
-                          ),
-                        ],
-                      ),
+                      Reviews(),
 
                       SizedBox(height: 16),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "Total",
-                            style: getTextStyle(fontWeight: FontWeight.w600),
-                          ),
-                          Text(
-                            "\$24.00",
-                            style: getTextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
+                      PriceAndPayment(),
                       SizedBox(height: 4),
-                      Text("VISA ****456", style: getTextStyle(fontSize: 13)),
 
                       SizedBox(height: 16),
                       Row(
@@ -172,47 +126,34 @@ class ActiveOrderDetailsScreen extends StatelessWidget {
 
                       SizedBox(height: 20),
 
-                      _buildStop(
-                        color: Colors.blue,
+                      StopItem(
+                        iconPath: IconPath.locationBlue,
                         title: "Collected from (Sender: Athena Lin)",
                         address: "Blk 657 Ang Mo Kio Ave 9, S560657",
                       ),
-                      _buildStop(
-                        color: Colors.red,
+                      StopItem(
+                        iconPath: IconPath.locationRed,
                         title: "Deliver to (Joseph Low)",
                         address: "Blk 222 Sengkang Ave 2, S530222",
                       ),
-                      _buildStop(
-                        color: Colors.red,
+                      StopItem(
+                        iconPath: IconPath.locationRed,
                         title: "Deliver to (Annie Tan)",
                         address: "Blk 447 Sengkang Ave 4, S530447",
                       ),
-                      _buildStop(
-                        color: Colors.red,
+                      StopItem(
+                        iconPath: IconPath.locationRed,
                         title: "Deliver to (Tony Toh)",
                         address: "Blk 244 Jurong East St 61, S600244",
                       ),
 
                       SizedBox(height: 20),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: () {},
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.amber,
-                            padding: EdgeInsets.symmetric(vertical: 14),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          child: Text(
-                            "Share Ride Information",
-                            style: getTextStyle(
-                              color: Colors.black,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ),
+
+                      CustomButton(
+                        label: 'Share Ride Information',
+                        onPressed: () {},
+                        color: AppColors.primaryButtonColor,
+                        textColor: AppColors.fontColor,
                       ),
                     ],
                   ),
@@ -221,32 +162,6 @@ class ActiveOrderDetailsScreen extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildStop({
-    required Color color,
-    required String title,
-    required String address,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(Icons.location_on, color: color, size: 20),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: getTextStyle(fontWeight: FontWeight.w600)),
-                Text(address, style: getTextStyle(fontSize: 13)),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }

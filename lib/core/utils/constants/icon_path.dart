@@ -12,17 +12,22 @@ class IconPath {
   static String file = "assets/icons/fileIcon.png";
   static String mappin = "assets/icons/mappin.png";
   static String massage = "assets/icons/message.png";
-  static String arrowBackIcon="assets/icons/arrow_back_icon.png";
-  static String editIcon="assets/icons/editIcon.png";
-  static String notificationIcon2="assets/icons/notificationIcon.png";
-    static String savedIcon="assets/icons/saveIcon.png";
-    static String walletIcon="assets/icons/walletIcon.png";
-    static String referIcon="assets/icons/referIcon.png";
-    static String ridersicon="assets/icons/myRidericon.png";
-    static String supportIcon="assets/icons/support.png";
-    static String logOutIcon="assets/icons/logOutIcon.png";
-    static String carIcon="assets/icons/carIcon.png";
-    static String ellipsIcon="assets/icons/ellipse.png";
+  static String arrowBackIcon = "assets/icons/arrow_back_icon.png";
+  static String editIcon = "assets/icons/editIcon.png";
+  static String notificationIcon2 = "assets/icons/notificationIcon.png";
+  static String savedIcon = "assets/icons/saveIcon.png";
+  static String walletIcon = "assets/icons/walletIcon.png";
+  static String referIcon = "assets/icons/referIcon.png";
+  static String ridersicon = "assets/icons/myRidericon.png";
+  static String supportIcon = "assets/icons/support.png";
+  static String logOutIcon = "assets/icons/logOutIcon.png";
+  static String carIcon = "assets/icons/carIcon.png";
+  static String ellipsIcon = "assets/icons/ellipse.png";
+  static String message = "assets/icons/message.png";
+  static String call = "assets/icons/call.png";
+  static String visa = "assets/icons/visa.png";
+    static String locationRed = "assets/icons/location_red.png";
+      static String locationBlue = "assets/icons/location_blue.png";
 
 
 }
