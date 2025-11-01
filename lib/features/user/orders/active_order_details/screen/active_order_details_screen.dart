@@ -16,7 +16,7 @@ class ActiveOrderDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroungColor,
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
           children: [
@@ -43,7 +43,7 @@ class ActiveOrderDetailsScreen extends StatelessWidget {
             ),
 
             Container(
-              height: 200,
+              height: 200.h,
               width: double.infinity,
               color: Colors.grey.shade300,
               alignment: Alignment.center,

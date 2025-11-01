@@ -110,13 +110,13 @@ class LoginSignupScreen extends StatelessWidget {
                                   ),
                                 ),
                               ),
-                              const SizedBox(width: 12),
+                              SizedBox(width: 12),
                               GestureDetector(
                                 onTap: () => controller.toggleSelection(false),
                                 child: AnimatedContainer(
-                                  duration: const Duration(milliseconds: 300),
+                                  duration: Duration(milliseconds: 300),
                                   curve: Curves.easeInOut,
-                                  padding: const EdgeInsets.symmetric(
+                                  padding: EdgeInsets.symmetric(
                                     horizontal: 18,
                                     vertical: 5,
                                   ),
@@ -126,9 +126,9 @@ class LoginSignupScreen extends StatelessWidget {
                                         : Colors.transparent,
                                     borderRadius: BorderRadius.circular(4),
                                   ),
-                                  child: const Text(
+                                  child: Text(
                                     'Sign Up',
-                                    style: TextStyle(
+                                    style: getTextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w600,
                                       color: Colors.black,
@@ -183,7 +183,7 @@ class LoginSignupScreen extends StatelessWidget {
                           ),
                           child: Text(
                             isLogin ? 'Login' : 'Continue',
-                            style: const TextStyle(
+                            style: getTextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
                               color: Colors.black,
