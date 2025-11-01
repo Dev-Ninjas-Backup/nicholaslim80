@@ -43,8 +43,8 @@ class AppRoutes {
   static String riderAccountScreen = '/riderAccountScreen';
 
   //user notification
-  static String userNotification='/user/notification';
-
+  static String userNotification = '/user/notification';
+  static String userOrderDetails = '/userOrderDetails';
 
   static String getSplashScreen() => splashScreen;
   static String getOnboardingScreen() => onboardingScreen;
@@ -68,8 +68,7 @@ class AppRoutes {
   static String getriderAccountScreen() => riderAccountScreen;
 
   //user notification
-  static String getUserNotification()=>userNotification;
-
+  static String getUserNotification() => userNotification;
 
   static List<GetPage> routes = [
     GetPage(name: splashScreen, page: () => SplashScreen()),
@@ -162,7 +161,6 @@ class AppRoutes {
     ),
 
     //user notification
-    GetPage(name: userNotification, page: ()=>UserNotification())
-
+    GetPage(name: userNotification, page: () => UserNotification()),
   ];
 }
