@@ -8,6 +8,7 @@ class ActiveOrderDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    //TODO: REFINE THE DESIGN
     return Scaffold(
       backgroundColor: AppColors.backgroungColor,
       body: SafeArea(
