@@ -10,7 +10,6 @@ class CompletedOrderCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        //TODO : Need to Add Approute
         Get.to(CompletedOrderDetailsScreen());
       },
       child: Container(

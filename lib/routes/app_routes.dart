@@ -13,6 +13,7 @@ import 'package:nicholaslim80/features/rider/rider_home/screen/rider_home_screen
 import 'package:nicholaslim80/features/rider/rider_incentives/screen/incentives_screen.dart';
 import 'package:nicholaslim80/features/rider/rider_records/screen/records_screen.dart';
 import 'package:nicholaslim80/features/splash/screen/splash_screen.dart';
+import 'package:nicholaslim80/features/user/my_wallet/screen/user_my_wallet.dart';
 import 'package:nicholaslim80/features/user/notification/screen/user_notification1.dart';
 import 'package:nicholaslim80/features/user/profile/screen/profile_screen.dart';
 import 'package:nicholaslim80/features/user/auth/login/screen/login_signup_screen.dart';
@@ -49,6 +50,8 @@ class AppRoutes {
   static String userNotification = '/user/notification';
   static String userOrderDetails = '/userOrderDetails';
   static String savedPlaces = '/savedPlaces';
+  //user wallet
+  static String myWalletUser = "/User/myWalletUser";
 
   static String getSplashScreen() => splashScreen;
   static String getOnboardingScreen() => onboardingScreen;
@@ -75,6 +78,8 @@ class AppRoutes {
   //user notification
   static String getUserNotification() => userNotification;
   static String getSavedPlaces() => savedPlaces;
+  //user my wallet
+  static String getmyWalletUser() => myWalletUser;
 
   static List<GetPage> routes = [
     GetPage(name: splashScreen, page: () => SplashScreen()),
@@ -174,5 +179,7 @@ class AppRoutes {
     //user notification
     GetPage(name: userNotification, page: () => UserNotification()),
     GetPage(name: savedPlaces, page: () => SavedPlaceScreen()),
+    //user my wallet
+    GetPage(name: myWalletUser, page: () => UserMyWallet()),
   ];
 }
