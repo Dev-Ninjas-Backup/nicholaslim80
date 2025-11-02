@@ -52,8 +52,7 @@ class HomeScreen extends StatelessWidget {
               color: AppColors.primaryFontColor,
             ),
             onPressed: () {
-              Get.toNamed(AppRoutes.getUserNotification());
-            },
+            Get.toNamed(AppRoutes.getUserNotification());},
           ),
         ],
 
