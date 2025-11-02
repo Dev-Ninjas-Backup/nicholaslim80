@@ -7,7 +7,7 @@ import 'package:nicholaslim80/features/user/home/model/drawer_model.dart';
 import 'package:nicholaslim80/routes/app_routes.dart';
 
 class HomeController extends GetxController {
-var controller=Get.put(LoginSignupController());
+  var controller = Get.put(LoginSignupController());
   final userName = 'Good Morning!'.obs;
   final parcelStatus = 'Your parcel delivered to destination'.obs;
 
@@ -63,12 +63,16 @@ var controller=Get.put(LoginSignupController());
       DrawerModel(
         iconUrl: IconPath.notificationIcon2,
         iconname: "Notifications",
-        ontap: () {Get.toNamed(AppRoutes.getUserNotification());},
+        ontap: () {
+          Get.toNamed(AppRoutes.getUserNotification());
+        },
       ),
       DrawerModel(
         iconUrl: IconPath.savedIcon,
         iconname: "Saved Places",
-        ontap: () {},
+        ontap: () {
+          Get.toNamed(AppRoutes.savedPlaces);
+        },
       ),
 
       DrawerModel(
@@ -99,8 +103,8 @@ var controller=Get.put(LoginSignupController());
         iconUrl: IconPath.logOutIcon,
         iconname: "Logout",
         ontap: () {
-        
-        controller.logout();},
+          controller.logout();
+        },
       ),
     ]);
     super.onInit();

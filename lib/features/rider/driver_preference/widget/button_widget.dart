@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
 import 'package:nicholaslim80/features/rider/driver_preference/controller/driver_preference_controller.dart';
+import 'package:nicholaslim80/routes/app_routes.dart';
 
 class TowButtonSection extends StatelessWidget {
   const TowButtonSection({super.key, required this.ctrl});
@@ -37,7 +40,7 @@ class TowButtonSection extends StatelessWidget {
         Expanded(
           child: ElevatedButton(
             onPressed: () {
-              ctrl.markAsDone();
+              Get.toNamed(AppRoutes.getriderBottomNavbarScreen());
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.onboardingIndicatorActive,
