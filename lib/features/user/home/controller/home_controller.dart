@@ -84,7 +84,9 @@ class HomeController extends GetxController {
       DrawerModel(
         iconUrl: IconPath.referIcon,
         iconname: "Refer & Earn",
-        ontap: () {},
+        ontap: () {
+          Get.toNamed(AppRoutes.getreferAndEarnScreen());
+        },
       ),
 
       DrawerModel(
