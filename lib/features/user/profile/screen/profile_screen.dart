@@ -16,28 +16,28 @@ class ProfileScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.backgroungColor,
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            CustomAppBarUser(
-              title: "Profile",
-              action: ClipRRect(
-                borderRadius: BorderRadiusGeometry.circular(50),
-                child: Image.asset(
-                  ImagePath.profileImage,
-                  height: 34,
-                  width: 34,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Column(
+            children: [
+              CustomAppBarUser(
+                title: "Profile",
+                action: ClipRRect(
+                  borderRadius: BorderRadiusGeometry.circular(50),
+                  child: Image.asset(
+                    ImagePath.profileImage,
+                    height: 34,
+                    width: 34,
+                  ),
                 ),
               ),
-            ),
-            SizedBox(height: 36),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              child: ListView.builder(
+              SizedBox(height: 36),
+              ListView.builder(
                 padding: EdgeInsets.zero,
                 shrinkWrap: true,
-
+              
                 itemCount: controller.profileItem.length,
-
+              
                 itemBuilder: (_, index) {
                   return Padding(
                     padding: EdgeInsets.only(bottom: 16),
@@ -67,7 +67,7 @@ class ProfileScreen extends StatelessWidget {
                             GestureDetector(
                               onTap: () {
                                 //
-
+              
                                 //
                               },
                               child: Image.asset(
@@ -85,8 +85,8 @@ class ProfileScreen extends StatelessWidget {
                   );
                 },
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

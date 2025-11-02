@@ -78,7 +78,9 @@ class HomeController extends GetxController {
       DrawerModel(
         iconUrl: IconPath.walletIcon,
         iconname: "My Wallet",
-        ontap: () {},
+        ontap: () {
+          Get.toNamed(AppRoutes.myWalletUser);
+        },
       ),
 
       DrawerModel(

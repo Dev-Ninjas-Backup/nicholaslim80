@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
 import 'package:nicholaslim80/features/rider/driver_preference/controller/driver_preference_controller.dart';
 import 'package:nicholaslim80/routes/app_routes.dart';
