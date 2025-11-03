@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
+import 'package:nicholaslim80/core/common/widgets/custom_button.dart';
 import 'package:nicholaslim80/features/user/refer_and_earn/controller/refer_and_earn_controller.dart';
+import 'package:nicholaslim80/features/user/refer_and_earn/widget/refar_card_widget.dart';
+
+import '../../../../core/utils/constants/app_colors.dart';
 
 class ReferAndEarnScreen extends StatelessWidget {
   ReferAndEarnScreen({super.key});
@@ -9,11 +14,10 @@ class ReferAndEarnScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // sizing helpers
     final padding = 20.0;
 
     return Scaffold(
-      backgroundColor: Color(0xFFFBF6E7),
+      backgroundColor: AppColors.backgroungColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -24,174 +28,120 @@ class ReferAndEarnScreen extends StatelessWidget {
         centerTitle: true,
         title: Text(
           'Refer & Earn',
-          style: TextStyle(color: Colors.black87, fontWeight: FontWeight.w600),
+          style: getTextStyle(
+            fontSize: 20,
+            color: Colors.black87,
+            fontWeight: FontWeight.w700,
+          ),
         ),
       ),
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: padding),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(height: 6),
               Text(
-                'Invite friends to and earn rewards for every sign-up',
-                style: TextStyle(fontSize: 14, color: Colors.black54),
+                'Invite friends to and earn rewards for every\nsign-up',
+                style: getTextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black54,
+                ),
+                textAlign: TextAlign.center,
               ),
+
               SizedBox(height: 18),
 
               // referral card
-              Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                elevation: 2,
-                child: Padding(
-                  padding: EdgeInsets.all(14.0),
-                  child: Column(
-                    children: [
-                      // Referral code row
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Your referral code:',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.black54,
-                                ),
-                              ),
-                              SizedBox(height: 6),
-                              Obx(
-                                () => Text(
-                                  ctrl.referralCode.value,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          IconButton(
-                            onPressed: ctrl.copyCode,
-                            icon: Icon(Icons.copy_outlined),
-                          ),
-                        ],
-                      ),
-
-                      Divider(height: 20),
-
-                      // Referral link row
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Your referral link:',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.black54,
-                                  ),
-                                ),
-                                SizedBox(height: 6),
-                                Obx(
-                                  () => Text(
-                                    ctrl.referralLink.value,
-                                    style: TextStyle(fontSize: 13),
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          IconButton(
-                            onPressed: ctrl.copyLink,
-                            icon: Icon(Icons.copy_outlined),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+              ReferralCard(ctrl: ctrl),
 
               SizedBox(height: 22),
 
-              // List options
               GestureDetector(
                 onTap: ctrl.openRewards,
                 child: Container(
-                  padding: EdgeInsets.symmetric(vertical: 12),
+                  padding: EdgeInsets.symmetric(vertical: 12, horizontal: 8),
                   child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Expanded(
-                        child: Text(
-                          'Your Rewards',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Your Rewards',
+                              style: getTextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black,
+                              ),
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              'Track the rewards you have earned from\nsuccessful referrals',
+
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      Icon(Icons.chevron_right),
+                      Icon(Icons.chevron_right, color: Colors.grey[700]),
                     ],
                   ),
                 ),
               ),
-              Divider(height: 1),
+              SizedBox(height: 12),
 
               GestureDetector(
                 onTap: ctrl.openHowItWorks,
                 child: Container(
-                  padding: EdgeInsets.symmetric(vertical: 12),
+                  padding: EdgeInsets.symmetric(vertical: 12, horizontal: 8),
                   child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Expanded(
-                        child: Text(
-                          'How It Works',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'How It Works',
+                              style: getTextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black,
+                              ),
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              'Step-by-step explanation Of how our\nreferral program works',
+
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      Icon(Icons.chevron_right),
+                      Icon(Icons.chevron_right, color: Colors.grey[700]),
                     ],
                   ),
                 ),
               ),
-              Divider(height: 1),
-
-              // spacer to push button to bottom
-              Spacer(),
-
+              SizedBox(height: 110),
               // Invite friends button
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: ctrl.onInvitePressed,
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: 14),
-                    backgroundColor: Color(0xFFFFC600), // yellow
-                    elevation: 2,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    foregroundColor: Colors.black87,
-                  ),
-                  child: Text(
-                    'Invite friends',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                  ),
-                ),
+              CustomButton(
+                label: "Invite friends",
+                onPressed: () {},
+                color: AppColors.primaryButtonColor,
+                textColor: AppColors.primaryFontColor,
               ),
 
               SizedBox(height: 18),
