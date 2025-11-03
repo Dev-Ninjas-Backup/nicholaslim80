@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../../core/common/styles/global_text_style.dart';
-import '../../../../core/common/widgets/custom_app_bar_user.dart';
-import '../../../../core/utils/constants/app_colors.dart';
-import '../../../../routes/app_routes.dart';
+import '../../../../../core/common/styles/global_text_style.dart';
+import '../../../../../core/common/widgets/custom_app_bar_user.dart';
+import '../../../../../core/utils/constants/app_colors.dart';
+import '../../../../../routes/app_routes.dart';
 import '../controller/user_my_wallet_controller.dart';
 
 class MyWalletUpperSection extends StatelessWidget {
