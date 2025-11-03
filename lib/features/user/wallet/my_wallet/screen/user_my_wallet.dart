@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:get/get_navigation/get_navigation.dart';
 import 'package:get/instance_manager.dart';
 import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
-import 'package:nicholaslim80/features/user/my_wallet/controller/user_my_wallet_controller.dart';
+import 'package:nicholaslim80/features/user/wallet/my_wallet/controller/user_my_wallet_controller.dart';
+import 'package:nicholaslim80/routes/app_routes.dart';
 import '../widgets/my_wallet_upper_section.dart';
 
 class UserMyWallet extends StatelessWidget {
@@ -24,7 +26,9 @@ class UserMyWallet extends StatelessWidget {
               child: Column(
                 children: [
                   GestureDetector(
-                    onTap: () {},
+                    onTap: () {
+                      Get.toNamed(AppRoutes.getuserAddFund());
+                    },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
