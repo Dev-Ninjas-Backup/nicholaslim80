@@ -13,7 +13,7 @@ class RiderHomeScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(kToolbarHeight),
+        preferredSize: Size.fromHeight(kToolbarHeight),
         child: Obx(
           () => AppBar(
             backgroundColor: Colors.white,
@@ -57,11 +57,11 @@ class RiderHomeScreen extends StatelessWidget {
 
       body: Obx(() {
         if (ctrl.orders.isEmpty) {
-          return const Center(child: CircularProgressIndicator());
+          return Center(child: CircularProgressIndicator());
         }
 
         return ListView.builder(
-          padding: const EdgeInsets.all(12),
+          padding: EdgeInsets.all(12),
           itemCount: ctrl.orders.length,
           itemBuilder: (context, index) {
             final order = ctrl.orders[index];
