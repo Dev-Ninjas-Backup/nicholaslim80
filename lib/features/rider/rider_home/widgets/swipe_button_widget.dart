@@ -27,57 +27,57 @@ class SwipeButtonWidget extends StatefulWidget {
 
 class _SwipeButtonWidgetState extends State<SwipeButtonWidget>
     with SingleTickerProviderStateMixin {
-  late AnimationController _animCtrl;
-  late Animation<double> _anim;
-  double _dragX = 0.0;
-  double _maxDrag = 0.0;
-  double _minDrag = 0.0;
+  late AnimationController animCtrl;
+  late Animation<double> anim;
+  double dragX = 0.0;
+  double maxDrag = 0.0;
+  double minDrag = 0.0;
 
   @override
   void initState() {
     super.initState();
-    _animCtrl = AnimationController(
+    animCtrl = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 300),
+      duration: Duration(milliseconds: 300),
     );
   }
 
   @override
   void dispose() {
-    _animCtrl.dispose();
+    animCtrl.dispose();
     super.dispose();
   }
 
-  void onPanStart(DragStartDetails details) => _animCtrl.stop();
+  void onPanStart(DragStartDetails details) => animCtrl.stop();
 
   void onPanUpdate(DragUpdateDetails details) {
     setState(() {
-      _dragX += details.delta.dx;
-      _dragX = _dragX.clamp(_minDrag, _maxDrag);
+      dragX += details.delta.dx;
+      dragX = dragX.clamp(minDrag, maxDrag);
     });
   }
 
   void onPanEnd(DragEndDetails details) {
-    if (_dragX > _maxDrag * 0.8) {
+    if (dragX > maxDrag * 0.8) {
       widget.onAccept();
-      _animateTo(0);
-    } else if (_dragX < _minDrag * 0.8) {
+      animateTo(0);
+    } else if (dragX < minDrag * 0.8) {
       widget.onDecline();
-      _animateTo(0);
+      animateTo(0);
     } else {
-      _animateTo(0);
+      animateTo(0);
     }
   }
 
-  void _animateTo(double to) {
-    final start = _dragX;
-    _anim = Tween<double>(begin: 0, end: 1).animate(_animCtrl)
+  void animateTo(double to) {
+    final start = dragX;
+    anim = Tween<double>(begin: 0, end: 1).animate(animCtrl)
       ..addListener(() {
         setState(() {
-          _dragX = start + (_anim.value) * (to - start);
+          dragX = start + (anim.value) * (to - start);
         });
       });
-    _animCtrl
+    animCtrl
       ..reset()
       ..forward();
   }
@@ -86,8 +86,8 @@ class _SwipeButtonWidgetState extends State<SwipeButtonWidget>
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width - 32;
     final handleSize = widget.height - 12;
-    _maxDrag = (width / 2) - (handleSize / 2) - 8;
-    _minDrag = -_maxDrag;
+    maxDrag = (width / 2) - (handleSize / 2) - 8;
+    minDrag = -maxDrag;
 
     return Container(
       height: widget.height,
@@ -101,7 +101,7 @@ class _SwipeButtonWidgetState extends State<SwipeButtonWidget>
           Positioned(
             left: 16,
             child: Opacity(
-              opacity: 1.0 - (_dragX / _maxDrag).clamp(0.0, 1.0),
+              opacity: 1.0 - (dragX / maxDrag).clamp(0.0, 1.0),
               child: Text(
                 widget.leftText,
                 style: getTextStyle(
@@ -114,7 +114,7 @@ class _SwipeButtonWidgetState extends State<SwipeButtonWidget>
           Positioned(
             right: 16,
             child: Opacity(
-              opacity: 1.0 - ((-_dragX) / _maxDrag).clamp(0.0, 1.0),
+              opacity: 1.0 - ((-dragX) / maxDrag).clamp(0.0, 1.0),
               child: Text(
                 widget.rightText,
                 style: getTextStyle(
@@ -125,7 +125,7 @@ class _SwipeButtonWidgetState extends State<SwipeButtonWidget>
             ),
           ),
           Positioned(
-            left: (width / 2) - (handleSize / 2) + _dragX,
+            left: (width / 2) - (handleSize / 2) + dragX,
             child: GestureDetector(
               onPanStart: onPanStart,
               onPanUpdate: onPanUpdate,
@@ -136,7 +136,7 @@ class _SwipeButtonWidgetState extends State<SwipeButtonWidget>
                 decoration: BoxDecoration(
                   color: Colors.white,
                   shape: BoxShape.circle,
-                  boxShadow: const [
+                  boxShadow: [
                     BoxShadow(
                       color: Colors.black26,
                       blurRadius: 4,
@@ -145,11 +145,7 @@ class _SwipeButtonWidgetState extends State<SwipeButtonWidget>
                   ],
                 ),
                 child: Center(
-                  child: Image.asset(
-                    widget.iconPath, // 👈 dynamic icon
-                    width: 24,
-                    height: 24,
-                  ),
+                  child: Image.asset(widget.iconPath, width: 24, height: 24),
                 ),
               ),
             ),

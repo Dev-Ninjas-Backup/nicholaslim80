@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
 import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
 import 'package:nicholaslim80/features/rider/rider_home/widgets/swipe_button_widget.dart';
+import 'package:nicholaslim80/features/rider/take_now/screen/take_now_screen.dart';
 import '../controller/rider_home_controller.dart';
 import '../model/home_order_model.dart';
 
@@ -18,25 +20,25 @@ class RiderCardWidget extends StatelessWidget {
     required this.ctrl,
   });
 
-  Color _getButtonColor(int type, String orderType) {
-    // dynamic color based on type
-    if (type == 1) return Colors.green; // accepted
+  // dynamic color based on order type
+  Color getButtonColor(int type, String orderType) {
+    if (type == 1) return Colors.blue; // accepted
     if (type == 2) return Colors.grey; // declined
 
-    // default (pending): depends on order type
     switch (orderType.toLowerCase()) {
       case 'car':
         return Colors.blue.shade100;
       case 'taxi':
-        return Colors.yellow.shade200;
+        return AppColors.onboardingIndicatorActive;
       case 'courier':
-        return Colors.orange.shade200;
+        return AppColors.onboardingIndicatorActive;
       default:
         return AppColors.onboardingIndicatorActive;
     }
   }
 
-  String _getSwipeButtonIcon(String type) {
+  // only the swipe button icon changes dynamically
+  String getSwipeButtonIcon(String type) {
     switch (type.toLowerCase()) {
       case 'car':
         return IconPath.car;
@@ -52,19 +54,19 @@ class RiderCardWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
+      margin: EdgeInsets.only(bottom: 12),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: const [
+        boxShadow: [
           BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 3)),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header section
+          // Header
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -74,18 +76,17 @@ class RiderCardWidget extends StatelessWidget {
                   Container(
                     width: 44,
                     height: 44,
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       color: Color(0xFFE3F2FD),
                       shape: BoxShape.circle,
                     ),
                     child: Image.asset(
-                      IconPath.exparess, // <- unchanged
+                      IconPath.exparess, // unchanged
                       width: 24,
                       height: 24,
                     ),
                   ),
-
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -119,7 +120,7 @@ class RiderCardWidget extends StatelessWidget {
                       color: AppColors.primaryFontColor,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
                   Text(
                     order.time,
                     style: getTextStyle(
@@ -133,9 +134,9 @@ class RiderCardWidget extends StatelessWidget {
             ],
           ),
 
-          const SizedBox(height: 12),
-          const Divider(),
-          const SizedBox(height: 8),
+          SizedBox(height: 12),
+          Divider(),
+          SizedBox(height: 8),
 
           // Pickup & Delivery
           Row(
@@ -144,29 +145,29 @@ class RiderCardWidget extends StatelessWidget {
               Column(
                 children: [
                   Image.asset(IconPath.locationBlue, width: 18, height: 18),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
                   Container(
                     width: 6,
                     height: 6,
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       color: Colors.grey,
                       shape: BoxShape.circle,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
                   Container(
                     width: 6,
                     height: 6,
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       color: Colors.grey,
                       shape: BoxShape.circle,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
                   Image.asset(IconPath.locationRed, width: 18, height: 18),
                 ],
               ),
-              const SizedBox(width: 6),
+              SizedBox(width: 6),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -179,7 +180,7 @@ class RiderCardWidget extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
                     Text(
                       order.delivery,
                       style: getTextStyle(
@@ -194,9 +195,9 @@ class RiderCardWidget extends StatelessWidget {
             ],
           ),
 
-          const SizedBox(height: 12),
-          const Divider(),
-          const SizedBox(height: 8),
+          SizedBox(height: 12),
+          Divider(),
+          SizedBox(height: 8),
 
           Text(
             'Summary the comments here',
@@ -206,17 +207,20 @@ class RiderCardWidget extends StatelessWidget {
               color: Colors.black,
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
 
-          // Swipe Button
           SwipeButtonWidget(
             leftText: 'LEFT TO DECLINE',
             rightText: 'TAKE NOW',
-            onAccept: () => ctrl.acceptOrder(index),
-            onDecline: () => ctrl.declineOrder(index),
-            backgroundColor: _getButtonColor(order.colorType, order.type),
+            onAccept: () {
+              Get.to(() => TakeNowScreen());
+            },
+            onDecline: () {
+              ctrl.declineOrder(index);
+            },
+            backgroundColor: getButtonColor(order.colorType, order.type),
             height: 50,
-            iconPath: _getSwipeButtonIcon(order.type),
+            iconPath: getSwipeButtonIcon(order.type),
           ),
         ],
       ),
