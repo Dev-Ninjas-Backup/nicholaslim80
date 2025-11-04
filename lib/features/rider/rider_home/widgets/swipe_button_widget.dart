@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 
 class SwipeButtonWidget extends StatefulWidget {
   final String leftText;
@@ -7,6 +8,7 @@ class SwipeButtonWidget extends StatefulWidget {
   final double height;
   final VoidCallback onAccept;
   final VoidCallback onDecline;
+  final String iconPath;
 
   const SwipeButtonWidget({
     super.key,
@@ -16,6 +18,7 @@ class SwipeButtonWidget extends StatefulWidget {
     this.height = 60,
     required this.onAccept,
     required this.onDecline,
+    required this.iconPath,
   });
 
   @override
@@ -45,28 +48,23 @@ class _SwipeButtonWidgetState extends State<SwipeButtonWidget>
     super.dispose();
   }
 
-  void _onPanStart(DragStartDetails details) {
-    _animCtrl.stop();
-  }
+  void onPanStart(DragStartDetails details) => _animCtrl.stop();
 
-  void _onPanUpdate(DragUpdateDetails details) {
+  void onPanUpdate(DragUpdateDetails details) {
     setState(() {
       _dragX += details.delta.dx;
       _dragX = _dragX.clamp(_minDrag, _maxDrag);
     });
   }
 
-  void _onPanEnd(DragEndDetails details) {
+  void onPanEnd(DragEndDetails details) {
     if (_dragX > _maxDrag * 0.8) {
-      // Swiped Right → Accept
       widget.onAccept();
       _animateTo(0);
     } else if (_dragX < _minDrag * 0.8) {
-      // Swiped Left → Decline
       widget.onDecline();
       _animateTo(0);
     } else {
-      // Return to center
       _animateTo(0);
     }
   }
@@ -86,8 +84,7 @@ class _SwipeButtonWidgetState extends State<SwipeButtonWidget>
 
   @override
   Widget build(BuildContext context) {
-    final width =
-        MediaQuery.of(context).size.width - 32; // adjust for card padding
+    final width = MediaQuery.of(context).size.width - 32;
     final handleSize = widget.height - 12;
     _maxDrag = (width / 2) - (handleSize / 2) - 8;
     _minDrag = -_maxDrag;
@@ -101,43 +98,38 @@ class _SwipeButtonWidgetState extends State<SwipeButtonWidget>
       child: Stack(
         alignment: Alignment.center,
         children: [
-          // Left label
           Positioned(
             left: 16,
             child: Opacity(
               opacity: 1.0 - (_dragX / _maxDrag).clamp(0.0, 1.0),
               child: Text(
                 widget.leftText,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
+                style: getTextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
             ),
           ),
-
-          // Right label
           Positioned(
             right: 16,
             child: Opacity(
               opacity: 1.0 - ((-_dragX) / _maxDrag).clamp(0.0, 1.0),
               child: Text(
                 widget.rightText,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
+                style: getTextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
             ),
           ),
-
-          // Draggable handle
           Positioned(
             left: (width / 2) - (handleSize / 2) + _dragX,
             child: GestureDetector(
-              onPanStart: _onPanStart,
-              onPanUpdate: _onPanUpdate,
-              onPanEnd: _onPanEnd,
+              onPanStart: onPanStart,
+              onPanUpdate: onPanUpdate,
+              onPanEnd: onPanEnd,
               child: Container(
                 width: handleSize,
                 height: handleSize,
@@ -152,8 +144,12 @@ class _SwipeButtonWidgetState extends State<SwipeButtonWidget>
                     ),
                   ],
                 ),
-                child: const Center(
-                  child: Icon(Icons.directions_car, color: Colors.black),
+                child: Center(
+                  child: Image.asset(
+                    widget.iconPath, // 👈 dynamic icon
+                    width: 24,
+                    height: 24,
+                  ),
                 ),
               ),
             ),
