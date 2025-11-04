@@ -13,15 +13,24 @@ class RiderHomeController extends GetxController {
   }
 
   void fetchOrders() {
-    // Generate 16 sample cards. You can replace with real data.
+    // Generate 16 sample cards (you can replace with real API data)
     orders.value = List.generate(16, (i) {
+      String type;
+      if (i % 3 == 0) {
+        type = 'Car';
+      } else if (i % 3 == 1) {
+        type = 'Taxi';
+      } else {
+        type = 'Courier';
+      }
+
       return HomeOrderModel(
-        type: i % 3 == 0 ? 'Car' : (i % 3 == 1 ? 'Taxi' : 'Courier'),
-        code: 'RDW${10000 + i}',
-        pickup: 'Pickup Place ${i + 1}',
-        delivery: 'Delivery Area ${i + 1} (${20 - i} km)',
+        type: type,
+        code: 'REXPRESS',
+        pickup: 'Punggol',
+        delivery: 'Bishan${i + 1} (${20 - i} km)',
         price: '€${10 + i}.00 - ${12 + i}.00',
-        time: '${5 + i} min',
+        time: '(${20 - i} km) ${5 + i} min',
         status: 'Pending',
         buttonText: 'LEFT TO DECLINE',
         colorType: 0,
@@ -33,7 +42,7 @@ class RiderHomeController extends GetxController {
     final order = orders[index];
     order.status = 'Active';
     order.buttonText = 'ACCEPTED';
-    order.colorType = 1; // blue or green could be used in UI
+    order.colorType = 1; // accepted color
     orders[index] = order;
   }
 
@@ -41,7 +50,7 @@ class RiderHomeController extends GetxController {
     final order = orders[index];
     order.status = 'Declined';
     order.buttonText = 'DECLINED';
-    order.colorType = 2; // gray/red
+    order.colorType = 2; // declined color
     orders[index] = order;
   }
 
