@@ -1,11 +1,11 @@
-// rider_card_widget.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nicholaslim80/features/rider/rider_home/widgets/swipe_button_widget.dart';
 import '../controller/rider_home_controller.dart';
+import '../model/home_order_model.dart';
 
 class RiderCardWidget extends StatelessWidget {
-  final dynamic order;
+  final HomeOrderModel order;
   final int index;
   final RiderHomeController ctrl;
 
@@ -18,12 +18,12 @@ class RiderCardWidget extends StatelessWidget {
 
   Color _getButtonColor(int type) {
     switch (type) {
+      case 1:
+        return Colors.green; // accepted
       case 2:
-        return Colors.green;
-      case 3:
-        return Colors.red;
+        return Colors.red; // declined
       default:
-        return Colors.yellow.shade700;
+        return Colors.yellow.shade700; // pending
     }
   }
 
@@ -35,12 +35,8 @@ class RiderCardWidget extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 6,
-            offset: const Offset(0, 3),
-          ),
+        boxShadow: const [
+          BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 3)),
         ],
       ),
       child: Column(
@@ -70,25 +66,15 @@ class RiderCardWidget extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        order.name, // আগে ছিল order.title
+                        order.type,
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      Row(
-                        children: [
-                          Text(
-                            order.subtitle ?? '',
-                            style: TextStyle(color: Colors.grey.shade700),
-                          ),
-                          const SizedBox(width: 4),
-                          const Icon(
-                            Icons.info_outline,
-                            size: 14,
-                            color: Colors.grey,
-                          ),
-                        ],
+                      Text(
+                        order.code,
+                        style: TextStyle(color: Colors.grey.shade700),
                       ),
                     ],
                   ),
@@ -98,7 +84,7 @@ class RiderCardWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    order.price,
+                    order.price, // ✅ use price
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -106,7 +92,7 @@ class RiderCardWidget extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    "3.1 Km  |  5 Mins",
+                    order.time, // ✅ use time
                     style: TextStyle(color: Colors.grey.shade700, fontSize: 12),
                   ),
                 ],
@@ -128,7 +114,7 @@ class RiderCardWidget extends StatelessWidget {
                     width: 8,
                     height: 8,
                     decoration: const BoxDecoration(
-                      color: Colors.grey,
+                      color: Colors.green,
                       shape: BoxShape.circle,
                     ),
                   ),
@@ -137,7 +123,7 @@ class RiderCardWidget extends StatelessWidget {
                     width: 8,
                     height: 8,
                     decoration: const BoxDecoration(
-                      color: Colors.grey,
+                      color: Colors.red,
                       shape: BoxShape.circle,
                     ),
                   ),
@@ -149,31 +135,16 @@ class RiderCardWidget extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Stop A',
-                      style: TextStyle(color: Colors.grey.shade700),
+                      order.pickup, // ✅ pickup location
+                      style: TextStyle(
+                        color: Colors.grey.shade700,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                     const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Container(
-                          width: 10,
-                          height: 10,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.red),
-                          ),
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          'Bishan',
-                          style: const TextStyle(fontWeight: FontWeight.w600),
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          '(17.2 Km)',
-                          style: TextStyle(color: Colors.grey.shade700),
-                        ),
-                      ],
+                    Text(
+                      order.delivery, // ✅ delivery location
+                      style: const TextStyle(fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
@@ -198,7 +169,7 @@ class RiderCardWidget extends StatelessWidget {
               ctrl.acceptOrder(index);
               Get.snackbar(
                 'Accepted',
-                'You accepted ${order.name}',
+                'You accepted ${order.code}', // ✅ replaced name
                 snackPosition: SnackPosition.BOTTOM,
               );
             },
@@ -206,7 +177,7 @@ class RiderCardWidget extends StatelessWidget {
               ctrl.declineOrder(index);
               Get.snackbar(
                 'Declined',
-                'You declined ${order.name}',
+                'You declined ${order.code}', // ✅ replaced name
                 snackPosition: SnackPosition.BOTTOM,
               );
             },
