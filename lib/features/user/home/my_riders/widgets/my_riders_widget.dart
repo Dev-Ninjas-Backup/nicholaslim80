@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
+import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
 import 'package:nicholaslim80/core/utils/constants/image_path.dart';
 import 'package:nicholaslim80/features/user/home/my_riders/controller/my_riders_controller.dart';
 
@@ -60,11 +61,13 @@ class RidersListWidget extends StatelessWidget {
               key: Key(id),
               direction: DismissDirection.startToEnd,
               background: Container(
-                alignment: Alignment.centerRight,
+                alignment: Alignment.centerLeft,
                 padding: const EdgeInsets.symmetric(horizontal: 20),
-                color: Colors.red,
-                child: const Icon(Icons.delete, color: Colors.white),
+                color: AppColors.backgroungColor,
+                child: Image.asset(IconPath.delete, height: 34, width: 34),
               ),
+              onUpdate: (details) =>
+                  controller.updateSwipeProgress(name, details.progress),
               onDismissed: (_) {
                 controller.ridersList.removeAt(index);
                 controller.loveState.remove(name);
@@ -75,48 +78,60 @@ class RidersListWidget extends StatelessWidget {
                   snackPosition: SnackPosition.BOTTOM,
                 );
               },
-              child: ListTile(
-                leading: CircleAvatar(
-                  radius: 20,
-                  backgroundColor: Colors.grey.shade400,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
-                    child: Image.asset(
-                      rider['image'] ?? ImagePath.profileImage,
-                      fit: BoxFit.cover,
+              child: Obx(() {
+                final progress = controller.swipeProgress[name] ?? 0.0;
+
+                return AnimatedContainer(
+                  duration: Duration(microseconds: 500),
+                  color: Color.lerp(
+                    AppColors.backgroungColor,
+                    const Color.fromARGB(255, 230, 189, 28),
+                    progress,
+                  ),
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      radius: 20,
+                      backgroundColor: Colors.grey.shade400,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: Image.asset(
+                          rider['image'] ?? ImagePath.profileImage,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                    title: Text(
+                      name,
+                      style: getTextStyle(
+                        fontSize: 14,
+                        color: Colors.black,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    subtitle: Text(
+                      id,
+                      style: getTextStyle(
+                        fontSize: 14,
+                        color: Colors.grey,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                    trailing: Obx(
+                      () => IconButton(
+                        icon: Icon(
+                          Icons.favorite,
+                          color: controller.loveState[name]!
+                              ? Colors.black
+                              : Colors.grey,
+                        ),
+                        onPressed: () {
+                          controller.toggleLove(name);
+                        },
+                      ),
                     ),
                   ),
-                ),
-                title: Text(
-                  name,
-                  style: getTextStyle(
-                    fontSize: 14,
-                    color: Colors.black,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                subtitle: Text(
-                  id,
-                  style: getTextStyle(
-                    fontSize: 14,
-                    color: Colors.grey,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-                trailing: Obx(
-                  () => IconButton(
-                    icon: Icon(
-                      Icons.favorite,
-                      color: controller.loveState[name]!
-                          ? Colors.black
-                          : Colors.grey,
-                    ),
-                    onPressed: () {
-                      controller.toggleLove(name);
-                    },
-                  ),
-                ),
-              ),
+                );
+              }),
             );
           },
           separatorBuilder: (context, index) =>

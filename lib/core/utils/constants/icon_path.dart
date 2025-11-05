@@ -26,8 +26,7 @@ class IconPath {
   static String message = "assets/icons/message.png";
   static String call = "assets/icons/call.png";
   static String visa = "assets/icons/visa.png";
-    static String locationRed = "assets/icons/location_red.png";
-      static String locationBlue = "assets/icons/location_blue.png";
-
-
+  static String locationRed = "assets/icons/location_red.png";
+  static String locationBlue = "assets/icons/location_blue.png";
+  static String delete = "assets/icons/delete.png";
 }

@@ -7,6 +7,7 @@ class MyRidersController extends GetxController {
 
   // Map to hold love/favorite state
   var loveState = <String, bool>{}.obs;
+  var swipeProgress = <String, double>{}.obs;
 
   @override
   void onInit() {
@@ -40,5 +41,10 @@ class MyRidersController extends GetxController {
     if (loveState.containsKey(name)) {
       loveState[name] = !loveState[name]!;
     }
+  }
+
+  // Call this on swipe update
+  void updateSwipeProgress(String name, double progress) {
+    swipeProgress[name] = progress;
   }
 }
