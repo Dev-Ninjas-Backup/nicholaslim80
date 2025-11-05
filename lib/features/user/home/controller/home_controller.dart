@@ -94,7 +94,9 @@ class HomeController extends GetxController {
       DrawerModel(
         iconUrl: IconPath.ridersicon,
         iconname: "My Riders",
-        ontap: () {},
+        ontap: () {
+          Get.toNamed(AppRoutes.myRidersScreen);
+        },
       ),
 
       DrawerModel(
