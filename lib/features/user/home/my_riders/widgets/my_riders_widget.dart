@@ -24,28 +24,38 @@ class RidersListWidget extends StatelessWidget {
             if (index == controller.ridersList.length) {
               return Padding(
                 padding: EdgeInsets.symmetric(vertical: 20),
-                child: SizedBox(
-                  width: 100,
-                  child: OutlinedButton(
-                    onPressed: () {
-                      // Action for See All Riders
-                    },
-                    style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: AppColors.primaryButtonColor),
-                      shape: RoundedRectangleBorder(
+                child: GestureDetector(
+                  onTap: () {
+                    // Action for See All Riders
+                  },
+                  child: Center(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: AppColors.primaryButtonColor),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       padding: EdgeInsets.symmetric(
                         vertical: 12,
                         horizontal: 24,
                       ),
-                    ),
-                    child: Text(
-                      'See All Riders',
-                      style: getTextStyle(
-                        fontSize: 16,
-                        color: Colors.black,
-                        fontWeight: FontWeight.w600,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.add,
+                            size: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          SizedBox(width: 8),
+                          Text(
+                            'Add Rider',
+                            style: getTextStyle(
+                              fontSize: 16,
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -71,12 +81,6 @@ class RidersListWidget extends StatelessWidget {
               onDismissed: (_) {
                 controller.ridersList.removeAt(index);
                 controller.loveState.remove(name);
-
-                Get.snackbar(
-                  'Deleted',
-                  '$name has been removed',
-                  snackPosition: SnackPosition.BOTTOM,
-                );
               },
               child: Obx(() {
                 final progress = controller.swipeProgress[name] ?? 0.0;
