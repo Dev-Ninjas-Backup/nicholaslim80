@@ -32,4 +32,5 @@ class IconPath {
   static String car = "assets/icons/car.png";
   static String bike = "assets/icons/bike.png";
   static String taxi = "assets/icons/taxi.png";
+  static String playicon = "assets/icons/playicon.png";
 }

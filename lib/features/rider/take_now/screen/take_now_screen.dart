@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
 import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
-import 'package:nicholaslim80/features/rider/take_now/controller/take_now_controller.dart';
+import '../controller/take_now_controller.dart';
 
 class TakeNowScreen extends StatelessWidget {
   const TakeNowScreen({super.key});
@@ -11,7 +11,7 @@ class TakeNowScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final TakeNowController ctrl = Get.put(TakeNowController());
-    final width = MediaQuery.of(context).size.width;
+    final width = MediaQuery.of(context).size.width - 32; // account for padding
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -19,7 +19,7 @@ class TakeNowScreen extends StatelessWidget {
         backgroundColor: AppColors.onboardingIndicatorActive,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+          icon: Icon(Icons.arrow_back_ios, color: Colors.black),
           onPressed: () => Get.back(),
         ),
         centerTitle: true,
@@ -29,7 +29,7 @@ class TakeNowScreen extends StatelessWidget {
             Container(
               padding: EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Color(0xFFE3F2FD),
+                color: Colors.blue.shade50,
                 shape: BoxShape.circle,
               ),
               child: Image.asset(IconPath.exparess, width: 30, height: 30),
@@ -65,7 +65,6 @@ class TakeNowScreen extends StatelessWidget {
           ],
         ),
       ),
-
       body: Padding(
         padding: EdgeInsets.all(16),
         child: Column(
@@ -99,45 +98,12 @@ class TakeNowScreen extends StatelessWidget {
               ),
             ),
             Spacer(),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey.shade300),
-              ),
-              child: Row(
-                children: [
-                  Image.asset(IconPath.exparess, width: 24),
-                  SizedBox(width: 8),
+            bottomPriceBox(),
+            SizedBox(height: 26),
 
-                  Text("8.9KM", style: TextStyle(fontWeight: FontWeight.w600)),
+            // Fixed Slide-to-Take Button
+            SlideToTakeButtonWidget(ctrl: ctrl, width: width),
 
-                  SizedBox(width: 8),
-                  Spacer(),
-
-                  Container(width: 1, height: 24, color: Colors.grey.shade400),
-                  Spacer(),
-
-                  SizedBox(width: 8),
-
-                  // Price text
-                  Text(
-                    "\$15.00 + \$10.50",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            SizedBox(height: 16),
-            Obx(
-              () => ctrl.isSlideCompleted.value
-                  ? nowButton()
-                  : slideToTakeButton(ctrl, width),
-            ),
             SizedBox(height: 110),
           ],
         ),
@@ -161,18 +127,15 @@ class TakeNowScreen extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Left Side (Icon + Title + Subtitle)
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
-                    // Left icon container
                     SizedBox(
                       width: 30,
                       height: 30,
-
                       child: Center(
                         child: Image.asset(
                           isPickup
@@ -185,8 +148,6 @@ class TakeNowScreen extends StatelessWidget {
                       ),
                     ),
                     SizedBox(width: 2),
-
-                    // Title text
                     Text(
                       title,
                       style: getTextStyle(
@@ -197,7 +158,6 @@ class TakeNowScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-
                 SizedBox(height: 4),
                 Padding(
                   padding: EdgeInsets.only(left: 30),
@@ -213,10 +173,8 @@ class TakeNowScreen extends StatelessWidget {
               ],
             ),
           ),
-
           Row(
             mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
                 distance.split('|')[0].trim(),
@@ -227,9 +185,7 @@ class TakeNowScreen extends StatelessWidget {
                 ),
               ),
               SizedBox(width: 6),
-
               Container(width: 1, height: 14, color: Colors.grey),
-
               SizedBox(width: 6),
               if (distance.split('|').length > 1)
                 Text(
@@ -247,54 +203,138 @@ class TakeNowScreen extends StatelessWidget {
     );
   }
 
-  Widget slideToTakeButton(TakeNowController ctrl, double width) {
-    return GestureDetector(
-      onHorizontalDragEnd: (details) {
-        ctrl.onSlideComplete();
-      },
-      child: Container(
-        width: width,
-        height: 65,
-        decoration: BoxDecoration(
-          color: AppColors.onboardingIndicatorActive,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.play_arrow, color: Colors.black),
-            SizedBox(width: 8),
-            Text(
-              "SLIDE TO TAKE",
-              style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1.2,
-              ),
+  Widget bottomPriceBox() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade300),
+      ),
+      child: Row(
+        children: [
+          Image.asset(IconPath.exparess, width: 24),
+          SizedBox(width: 8),
+          Text("8.9KM", style: TextStyle(fontWeight: FontWeight.w600)),
+          Spacer(),
+          Container(width: 1, height: 24, color: Colors.grey.shade400),
+          Spacer(),
+          Text(
+            "\$15.00 + \$10.50",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
+}
 
-  Widget nowButton() {
-    return Container(
-      height: 65,
-      width: double.infinity,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: Colors.green,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: const Text(
-        "NOW",
-        style: TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.bold,
-          letterSpacing: 1.2,
+//  Fixed SlideToTakeButtonWidget
+class SlideToTakeButtonWidget extends StatelessWidget {
+  final TakeNowController ctrl;
+  final double width;
+
+  const SlideToTakeButtonWidget({
+    super.key,
+    required this.ctrl,
+    required this.width,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final double buttonSize = 68;
+    final double leftGap = 12;
+    final double maxDrag = width - buttonSize - leftGap;
+
+    return Stack(
+      alignment: Alignment.centerLeft,
+      children: [
+        Container(
+          height: 68,
+          width: width,
+          decoration: BoxDecoration(
+            color: AppColors.primaryButtonColor,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          padding: EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  SizedBox(width: 55),
+                  Text(
+                    "SLIDE TO TAKE",
+                    style: getTextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
+
+              Text(
+                "Now",
+                style: getTextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 14,
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
+
+        // Only the draggable button wrapped in Obx
+        Obx(() {
+          return Positioned(
+            left: ctrl.dragX.value + leftGap,
+            top: 12,
+            bottom: 12,
+            child: GestureDetector(
+              onHorizontalDragUpdate: (details) {
+                ctrl.dragX.value += details.delta.dx;
+                if (ctrl.dragX.value < 0) ctrl.dragX.value = 0;
+                if (ctrl.dragX.value > maxDrag) ctrl.dragX.value = maxDrag;
+              },
+              onHorizontalDragEnd: (_) {
+                if (ctrl.dragX.value >= maxDrag * 0.9) {
+                  ctrl.onSlideComplete();
+                } else {
+                  ctrl.resetSlide();
+                }
+              },
+              child: Container(
+                height: 38,
+                width: 48,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 2,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Padding(
+                  padding: EdgeInsets.only(left: 6, top: 12, bottom: 12),
+                  child: Image.asset(
+                    IconPath.playicon,
+                    height: 16,
+                    width: 12,
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+            ),
+          );
+        }),
+      ],
     );
   }
 }
