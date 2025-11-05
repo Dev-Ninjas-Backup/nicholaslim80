@@ -41,11 +41,7 @@ Drawer drawer(HomeController controller) {
                         children: [
                           Row(
                             children: [
-                              Image.asset(
-                                item.iconUrl,
-                                height: 24,
-                                width: 24,
-                              ),
+                              Image.asset(item.iconUrl, height: 24, width: 24),
                               SizedBox(width: 10),
                               Text(
                                 item.iconname,
@@ -56,10 +52,10 @@ Drawer drawer(HomeController controller) {
                               ),
                             ],
                           ),
-                
+
                           GestureDetector(
-                            onTap: item.ontap,
-                
+                            onTap: controller.drawerItem[index].ontap,
+
                             child: Icon(Icons.arrow_forward_ios, size: 24),
                           ),
                         ],
