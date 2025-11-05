@@ -102,7 +102,9 @@ class HomeController extends GetxController {
       DrawerModel(
         iconUrl: IconPath.supportIcon,
         iconname: "Support",
-        ontap: () {},
+        ontap: () {
+          Get.toNamed(AppRoutes.supportScreen);
+        },
       ),
 
       DrawerModel(
