@@ -1,8 +1,8 @@
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
 
 import 'package:nicholaslim80/features/user/user_support/model/support_option_model.dart';
+import 'package:nicholaslim80/features/user/user_support/chat_screen/screen/support_chat_screen.dart';
 
 class SupportController extends GetxController {
   final options = <SupportOption>[].obs;
@@ -19,8 +19,10 @@ class SupportController extends GetxController {
         title: 'Chat with us',
         description:
             'Get help with orders or account related issue, available 24/7',
-        icon: IconPath.chat, // replace with your actual asset
-        onTap: () => EasyLoading.showToast('Starting chat...'),
+        icon: IconPath.send,
+        onTap: () {
+          Get.to(ChatScreen());
+        },
       ),
       SupportOption(
         title: 'Call us',

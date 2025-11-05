@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
@@ -15,17 +14,15 @@ class SupportScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.backgroungColor,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFFFF8E7),
-        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Get.back(),
         ),
         title: Text(
           'Support',
           style: getTextStyle(
             color: Colors.black,
-            fontWeight: FontWeight.w500,
+            fontWeight: FontWeight.bold,
             fontSize: 20,
           ),
         ),
@@ -45,7 +42,7 @@ class SupportScreen extends StatelessWidget {
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
                 itemCount: controller.options.length,
-                separatorBuilder: (_, __) => const Divider(height: 1),
+                separatorBuilder: (_, __) => Divider(height: 1),
                 itemBuilder: (context, index) {
                   final option = controller.options[index];
                   return ListTile(
@@ -60,8 +57,11 @@ class SupportScreen extends StatelessWidget {
                       option.title,
                       style: getTextStyle(fontWeight: FontWeight.bold),
                     ),
-                    subtitle: Text(option.description),
-                    contentPadding: const EdgeInsets.symmetric(
+                    subtitle: Text(
+                      option.description,
+                      style: getTextStyle(fontSize: 10),
+                    ),
+                    contentPadding: EdgeInsets.symmetric(
                       vertical: 12,
                       horizontal: 16,
                     ),
