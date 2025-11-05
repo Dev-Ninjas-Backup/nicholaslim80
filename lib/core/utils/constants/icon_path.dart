@@ -28,8 +28,12 @@ class IconPath {
   static String visa = "assets/icons/visa.png";
   static String locationRed = "assets/icons/location_red.png";
   static String locationBlue = "assets/icons/location_blue.png";
+
+  static String delete = "assets/icons/delete.png";
+
   static String exparess = "assets/icons/exparess.png";
   static String car = "assets/icons/car.png";
   static String bike = "assets/icons/bike.png";
   static String taxi = "assets/icons/taxi.png";
+
 }
