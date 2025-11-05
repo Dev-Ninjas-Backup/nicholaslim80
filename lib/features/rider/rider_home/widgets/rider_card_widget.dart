@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
+import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
+import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
 import 'package:nicholaslim80/features/rider/rider_home/widgets/swipe_button_widget.dart';
+import 'package:nicholaslim80/features/rider/take_now/screen/take_now_screen.dart';
 import '../controller/rider_home_controller.dart';
 import '../model/home_order_model.dart';
 
@@ -16,65 +20,90 @@ class RiderCardWidget extends StatelessWidget {
     required this.ctrl,
   });
 
-  Color _getButtonColor(int type) {
-    switch (type) {
-      case 1:
-        return Colors.green; // accepted
-      case 2:
-        return Colors.red; // declined
+  // dynamic color based on order type
+  Color getButtonColor(int type, String orderType) {
+    if (type == 1) return Colors.blue; // accepted
+    if (type == 2) return Colors.grey; // declined
+
+    switch (orderType.toLowerCase()) {
+      case 'car':
+        return Colors.blue.shade100;
+      case 'taxi':
+        return AppColors.onboardingIndicatorActive;
+      case 'courier':
+        return AppColors.onboardingIndicatorActive;
       default:
-        return Colors.yellow.shade700; // pending
+        return AppColors.onboardingIndicatorActive;
+    }
+  }
+
+  // only the swipe button icon changes dynamically
+  String getSwipeButtonIcon(String type) {
+    switch (type.toLowerCase()) {
+      case 'car':
+        return IconPath.car;
+      case 'taxi':
+        return IconPath.taxi;
+      case 'courier':
+        return IconPath.bike;
+      default:
+        return IconPath.car;
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
+      margin: EdgeInsets.only(bottom: 12),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: const [
+        boxShadow: [
           BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 3)),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 🟦 Header Row
+          // Header
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Row(
                 children: [
+                  // Top-left circle icon stays the same
                   Container(
                     width: 44,
                     height: 44,
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       color: Color(0xFFE3F2FD),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(
-                      Icons.directions_car,
-                      color: Colors.blue,
-                      size: 22,
+                    child: Image.asset(
+                      IconPath.exparess, // unchanged
+                      width: 24,
+                      height: 24,
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         order.type,
-                        style: const TextStyle(
-                          fontSize: 16,
+                        style: getTextStyle(
+                          fontSize: 14,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                       Text(
                         order.code,
-                        style: TextStyle(color: Colors.grey.shade700),
+                        style: getTextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ],
                   ),
@@ -84,67 +113,81 @@ class RiderCardWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    order.price, // ✅ use price
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                    order.price,
+                    style: getTextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.primaryFontColor,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
                   Text(
-                    order.time, // ✅ use time
-                    style: TextStyle(color: Colors.grey.shade700, fontSize: 12),
+                    order.time,
+                    style: getTextStyle(
+                      color: Colors.grey.shade800,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400,
+                    ),
                   ),
                 ],
               ),
             ],
           ),
 
-          const SizedBox(height: 12),
-          const Divider(),
-          const SizedBox(height: 8),
+          SizedBox(height: 12),
+          Divider(),
+          SizedBox(height: 8),
 
-          // 🗺️ Route Section
+          // Pickup & Delivery
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Column(
                 children: [
+                  Image.asset(IconPath.locationBlue, width: 18, height: 18),
+                  SizedBox(height: 4),
                   Container(
-                    width: 8,
-                    height: 8,
-                    decoration: const BoxDecoration(
-                      color: Colors.green,
+                    width: 6,
+                    height: 6,
+                    decoration: BoxDecoration(
+                      color: Colors.grey,
                       shape: BoxShape.circle,
                     ),
                   ),
-                  const SizedBox(height: 6),
+                  SizedBox(height: 4),
                   Container(
-                    width: 8,
-                    height: 8,
-                    decoration: const BoxDecoration(
-                      color: Colors.red,
+                    width: 6,
+                    height: 6,
+                    decoration: BoxDecoration(
+                      color: Colors.grey,
                       shape: BoxShape.circle,
                     ),
                   ),
+                  SizedBox(height: 4),
+                  Image.asset(IconPath.locationRed, width: 18, height: 18),
                 ],
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: 6),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      order.pickup, // ✅ pickup location
-                      style: TextStyle(
-                        color: Colors.grey.shade700,
-                        fontWeight: FontWeight.w500,
+                      order.pickup,
+                      style: getTextStyle(
+                        color: Colors.black,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 12),
                     Text(
-                      order.delivery, // ✅ delivery location
-                      style: const TextStyle(fontWeight: FontWeight.w600),
+                      order.delivery,
+                      style: getTextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black,
+                      ),
                     ),
                   ],
                 ),
@@ -152,42 +195,32 @@ class RiderCardWidget extends StatelessWidget {
             ],
           ),
 
-          const SizedBox(height: 12),
-          const Divider(),
-          const SizedBox(height: 8),
+          SizedBox(height: 12),
+          Divider(),
+          SizedBox(height: 8),
 
-          // 🚗 Ride Request + Swipe Button
-          const Text(
-            'Ride Request',
-            style: TextStyle(fontWeight: FontWeight.bold),
+          Text(
+            'Summary the comments here',
+            style: getTextStyle(
+              fontWeight: FontWeight.w500,
+              fontSize: 12,
+              color: Colors.black,
+            ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 16),
+
           SwipeButtonWidget(
             leftText: 'LEFT TO DECLINE',
             rightText: 'TAKE NOW',
             onAccept: () {
-              ctrl.acceptOrder(index);
-              Get.snackbar(
-                'Accepted',
-                'You accepted ${order.code}', // ✅ replaced name
-                snackPosition: SnackPosition.BOTTOM,
-              );
+              Get.to(() => TakeNowScreen());
             },
             onDecline: () {
               ctrl.declineOrder(index);
-              Get.snackbar(
-                'Declined',
-                'You declined ${order.code}', // ✅ replaced name
-                snackPosition: SnackPosition.BOTTOM,
-              );
             },
-            backgroundColor: _getButtonColor(order.colorType),
+            backgroundColor: getButtonColor(order.colorType, order.type),
             height: 50,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Status: ${order.status}',
-            style: TextStyle(color: Colors.grey.shade800),
+            iconPath: getSwipeButtonIcon(order.type),
           ),
         ],
       ),

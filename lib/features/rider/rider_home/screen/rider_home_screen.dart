@@ -13,15 +13,15 @@ class RiderHomeScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(kToolbarHeight),
+        preferredSize: Size.fromHeight(kToolbarHeight),
         child: Obx(
           () => AppBar(
             backgroundColor: Colors.white,
             elevation: 6,
+            // ignore: deprecated_member_use
             shadowColor: Colors.grey.withOpacity(0.4),
             centerTitle: true,
 
-            // ✅ Dynamic title color based on online status
             title: Text(
               ctrl.isOnline.value ? 'Online' : 'Offline',
               style: TextStyle(
@@ -30,7 +30,6 @@ class RiderHomeScreen extends StatelessWidget {
               ),
             ),
 
-            // ✅ Dynamic back icon color
             leading: IconButton(
               icon: Icon(Icons.arrow_back_ios_new, color: Colors.black),
               splashRadius: 24,
@@ -41,7 +40,6 @@ class RiderHomeScreen extends StatelessWidget {
               },
             ),
 
-            // ✅ Online/Offline Switch
             actions: [
               Switch(
                 value: ctrl.isOnline.value,
@@ -57,14 +55,13 @@ class RiderHomeScreen extends StatelessWidget {
 
       backgroundColor: Colors.white,
 
-      // ✅ Reactive body for order list
       body: Obx(() {
         if (ctrl.orders.isEmpty) {
-          return const Center(child: CircularProgressIndicator());
+          return Center(child: CircularProgressIndicator());
         }
 
         return ListView.builder(
-          padding: const EdgeInsets.all(12),
+          padding: EdgeInsets.all(12),
           itemCount: ctrl.orders.length,
           itemBuilder: (context, index) {
             final order = ctrl.orders[index];
