@@ -4,6 +4,7 @@ import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 import 'package:nicholaslim80/core/common/widgets/custom_button.dart';
 import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
 import 'package:nicholaslim80/features/user/refer_and_earn/how_it_work/controller/how_it_work_controller.dart';
+import 'package:nicholaslim80/features/user/refer_and_earn/widget/redeem_credits_suscess_widget.dart';
 
 class HowItWorksScreen extends StatelessWidget {
   const HowItWorksScreen({super.key});
@@ -99,7 +100,9 @@ class HowItWorksScreen extends StatelessWidget {
 
             CustomButton(
               label: "Redeem credits to wallet",
-              onPressed: () {},
+              onPressed: () {
+                Get.to(() => RedeemSuccessScreen());
+              },
               color: AppColors.primaryButtonColor,
               textColor: AppColors.primaryFontColor,
             ),
