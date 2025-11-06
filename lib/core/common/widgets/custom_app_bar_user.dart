@@ -17,7 +17,7 @@ class CustomAppBarUser extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(top: 79),
+      padding: EdgeInsets.only(top: 79, left: 16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -33,7 +33,7 @@ class CustomAppBarUser extends StatelessWidget {
             ),
           ),
 
-          action ?? const SizedBox(width: 18),
+          action ?? SizedBox(width: 18),
         ],
       ),
     );

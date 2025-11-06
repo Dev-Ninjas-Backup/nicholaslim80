@@ -14,6 +14,7 @@ class SupportScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.backgroungColor,
       appBar: AppBar(
+        backgroundColor: AppColors.backgroungColor,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Get.back(),
