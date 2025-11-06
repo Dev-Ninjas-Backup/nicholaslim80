@@ -61,7 +61,8 @@ class ChatScreen extends StatelessWidget {
                       margin: EdgeInsets.symmetric(vertical: 6),
                       padding: EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: msg.isUser ? Colors.blue.shade200 : Colors.white,
+                        color: msg.isUser ? Colors.white : Colors.white,
+
                         borderRadius: BorderRadius.only(
                           topRight: Radius.circular(20),
                           topLeft: Radius.circular(20),
@@ -93,10 +94,10 @@ class ChatScreen extends StatelessWidget {
                         onPressed: () {
                           final text = textController.text.trim();
                           if (text.isEmpty) return;
-
+                          controller.sendMessage(text);
                           textController.clear();
                         },
-                        padding: const EdgeInsets.all(8),
+                        padding: EdgeInsets.all(8),
                         splashRadius: 20,
                         icon: Padding(
                           padding: EdgeInsets.only(right: 2),
