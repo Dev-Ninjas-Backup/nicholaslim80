@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:flutter/services.dart';
+import 'package:nicholaslim80/features/user/refer_and_earn/how_it_work/screen/how_it_work_screen.dart';
 import 'package:nicholaslim80/features/user/refer_and_earn/your_rewards/screen/your_rewards_screen.dart';
 
 class ReferAndEarnController extends GetxController {
@@ -21,6 +22,6 @@ class ReferAndEarnController extends GetxController {
   }
 
   void openHowItWorks() {
-    // Get.to(() => HowItWorksScreen());
+    Get.to(() => HowItWorksScreen());
   }
 }

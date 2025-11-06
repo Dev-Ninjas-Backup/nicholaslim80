@@ -33,7 +33,7 @@ class YourRewardsScreen extends StatelessWidget {
         actions: [
           Padding(
             padding: EdgeInsets.only(right: 12),
-            child: Icon(Icons.info_outline, color: Colors.black),
+            child: Icon(Icons.info_outline, color: Colors.grey),
           ),
         ],
       ),
@@ -47,7 +47,11 @@ class YourRewardsScreen extends StatelessWidget {
                 children: [
                   Text(
                     'Total credits earned',
-                    style: TextStyle(fontSize: 14, color: Colors.black54),
+                    style: getTextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black54,
+                    ),
                   ),
                   SizedBox(height: 4),
                   Text(
@@ -56,7 +60,11 @@ class YourRewardsScreen extends StatelessWidget {
                   ),
                   Text(
                     '= \$${ctrl.currencyValue.toStringAsFixed(2)}',
-                    style: TextStyle(fontSize: 14, color: Colors.black54),
+                    style: getTextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black54,
+                    ),
                   ),
                 ],
               ),
@@ -66,75 +74,70 @@ class YourRewardsScreen extends StatelessWidget {
               'For every successful referral, you receive 20 credits\n'
               'towards your next order',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 13, color: Colors.black54),
+              style: TextStyle(fontSize: 14, color: Colors.black54),
             ),
             SizedBox(height: 24),
             Align(
               alignment: Alignment.center,
               child: Text(
                 'Referral History',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                style: getTextStyle(fontWeight: FontWeight.w700, fontSize: 16),
               ),
             ),
             SizedBox(height: 12),
             Expanded(
               child: Obx(
-                () => ListView.separated(
+                () => ListView.builder(
                   itemCount: ctrl.referralHistory.length,
-                  separatorBuilder: (context, index) => SizedBox(height: 0),
                   itemBuilder: (context, index) {
                     final item = ctrl.referralHistory[index];
-                    return Padding(
-                      padding: EdgeInsets.symmetric(
-                        vertical: 4,
-                        horizontal: 16,
+                    final isLast = index == ctrl.referralHistory.length - 1;
+
+                    return Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.shade200,
+                            blurRadius: 4,
+                            offset: Offset(0, 2),
+                          ),
+                        ],
                       ),
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Container(
-                            width: double.infinity,
+                          Padding(
                             padding: EdgeInsets.symmetric(
-                              vertical: 12,
+                              vertical: 26,
                               horizontal: 16,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(12),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.shade200,
-                                  blurRadius: 4,
-                                  offset: Offset(0, 2),
-                                ),
-                              ],
                             ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   item['name']!,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 15,
+                                  style: getTextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 16,
                                   ),
                                 ),
                                 SizedBox(height: 4),
                                 Text(
                                   'You earned on ${item['date']}',
-                                  style: TextStyle(
-                                    fontSize: 13,
+                                  style: getTextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
                                     color: Colors.black54,
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                          // Underline
-                          Container(
-                            height: 1,
-                            margin: EdgeInsets.only(top: 4),
-                            color: Colors.grey.shade300,
-                          ),
+                          if (!isLast)
+                            Container(height: 1, color: Colors.grey.shade300),
                         ],
                       ),
                     );
