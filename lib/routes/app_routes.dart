@@ -13,6 +13,8 @@ import 'package:nicholaslim80/features/rider/rider_home/screen/rider_home_screen
 import 'package:nicholaslim80/features/rider/rider_incentives/screen/incentives_screen.dart';
 import 'package:nicholaslim80/features/rider/rider_records/screen/records_screen.dart';
 import 'package:nicholaslim80/features/splash/screen/splash_screen.dart';
+import 'package:nicholaslim80/features/user/home/my_riders/screen/my_riders.dart';
+import 'package:nicholaslim80/features/user/user_support/screen/support_screen.dart';
 import 'package:nicholaslim80/features/user/wallet/add_funds/screen/user_add_funds.dart';
 import 'package:nicholaslim80/features/user/wallet/my_wallet/screen/user_my_wallet.dart';
 import 'package:nicholaslim80/features/user/notification/screen/user_notification1.dart';
@@ -40,6 +42,8 @@ class AppRoutes {
   static String driverPreferenceScreen = '/driverPreferenceScreen';
   static String distanceRadiusScreen = '/distanceRadiusScreen';
   static String referAndEarnScreen = '/referAndEarnScreen';
+  static String myRidersScreen = '/myRidersScreen';
+  static String supportScreen = '/supportScreen';
 
   static String riderBottomNavbarScreen = '/riderBottomNavbarScreen';
   static String riderHomeScreen = '/riderHomeScreen';
@@ -176,6 +180,16 @@ class AppRoutes {
     GetPage(
       name: referAndEarnScreen,
       page: () => ReferAndEarnScreen(),
+      transition: Transition.fadeIn,
+    ),
+    GetPage(
+      name: myRidersScreen,
+      page: () => MyRidersScreen(),
+      transition: Transition.fadeIn,
+    ),
+    GetPage(
+      name: supportScreen,
+      page: () => SupportScreen(),
       transition: Transition.fadeIn,
     ),
 
