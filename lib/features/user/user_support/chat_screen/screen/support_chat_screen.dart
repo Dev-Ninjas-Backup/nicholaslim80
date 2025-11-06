@@ -16,6 +16,7 @@ class ChatScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.backgroungColor,
       appBar: AppBar(
+        backgroundColor: AppColors.backgroungColor,
         centerTitle: true,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black),
