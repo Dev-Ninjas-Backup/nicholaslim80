@@ -13,6 +13,7 @@ import 'package:nicholaslim80/features/rider/rider_home/screen/rider_home_screen
 import 'package:nicholaslim80/features/rider/rider_incentives/screen/incentives_screen.dart';
 import 'package:nicholaslim80/features/rider/rider_records/screen/records_screen.dart';
 import 'package:nicholaslim80/features/splash/screen/splash_screen.dart';
+import 'package:nicholaslim80/features/user/%20express_delivery_1/screen/express_delivery_1.dart';
 import 'package:nicholaslim80/features/user/home/my_riders/screen/my_riders.dart';
 import 'package:nicholaslim80/features/user/user_support/screen/support_screen.dart';
 import 'package:nicholaslim80/features/user/wallet/add_funds/screen/user_add_funds.dart';
@@ -58,6 +59,8 @@ class AppRoutes {
   //user wallet
   static String myWalletUser = "/User/myWalletUser";
   static String userAddFund = "/user/userAddFund";
+  //express delivery
+  static String expressDelivery1 = "/expressDelivery1";
 
   static String getSplashScreen() => splashScreen;
   static String getOnboardingScreen() => onboardingScreen;
@@ -73,6 +76,7 @@ class AppRoutes {
   static String gettryAginScreen() => tryAginScreen;
   static String getdriverPreferenceScreen() => driverPreferenceScreen;
   static String getdistanceRadiusScreen() => distanceRadiusScreen;
+  static String getexpressDelivery1() => expressDelivery1;
 
   static String getriderBottomNavbarScreen() => riderBottomNavbarScreen;
   static String getriderHomeScreen() => riderHomeScreen;
@@ -190,6 +194,11 @@ class AppRoutes {
     GetPage(
       name: supportScreen,
       page: () => SupportScreen(),
+      transition: Transition.fadeIn,
+    ),
+    GetPage(
+      name: expressDelivery1,
+      page: () => ExpressDelivery1(),
       transition: Transition.fadeIn,
     ),
 

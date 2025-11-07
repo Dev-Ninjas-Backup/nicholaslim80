@@ -41,5 +41,7 @@ class IconPath {
   static String send = "assets/icons/chat.png";
   static String email = "assets/icons/email.png";
   static String faq = "assets/icons/faq.png";
-
+  static String bike2 = "assets/icons/bike.png";
+  static String car2 = "assets/icons/car.png";
+  static String shopcar = "assets/icons/shop_car.png";
 }

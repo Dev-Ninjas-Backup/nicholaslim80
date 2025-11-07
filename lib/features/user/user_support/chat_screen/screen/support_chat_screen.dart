@@ -61,7 +61,9 @@ class ChatScreen extends StatelessWidget {
                       margin: EdgeInsets.symmetric(vertical: 6),
                       padding: EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: msg.isUser ? Colors.white : Colors.white,
+                        color: msg.isUser
+                            ? AppColors.onboardingIndicatorActive
+                            : Colors.white,
 
                         borderRadius: BorderRadius.only(
                           topRight: Radius.circular(20),
