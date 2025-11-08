@@ -36,7 +36,7 @@ class MyRidersScreen extends StatelessWidget {
               ),
             ),
             SizedBox(width: 4.w),
-            const Icon(Icons.info_outline, color: Colors.black87, size: 20),
+            Icon(Icons.info_outline, color: Colors.black87, size: 20),
           ],
         ),
       ),

@@ -4,6 +4,7 @@ import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
 import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
 import 'package:nicholaslim80/features/user/%20express_delivery_1/controller/express_controller_1.dart';
+import 'package:nicholaslim80/features/user/%20express_delivery_1/widget/one_way_round_functionality.dart';
 
 class ExpressButtonWidget extends StatelessWidget {
   const ExpressButtonWidget({super.key, required this.controller});
@@ -70,7 +71,7 @@ class ExpressButtonWidget extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
 
           Container(
             width: double.infinity,
@@ -86,7 +87,13 @@ class ExpressButtonWidget extends StatelessWidget {
                       Row(
                         spacing: 8,
                         children: [
-                          Image.asset(IconPath.exparess, width: 24, height: 24),
+                          Center(
+                            child: Image.asset(
+                              IconPath.exparess,
+                              width: 24,
+                              height: 24,
+                            ),
+                          ),
                           Text(
                             'Fixed route',
                             style: getTextStyle(
@@ -96,21 +103,82 @@ class ExpressButtonWidget extends StatelessWidget {
                           ),
                         ],
                       ),
+                      Column(
+                        children: [
+                          OneWayRoundWidget(
+                            controller: LocationController(),
+                            title: 'Collected from (Sender: Athena Lin)',
+                            subtitle: 'Sender Address',
+                            icon: Image.asset(
+                              IconPath.collectIcon,
+                              width: 14,
+                              height: 14,
+                            ),
+                          ),
+
+                          SizedBox(height: 8),
+                          OneWayRoundWidget(
+                            controller: LocationController(),
+                            title: 'Delivered from (Sender: Athena Lin)',
+                            subtitle: 'Delivered Address',
+                            icon: Image.asset(
+                              IconPath.deliveredIcon,
+                              width: 14,
+                              height: 14,
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
                   )
                 : Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        "One Way Details",
-                        style: getTextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
+                      Row(
+                        spacing: 8,
+                        children: [
+                          Center(
+                            child: Image.asset(
+                              IconPath.exparess,
+                              width: 24,
+                              height: 24,
+                            ),
+                          ),
+                          Text(
+                            'Fixed route',
+                            style: getTextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
                       ),
-                      SizedBox(height: 8),
-                      Text("• Select your departure location and date."),
+                      Column(
+                        children: [
+                          OneWayRoundWidget(
+                            controller: LocationController(),
+                            title: 'Collected from (Sender: Athena Lin)',
+                            subtitle: 'Sender Address',
+                            icon: Image.asset(
+                              IconPath.collectIcon,
+                              width: 14,
+                              height: 14,
+                            ),
+                          ),
+
+                          SizedBox(height: 8),
+                          OneWayRoundWidget(
+                            controller: LocationController(),
+                            title: 'Delivered from (Sender: Athena Lin)',
+                            subtitle: 'Delivered Address',
+                            icon: Image.asset(
+                              IconPath.deliveredIcon,
+                              width: 14,
+                              height: 14,
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
           ),

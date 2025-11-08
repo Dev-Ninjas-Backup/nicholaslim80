@@ -1,37 +1,52 @@
 import 'package:get/get.dart';
 import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
 
-class GariModel {
+class VehicleModel {
   final String iconPath;
-  GariModel(this.iconPath);
+  VehicleModel(this.iconPath);
 }
 
 class LocationController extends GetxController {
+  // trip/time state
   var isRoundTrip = false.obs;
   var isNowSelected = true.obs;
 
-  var gariList = <GariModel>[].obs;
+  // editing state used by widgets that allow inline title edit
+  var isEditing = false.obs;
+
+  // a simple title property used by the CollectInfoWidget
+  var title = 'Collected from (Sender: Athena Lin)'.obs;
+
+  // vehicles
+  var vehicleList = <VehicleModel>[].obs;
+
+  // selected vehicle state
+  var selectedVehicle = Rxn<VehicleModel>();
 
   @override
   void onInit() {
     super.onInit();
-    loadGariData();
+    loadVehicleData();
   }
 
   // Load initial vehicles
-  void loadGariData() {
-    gariList.value = [
-      GariModel(IconPath.car2),
-      GariModel(IconPath.bike2),
-      GariModel(IconPath.shopcar),
+  void loadVehicleData() {
+    vehicleList.value = [
+      VehicleModel(IconPath.car2),
+      VehicleModel(IconPath.bike2),
+      VehicleModel(IconPath.shopcar),
+      VehicleModel(IconPath.shipment),
     ];
   }
 
   void selectNow() => isNowSelected.value = true;
-
   void selectSchedule() => isNowSelected.value = false;
+  void toggleTripType(bool isRound) => isRoundTrip.value = isRound;
+  void toggleEdit() => isEditing.value = !isEditing.value;
+  void updateTitle(String newTitle) => title.value = newTitle;
 
-  void toggleTripType(bool isRound) {
-    isRoundTrip.value = isRound;
+  // 👉 new function to select vehicle
+  void selectVehicle(VehicleModel vehicle) {
+    selectedVehicle.value = vehicle;
   }
 }
