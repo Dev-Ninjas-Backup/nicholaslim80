@@ -14,6 +14,7 @@ import 'package:nicholaslim80/features/rider/rider_incentives/screen/incentives_
 import 'package:nicholaslim80/features/rider/rider_records/screen/records_screen.dart';
 import 'package:nicholaslim80/features/splash/screen/splash_screen.dart';
 import 'package:nicholaslim80/features/user/%20express_delivery_1/screen/express_delivery_1.dart';
+import 'package:nicholaslim80/features/user/Express_Delivary_Faq/Screen/express_faq.dart';
 import 'package:nicholaslim80/features/user/home/my_riders/screen/my_riders.dart';
 import 'package:nicholaslim80/features/user/user_support/screen/support_screen.dart';
 import 'package:nicholaslim80/features/user/wallet/add_funds/screen/user_add_funds.dart';
@@ -61,6 +62,7 @@ class AppRoutes {
   static String userAddFund = "/user/userAddFund";
   //express delivery
   static String expressDelivery1 = "/expressDelivery1";
+  static String expressFaq = "/expressFaq";
 
   static String getSplashScreen() => splashScreen;
   static String getOnboardingScreen() => onboardingScreen;
@@ -77,6 +79,7 @@ class AppRoutes {
   static String getdriverPreferenceScreen() => driverPreferenceScreen;
   static String getdistanceRadiusScreen() => distanceRadiusScreen;
   static String getexpressDelivery1() => expressDelivery1;
+  static String getexpressFaq() => expressFaq;
 
   static String getriderBottomNavbarScreen() => riderBottomNavbarScreen;
   static String getriderHomeScreen() => riderHomeScreen;
@@ -199,6 +202,11 @@ class AppRoutes {
     GetPage(
       name: expressDelivery1,
       page: () => ExpressDelivery1(),
+      transition: Transition.fadeIn,
+    ),
+    GetPage(
+      name: expressFaq,
+      page: () => ExpressFaq(),
       transition: Transition.fadeIn,
     ),
 

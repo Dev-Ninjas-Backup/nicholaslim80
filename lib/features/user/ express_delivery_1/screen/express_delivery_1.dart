@@ -7,6 +7,7 @@ import 'package:nicholaslim80/features/user/%20express_delivery_1/widget/collect
 import 'package:nicholaslim80/features/user/%20express_delivery_1/widget/order_review_widget.dart';
 import 'package:nicholaslim80/features/user/%20express_delivery_1/widget/select_location_widget.dart';
 import 'package:nicholaslim80/features/user/%20express_delivery_1/widget/vehicle_type_widget.dart';
+import 'package:nicholaslim80/routes/app_routes.dart';
 
 class ExpressDelivery1 extends StatelessWidget {
   final LocationController controller = Get.put(LocationController());
@@ -38,82 +39,86 @@ class ExpressDelivery1 extends StatelessWidget {
             SizedBox(width: 4.0),
             IconButton(
               icon: Icon(Icons.info_outline, color: Colors.black87, size: 20),
-              onPressed: () {},
+              onPressed: () {
+                Get.toNamed(AppRoutes.getexpressFaq());
+              },
             ),
           ],
         ),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
 
-          children: [
-            Text(
-              'Select Location',
-              style: getTextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-            ),
-            SelectLocationWidget(controller: controller),
-            SizedBox(height: 24),
-            Text(
-              'Collect time',
-              style: getTextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-            ),
-            SizedBox(height: 10),
-            Obx(
-              () => IntrinsicHeight(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    CollectTimeOption(
-                      title: "Now",
-                      selected: controller.isNowSelected.value,
-                      onTap: controller.selectNow,
-                    ),
-                    SizedBox(width: 16),
-                    CollectTimeOption(
-                      title: "Schedule",
-                      subtitle: "Pick Date and Time",
-                      selected: !controller.isNowSelected.value,
-                      onTap: controller.selectSchedule,
-                    ),
-                  ],
+            children: [
+              Text(
+                'Select Location',
+                style: getTextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
                 ),
               ),
-            ),
-            SizedBox(height: 24),
-            Row(
-              children: [
-                Text(
-                  'Vehicle type',
-                  style: getTextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
+              SelectLocationWidget(controller: controller),
+              SizedBox(height: 24),
+              Text(
+                'Collect time',
+                style: getTextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+              SizedBox(height: 10),
+              Obx(
+                () => IntrinsicHeight(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      CollectTimeOption(
+                        title: "Now",
+                        selected: controller.isNowSelected.value,
+                        onTap: controller.selectNow,
+                      ),
+                      SizedBox(width: 16),
+                      CollectTimeOption(
+                        title: "Schedule",
+                        subtitle: "Pick Date and Time",
+                        selected: !controller.isNowSelected.value,
+                        onTap: controller.selectSchedule,
+                      ),
+                    ],
                   ),
                 ),
-                IconButton(
-                  onPressed: () {},
-                  icon: Icon(Icons.info_outline),
-                  color: Colors.black87,
-                  iconSize: 20,
-                ),
-              ],
-            ),
-            SizedBox(height: 4),
-            VehicleTypeWidget(controller: controller),
+              ),
+              SizedBox(height: 24),
+              Row(
+                children: [
+                  Text(
+                    'Vehicle type',
+                    style: getTextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {},
+                    icon: Icon(Icons.info_outline),
+                    color: Colors.black87,
+                    iconSize: 20,
+                  ),
+                ],
+              ),
+              SizedBox(height: 4),
+              VehicleTypeWidget(controller: controller),
 
-            SizedBox(height: 24),
-            OrderReviewWidget(),
-          ],
+              SizedBox(height: 24),
+              OrderReviewWidget(),
+            ],
+          ),
         ),
       ),
     );
