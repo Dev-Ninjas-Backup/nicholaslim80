@@ -7,6 +7,8 @@ import 'package:nicholaslim80/features/user/%20express_delivery_1/widget/collect
 import 'package:nicholaslim80/features/user/%20express_delivery_1/widget/order_review_widget.dart';
 import 'package:nicholaslim80/features/user/%20express_delivery_1/widget/select_location_widget.dart';
 import 'package:nicholaslim80/features/user/%20express_delivery_1/widget/vehicle_type_widget.dart';
+import 'package:nicholaslim80/features/user/Veicale_Type_on_Exprees_Delivery/screen/veichale_secation_page.dart';
+
 import 'package:nicholaslim80/routes/app_routes.dart';
 
 class ExpressDelivery1 extends StatelessWidget {
@@ -105,7 +107,9 @@ class ExpressDelivery1 extends StatelessWidget {
                     ),
                   ),
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Get.to(() => VehicleSelectionPage());
+                    },
                     icon: Icon(Icons.info_outline),
                     color: Colors.black87,
                     iconSize: 20,
