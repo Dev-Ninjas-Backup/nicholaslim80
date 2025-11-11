@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nicholaslim80/features/user/Veicale_Type_on_Exprees_Delivery/controller/vehicle_Controller.dart';
 import 'package:nicholaslim80/features/user/Veicale_Type_on_Exprees_Delivery/models/data_model.dart';
+import 'package:nicholaslim80/features/user/Veicale_Type_on_Exprees_Delivery/widget/additional_service_card.dart';
+import 'package:nicholaslim80/features/user/Veicale_Type_on_Exprees_Delivery/widget/buttom_sumary.dart';
 import 'package:nicholaslim80/features/user/Veicale_Type_on_Exprees_Delivery/widget/vehicale_card.dart';
 
 class VehicleTabPage extends StatelessWidget {
@@ -21,7 +23,7 @@ class VehicleTabPage extends StatelessWidget {
         Expanded(
           child: SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: EdgeInsets.all(16.0),
               child: Obx(() {
                 final vehicles = controller.getVehiclesForType(vehicleType);
                 final selectedVehicle = controller.selectedVehicle.value;
@@ -34,17 +36,17 @@ class VehicleTabPage extends StatelessWidget {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Please select available vehicle',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: 10),
                     ...vehicles.map(
                       (vehicle) => Padding(
-                        padding: const EdgeInsets.only(bottom: 14),
+                        padding: EdgeInsets.only(bottom: 14),
                         child: VehicleCard(
                           vehicle: vehicle,
                           isSelected: selectedVehicle?.name == vehicle.name,
@@ -53,18 +55,18 @@ class VehicleTabPage extends StatelessWidget {
                       ),
                     ),
                     if (services.isNotEmpty) ...[
-                      const SizedBox(height: 20),
-                      const Text(
+                      SizedBox(height: 20),
+                      Text(
                         'Additional Services',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(height: 10),
+                      SizedBox(height: 10),
                       ...services.map(
                         (service) => Padding(
-                          padding: const EdgeInsets.only(bottom: 14),
+                          padding: EdgeInsets.only(bottom: 14),
                           child: AdditionalServiceCard(
                             service: service,
                             isSelected: controller.selectedServices.contains(
