@@ -25,10 +25,10 @@ class VehicleSelectionPage extends StatelessWidget {
           ),
           centerTitle: true,
           bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(50),
+            preferredSize: Size.fromHeight(50),
             child: Container(
               color: AppColors.backgroungColor,
-              margin: const EdgeInsets.only(top: 5),
+              margin: EdgeInsets.only(top: 5),
               child: TabBar(
                 isScrollable: false, // evenly spaced
                 indicator: BoxDecoration(
