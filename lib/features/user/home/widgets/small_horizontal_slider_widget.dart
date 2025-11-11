@@ -19,6 +19,7 @@ class SmallHorizontalSlider extends StatelessWidget {
         itemBuilder: (context, index) {
           return SizedBox(
             width: width * 0.9,
+
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 18, vertical: 28),
               decoration: BoxDecoration(
@@ -38,9 +39,9 @@ class SmallHorizontalSlider extends StatelessWidget {
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        SizedBox(height: 6),
+                        //SizedBox(height: 4),
                         Text(
-                          'Invite friends and get 10 credit for every\n successful signup',
+                          'Invite friends and get 10 credit for every successful signup',
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w500,

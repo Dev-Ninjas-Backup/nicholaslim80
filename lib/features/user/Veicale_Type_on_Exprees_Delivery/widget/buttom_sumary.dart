@@ -112,7 +112,7 @@ class BottomSummary extends StatelessWidget {
                     ),
                     child: Text(
                       'Review Order',
-                      style: TextStyle(
+                      style: getTextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,

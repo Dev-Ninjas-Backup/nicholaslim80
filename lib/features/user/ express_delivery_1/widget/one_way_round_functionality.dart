@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
+import 'package:nicholaslim80/features/user/collect_form_on_express_delivery/controller/collect_form_controller.dart';
+import 'package:nicholaslim80/features/user/collect_form_on_express_delivery/screen/collect_form_screen.dart';
 import '../controller/express_controller_1.dart';
 
 class OneWayRoundWidget extends StatelessWidget {
@@ -74,7 +76,13 @@ class OneWayRoundWidget extends StatelessWidget {
         ),
         Obx(
           () => GestureDetector(
-            onTap: controller.toggleEdit,
+            onTap: () {
+              Get.to(
+                () => CollectFormScreen(
+                  controller: Get.put(CollectFormController()),
+                ),
+              );
+            },
             child: Icon(
               controller.isEditing.value ? Icons.check : Icons.edit,
               color: controller.isEditing.value ? Colors.green : Colors.black,

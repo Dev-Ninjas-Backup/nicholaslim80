@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nicholaslim80/features/user/Veicale_Type_on_Exprees_Delivery/controller/vehicle_Controller.dart';
+import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
+import 'package:nicholaslim80/features/user/Veicale_Type_on_Exprees_Delivery/controller/vehicle_controller.dart';
 import 'package:nicholaslim80/features/user/Veicale_Type_on_Exprees_Delivery/models/data_model.dart';
 import 'package:nicholaslim80/features/user/Veicale_Type_on_Exprees_Delivery/widget/additional_service_card.dart';
 import 'package:nicholaslim80/features/user/Veicale_Type_on_Exprees_Delivery/widget/buttom_sumary.dart';
@@ -38,7 +39,7 @@ class VehicleTabPage extends StatelessWidget {
                   children: [
                     Text(
                       'Please select available vehicle',
-                      style: TextStyle(
+                      style: getTextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
@@ -58,7 +59,7 @@ class VehicleTabPage extends StatelessWidget {
                       SizedBox(height: 20),
                       Text(
                         'Additional Services',
-                        style: TextStyle(
+                        style: getTextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),

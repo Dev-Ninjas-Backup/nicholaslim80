@@ -54,4 +54,6 @@ class IconPath {
   static String trunk1 = "assets/icons/trunk1.png";
   static String trunk2 = "assets/icons/trunk2.png";
   static String trunk3 = "assets/icons/trunk3.png";
+  static String location = "assets/icons/location.png";
+  static String history = "assets/icons/history.png";
 }

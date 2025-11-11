@@ -24,7 +24,7 @@ class VehicleCards extends StatelessWidget {
             return SizedBox(
               width: 220,
               child: Container(
-                padding: EdgeInsets.all(16),
+                padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: AppColors.subtitleFontColor),
@@ -87,7 +87,7 @@ class VehicleCards extends StatelessWidget {
                     SizedBox(height: 18),
                     SizedBox(
                       width: double.infinity,
-                      height: 36,
+                      height: 30,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primaryButtonColor,
