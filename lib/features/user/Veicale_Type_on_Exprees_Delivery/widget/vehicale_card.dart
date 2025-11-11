@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
@@ -52,7 +51,7 @@ class VehicleCard extends StatelessWidget {
                   children: [
                     Text(
                       vehicle.name,
-                      style: TextStyle(
+                      style: getTextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                       ),
@@ -68,7 +67,7 @@ class VehicleCard extends StatelessWidget {
                     const SizedBox(height: 6),
                     Text(
                       vehicle.details,
-                      style: TextStyle(color: Colors.grey, fontSize: 14),
+                      style: getTextStyle(color: Colors.grey, fontSize: 14),
                     ),
                   ],
                 ),

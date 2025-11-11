@@ -42,7 +42,7 @@ class LocationController extends GetxController {
   void selectNow() => isNowSelected.value = true;
   void selectSchedule() => isNowSelected.value = false;
   void toggleTripType(bool isRound) => isRoundTrip.value = isRound;
-  void toggleEdit() => isEditing.value = !isEditing.value;
+  // void toggleEdit() => isEditing.value = !isEditing.value;
   void updateTitle(String newTitle) => title.value = newTitle;
 
   // 👉 new function to select vehicle
