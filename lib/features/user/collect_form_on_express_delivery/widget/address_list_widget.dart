@@ -44,8 +44,7 @@ class AddressListWidget extends StatelessWidget {
                 style: getTextStyle(color: Colors.grey.shade600),
               ),
               onTap: () {
-                controller.selectedAddress.value = address;
-                if (Get.isRegistered<CollectFormController>()) Get.back();
+                controller.onAddressTap(address);
               },
             );
           },
