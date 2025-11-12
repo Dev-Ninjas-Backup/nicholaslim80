@@ -13,12 +13,19 @@ import 'package:nicholaslim80/features/rider/rider_home/screen/rider_home_screen
 import 'package:nicholaslim80/features/rider/rider_incentives/screen/incentives_screen.dart';
 import 'package:nicholaslim80/features/rider/rider_records/screen/records_screen.dart';
 import 'package:nicholaslim80/features/splash/screen/splash_screen.dart';
+import 'package:nicholaslim80/features/user/%20express_delivery_1/screen/express_delivery_1.dart';
+import 'package:nicholaslim80/features/user/Express_Delivary_Faq/Screen/express_faq.dart';
+import 'package:nicholaslim80/features/user/home/my_riders/screen/my_riders.dart';
+import 'package:nicholaslim80/features/user/user_support/screen/support_screen.dart';
+import 'package:nicholaslim80/features/user/wallet/add_funds/screen/user_add_funds.dart';
+import 'package:nicholaslim80/features/user/wallet/my_wallet/screen/user_my_wallet.dart';
 import 'package:nicholaslim80/features/user/notification/screen/user_notification1.dart';
 import 'package:nicholaslim80/features/user/profile/screen/profile_screen.dart';
 import 'package:nicholaslim80/features/user/auth/login/screen/login_signup_screen.dart';
 import 'package:nicholaslim80/features/user/auth/verification/screen/verification_screen.dart';
 import 'package:nicholaslim80/features/user/bottom_navbar/screen/bottom_navbar_screen.dart';
 import 'package:nicholaslim80/features/user/home/screen/home_screen.dart';
+import 'package:nicholaslim80/features/user/refer_and_earn/screen/refer_and_earn_screen.dart';
 import 'package:nicholaslim80/features/user/saved_places/screen/saved_place_screenn.dart';
 
 class AppRoutes {
@@ -36,6 +43,9 @@ class AppRoutes {
   static String tryAginScreen = '/tryAginScreen';
   static String driverPreferenceScreen = '/driverPreferenceScreen';
   static String distanceRadiusScreen = '/distanceRadiusScreen';
+  static String referAndEarnScreen = '/referAndEarnScreen';
+  static String myRidersScreen = '/myRidersScreen';
+  static String supportScreen = '/supportScreen';
 
   static String riderBottomNavbarScreen = '/riderBottomNavbarScreen';
   static String riderHomeScreen = '/riderHomeScreen';
@@ -47,6 +57,12 @@ class AppRoutes {
   static String userNotification = '/user/notification';
   static String userOrderDetails = '/userOrderDetails';
   static String savedPlaces = '/savedPlaces';
+  //user wallet
+  static String myWalletUser = "/User/myWalletUser";
+  static String userAddFund = "/user/userAddFund";
+  //express delivery
+  static String expressDelivery1 = "/expressDelivery1";
+  static String expressFaq = "/expressFaq";
 
   static String getSplashScreen() => splashScreen;
   static String getOnboardingScreen() => onboardingScreen;
@@ -62,16 +78,22 @@ class AppRoutes {
   static String gettryAginScreen() => tryAginScreen;
   static String getdriverPreferenceScreen() => driverPreferenceScreen;
   static String getdistanceRadiusScreen() => distanceRadiusScreen;
+  static String getexpressDelivery1() => expressDelivery1;
+  static String getexpressFaq() => expressFaq;
 
   static String getriderBottomNavbarScreen() => riderBottomNavbarScreen;
   static String getriderHomeScreen() => riderHomeScreen;
   static String getincentivesScreen() => incentivesScreen;
   static String getrecordsScreen() => recordsScreen;
   static String getriderAccountScreen() => riderAccountScreen;
+  static String getreferAndEarnScreen() => referAndEarnScreen;
 
   //user notification
   static String getUserNotification() => userNotification;
   static String getSavedPlaces() => savedPlaces;
+  //user my wallet
+  static String getmyWalletUser() => myWalletUser;
+  static String getuserAddFund() => userAddFund;
 
   static List<GetPage> routes = [
     GetPage(name: splashScreen, page: () => SplashScreen()),
@@ -162,9 +184,37 @@ class AppRoutes {
       page: () => RiderAccountScreen(),
       transition: Transition.fadeIn,
     ),
+    GetPage(
+      name: referAndEarnScreen,
+      page: () => ReferAndEarnScreen(),
+      transition: Transition.fadeIn,
+    ),
+    GetPage(
+      name: myRidersScreen,
+      page: () => MyRidersScreen(),
+      transition: Transition.fadeIn,
+    ),
+    GetPage(
+      name: supportScreen,
+      page: () => SupportScreen(),
+      transition: Transition.fadeIn,
+    ),
+    GetPage(
+      name: expressDelivery1,
+      page: () => ExpressDelivery1(),
+      transition: Transition.fadeIn,
+    ),
+    GetPage(
+      name: expressFaq,
+      page: () => ExpressFaq(),
+      transition: Transition.fadeIn,
+    ),
 
     //user notification
     GetPage(name: userNotification, page: () => UserNotification()),
     GetPage(name: savedPlaces, page: () => SavedPlaceScreen()),
+    //user my wallet
+    GetPage(name: myWalletUser, page: () => UserMyWallet()),
+    GetPage(name: userAddFund, page: () => UserAddFunds()),
   ];
 }

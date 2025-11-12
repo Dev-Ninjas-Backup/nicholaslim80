@@ -78,25 +78,33 @@ class HomeController extends GetxController {
       DrawerModel(
         iconUrl: IconPath.walletIcon,
         iconname: "My Wallet",
-        ontap: () {},
+        ontap: () {
+          Get.toNamed(AppRoutes.myWalletUser);
+        },
       ),
 
       DrawerModel(
         iconUrl: IconPath.referIcon,
         iconname: "Refer & Earn",
-        ontap: () {},
+        ontap: () {
+          Get.toNamed(AppRoutes.getreferAndEarnScreen());
+        },
       ),
 
       DrawerModel(
         iconUrl: IconPath.ridersicon,
         iconname: "My Riders",
-        ontap: () {},
+        ontap: () {
+          Get.toNamed(AppRoutes.myRidersScreen);
+        },
       ),
 
       DrawerModel(
         iconUrl: IconPath.supportIcon,
         iconname: "Support",
-        ontap: () {},
+        ontap: () {
+          Get.toNamed(AppRoutes.supportScreen);
+        },
       ),
 
       DrawerModel(

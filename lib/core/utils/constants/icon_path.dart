@@ -26,8 +26,34 @@ class IconPath {
   static String message = "assets/icons/message.png";
   static String call = "assets/icons/call.png";
   static String visa = "assets/icons/visa.png";
-    static String locationRed = "assets/icons/location_red.png";
-      static String locationBlue = "assets/icons/location_blue.png";
+  static String locationRed = "assets/icons/location_red.png";
+  static String locationBlue = "assets/icons/location_blue.png";
 
+  static String delete = "assets/icons/delete.png";
 
+  static String exparess = "assets/icons/exparess.png";
+  static String car = "assets/icons/car.png";
+  static String bike = "assets/icons/bike.png";
+  static String taxi = "assets/icons/taxi.png";
+
+  static String playicon = "assets/icons/playicon.png";
+
+  static String send = "assets/icons/chat.png";
+  static String email = "assets/icons/email.png";
+  static String faq = "assets/icons/faq.png";
+  static String bike2 = "assets/icons/bike.png";
+  static String car2 = "assets/icons/car.png";
+  static String shipment = "assets/icons/shipment.png";
+  static String shopcar = "assets/icons/shop_car.png";
+  static String collectIcon = "assets/icons/collected_dot.png";
+  static String deliveredIcon = "assets/icons/delevered_dot.png";
+  static String courierIcon = "assets/icons/courier.png";
+  static String realCar = "assets/icons/real_car.png";
+  static String mpv = "assets/icons/mpv.png";
+  static String van = "assets/icons/van1.png";
+  static String trunk1 = "assets/icons/trunk1.png";
+  static String trunk2 = "assets/icons/trunk2.png";
+  static String trunk3 = "assets/icons/trunk3.png";
+  static String location = "assets/icons/location.png";
+  static String history = "assets/icons/history.png";
 }

@@ -9,4 +9,7 @@ class ImagePath {
   static String profileImage = "assets/images/profileImage.jpg";
   static String trackmap = "assets/images/trackmap.png";
   static String deliveryBox = "assets/images/delivery_box.png";
+  static String profile1 = "assets/images/profile1.png";
+  static String profile2 = "assets/images/profile2.png";
+  static String profile3 = "assets/images/profile3.png";
 }

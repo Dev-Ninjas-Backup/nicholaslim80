@@ -140,7 +140,9 @@ class HomeScreen extends StatelessWidget {
                           'Courier takes only your package and delivers instantly',
                       iconPath: IconPath.parcel,
                       selected: ctrl.selectedService.value == 'Express',
-                      onTap: () => ctrl.selectService('Express'),
+                      onTap: () {
+                        Get.toNamed(AppRoutes.expressDelivery1);
+                      },
                     ),
                   ),
                 ),

@@ -5,9 +5,9 @@ class HomeOrderModel {
   String delivery;
   String price;
   String time;
-  String status; // pending, active, completed
+  String status;
   String buttonText;
-  int colorType; // 0=yellow,1=blue,2=gray
+  int colorType;
 
   HomeOrderModel({
     required this.type,
