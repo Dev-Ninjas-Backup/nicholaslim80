@@ -7,7 +7,7 @@ import 'package:nicholaslim80/features/user/collect_form_on_express_delivery/Sen
 import 'package:nicholaslim80/features/user/collect_form_on_express_delivery/models/address_model.dart';
 
 class SenderView extends StatelessWidget {
-  const SenderView({Key? key, required AddressModel address}) : super(key: key);
+  const SenderView({super.key, required AddressModel address});
 
   @override
   Widget build(BuildContext context) {

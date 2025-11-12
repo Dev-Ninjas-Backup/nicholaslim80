@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_print
 
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 
 class QuizCongratulationController extends GetxController {
