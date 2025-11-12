@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
+import 'package:nicholaslim80/features/user/collect_form_on_express_delivery/Sender_Part/screen_sender/sender_screen.dart';
 import 'package:nicholaslim80/features/user/collect_form_on_express_delivery/models/address_model.dart';
 
 class CollectFormController extends GetxController {
@@ -56,9 +57,7 @@ class CollectFormController extends GetxController {
     selectedAddress.value = address;
 
     if (selectedFilterIndex.value == 0) {
-      Get.to(() => (address: address));
-    } else {
-      Get.back();
+      Get.to(() => SenderView(address: address));
     }
   }
 
