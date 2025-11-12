@@ -18,8 +18,14 @@ class QuizCongratulationController extends GetxController {
   }
 
   void submitResult() {
-    print('Score: ${score.value}/${totalScore.value}');
-    print('Rating: ${rating.value}');
-    print('Feedback: ${feedback.value}');
+    if (kDebugMode) {
+      print('Score: ${score.value}/${totalScore.value}');
+    }
+    if (kDebugMode) {
+      print('Rating: ${rating.value}');
+    }
+    if (kDebugMode) {
+      print('Feedback: ${feedback.value}');
+    }
   }
 }

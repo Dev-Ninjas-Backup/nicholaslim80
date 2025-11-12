@@ -62,7 +62,7 @@ class DistanceRadiusScreen extends StatelessWidget {
                   height: 246,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Colors.grey.withOpacity(0.6),
+                    color: Colors.grey.withValues(alpha: .6),
                   ),
                 ),
                 Icon(
