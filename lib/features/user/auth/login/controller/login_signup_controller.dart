@@ -65,7 +65,7 @@ class LoginSignupController extends GetxController {
         'Error',
         'Please enter your phone number',
         snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.red.withOpacity(0.8),
+        backgroundColor: Colors.red.withValues(alpha: .8),
         colorText: Colors.white,
       );
       return;
@@ -83,7 +83,7 @@ class LoginSignupController extends GetxController {
         'Error',
         'Please fill all fields',
         snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.red.withOpacity(0.8),
+        backgroundColor: Colors.red.withValues(alpha: .8),
         colorText: Colors.white,
       );
       return;
@@ -97,9 +97,7 @@ class LoginSignupController extends GetxController {
     }
   }
 
-
-
-    void logout() {
+  void logout() {
     phoneNumber.value = '';
     selectedUserType.value = 'USER';
     isLoginSelected.value = true;
@@ -118,6 +116,4 @@ class LoginSignupController extends GetxController {
     // emailController.dispose();
     super.onClose();
   }
-
-
 }

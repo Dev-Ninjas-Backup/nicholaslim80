@@ -63,7 +63,7 @@ class DriverPreferenceScreen extends StatelessWidget {
             child: Container(
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                color: AppColors.primaryFontColor.withOpacity(0.2),
+                color: AppColors.primaryFontColor.withValues(alpha: .2),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
