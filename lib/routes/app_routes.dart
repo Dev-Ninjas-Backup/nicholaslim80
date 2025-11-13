@@ -13,6 +13,7 @@ import 'package:nicholaslim80/features/rider/rider_home/screen/rider_home_screen
 import 'package:nicholaslim80/features/rider/rider_incentives/screen/incentives_screen.dart';
 import 'package:nicholaslim80/features/rider/rider_records/screen/records_screen.dart';
 import 'package:nicholaslim80/features/splash/screen/splash_screen.dart';
+import 'package:nicholaslim80/features/user/%20express_delivery_1/express_delivery_to_sendr_or_recepmeant/screen/express_sender_or_recepmeant.dart';
 import 'package:nicholaslim80/features/user/%20express_delivery_1/screen/express_delivery_1.dart';
 import 'package:nicholaslim80/features/user/Express_Delivary_Faq/Screen/express_faq.dart';
 import 'package:nicholaslim80/features/user/home/my_riders/screen/my_riders.dart';
@@ -63,6 +64,7 @@ class AppRoutes {
   //express delivery
   static String expressDelivery1 = "/expressDelivery1";
   static String expressFaq = "/expressFaq";
+  static String expressSenderOrRecepment = "/expressSenderOrRecepment";
 
   static String getSplashScreen() => splashScreen;
   static String getOnboardingScreen() => onboardingScreen;
@@ -94,6 +96,8 @@ class AppRoutes {
   //user my wallet
   static String getmyWalletUser() => myWalletUser;
   static String getuserAddFund() => userAddFund;
+  //express delivery
+  static String getexpressSenderOrRecepment() => expressSenderOrRecepment;
 
   static List<GetPage> routes = [
     GetPage(name: splashScreen, page: () => SplashScreen()),
@@ -216,5 +220,10 @@ class AppRoutes {
     //user my wallet
     GetPage(name: myWalletUser, page: () => UserMyWallet()),
     GetPage(name: userAddFund, page: () => UserAddFunds()),
+    //express delivery
+    GetPage(
+      name: expressSenderOrRecepment,
+      page: () => ExpressSenderOrRecepment(),
+    ),
   ];
 }

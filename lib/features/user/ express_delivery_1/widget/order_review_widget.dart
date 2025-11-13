@@ -3,7 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 
 class OrderReviewWidget extends StatelessWidget {
-  const OrderReviewWidget({super.key});
+  final double total;
+  final bool isButtonEnabled;
+  final VoidCallback? onReview;
+
+  const OrderReviewWidget({
+    super.key,
+    this.total = 0.00, // 👈 DEFAULT VALUE
+    this.isButtonEnabled = false, // 👈 DEFAULT VALUE
+    this.onReview, // nullable
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -13,10 +22,8 @@ class OrderReviewWidget extends StatelessWidget {
       color: Colors.white,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
@@ -27,8 +34,9 @@ class OrderReviewWidget extends StatelessWidget {
                   color: CupertinoColors.secondaryLabel,
                 ),
               ),
+
               Text(
-                'S\$00.00',
+                'S\$${total.toStringAsFixed(2)}', // 👈 always safe
                 style: getTextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -37,24 +45,20 @@ class OrderReviewWidget extends StatelessWidget {
               ),
             ],
           ),
+
           Flexible(
             child: FilledButton(
-              onPressed: () {},
+              onPressed: isButtonEnabled ? onReview : null,
               style: FilledButton.styleFrom(
-                backgroundColor: CupertinoColors.secondaryLabel,
+                backgroundColor: isButtonEnabled
+                    ? Colors.black
+                    : CupertinoColors.inactiveGray,
                 foregroundColor: Colors.white,
                 padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
               ),
               child: Text(
                 'Review order',
-                style: getTextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.white,
-                ),
+                style: getTextStyle(fontSize: 14, fontWeight: FontWeight.w500),
               ),
             ),
           ),
