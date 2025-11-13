@@ -10,7 +10,7 @@ import 'package:nicholaslim80/features/user/collect_form_on_express_delivery/mod
 class RecipientView extends StatelessWidget {
   final AddressModel address;
 
-  RecipientView({super.key, required this.address});
+  const RecipientView({super.key, required this.address});
 
   @override
   Widget build(BuildContext context) {
