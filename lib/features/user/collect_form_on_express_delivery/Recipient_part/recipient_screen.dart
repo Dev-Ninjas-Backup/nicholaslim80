@@ -6,6 +6,7 @@ import 'package:nicholaslim80/core/utils/constants/image_path.dart';
 import 'package:nicholaslim80/features/user/collect_form_on_express_delivery/Sender_Part/controller_sender/sender_controller.dart';
 import 'package:nicholaslim80/features/user/collect_form_on_express_delivery/Sender_Part/widget_sender/text_filed_widget.dart';
 import 'package:nicholaslim80/features/user/collect_form_on_express_delivery/models/address_model.dart';
+import 'package:nicholaslim80/routes/app_routes.dart';
 
 class RecipientView extends StatelessWidget {
   final AddressModel address;
@@ -107,10 +108,8 @@ class RecipientView extends StatelessWidget {
                         child: ElevatedButton(
                           onPressed: controller.isFormValid.value
                               ? () {
-                                  Get.snackbar(
-                                    "Success",
-                                    "Form submitted!",
-                                    snackPosition: SnackPosition.BOTTOM,
+                                  Get.toNamed(
+                                    AppRoutes.getexpressSenderOrRecepment(),
                                   );
                                 }
                               : null,

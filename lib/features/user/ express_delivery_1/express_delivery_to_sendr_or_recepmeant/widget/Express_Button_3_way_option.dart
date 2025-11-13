@@ -6,8 +6,8 @@ import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
 import 'package:nicholaslim80/features/user/%20express_delivery_1/controller/express_controller_1.dart';
 import 'package:nicholaslim80/features/user/%20express_delivery_1/widget/one_way_round_functionality.dart';
 
-class ExpressButtonWidget extends StatelessWidget {
-  const ExpressButtonWidget({super.key, required this.controller});
+class ExpressButtonWidget3Address extends StatelessWidget {
+  const ExpressButtonWidget3Address({super.key, required this.controller});
 
   final LocationController controller;
 
@@ -168,10 +168,21 @@ class ExpressButtonWidget extends StatelessWidget {
                           SizedBox(height: 8),
                           OneWayRoundWidget(
                             controller: LocationController(),
-                            title: 'Delivered from (Sender: Athena Lin)',
-                            subtitle: 'Delivered Address',
+                            title: 'Deliver to (Recipent: Joseph Low)',
+                            subtitle: 'Blk 222 Sengkang Ave 2, S530222',
                             icon: Image.asset(
                               IconPath.deliveredIcon,
+                              width: 14,
+                              height: 14,
+                            ),
+                          ),
+                          SizedBox(height: 8),
+                          OneWayRoundWidget(
+                            controller: LocationController(),
+                            title: 'Return address (Athena Lin)',
+                            subtitle: 'Blk 657 Ang Mo Kio Ave 9, S560657',
+                            icon: Image.asset(
+                              IconPath.collectIcon,
                               width: 14,
                               height: 14,
                             ),
