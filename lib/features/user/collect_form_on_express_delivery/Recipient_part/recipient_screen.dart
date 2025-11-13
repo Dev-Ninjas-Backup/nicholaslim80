@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
-
 import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
 import 'package:nicholaslim80/core/utils/constants/image_path.dart';
 import 'package:nicholaslim80/features/user/collect_form_on_express_delivery/Sender_Part/controller_sender/sender_controller.dart';
 import 'package:nicholaslim80/features/user/collect_form_on_express_delivery/Sender_Part/widget_sender/text_filed_widget.dart';
 import 'package:nicholaslim80/features/user/collect_form_on_express_delivery/models/address_model.dart';
 
-class SenderView extends StatelessWidget {
+class RecipientView extends StatelessWidget {
   final AddressModel address; // store the address
 
-  const SenderView({super.key, required this.address});
+  const RecipientView({super.key, required this.address});
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +53,7 @@ class SenderView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Sender",
+                    "Recipient 1", // title text
                     style: getTextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -83,16 +82,8 @@ class SenderView extends StatelessWidget {
                     controller: controller.numberController,
                     label: "Contact number*",
                     keyboardType: TextInputType.phone,
-                    // maxLengthEnforcement removed
                   ),
                   SizedBox(height: 10),
-                  CustomTextField(
-                    controller: controller.noteController,
-                    label: "Note to driver",
-                    maxLines: 2,
-                    maxLength: 120,
-                  ),
-                  SizedBox(height: 8),
                   Row(
                     children: [
                       Obx(
@@ -111,7 +102,7 @@ class SenderView extends StatelessWidget {
                       ),
                     ],
                   ),
-                  SizedBox(height: 16),
+                  SizedBox(height: 26),
 
                   /// CONFIRM BUTTON
                   Obx(
