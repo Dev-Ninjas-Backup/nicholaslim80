@@ -9,8 +9,7 @@ import 'package:nicholaslim80/features/user/collect_form_on_express_delivery/mod
 
 class SenderView extends StatelessWidget {
   final AddressModel address;
-
-  const SenderView({super.key, required this.address});
+ const SenderView({super.key, required this.address});
 
   @override
   Widget build(BuildContext context) {
