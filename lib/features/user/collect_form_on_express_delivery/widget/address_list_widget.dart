@@ -38,7 +38,14 @@ class AddressListWidget extends StatelessWidget {
                           Icon(Icons.location_on),
                     )
                   : SizedBox(width: 24, height: 24),
-              title: Text(address.title),
+              title: Text(
+                address.title,
+                style: getTextStyle(
+                  color: Colors.black,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
               subtitle: Text(
                 address.subtitle,
                 style: getTextStyle(color: Colors.grey.shade600),
