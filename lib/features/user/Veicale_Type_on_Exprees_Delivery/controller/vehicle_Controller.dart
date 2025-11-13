@@ -1,14 +1,13 @@
+// ignore_for_file: file_names
+
 import 'package:get/get.dart';
 import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
 import 'package:nicholaslim80/features/user/Veicale_Type_on_Exprees_Delivery/models/data_model.dart';
 
 class VehicleController extends GetxController {
-  // Observables
   final selectedVehicle = Rxn<Vehicle>();
   final selectedServices = <AdditionalService>[].obs;
   final calculationHistory = <String>[].obs;
-
-  // ------------------- VEHICLE DATA -------------------
 
   final List<Vehicle> _allVehicles = [
     Vehicle(
@@ -77,8 +76,6 @@ class VehicleController extends GetxController {
     ),
   ];
 
-  // ------------------- SERVICES DATA -------------------
-
   final List<AdditionalService> _allServices = [
     AdditionalService(
       name: 'Controlled zone',
@@ -100,8 +97,6 @@ class VehicleController extends GetxController {
     AdditionalService(name: 'Open/Box', price: 20.0, applicableTo: ['Truck']),
   ];
 
-  // ------------------- GETTERS -------------------
-
   List<Vehicle> getVehiclesForType(String type) =>
       _allVehicles.where((v) => v.type == type).toList();
 
@@ -112,8 +107,6 @@ class VehicleController extends GetxController {
         .where((s) => s.applicableTo.contains(vehicle.type))
         .toList();
   }
-
-  // ------------------- SELECT VEHICLE -------------------
 
   void selectVehicle(Vehicle vehicle) {
     if (selectedVehicle.value == vehicle) {
@@ -128,8 +121,6 @@ class VehicleController extends GetxController {
     }
   }
 
-  // ------------------- TOGGLE SERVICE -------------------
-
   void toggleService(AdditionalService service) {
     selectedServices.contains(service)
         ? selectedServices.remove(service)
@@ -138,8 +129,6 @@ class VehicleController extends GetxController {
     _updateHistory();
   }
 
-  // ------------------- CALCULATE TOTAL -------------------
-
   double calculateTotal() {
     double total = selectedVehicle.value?.price ?? 0;
 
@@ -147,8 +136,6 @@ class VehicleController extends GetxController {
 
     return total;
   }
-
-  // ------------------- HISTORY HANDLING -------------------
 
   void _updateHistory() {
     calculationHistory.clear();
@@ -163,8 +150,6 @@ class VehicleController extends GetxController {
       calculationHistory.add("${s.name}: S\$${s.price.toStringAsFixed(2)}");
     }
   }
-
-  // ------------------- ORDER READY -------------------
 
   bool get isOrderReady => selectedVehicle.value != null;
 }
