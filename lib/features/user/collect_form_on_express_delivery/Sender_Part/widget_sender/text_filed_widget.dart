@@ -34,11 +34,8 @@ class CustomTextField extends StatelessWidget {
           maxLength: maxLength,
           keyboardType: keyboardType,
           decoration: InputDecoration(
-            border: const OutlineInputBorder(),
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 12,
-              vertical: 14,
-            ),
+            border: OutlineInputBorder(),
+            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
             suffixIcon: suffixIcon,
           ),
         ),

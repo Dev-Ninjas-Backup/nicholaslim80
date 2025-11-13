@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
+import 'package:nicholaslim80/features/user/collect_form_on_express_delivery/Recipient_part/recipient_screen.dart';
 import 'package:nicholaslim80/features/user/collect_form_on_express_delivery/Sender_Part/screen_sender/sender_screen.dart';
 import 'package:nicholaslim80/features/user/collect_form_on_express_delivery/models/address_model.dart';
 
@@ -31,7 +32,7 @@ class CollectFormController extends GetxController {
     isLoading.value = true;
 
     // Simulated delay
-    await Future.delayed(const Duration(milliseconds: 500));
+    await Future.delayed(Duration(milliseconds: 500));
 
     // Clear previous list
     addressList.clear();
@@ -58,6 +59,8 @@ class CollectFormController extends GetxController {
 
     if (selectedFilterIndex.value == 0) {
       Get.to(() => SenderView(address: address));
+    } else if (selectedFilterIndex.value == 1) {
+      Get.to(() => RecipientView(address: address));
     }
   }
 
