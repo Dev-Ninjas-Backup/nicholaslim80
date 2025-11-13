@@ -10,11 +10,7 @@ class SlideToTakeButtonWidget extends StatelessWidget {
   final TakeNowController ctrl;
   final double width;
 
-  const SlideToTakeButtonWidget({
-    super.key,
-    required this.ctrl,
-    required this.width,
-  });
+  SlideToTakeButtonWidget({super.key, required this.ctrl, required this.width});
 
   @override
   Widget build(BuildContext context) {

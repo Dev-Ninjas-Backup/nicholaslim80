@@ -31,14 +31,14 @@ class CustomButton extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(borderRadius),
           ),
-          shadowColor: const Color.fromRGBO(0, 136, 163, 0.20),
+          shadowColor: Color.fromRGBO(0, 136, 163, 0.20),
           elevation: 10,
         ),
         onPressed: onPressed,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            if (icon != null) ...[icon!, const SizedBox(width: 8.0)],
+            if (icon != null) ...[icon!, SizedBox(width: 8.0)],
             Text(
               label,
               style: TextStyle(

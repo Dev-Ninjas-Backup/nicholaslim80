@@ -223,7 +223,7 @@ class AppRoutes {
     //express delivery
     GetPage(
       name: expressSenderOrRecepment,
-      page: () => ExpressSenderOrRecepment(),
+      page: () => ExpressToSenderOrRecepment(),
     ),
   ];
 }
