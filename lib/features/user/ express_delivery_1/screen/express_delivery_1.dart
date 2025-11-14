@@ -120,7 +120,7 @@ class ExpressDelivery1 extends StatelessWidget {
               VehicleTypeWidget(controller: controller),
 
               SizedBox(height: 24),
-              OrderReviewWidget(),
+              OrderReviewWidget(total: 15),
             ],
           ),
         ),

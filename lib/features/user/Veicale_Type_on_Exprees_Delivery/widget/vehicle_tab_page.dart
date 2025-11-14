@@ -90,6 +90,7 @@ class VehicleTabPage extends StatelessWidget {
             total: controller.calculateTotal(),
             isButtonEnabled: controller.isOrderReady,
             calculationHistory: controller.calculationHistory,
+            couriers: [],
           ),
         ),
       ],
