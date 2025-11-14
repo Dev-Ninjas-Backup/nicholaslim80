@@ -1,130 +1,188 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
+import 'package:nicholaslim80/routes/app_routes.dart';
+
+class BottomSummaryController extends GetxController {
+  RxBool isExpanded = false.obs; // dropdown state
+  RxSet<String> selectedCouriers = <String>{}.obs; // selected couriers
+}
 
 class BottomSummary extends StatelessWidget {
   final double total;
-  final bool isButtonEnabled;
-  final List<String> calculationHistory;
+  final List<String> couriers;
 
-  const BottomSummary({
+  BottomSummary({
     super.key,
     required this.total,
-    required this.isButtonEnabled,
-    required this.calculationHistory,
+    required this.couriers,
+    required bool isButtonEnabled,
+    required RxList<String> calculationHistory,
   });
+
+  final BottomSummaryController controller = Get.put(BottomSummaryController());
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        /// Divider or shadow
-        Container(height: 1, color: Colors.grey.shade300),
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onTap: () {
+        if (controller.isExpanded.value) controller.isExpanded.value = false;
+      },
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: 16.0,
+                ),
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        /// Arrow icon left of total
+                        Obx(
+                          () => IconButton(
+                            onPressed: () {
+                              controller.isExpanded.value =
+                                  !controller.isExpanded.value;
+                            },
+                            icon: Icon(
+                              controller.isExpanded.value
+                                  ? Icons.arrow_drop_up
+                                  : Icons.arrow_drop_down,
+                              size: 30,
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 8),
 
-        /// Total + Button
-        Container(
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20),
-              topRight: Radius.circular(20),
-              bottomLeft: Radius.circular(20),
-              bottomRight: Radius.circular(20),
-            ),
-            boxShadow: [
-              BoxShadow(color: Colors.black12, blurRadius: 5, spreadRadius: 2),
+                        /// Total text
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Total (incl. GST):',
+                                style: getTextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  color: CupertinoColors.secondaryLabel,
+                                ),
+                              ),
+                              Text(
+                                'S\$${total.toStringAsFixed(2)}',
+                                style: getTextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        /// Review Order button (dynamic color)
+                        Obx(
+                          () => FilledButton(
+                            onPressed: controller.selectedCouriers.isNotEmpty
+                                ? () {
+                                    Get.toNamed(
+                                      AppRoutes.getexpressSenderOrRecepment(),
+                                    );
+                                  }
+                                : null,
+                            style: FilledButton.styleFrom(
+                              backgroundColor:
+                                  controller.selectedCouriers.isNotEmpty
+                                  ? Colors.amber
+                                  : Colors.grey.shade400,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 16,
+                                horizontal: 12,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            child: Text(
+                              'Review Order',
+                              style: getTextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    /// Dropdown section
+                    Obx(
+                      () => controller.isExpanded.value
+                          ? Container(
+                              margin: const EdgeInsets.only(top: 16),
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Colors.grey.shade100,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Column(
+                                children: couriers
+                                    .map(
+                                      (e) => Obx(
+                                        () => ListTile(
+                                          onTap: () {
+                                            if (controller.selectedCouriers
+                                                .contains(e)) {
+                                              controller.selectedCouriers
+                                                  .remove(e);
+                                            } else {
+                                              controller.selectedCouriers.add(
+                                                e,
+                                              );
+                                            }
+                                          },
+                                          leading: Icon(
+                                            controller.selectedCouriers
+                                                    .contains(e)
+                                                ? Icons.check_circle
+                                                : Icons.circle_outlined,
+                                            color:
+                                                controller.selectedCouriers
+                                                    .contains(e)
+                                                ? Colors.amber
+                                                : Colors.grey,
+                                          ),
+                                          title: Text(e),
+                                        ),
+                                      ),
+                                    )
+                                    .toList(),
+                              ),
+                            )
+                          : const SizedBox.shrink(),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 60),
             ],
           ),
-          padding: EdgeInsets.symmetric(vertical: 8),
-          child: Padding(
-            padding: EdgeInsets.only(left: 12, right: 12),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Total
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: Row(
-                    children: [
-                      Text(
-                        'Total (incl. GST): ',
-                        style: getTextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: CupertinoColors.secondaryLabel,
-                        ),
-                      ),
-                      Text(
-                        'S\$${total.toStringAsFixed(2)}',
-                        style: getTextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 8),
-
-                // Edge-to-edge button
-                SizedBox(
-                  width: double.infinity,
-                  height: 60,
-                  child: FilledButton(
-                    onPressed: isButtonEnabled
-                        ? () {
-                            showDialog(
-                              context: context,
-                              builder: (context) => AlertDialog(
-                                title: Text('Calculation History'),
-                                content: SizedBox(
-                                  width: double.maxFinite,
-                                  child: ListView.builder(
-                                    shrinkWrap: true,
-                                    itemCount: calculationHistory.length,
-                                    itemBuilder: (context, index) {
-                                      return ListTile(
-                                        leading: Icon(Icons.history),
-                                        title: Text(calculationHistory[index]),
-                                      );
-                                    },
-                                  ),
-                                ),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () => Navigator.pop(context),
-                                    child: Text('Close'),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }
-                        : null,
-                    style: FilledButton.styleFrom(
-                      backgroundColor: isButtonEnabled
-                          ? Colors.amber
-                          : Colors.grey.shade400,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(),
-                    ),
-                    child: Text(
-                      'Review Order',
-                      style: getTextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
         ),
-      ],
+      ),
     );
   }
 }

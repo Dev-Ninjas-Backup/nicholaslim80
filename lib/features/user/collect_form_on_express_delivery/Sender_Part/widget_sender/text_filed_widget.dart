@@ -9,7 +9,7 @@ class CustomTextField extends StatelessWidget {
   final TextInputType? keyboardType;
 
   const CustomTextField({
-    super.key, // <-- super parameter
+    super.key,
     required this.controller,
     required this.label,
     this.suffixIcon,
@@ -34,7 +34,27 @@ class CustomTextField extends StatelessWidget {
           maxLength: maxLength,
           keyboardType: keyboardType,
           decoration: InputDecoration(
-            border: OutlineInputBorder(),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(
+                color: Colors.grey, // default border color
+                width: 1.0,
+              ),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(
+                color: Colors.black, // unfocused color
+                width: 1.0,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(
+                color: Colors.black, // focused color
+                width: 2.0,
+              ),
+            ),
             contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
             suffixIcon: suffixIcon,
           ),

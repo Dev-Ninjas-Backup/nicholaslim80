@@ -27,19 +27,19 @@ class CustomPasswordTextField extends StatelessWidget {
       children: [
         Text(
           labelText,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
             color: Colors.black,
             fontWeight: FontWeight.w500,
           ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         TextField(
           controller: controller,
           obscureText: obscureText ?? false,
           decoration: InputDecoration(
             hintText: hintText,
-            hintStyle: const TextStyle(
+            hintStyle: TextStyle(
               color: Color(0xFF636363),
               fontSize: 14,
               fontWeight: FontWeight.w400,
@@ -50,10 +50,7 @@ class CustomPasswordTextField extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide.none,
             ),
-            contentPadding: const EdgeInsets.symmetric(
-              vertical: 16,
-              horizontal: 16,
-            ),
+            contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
             suffixIcon: suffixIcon,
             errorText: errorText?.isEmpty ?? true ? null : errorText,
           ),
