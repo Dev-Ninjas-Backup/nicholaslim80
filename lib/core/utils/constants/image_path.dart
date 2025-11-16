@@ -1,5 +1,4 @@
 class ImagePath {
-  static String splashLogo = 'assets/images/splashImage.png';
   static String onboarding1 = 'assets/images/onboarding1.png';
   static String onboarding2 = 'assets/images/onboarding2.png';
   static String onboarding3 = 'assets/images/onboarding3.png';
@@ -13,4 +12,5 @@ class ImagePath {
   static String profile2 = "assets/images/profile2.png";
   static String profile3 = "assets/images/profile3.png";
   static String map = "assets/images/map.png";
+  static String splash = "assets/images/splash.jpg";
 }
