@@ -219,21 +219,21 @@ class LoginSignupScreen extends StatelessWidget {
         const SizedBox(height: 10),
         _buildPhoneField(controller),
         const SizedBox(height: 10),
-        GestureDetector(
-          onTap: () {},
-          child: const Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              "Forgot Password?",
-              style: TextStyle(
-                fontSize: 11,
-                color: Color.fromARGB(255, 152, 122, 2),
-                decoration: TextDecoration.underline,
-                decorationColor: Color.fromARGB(255, 152, 122, 2),
-              ),
-            ),
-          ),
-        ),
+        // GestureDetector(
+        //   onTap: () {},
+        //   child: const Align(
+        //     alignment: Alignment.centerLeft,
+        //     child: Text(
+        //       "Forgot Password?",
+        //       style: TextStyle(
+        //         fontSize: 11,
+        //         color: Color.fromARGB(255, 152, 122, 2),
+        //         decoration: TextDecoration.underline,
+        //         decorationColor: Color.fromARGB(255, 152, 122, 2),
+        //       ),
+        //     ),
+        //   ),
+        // ),
       ],
     );
   }
@@ -255,36 +255,36 @@ class LoginSignupScreen extends StatelessWidget {
         const SizedBox(height: 20),
 
         // 👇 New Dropdown for USER / RIDER
-        Obx(
-          () => Container(
-            height: 52,
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            decoration: BoxDecoration(
-              border: Border.all(color: AppColors.subtitleFontColor, width: 1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: DropdownButtonHideUnderline(
-              child: DropdownButton<String>(
-                value: controller.selectedUserType.value,
-                items: controller.userTypes
-                    .map(
-                      (type) => DropdownMenuItem(
-                        value: type,
-                        child: Text(type, style: const TextStyle(fontSize: 16)),
-                      ),
-                    )
-                    .toList(),
-                onChanged: (value) {
-                  if (value != null) {
-                    controller.selectUserType(value);
-                  }
-                },
-                icon: const Icon(Icons.arrow_drop_down),
-              ),
-            ),
-          ),
-        ),
+        // Obx(
+        //   () => Container(
+        //     height: 52,
+        //     width: double.infinity,
+        //     padding: const EdgeInsets.symmetric(horizontal: 12),
+        //     decoration: BoxDecoration(
+        //       border: Border.all(color: AppColors.subtitleFontColor, width: 1),
+        //       borderRadius: BorderRadius.circular(8),
+        //     ),
+        //     child: DropdownButtonHideUnderline(
+        //       child: DropdownButton<String>(
+        //         value: controller.selectedUserType.value,
+        //         items: controller.userTypes
+        //             .map(
+        //               (type) => DropdownMenuItem(
+        //                 value: type,
+        //                 child: Text(type, style: const TextStyle(fontSize: 16)),
+        //               ),
+        //             )
+        //             .toList(),
+        //         onChanged: (value) {
+        //           if (value != null) {
+        //             controller.selectUserType(value);
+        //           }
+        //         },
+        //         icon: const Icon(Icons.arrow_drop_down),
+        //       ),
+        //     ),
+        //   ),
+        // ),
       ],
     );
   }
