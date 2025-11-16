@@ -7,6 +7,7 @@ import 'package:nicholaslim80/features/user/%20express_delivery_1/widget/collect
 import 'package:nicholaslim80/features/user/%20express_delivery_1/widget/order_review_widget.dart';
 import 'package:nicholaslim80/features/user/%20express_delivery_1/widget/select_location_widget.dart';
 import 'package:nicholaslim80/features/user/%20express_delivery_1/widget/vehicle_type_widget.dart';
+import 'package:nicholaslim80/features/user/Veicale_Type_on_Exprees_Delivery/controller/vehicle_controller.dart';
 import 'package:nicholaslim80/features/user/Veicale_Type_on_Exprees_Delivery/screen/veichale_secation_page.dart';
 
 import 'package:nicholaslim80/routes/app_routes.dart';
@@ -120,7 +121,10 @@ class ExpressDelivery1 extends StatelessWidget {
               VehicleTypeWidget(controller: controller),
 
               SizedBox(height: 24),
-              OrderReviewWidget(total: 15),
+              OrderReviewWidget(
+                total: 15,
+                vehicleController: VehicleController(),
+              ),
             ],
           ),
         ),

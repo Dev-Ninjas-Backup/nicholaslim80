@@ -10,7 +10,7 @@ import 'package:nicholaslim80/routes/app_routes.dart';
 
 class SenderView extends StatelessWidget {
   final AddressModel address;
- const SenderView({super.key, required this.address});
+  const SenderView({super.key, required this.address});
 
   @override
   Widget build(BuildContext context) {
@@ -32,10 +32,14 @@ class SenderView extends StatelessWidget {
           child: Column(
             children: [
               /// MAP SECTION
-              Image.asset(
-                ImagePath.map,
+              SizedBox(
+                height: 240,
                 width: double.infinity,
-                fit: BoxFit.cover,
+                child: Image.asset(
+                  ImagePath.map,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
               ),
 
               /// FORM SECTION

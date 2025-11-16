@@ -1,17 +1,6 @@
 import 'package:get/get_navigation/src/routes/get_route.dart';
 import 'package:get/get_navigation/src/routes/transitions_type.dart';
 import 'package:nicholaslim80/features/onboarding/screen/onboarding_screen.dart';
-import 'package:nicholaslim80/features/rider/app_course/quiz_congratulation/screen/quiz_congratulation_screen.dart';
-import 'package:nicholaslim80/features/rider/app_course/screen/app_coures_screen.dart';
-import 'package:nicholaslim80/features/rider/app_course/try_agin/screen/try_agin_screen.dart';
-import 'package:nicholaslim80/features/rider/app_quiz/screen/app_quiz_screen.dart';
-import 'package:nicholaslim80/features/rider/driver_preference/distance_radius/screen/distance_radius_screen.dart';
-import 'package:nicholaslim80/features/rider/driver_preference/screen/driver_preference_screen.dart';
-import 'package:nicholaslim80/features/rider/rider_account/screen/rider_account_screen.dart';
-import 'package:nicholaslim80/features/rider/rider_bottom_navbar/screen/rider_bottom_navbar_screen.dart';
-import 'package:nicholaslim80/features/rider/rider_home/screen/rider_home_screen.dart';
-import 'package:nicholaslim80/features/rider/rider_incentives/screen/incentives_screen.dart';
-import 'package:nicholaslim80/features/rider/rider_records/screen/records_screen.dart';
 import 'package:nicholaslim80/features/splash/screen/splash_screen.dart';
 import 'package:nicholaslim80/features/user/%20express_delivery_1/express_delivery_to_sendr_or_recepmeant/screen/express_sender_or_recepmeant.dart';
 import 'package:nicholaslim80/features/user/%20express_delivery_1/screen/express_delivery_1.dart';
@@ -132,62 +121,7 @@ class AppRoutes {
       page: () => BottomNavbarScreen(),
       transition: Transition.fadeIn,
     ),
-    GetPage(
-      name: appQuizScreen,
-      page: () => AppQuizScreen(),
-      transition: Transition.fadeIn,
-    ),
-    GetPage(
-      name: appCouresScreen,
-      page: () => AppCouresScreen(),
-      transition: Transition.fadeIn,
-    ),
-    GetPage(
-      name: quizCongratulationScreen,
-      page: () => QuizCongratulationScreen(),
-      transition: Transition.fadeIn,
-    ),
-    GetPage(
-      name: tryAginScreen,
-      page: () => TryAginScreen(),
-      transition: Transition.fadeIn,
-    ),
-    GetPage(
-      name: driverPreferenceScreen,
-      page: () => DriverPreferenceScreen(),
-      transition: Transition.fadeIn,
-    ),
-    GetPage(
-      name: distanceRadiusScreen,
-      page: () => DistanceRadiusScreen(),
-      transition: Transition.fadeIn,
-    ),
 
-    GetPage(
-      name: riderBottomNavbarScreen,
-      page: () => RiderBottomNavbarScreen(),
-      transition: Transition.fadeIn,
-    ),
-    GetPage(
-      name: riderHomeScreen,
-      page: () => RiderHomeScreen(),
-      transition: Transition.fadeIn,
-    ),
-    GetPage(
-      name: incentivesScreen,
-      page: () => IncentivesScreen(),
-      transition: Transition.fadeIn,
-    ),
-    GetPage(
-      name: recordsScreen,
-      page: () => RecordsScreen(),
-      transition: Transition.fadeIn,
-    ),
-    GetPage(
-      name: riderAccountScreen,
-      page: () => RiderAccountScreen(),
-      transition: Transition.fadeIn,
-    ),
     GetPage(
       name: referAndEarnScreen,
       page: () => ReferAndEarnScreen(),
