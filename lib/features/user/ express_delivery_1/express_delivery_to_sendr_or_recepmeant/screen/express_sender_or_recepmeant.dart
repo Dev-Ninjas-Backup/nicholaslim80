@@ -11,15 +11,15 @@ import 'package:nicholaslim80/features/user/%20express_delivery_1/widget/collect
 import 'package:nicholaslim80/features/user/%20express_delivery_1/widget/order_review_widget.dart';
 import 'package:nicholaslim80/features/user/%20express_delivery_1/widget/vehicle_type_widget.dart';
 
-import 'package:nicholaslim80/features/user/Veicale_Type_on_Exprees_Delivery/controller/vehicle_controller.dart';
-
 // 🔹 Other Pages
 import 'package:nicholaslim80/features/user/Veicale_Type_on_Exprees_Delivery/screen/veichale_secation_page.dart';
 import 'package:nicholaslim80/routes/app_routes.dart';
 
+import '../../../Veicale_Type_on_Exprees_Delivery/controller/vehicle_Controller.dart';
+
 class ExpressToSenderOrRecepment extends StatelessWidget {
   final LocationController controller = Get.put(LocationController());
-  final VehicleController vehicleController = Get.put(VehicleController());
+  final VehicleController vehicleController = Get.find<VehicleController>();
 
   ExpressToSenderOrRecepment({super.key});
 
@@ -151,7 +151,9 @@ class ExpressToSenderOrRecepment extends StatelessWidget {
                 // 🔹 Order Review Section
                 OrderReviewWidget(
                   vehicleController: vehicleController,
-                  total: 0,
+                  total: vehicleController.calculateTotal(),
+                  calculationHistory: vehicleController.calculationHistory
+                      .toList(),
                 ),
               ],
             ),

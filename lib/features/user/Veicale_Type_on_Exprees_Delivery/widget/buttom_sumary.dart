@@ -61,13 +61,10 @@ class BottomSummary extends StatelessWidget {
               () => FilledButton(
                 onPressed: vehicleController.selectedVehicle.value != null
                     ? () {
-                        double total = vehicleController
-                            .calculateTotal(); // total nite hobe
+                        double total = vehicleController.calculateTotal();
                         Get.toNamed(
                           AppRoutes.getexpressSenderOrRecepment(),
-                          arguments: {
-                            'totalAmount': total,
-                          }, // <-- correct syntax
+                          arguments: {'totalAmount': total},
                         );
                       }
                     : null,
