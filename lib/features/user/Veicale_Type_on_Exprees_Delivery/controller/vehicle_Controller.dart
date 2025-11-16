@@ -110,7 +110,6 @@ class VehicleController extends GetxController {
 
   void selectVehicle(Vehicle vehicle) {
     if (selectedVehicle.value == vehicle) {
-      // unselect
       selectedVehicle.value = null;
       selectedServices.clear();
       calculationHistory.clear();
@@ -131,9 +130,7 @@ class VehicleController extends GetxController {
 
   double calculateTotal() {
     double total = selectedVehicle.value?.price ?? 0;
-
     total += selectedServices.fold(0.0, (sum, item) => sum + item.price);
-
     return total;
   }
 

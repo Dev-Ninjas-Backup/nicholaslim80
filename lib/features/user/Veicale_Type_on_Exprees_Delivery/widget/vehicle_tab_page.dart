@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 import 'package:nicholaslim80/features/user/Veicale_Type_on_Exprees_Delivery/controller/vehicle_controller.dart';
-import 'package:nicholaslim80/features/user/Veicale_Type_on_Exprees_Delivery/models/data_model.dart';
 import 'package:nicholaslim80/features/user/Veicale_Type_on_Exprees_Delivery/widget/additional_service_card.dart';
 import 'package:nicholaslim80/features/user/Veicale_Type_on_Exprees_Delivery/widget/buttom_sumary.dart';
 import 'package:nicholaslim80/features/user/Veicale_Type_on_Exprees_Delivery/widget/vehicale_card.dart';
@@ -21,78 +20,86 @@ class VehicleTabPage extends StatelessWidget {
 
     return Column(
       children: [
+        // Flexible scrollable content
         Expanded(
           child: SingleChildScrollView(
-            child: Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Obx(() {
-                final vehicles = controller.getVehiclesForType(vehicleType);
-                final selectedVehicle = controller.selectedVehicle.value;
-                final services = selectedVehicle != null
-                    ? controller.getAdditionalServicesForType(
-                        selectedVehicle.type,
-                      )
-                    : <AdditionalService>[];
+            padding: EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Please select available vehicle',
+                  style: getTextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 10),
 
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Please select available vehicle',
-                      style: getTextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    ...vehicles.map(
-                      (vehicle) => Padding(
-                        padding: EdgeInsets.only(bottom: 14),
-                        child: VehicleCard(
-                          vehicle: vehicle,
-                          isSelected: selectedVehicle?.name == vehicle.name,
-                          onTap: () => controller.selectVehicle(vehicle),
-                        ),
-                      ),
-                    ),
-                    if (services.isNotEmpty) ...[
-                      SizedBox(height: 20),
-                      Text(
-                        'Additional Services',
-                        style: getTextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 10),
-                      ...services.map(
-                        (service) => Padding(
-                          padding: EdgeInsets.only(bottom: 14),
-                          child: AdditionalServiceCard(
-                            service: service,
-                            isSelected: controller.selectedServices.contains(
-                              service,
+                // Vehicles list
+                Obx(() {
+                  final vehicles = controller.getVehiclesForType(vehicleType);
+                  final selectedVehicle = controller.selectedVehicle.value;
+                  return Column(
+                    children: vehicles
+                        .map(
+                          (vehicle) => Padding(
+                            padding: EdgeInsets.only(bottom: 14),
+                            child: VehicleCard(
+                              vehicle: vehicle,
+                              isSelected: selectedVehicle?.name == vehicle.name,
+                              onTap: () => controller.selectVehicle(vehicle),
                             ),
-                            onTap: () => controller.toggleService(service),
+                          ),
+                        )
+                        .toList(),
+                  );
+                }),
+
+                // Additional services list
+                Obx(() {
+                  final selectedVehicle = controller.selectedVehicle.value;
+                  if (selectedVehicle == null) return SizedBox.shrink();
+                  final services = controller.getAdditionalServicesForType(
+                    selectedVehicle.type,
+                  );
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (services.isNotEmpty) ...[
+                        SizedBox(height: 20),
+                        Text(
+                          'Additional Services',
+                          style: getTextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                      ),
+                        SizedBox(height: 10),
+                        ...services.map(
+                          (service) => Padding(
+                            padding: EdgeInsets.only(bottom: 14),
+                            child: AdditionalServiceCard(
+                              service: service,
+                              isSelected: controller.selectedServices.contains(
+                                service,
+                              ),
+                              onTap: () => controller.toggleService(service),
+                            ),
+                          ),
+                        ),
+                      ],
                     ],
-                  ],
-                );
-              }),
+                  );
+                }),
+              ],
             ),
           ),
         ),
 
-        Obx(
-          () => BottomSummary(
-            total: controller.calculateTotal(),
-            isButtonEnabled: controller.isOrderReady,
-            calculationHistory: controller.calculationHistory,
-            couriers: [],
-          ),
-        ),
+        // Fixed BottomSummary (not inside scroll)
+        BottomSummary(vehicleController: controller, couriers: []),
       ],
     );
   }
