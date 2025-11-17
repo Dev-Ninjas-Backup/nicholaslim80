@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
-import 'package:nicholaslim80/features/user/%20express_delivery_1/order_express_de;ivery/screen/order_controller_screen.dart';
+import 'package:nicholaslim80/features/user/%20express_delivery_1/order_express_delivery/controller/order_controller.dart';
+import 'package:nicholaslim80/features/user/%20express_delivery_1/order_express_delivery/screen/order_controller_screen.dart';
 import 'package:nicholaslim80/features/user/Veicale_Type_on_Exprees_Delivery/controller/vehicle_Controller.dart';
 
 class OrderReviewWidget extends StatelessWidget {
@@ -34,9 +35,9 @@ class OrderReviewWidget extends StatelessWidget {
       child: Row(
         children: [
           _historyButton(context),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           Expanded(child: _totalInfo()),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           _reviewOrderButton(),
         ],
       ),
@@ -63,7 +64,7 @@ class OrderReviewWidget extends StatelessWidget {
             color: CupertinoColors.secondaryLabel,
           ),
         ),
-        const SizedBox(height: 4),
+        SizedBox(height: 4),
         Text(
           'S\$${total.toStringAsFixed(2)}', // ← Using total directly
           style: getTextStyle(
@@ -77,7 +78,8 @@ class OrderReviewWidget extends StatelessWidget {
   }
 
   Widget _reviewOrderButton() {
-    final OrderController orderController = Get.find<OrderController>();
+    final OrderControllerScreen orderController =
+        Get.find<OrderControllerScreen>();
     return FilledButton(
       onPressed: () {
         orderController.totalAmount = total;

@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
 import 'package:nicholaslim80/features/user/%20express_delivery_1/controller/express_controller_1.dart';
+import 'package:nicholaslim80/features/user/%20express_delivery_1/order_express_delivery/screen/order_controller_screen.dart';
 import 'package:nicholaslim80/features/user/%20express_delivery_1/widget/collect_time_widget.dart';
 import 'package:nicholaslim80/features/user/%20express_delivery_1/widget/order_review_widget.dart';
 import 'package:nicholaslim80/features/user/%20express_delivery_1/widget/select_location_widget.dart';
@@ -15,6 +16,9 @@ import 'package:nicholaslim80/routes/app_routes.dart';
 class ExpressDelivery1 extends StatelessWidget {
   final LocationController controller = Get.put(LocationController());
   final vehicleController = Get.put(VehicleController());
+  final OrderControllerScreen orderController = Get.put(
+    OrderControllerScreen(),
+  );
 
   ExpressDelivery1({super.key});
 
