@@ -3,11 +3,13 @@ import 'package:get/get.dart';
 
 import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
-import 'package:nicholaslim80/features/user/%20express_delivery_1/order_express_de;ivery/widget/custom_toggoe_switich_widget.dart';
-import 'package:nicholaslim80/features/user/%20express_delivery_1/order_express_de;ivery/widget/payment_method_widget.dart';
-import 'package:nicholaslim80/features/user/%20express_delivery_1/order_express_de;ivery/widget/promo_dilog_widget.dart';
+import 'package:nicholaslim80/features/user/%20express_delivery_1/order_express_delivery/widget/custom_toggoe_switich_widget.dart';
+import 'package:nicholaslim80/features/user/%20express_delivery_1/order_express_delivery/widget/order_confirmation_dialog.dart';
+import 'package:nicholaslim80/features/user/%20express_delivery_1/order_express_delivery/widget/order_success_dialog.dart';
+import 'package:nicholaslim80/features/user/%20express_delivery_1/order_express_delivery/widget/payment_method_widget.dart';
+import 'package:nicholaslim80/features/user/%20express_delivery_1/order_express_delivery/widget/promo_dilog_widget.dart';
 
-class OrderController extends GetxController {
+class OrderControllerScreen extends GetxController {
   double totalAmount = 0.00;
 
   // ✅ Track toggle state
@@ -271,7 +273,13 @@ class OrderController extends GetxController {
                       ),
                     ),
                     FilledButton(
-                      onPressed: () {},
+                      onPressed: () async {
+                        Get.back();
+                        OrderConfirmationDialog.show();
+                        await Future.delayed(Duration(seconds: 3));
+                        Get.back();
+                        OrderSuccessDialog.show();
+                      },
                       style: FilledButton.styleFrom(
                         backgroundColor: Colors.amber,
                         foregroundColor: Colors.white,
