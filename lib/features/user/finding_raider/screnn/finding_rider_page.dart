@@ -80,8 +80,10 @@ class FindingRiderPage extends StatelessWidget {
                           ),
                         ),
                         SizedBox(height: 20),
-                        Obx(
-                          () => Row(
+                        Obx(() {
+                          // ignore: unused_local_variable
+                          final value = raidercontroller.firstActive.value;
+                          return Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Container(
@@ -89,9 +91,7 @@ class FindingRiderPage extends StatelessWidget {
                                 height: 6,
                                 margin: EdgeInsets.symmetric(horizontal: 4),
                                 decoration: BoxDecoration(
-                                  color: raidercontroller.firstActive.value
-                                      ? Colors.amber
-                                      : Colors.grey,
+                                  color: Colors.amber,
                                   borderRadius: BorderRadius.circular(3),
                                 ),
                               ),
@@ -100,15 +100,14 @@ class FindingRiderPage extends StatelessWidget {
                                 height: 6,
                                 margin: EdgeInsets.symmetric(horizontal: 4),
                                 decoration: BoxDecoration(
-                                  color: raidercontroller.secondActive.value
-                                      ? Colors.amber
-                                      : Colors.grey,
+                                  color: Colors.grey,
+
                                   borderRadius: BorderRadius.circular(3),
                                 ),
                               ),
                             ],
-                          ),
-                        ),
+                          );
+                        }),
 
                         SizedBox(height: 10),
                         Center(

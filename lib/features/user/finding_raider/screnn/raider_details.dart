@@ -1,27 +1,25 @@
-// ignore_for_file: unused_local_variable
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
+import 'package:nicholaslim80/core/common/widgets/custom_button.dart';
+import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
 import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
 import 'package:nicholaslim80/core/utils/constants/image_path.dart';
 import 'package:nicholaslim80/features/user/finding_raider/controller/rider_controller.dart';
-import 'package:nicholaslim80/features/user/finding_raider/screnn/raider_details.dart';
-import 'package:nicholaslim80/features/user/finding_raider/widget/button.dart';
+import 'package:nicholaslim80/features/user/finding_raider/widget/custom_icon_text_button.dart';
 import 'package:nicholaslim80/features/user/finding_raider/widget/location_row_widget.dart';
+import 'package:nicholaslim80/features/user/finding_raider/widget/review_rateing.dart';
+import 'package:share_plus/share_plus.dart';
 
-class ConnectingRiderPage extends StatelessWidget {
+class RaiderDetails extends StatelessWidget {
   final RiderController controller = Get.find<RiderController>();
-
-  ConnectingRiderPage({super.key});
-
+  RaiderDetails({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
           SizedBox.expand(child: Image.asset(ImagePath.map, fit: BoxFit.cover)),
-
           DraggableScrollableSheet(
             initialChildSize: 0.5,
             minChildSize: 0.4,
@@ -56,64 +54,13 @@ class ConnectingRiderPage extends StatelessWidget {
                             ),
                           ),
                         ),
-                        SizedBox(height: 16),
-
-                        Center(
-                          child: Column(
-                            children: [
-                              Text(
-                                'Connecting to rider...',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                              SizedBox(height: 20),
-                              Obx(() {
-                                final value = controller.firstActive.value;
-                                return Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                      width: 69,
-                                      height: 6,
-                                      margin: EdgeInsets.symmetric(
-                                        horizontal: 4,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: Colors.amber,
-
-                                        borderRadius: BorderRadius.circular(3),
-                                      ),
-                                    ),
-                                    Container(
-                                      width: 69,
-                                      height: 6,
-                                      margin: EdgeInsets.symmetric(
-                                        horizontal: 4,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: Colors.amber,
-
-                                        borderRadius: BorderRadius.circular(3),
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              }),
-                            ],
-                          ),
-                        ),
-                        SizedBox(height: 16),
+                        SizedBox(height: 24),
                         Row(
                           spacing: 11,
-                          mainAxisAlignment: MainAxisAlignment.center,
-
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             CircleAvatar(
                               radius: 36,
-
                               backgroundImage: AssetImage(
                                 ImagePath.profileImage,
                               ),
@@ -141,6 +88,52 @@ class ConnectingRiderPage extends StatelessWidget {
                                   style: getTextStyle(fontSize: 13),
                                 ),
                               ],
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 16),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            CustomIconTextButton(
+                              text: 'Message',
+                              iconPath: IconPath.message,
+                              borderColor: Colors.black,
+                              textColor: Colors.black,
+                              backgroundColor: Colors.white,
+                              onPressed: () {},
+                              iconPosition: IconPosition.before,
+                            ),
+                            CustomIconTextButton(
+                              text: 'Call',
+                              iconPath: IconPath.call,
+                              borderColor: Colors.black,
+                              textColor: Colors.black,
+                              backgroundColor: Colors.white,
+                              onPressed: () {},
+                              iconPosition: IconPosition.before,
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 16),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            ReviewRating(
+                              onRatingSelected: (rating) {},
+                              initialRating: 0,
+                            ),
+                            TextButton(
+                              onPressed: () {},
+                              child: Text(
+                                '(243 Reviews)',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.grey,
+                                  decoration: TextDecoration.underline,
+                                ),
+                              ),
                             ),
                           ],
                         ),
@@ -224,13 +217,18 @@ class ConnectingRiderPage extends StatelessWidget {
                           ),
                         ),
                         SizedBox(height: 20),
-                        Button(
+                        CustomButton(
+                          label: "Share Ride Information",
                           onPressed: () {
-                            Get.to(() => RaiderDetails());
+                            final String referralLink =
+                                "https://yourapp.com/referral?code";
+                            final String message =
+                                "Hey! Join this amazing app and earn rewards. Use my referral link: $referralLink";
+
+                            Share.share(message, subject: "Invite to our app");
                           },
-                          buttonText: 'Share Ride Information',
-                          textColor: Colors.black,
-                          backgroundColor: Colors.amber,
+                          color: AppColors.primaryButtonColor,
+                          textColor: AppColors.primaryFontColor,
                         ),
                         SizedBox(height: 16),
                       ],

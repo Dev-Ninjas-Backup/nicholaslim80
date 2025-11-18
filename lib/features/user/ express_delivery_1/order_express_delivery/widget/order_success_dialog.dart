@@ -80,10 +80,7 @@ class OrderSuccessDialog {
                                   wantsConfirmationCall.value = value!,
                               activeColor: Colors.blue,
                             ),
-                            title: const Text(
-                              'Yes',
-                              style: TextStyle(fontSize: 16),
-                            ),
+                            title: Text('Yes', style: TextStyle(fontSize: 16)),
                             //onTap: () => wantsConfirmationCall.value = true,
                           ),
                         ),
@@ -101,10 +98,7 @@ class OrderSuccessDialog {
                                   wantsConfirmationCall.value = value!,
                               activeColor: Colors.blue,
                             ),
-                            title: const Text(
-                              'No',
-                              style: TextStyle(fontSize: 16),
-                            ),
+                            title: Text('No', style: TextStyle(fontSize: 16)),
                           ),
                         ),
                       ),

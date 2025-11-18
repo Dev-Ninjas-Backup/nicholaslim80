@@ -76,7 +76,7 @@ class _PaymentSelectionWidgetState extends State<PaymentSelectionWidget> {
                           child: Container(
                             width: 12,
                             height: 12,
-                            decoration: const BoxDecoration(
+                            decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               color: Colors.yellow,
                             ),
@@ -90,7 +90,7 @@ class _PaymentSelectionWidgetState extends State<PaymentSelectionWidget> {
                 widget.onChanged?.call(index);
               },
             ),
-            if (index != widget.options.length - 1) const Divider(height: 1),
+            if (index != widget.options.length - 1) Divider(height: 1),
           ],
         );
       }).toList(),
