@@ -5,6 +5,8 @@ import 'package:nicholaslim80/features/splash/screen/splash_screen.dart';
 import 'package:nicholaslim80/features/user/%20express_delivery_1/express_delivery_to_sendr_or_recepmeant/screen/express_sender_or_recepmeant.dart';
 import 'package:nicholaslim80/features/user/%20express_delivery_1/screen/express_delivery_1.dart';
 import 'package:nicholaslim80/features/user/Express_Delivary_Faq/Screen/express_faq.dart';
+import 'package:nicholaslim80/features/user/finding_raider/screnn/connecting_rider_page.dart';
+import 'package:nicholaslim80/features/user/finding_raider/screnn/finding_rider_page.dart';
 import 'package:nicholaslim80/features/user/home/my_riders/screen/my_riders.dart';
 import 'package:nicholaslim80/features/user/user_support/screen/support_screen.dart';
 import 'package:nicholaslim80/features/user/wallet/add_funds/screen/user_add_funds.dart';
@@ -36,6 +38,8 @@ class AppRoutes {
   static String referAndEarnScreen = '/referAndEarnScreen';
   static String myRidersScreen = '/myRidersScreen';
   static String supportScreen = '/supportScreen';
+  static String findingRider = '/finding-rider';
+  static String connectingRider = '/connecting-rider';
 
   static String riderBottomNavbarScreen = '/riderBottomNavbarScreen';
   static String riderHomeScreen = '/riderHomeScreen';
@@ -87,6 +91,8 @@ class AppRoutes {
   static String getuserAddFund() => userAddFund;
   //express delivery
   static String getexpressSenderOrRecepment() => expressSenderOrRecepment;
+  static String getconnectingRider() => connectingRider;
+  static String getfindingRider() => findingRider;
 
   static List<GetPage> routes = [
     GetPage(name: splashScreen, page: () => SplashScreen()),
@@ -159,5 +165,7 @@ class AppRoutes {
       name: expressSenderOrRecepment,
       page: () => ExpressToSenderOrRecepment(),
     ),
+    GetPage(name: connectingRider, page: () => ConnectingRiderPage()),
+    GetPage(name: findingRider, page: () => FindingRiderPage()),
   ];
 }

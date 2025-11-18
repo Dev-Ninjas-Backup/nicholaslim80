@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 import 'package:nicholaslim80/features/user/%20express_delivery_1/order_express_delivery/controller/order_controller.dart';
+import 'package:nicholaslim80/features/user/finding_raider/screnn/finding_rider_page.dart';
 
 class OrderSuccessDialog {
   static final OrderController controller = Get.find<OrderController>();
@@ -66,10 +67,15 @@ class OrderSuccessDialog {
                     children: [
                       Expanded(
                         child: GestureDetector(
+                          onTap: () {
+                            Get.to(FindingRiderPage());
+                          },
                           child: ListTile(
                             leading: Radio<bool>(
                               value: true,
+                              // ignore: deprecated_member_use
                               groupValue: wantsConfirmationCall.value,
+                              // ignore: deprecated_member_use
                               onChanged: (value) =>
                                   wantsConfirmationCall.value = value!,
                               activeColor: Colors.blue,
@@ -78,7 +84,7 @@ class OrderSuccessDialog {
                               'Yes',
                               style: TextStyle(fontSize: 16),
                             ),
-                            onTap: () => wantsConfirmationCall.value = true,
+                            //onTap: () => wantsConfirmationCall.value = true,
                           ),
                         ),
                       ),
@@ -88,7 +94,9 @@ class OrderSuccessDialog {
                           child: ListTile(
                             leading: Radio<bool>(
                               value: false,
+                              // ignore: deprecated_member_use
                               groupValue: wantsConfirmationCall.value,
+                              // ignore: deprecated_member_use
                               onChanged: (value) =>
                                   wantsConfirmationCall.value = value!,
                               activeColor: Colors.blue,
