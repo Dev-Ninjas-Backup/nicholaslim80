@@ -45,8 +45,8 @@ class IconPath {
   static String car2 = "assets/icons/car.png";
   static String shipment = "assets/icons/shipment.png";
   static String shopcar = "assets/icons/shop_car.png";
-  static String collectIcon = "assets/icons/collected_dot.png";
-  static String deliveredIcon = "assets/icons/delevered_dot.png";
+  static String deliveredIcon = "assets/icons/collect.png";
+  static String collectIcon = "assets/icons/delivered.png";
   static String courierIcon = "assets/icons/courier.png";
   static String realCar = "assets/icons/real_car.png";
   static String mpv = "assets/icons/mpv.png";
@@ -58,6 +58,11 @@ class IconPath {
   static String history = "assets/icons/history.png";
   static String promo = "assets/icons/promo.png";
   static String cash = "assets/icons/cash.png";
-  static String stripe = "assets/icons/stripe.png";
+  static String stripe = "assets/icons/stripe_icon.png";
   static String cencell = "assets/icons/cencell.png";
+  static String love = "assets/icons/love.png";
+  // ignore: non_constant_identifier_names
+  static String yellow_dot = "assets/icons/yellow_dot.png";
+  // ignore: non_constant_identifier_names
+  static String grey_dot = "assets/icons/grey_dot.png";
 }

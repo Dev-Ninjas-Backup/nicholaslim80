@@ -1,49 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:nicholaslim80/features/user/finding_raider/controller/rider_controller.dart';
 
-class ReviewRating extends StatefulWidget {
-  final int initialRating;
-  final ValueChanged<int> onRatingSelected;
+class ReviewRating extends StatelessWidget {
   final double size;
+  final RiderController controller = Get.find<RiderController>();
 
-  const ReviewRating({
-    super.key,
-    this.initialRating = 0,
-    required this.onRatingSelected,
-    this.size = 24,
-  });
-
-  @override
-  State<ReviewRating> createState() => _ReviewRatingState();
-}
-
-class _ReviewRatingState extends State<ReviewRating> {
-  late int rating;
-
-  @override
-  void initState() {
-    super.initState();
-    rating = widget.initialRating;
-  }
+  ReviewRating({super.key, this.size = 24});
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: List.generate(5, (index) {
-        final isSelected = index < rating;
+    return Obx(
+      () => Row(
+        mainAxisSize: MainAxisSize.min,
+        children: List.generate(5, (index) {
+          final isSelected = index < controller.rating.value;
 
-        return GestureDetector(
-          onTap: () {
-            setState(() => rating = index + 1);
-            widget.onRatingSelected(rating);
-          },
-          child: Icon(
-            Icons.star,
-            size: widget.size,
-            color: isSelected ? Colors.amber : Colors.grey,
-          ),
-        );
-      }),
+          return GestureDetector(
+            onTap: () {
+              controller.setRating(index + 1);
+            },
+            child: Icon(
+              Icons.star,
+              size: size,
+              color: isSelected ? Colors.amber : Colors.grey,
+            ),
+          );
+        }),
+      ),
     );
   }
 }

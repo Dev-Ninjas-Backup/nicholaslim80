@@ -10,11 +10,17 @@ class RiderController extends GetxController {
   var dateTime = '25 September 2025 / 9:40 am'.obs;
   RxBool firstActive = true.obs;
   RxBool secondActive = false.obs;
+  var isLoved = false.obs;
+  var rating = 0.obs;
 
   final List<double> fareOptions = [1.2, 2.5, 4.5, 6.5];
 
   void selectFare(int index) {
     selectedFare.value = index;
+  }
+
+  void setRating(int value) {
+    rating.value = value;
   }
 
   void navigateToConnectingRider() {

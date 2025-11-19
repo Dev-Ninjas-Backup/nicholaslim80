@@ -6,6 +6,7 @@ import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
 import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
 import 'package:nicholaslim80/core/utils/constants/image_path.dart';
 import 'package:nicholaslim80/features/user/finding_raider/controller/rider_controller.dart';
+import 'package:nicholaslim80/features/user/finding_raider/screnn/rate_rider.dart';
 import 'package:nicholaslim80/features/user/finding_raider/widget/custom_icon_text_button.dart';
 import 'package:nicholaslim80/features/user/finding_raider/widget/location_row_widget.dart';
 import 'package:nicholaslim80/features/user/finding_raider/widget/review_rateing.dart';
@@ -119,12 +120,12 @@ class RaiderDetails extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            ReviewRating(
-                              onRatingSelected: (rating) {},
-                              initialRating: 0,
-                            ),
+                            ReviewRating(),
                             TextButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                Get.to(() => RateRider());
+                              },
+
                               child: Text(
                                 '(243 Reviews)',
                                 style: TextStyle(

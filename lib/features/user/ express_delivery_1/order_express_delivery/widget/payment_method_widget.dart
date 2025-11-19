@@ -2,95 +2,98 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
 
+// Payment Option Model
 class PaymentOption {
   final String title;
   final String subtitle;
-  final String? icon;
   final String? imageAsset;
 
-  PaymentOption({
-    required this.title,
-    required this.subtitle,
-    this.icon,
-    this.imageAsset,
-  });
+  PaymentOption({required this.title, required this.subtitle, this.imageAsset});
 }
 
-class PaymentSelectionWidget extends StatefulWidget {
+// -------------------
+// Payment Controller
+// -------------------
+class PaymentController extends GetxController {
+  var selectedIndex = 0.obs;
+  var selectedTitle = "Select".obs;
+}
+
+// -------------------
+// Payment Selection Widget
+// -------------------
+class PaymentSelectionWidget extends StatelessWidget {
   final List<PaymentOption> options;
-  final void Function(int selectedIndex)? onChanged;
+  final PaymentController controller;
 
   const PaymentSelectionWidget({
     super.key,
     required this.options,
-    this.onChanged,
+    required this.controller,
   });
-
-  @override
-  State<PaymentSelectionWidget> createState() => _PaymentSelectionWidgetState();
-}
-
-class _PaymentSelectionWidgetState extends State<PaymentSelectionWidget> {
-  int selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: widget.options.asMap().entries.map((entry) {
+      children: options.asMap().entries.map((entry) {
         int index = entry.key;
         PaymentOption option = entry.value;
 
         return Column(
           children: [
-            ListTile(
-              leading: option.imageAsset != null
-                  ? Image.asset(option.imageAsset!, width: 32, height: 32)
-                  : Image.asset(IconPath.arrowBackIcon),
-              title: Text(
-                option.title,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-              ),
-              subtitle: Text(
-                option.subtitle,
-                style: TextStyle(fontSize: 12, color: Colors.grey),
-              ),
-              trailing: GestureDetector(
-                onTap: () {
-                  setState(() => selectedIndex = index);
-                  widget.onChanged?.call(index);
-                },
-                child: Container(
-                  width: 24,
-                  height: 24,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: selectedIndex == index
-                          ? Colors.yellow
-                          : Colors.black,
-                      width: 2,
-                    ),
-                  ),
-                  child: selectedIndex == index
-                      ? Center(
-                          child: Container(
-                            width: 12,
-                            height: 12,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.yellow,
-                            ),
-                          ),
-                        )
-                      : null,
+            Obx(
+              () => ListTile(
+                leading: option.imageAsset != null
+                    ? Image.asset(option.imageAsset!, width: 32, height: 32)
+                    : Image.asset(IconPath.arrowBackIcon),
+                title: Text(
+                  option.title,
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
+                subtitle: Text(
+                  option.subtitle,
+                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                ),
+                trailing: GestureDetector(
+                  onTap: () {
+                    controller.selectedIndex.value = index;
+                    controller.selectedTitle.value = option.title;
+                    Get.back();
+                  },
+                  child: Container(
+                    width: 24,
+                    height: 24,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: controller.selectedIndex.value == index
+                            ? Colors.yellow
+                            : Colors.black,
+                        width: 2,
+                      ),
+                    ),
+                    child: controller.selectedIndex.value == index
+                        ? Center(
+                            child: Container(
+                              width: 12,
+                              height: 12,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.yellow,
+                              ),
+                            ),
+                          )
+                        : null,
+                  ),
+                ),
+                onTap: () {
+                  controller.selectedIndex.value = index;
+                  controller.selectedTitle.value = option.title;
+                  Get.back();
+                },
               ),
-              onTap: () {
-                setState(() => selectedIndex = index);
-                widget.onChanged?.call(index);
-              },
             ),
-            if (index != widget.options.length - 1) Divider(height: 1),
+            if (index != options.length - 1) Divider(height: 1),
           ],
         );
       }).toList(),
@@ -101,17 +104,11 @@ class _PaymentSelectionWidgetState extends State<PaymentSelectionWidget> {
 // -------------------
 // Selector Button Widget
 // -------------------
-class PaymentMethodSelector extends StatefulWidget {
+class PaymentMethodSelector extends StatelessWidget {
   final List<PaymentOption> options;
+  final PaymentController controller = Get.put(PaymentController());
 
-  const PaymentMethodSelector({super.key, required this.options});
-
-  @override
-  State<PaymentMethodSelector> createState() => _PaymentMethodSelectorState();
-}
-
-class _PaymentMethodSelectorState extends State<PaymentMethodSelector> {
-  String selectedTitle = "Select";
+  PaymentMethodSelector({super.key, required this.options});
 
   void openSelectorSheet() {
     Get.bottomSheet(
@@ -121,16 +118,7 @@ class _PaymentMethodSelectorState extends State<PaymentMethodSelector> {
           color: Colors.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
-        child: PaymentSelectionWidget(
-          options: widget.options,
-          onChanged: (index) {
-            setState(() {
-              selectedTitle = widget.options[index].title;
-            });
-
-            Get.back(); // close sheet
-          },
-        ),
+        child: PaymentSelectionWidget(options: options, controller: controller),
       ),
     );
   }
@@ -147,9 +135,11 @@ class _PaymentMethodSelectorState extends State<PaymentMethodSelector> {
         ),
         child: Row(
           children: [
-            Text(
-              selectedTitle,
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+            Obx(
+              () => Text(
+                controller.selectedTitle.value,
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+              ),
             ),
             SizedBox(width: 6),
             Icon(Icons.keyboard_arrow_down),

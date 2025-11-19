@@ -221,12 +221,12 @@ class OrderControllerScreen extends GetxController {
                         PaymentOption(
                           title: "Stripe",
                           subtitle: "Instant payment",
-                          icon: IconPath.stripe,
+                          imageAsset: "assets/icons/stripe_icon.png",
                         ),
                         PaymentOption(
-                          title: "Wallet (w/n your available balance",
+                          title: "Wallet ",
                           subtitle: "S\$10.50",
-                          icon: IconPath.wallet,
+                          imageAsset: IconPath.wallet,
                         ),
                         PaymentOption(
                           title: "Cash",
