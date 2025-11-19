@@ -36,13 +36,13 @@ class VehicleTypeWidget extends StatelessWidget {
                       child: Image.asset(
                         vehicle.iconPath,
                         fit: BoxFit.cover,
-                        width: screenWidth * 0.25, // responsive width
-                        height: screenWidth * 0.18, // responsive height
+                        width: screenWidth * 0.25,
+                        height: screenWidth * 0.18,
                       ),
                     ),
                   ),
                 ),
-                SizedBox(width: 8), // spacing between images
+                SizedBox(width: 8),
               ],
             );
           }).toList(),
