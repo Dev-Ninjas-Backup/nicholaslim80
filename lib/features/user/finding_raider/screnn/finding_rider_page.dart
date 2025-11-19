@@ -16,19 +16,28 @@ class FindingRiderPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: GestureDetector(
+          onTap: () {
+            Get.back();
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Image.asset(IconPath.colorFullArrow, width: 24, height: 24),
+          ),
+        ),
+      ),
       body: Stack(
         children: [
-          // Map Image Background
           SizedBox(
             width: double.infinity,
             height: double.infinity,
-            child: Image.asset(
-              ImagePath.map, // replace with your static map image path
-              fit: BoxFit.cover,
-            ),
+            child: Image.asset(ImagePath.map, fit: BoxFit.cover),
           ),
 
-          // Scrollable Content Overlay
           DraggableScrollableSheet(
             initialChildSize: 0.4,
             minChildSize: 0.3,
@@ -68,7 +77,6 @@ class FindingRiderPage extends StatelessWidget {
                         ),
                         SizedBox(height: 16),
 
-                        // Header
                         Center(
                           child: Text(
                             'Finding your rider',
@@ -118,7 +126,6 @@ class FindingRiderPage extends StatelessWidget {
                         ),
                         SizedBox(height: 20),
 
-                        // Pickup Location
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: 10),
                           child: Column(

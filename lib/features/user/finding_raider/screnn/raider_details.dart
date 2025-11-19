@@ -18,6 +18,20 @@ class RaiderDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: GestureDetector(
+          onTap: () {
+            Get.back();
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Image.asset(IconPath.colorFullArrow, width: 24, height: 24),
+          ),
+        ),
+      ),
       body: Stack(
         children: [
           SizedBox.expand(child: Image.asset(ImagePath.map, fit: BoxFit.cover)),
