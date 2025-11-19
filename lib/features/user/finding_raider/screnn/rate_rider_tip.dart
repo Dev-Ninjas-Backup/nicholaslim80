@@ -7,6 +7,7 @@ import 'package:nicholaslim80/core/utils/constants/image_path.dart';
 import 'package:nicholaslim80/features/user/finding_raider/controller/rider_controller.dart';
 import 'package:nicholaslim80/features/user/finding_raider/widget/button.dart';
 import 'package:nicholaslim80/features/user/finding_raider/widget/payment_option_widget.dart';
+import 'package:nicholaslim80/features/user/finding_raider/widget/tip_aleart_dialog.dart';
 
 class RateRiderTip extends StatelessWidget {
   final RiderController controller = Get.find<RiderController>();
@@ -110,7 +111,12 @@ class RateRiderTip extends StatelessWidget {
                                 buttonText: 'Give a Tip',
                                 backgroundColor: AppColors.primaryButtonColor,
                                 textColor: AppColors.fontColor,
-                                onPressed: () {},
+                                onPressed: () {
+                                  Get.dialog(
+                                    TipAleartDialog(),
+                                    barrierDismissible: true,
+                                  );
+                                },
                               ),
                               SizedBox(height: 16),
 
