@@ -4,6 +4,7 @@ import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
 import 'package:nicholaslim80/core/utils/constants/image_path.dart';
 import 'package:nicholaslim80/features/user/finding_raider/controller/rider_controller.dart';
+import 'package:nicholaslim80/features/user/finding_raider/screnn/rate_rider_tip.dart';
 import 'package:nicholaslim80/features/user/finding_raider/widget/button.dart';
 import 'package:nicholaslim80/features/user/finding_raider/widget/location_row_widget.dart';
 import 'package:nicholaslim80/features/user/finding_raider/widget/review_rateing.dart';
@@ -256,16 +257,16 @@ class RateRider extends StatelessWidget {
                         ),
                         SizedBox(height: 26),
                         TwoSideIconText(
-                          leftImage: IconPath.yellow_dot,
+                          leftImage: IconPath.yellowDot,
                           leftText: 'Fast delivery',
-                          rightImage: IconPath.grey_dot,
+                          rightImage: IconPath.greyDot,
                           rightText: 'Slow in delivery',
                         ),
                         SizedBox(height: 16),
                         TwoSideIconText(
-                          leftImage: IconPath.yellow_dot,
+                          leftImage: IconPath.yellowDot,
                           leftText: 'Item/s delivered ingood condition',
-                          rightImage: IconPath.grey_dot,
+                          rightImage: IconPath.greyDot,
                           rightText: 'tem/s delivered inbad condition',
                         ),
                         SizedBox(height: 40),
@@ -274,7 +275,9 @@ class RateRider extends StatelessWidget {
                           buttonText: 'Slow in delivery',
                           textColor: Colors.black,
                           backgroundColor: Colors.amber,
-                          onPressed: () {},
+                          onPressed: () {
+                            Get.to(RateRiderTip());
+                          },
                         ),
 
                         SizedBox(height: 16),
