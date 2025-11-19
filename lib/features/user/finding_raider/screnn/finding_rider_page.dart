@@ -6,6 +6,7 @@ import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
 import 'package:nicholaslim80/core/utils/constants/image_path.dart';
 import 'package:nicholaslim80/features/user/finding_raider/controller/rider_controller.dart';
 import 'package:nicholaslim80/features/user/finding_raider/widget/button.dart';
+import 'package:nicholaslim80/features/user/finding_raider/widget/cancel_order_dialog.dart';
 import 'package:nicholaslim80/features/user/finding_raider/widget/location_row_widget.dart';
 
 class FindingRiderPage extends StatelessWidget {
@@ -217,7 +218,10 @@ class FindingRiderPage extends StatelessWidget {
 
                         Center(
                           child: FilledButton(
-                            onPressed: () => Get.back(),
+                            onPressed: () {
+                              showCancelOrderDialog(context);
+                            },
+
                             style: FilledButton.styleFrom(
                               backgroundColor: Colors.white,
                               foregroundColor: Colors.white,
