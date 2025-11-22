@@ -34,6 +34,7 @@ class CancelOrderDialogBody extends StatelessWidget {
           padding: EdgeInsets.symmetric(vertical: 16),
           decoration: BoxDecoration(
             color: isSelected
+                // ignore: deprecated_member_use
                 ? Colors.black.withOpacity(0.05)
                 : Colors.grey[200],
             borderRadius: BorderRadius.circular(12),

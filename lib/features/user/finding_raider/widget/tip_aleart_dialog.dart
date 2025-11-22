@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
+import 'package:nicholaslim80/features/user/%20express_delivery_1/controller/express_controller_1.dart';
+import 'package:nicholaslim80/features/user/schedule_express_%20delivey/screen/schedule_delivery.dart';
 
 class TipAleartDialog extends StatelessWidget {
   const TipAleartDialog({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
+    final locationController = Get.put(LocationController());
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
@@ -34,11 +38,13 @@ class TipAleartDialog extends StatelessWidget {
               SizedBox(height: 40),
               FilledButton(
                 onPressed: () {
-                  Get.back();
+                  Get.to(ScheduleDelivery());
+                  //Get.back();
                   Get.snackbar(
                     '',
                     '',
                     snackPosition: SnackPosition.TOP,
+                    // ignore: deprecated_member_use
                     backgroundColor: Colors.amber.withOpacity(0.8),
                     colorText: Colors.white,
                     margin: EdgeInsets.all(10),
