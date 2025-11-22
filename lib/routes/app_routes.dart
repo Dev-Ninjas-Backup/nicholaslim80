@@ -58,6 +58,7 @@ class AppRoutes {
   static String expressDelivery1 = "/expressDelivery1";
   static String expressFaq = "/expressFaq";
   static String expressSenderOrRecepment = "/expressSenderOrRecepment";
+  // static String scheduledelivery = "/scheduledelivery";
 
   static String getSplashScreen() => splashScreen;
   static String getOnboardingScreen() => onboardingScreen;
@@ -93,6 +94,7 @@ class AppRoutes {
   static String getexpressSenderOrRecepment() => expressSenderOrRecepment;
   static String getconnectingRider() => connectingRider;
   static String getfindingRider() => findingRider;
+  // static String scheduledelivery() => scheduledelivery;
 
   static List<GetPage> routes = [
     GetPage(name: splashScreen, page: () => SplashScreen()),
@@ -167,5 +169,10 @@ class AppRoutes {
     ),
     GetPage(name: connectingRider, page: () => ConnectingRiderPage()),
     GetPage(name: findingRider, page: () => FindingRiderPage()),
+    // GetPage(
+    //   name: scheduledelivery,
+    //   page: () => ScheduleDelivery(),
+    //   transition: Transition.fadeIn,
+    // ),
   ];
 }

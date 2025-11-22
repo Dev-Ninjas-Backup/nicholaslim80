@@ -16,31 +16,40 @@ class SelectLocationWidget extends StatelessWidget {
           ExpressButtonWidget(controller: controller),
           SizedBox(height: 10),
           Divider(),
-          Center(
-            child: ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.grey[100],
-                foregroundColor: Colors.black,
-
-                padding: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              icon: Icon(Icons.add),
-              label: Text(
-                "Add Stop",
-                style: getTextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.black,
-                ),
-              ),
-              onPressed: () {},
-            ),
-          ),
+          CustomAddButton(),
           SizedBox(height: 10),
         ],
+      ),
+    );
+  }
+}
+
+class CustomAddButton extends StatelessWidget {
+  const CustomAddButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: ElevatedButton.icon(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.grey[100],
+          foregroundColor: Colors.black,
+
+          padding: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+        icon: Icon(Icons.add),
+        label: Text(
+          "Add Stop",
+          style: getTextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+            color: Colors.black,
+          ),
+        ),
+        onPressed: () {},
       ),
     );
   }
