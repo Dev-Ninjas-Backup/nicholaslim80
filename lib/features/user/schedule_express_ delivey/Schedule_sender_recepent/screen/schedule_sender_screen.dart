@@ -7,6 +7,7 @@ import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
 import 'package:nicholaslim80/core/utils/constants/image_path.dart';
 import 'package:nicholaslim80/features/user/collect_form_on_express_delivery/Sender_Part/widget_sender/text_filed_widget.dart';
+import 'package:nicholaslim80/features/user/schedule_express_%20delivey/Schedule_recepent/screen/schedule_recepent_screen1.dart';
 import 'package:nicholaslim80/features/user/schedule_express_%20delivey/Schedule_sender_recepent/controller/sender_schedule_controller.dart';
 import 'package:nicholaslim80/routes/app_routes.dart' show AppRoutes;
 
@@ -121,8 +122,10 @@ class SenderScheduleScreen extends StatelessWidget {
                         child: ElevatedButton(
                           onPressed: controller.isFormValid.value
                               ? () {
-                                  Get.toNamed(
-                                    AppRoutes.getexpressSenderOrRecepment(),
+                                  Get.to(
+                                    SchedulRecepmenteScreen(
+                                      title: 'Recepent 1',
+                                    ),
                                   );
                                 }
                               : null,
