@@ -250,41 +250,9 @@ class LoginSignupScreen extends StatelessWidget {
           'Your e-mail address',
           keyboardType: TextInputType.emailAddress,
         ),
-        const SizedBox(height: 20),
+        SizedBox(height: 20),
         _buildPhoneField(controller),
-        const SizedBox(height: 20),
-
-        // 👇 New Dropdown for USER / RIDER
-        // Obx(
-        //   () => Container(
-        //     height: 52,
-        //     width: double.infinity,
-        //     padding: const EdgeInsets.symmetric(horizontal: 12),
-        //     decoration: BoxDecoration(
-        //       border: Border.all(color: AppColors.subtitleFontColor, width: 1),
-        //       borderRadius: BorderRadius.circular(8),
-        //     ),
-        //     child: DropdownButtonHideUnderline(
-        //       child: DropdownButton<String>(
-        //         value: controller.selectedUserType.value,
-        //         items: controller.userTypes
-        //             .map(
-        //               (type) => DropdownMenuItem(
-        //                 value: type,
-        //                 child: Text(type, style: const TextStyle(fontSize: 16)),
-        //               ),
-        //             )
-        //             .toList(),
-        //         onChanged: (value) {
-        //           if (value != null) {
-        //             controller.selectUserType(value);
-        //           }
-        //         },
-        //         icon: const Icon(Icons.arrow_drop_down),
-        //       ),
-        //     ),
-        //   ),
-        // ),
+        SizedBox(height: 20),
       ],
     );
   }

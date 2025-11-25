@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nicholaslim80/features/user/bottom_navbar/screen/bottom_navbar_screen.dart';
 import 'package:nicholaslim80/routes/app_routes.dart';
 
 class LoginSignupController extends GetxController {
@@ -29,7 +28,7 @@ class LoginSignupController extends GetxController {
   ].obs;
 
   // New: user type options
-  final List<String> userTypes = ['USER', 'RIDER'];
+  final List<String> userTypes = ['USER'];
 
   void toggleSelection(bool isLogin) {
     isLoginSelected.value = isLogin;
@@ -74,7 +73,7 @@ class LoginSignupController extends GetxController {
     }
 
     // Navigate to VerifyScreen
-    Get.offAllNamed(AppRoutes.verificationScreen, arguments: phoneNumber.value);
+    Get.offAllNamed(AppRoutes.bottomNavbarScreen, arguments: phoneNumber.value);
   }
 
   void onSignUpContinuePressed() {
@@ -85,18 +84,14 @@ class LoginSignupController extends GetxController {
         'Error',
         'Please fill all fields',
         snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.red.withValues(alpha: .8),
+        backgroundColor: Colors.red,
         colorText: Colors.white,
       );
       return;
     }
 
-    // Navigate based on user type
-    if (selectedUserType.value == 'USER') {
-      Get.offAll(BottomNavbarScreen());
-    } else {
-      Get.offAllNamed("/appQuizScreen");
-    }
+    // Send to verification screen
+    Get.toNamed(AppRoutes.verificationScreen, arguments: phoneController.text);
   }
 
   void logout() {

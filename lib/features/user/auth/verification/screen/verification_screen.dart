@@ -7,6 +7,8 @@ import 'package:nicholaslim80/features/user/auth/verification/controller/verific
 import 'package:nicholaslim80/features/user/auth/verification/widgets/input_box_widget.dart';
 import 'package:nicholaslim80/features/user/auth/verification/widgets/verify_button_widget.dart';
 
+import '../../../../../routes/app_routes.dart';
+
 class VerificationScreen extends StatelessWidget {
   const VerificationScreen({super.key});
 
@@ -34,7 +36,10 @@ class VerificationScreen extends StatelessWidget {
                   SizedBox(height: media.size.height * 0.02),
 
                   GestureDetector(
-                    onTap: () => Get.back(),
+                    onTap: () {
+                      Get.offAllNamed(AppRoutes.loginScreen);
+                    },
+
                     child: Container(
                       width: media.size.width * 0.1,
                       height: media.size.width * 0.1,
