@@ -3,11 +3,11 @@ import 'package:get/get.dart';
 
 import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
-import 'package:nicholaslim80/features/user/%20express_delivery_1/order_express_delivery/widget/custom_toggoe_switich_widget.dart';
-import 'package:nicholaslim80/features/user/%20express_delivery_1/order_express_delivery/widget/order_confirmation_dialog.dart';
-import 'package:nicholaslim80/features/user/%20express_delivery_1/order_express_delivery/widget/order_success_dialog.dart';
-import 'package:nicholaslim80/features/user/%20express_delivery_1/order_express_delivery/widget/payment_method_widget.dart';
-import 'package:nicholaslim80/features/user/%20express_delivery_1/order_express_delivery/widget/promo_dilog_widget.dart';
+import 'package:nicholaslim80/features/user/express_delivery_1/order_express_delivery/widget/custom_toggoe_switich_widget.dart';
+import 'package:nicholaslim80/features/user/express_delivery_1/order_express_delivery/widget/order_confirmation_dialog.dart';
+import 'package:nicholaslim80/features/user/express_delivery_1/order_express_delivery/widget/order_success_dialog.dart';
+import 'package:nicholaslim80/features/user/express_delivery_1/order_express_delivery/widget/payment_method_widget.dart';
+import 'package:nicholaslim80/features/user/express_delivery_1/order_express_delivery/widget/promo_dilog_widget.dart';
 
 class OrderControllerScreen extends GetxController {
   double totalAmount = 0.00;

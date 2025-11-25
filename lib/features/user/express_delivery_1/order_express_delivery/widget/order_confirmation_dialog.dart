@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
-import 'package:nicholaslim80/features/user/%20express_delivery_1/order_express_delivery/controller/order_controller.dart';
+import 'package:nicholaslim80/features/user/express_delivery_1/order_express_delivery/controller/order_controller.dart';
 
 class OrderConfirmationDialog {
   static final OrderController controller = Get.put(OrderController());
