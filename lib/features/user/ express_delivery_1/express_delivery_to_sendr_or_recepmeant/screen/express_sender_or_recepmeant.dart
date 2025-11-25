@@ -9,6 +9,7 @@ import 'package:nicholaslim80/features/user/%20express_delivery_1/controller/exp
 import 'package:nicholaslim80/features/user/%20express_delivery_1/express_delivery_to_sendr_or_recepmeant/widget/Express_Button_3_way_option.dart';
 import 'package:nicholaslim80/features/user/%20express_delivery_1/widget/collect_time_widget.dart';
 import 'package:nicholaslim80/features/user/%20express_delivery_1/widget/order_review_widget.dart';
+import 'package:nicholaslim80/features/user/%20express_delivery_1/widget/pick_date_time_dialog.dart';
 import 'package:nicholaslim80/features/user/%20express_delivery_1/widget/vehicle_type_widget.dart';
 
 // 🔹 Other Pages
@@ -114,6 +115,11 @@ class ExpressToSenderOrRecepment extends StatelessWidget {
                         onTap: () {
                           hideKeyboard();
                           controller.selectSchedule();
+
+                          showDialog(
+                            context: context,
+                            builder: (_) => PickDateTimeDialog(),
+                          );
                         },
                       ),
                     ],

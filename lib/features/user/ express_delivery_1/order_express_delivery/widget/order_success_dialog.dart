@@ -65,41 +65,43 @@ class OrderSuccessDialog {
                   () => Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () {
-                            Get.to(FindingRiderPage());
-                          },
-                          child: ListTile(
-                            leading: Radio<bool>(
+                      GestureDetector(
+                        onTap: () {
+                          wantsConfirmationCall.value =
+                              true; // ট্যাপ করলেও Radio select হবে
+                          Get.to(FindingRiderPage());
+                        },
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Radio<bool>(
                               value: true,
-                              // ignore: deprecated_member_use
                               groupValue: wantsConfirmationCall.value,
-                              // ignore: deprecated_member_use
                               onChanged: (value) =>
                                   wantsConfirmationCall.value = value!,
                               activeColor: Colors.blue,
                             ),
-                            title: Text('Yes', style: TextStyle(fontSize: 16)),
-                            //onTap: () => wantsConfirmationCall.value = true,
-                          ),
+                            SizedBox(width: 4), // spacing খুব ছোট
+                            Text('Yes', style: TextStyle(fontSize: 16)),
+                          ],
                         ),
                       ),
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () => Get.back(),
-                          child: ListTile(
-                            leading: Radio<bool>(
+
+                      GestureDetector(
+                        onTap: () => Get.back(),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Radio<bool>(
                               value: false,
-                              // ignore: deprecated_member_use
                               groupValue: wantsConfirmationCall.value,
-                              // ignore: deprecated_member_use
                               onChanged: (value) =>
                                   wantsConfirmationCall.value = value!,
                               activeColor: Colors.blue,
                             ),
-                            title: Text('No', style: TextStyle(fontSize: 16)),
-                          ),
+                            SizedBox(width: 4), // spacing খুব ছোট
+                            Text('No', style: TextStyle(fontSize: 16)),
+                          ],
                         ),
                       ),
                     ],

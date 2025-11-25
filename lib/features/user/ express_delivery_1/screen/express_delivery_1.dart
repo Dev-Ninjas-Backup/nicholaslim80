@@ -6,6 +6,7 @@ import 'package:nicholaslim80/features/user/%20express_delivery_1/controller/exp
 import 'package:nicholaslim80/features/user/%20express_delivery_1/order_express_delivery/screen/order_controller_screen.dart';
 import 'package:nicholaslim80/features/user/%20express_delivery_1/widget/collect_time_widget.dart';
 import 'package:nicholaslim80/features/user/%20express_delivery_1/widget/order_reviw_button_static.dart';
+import 'package:nicholaslim80/features/user/%20express_delivery_1/widget/pick_date_time_dialog.dart';
 import 'package:nicholaslim80/features/user/%20express_delivery_1/widget/select_location_widget.dart';
 import 'package:nicholaslim80/features/user/%20express_delivery_1/widget/vehicle_type_widget.dart';
 import 'package:nicholaslim80/features/user/Veicale_Type_on_Exprees_Delivery/controller/vehicle_Controller.dart';
@@ -95,7 +96,16 @@ class ExpressDelivery1 extends StatelessWidget {
                         title: "Schedule",
                         subtitle: "Pick Date and Time",
                         selected: !controller.isNowSelected.value,
-                        onTap: controller.selectSchedule,
+                        onTap: () {
+                          FocusScope.of(context).unfocus();
+                          controller.selectSchedule();
+
+                          // Open the date-time dialog
+                          showDialog(
+                            context: context,
+                            builder: (_) => PickDateTimeDialog(),
+                          );
+                        },
                       ),
                     ],
                   ),

@@ -39,7 +39,6 @@ class CollectTimeOption extends StatelessWidget {
                 : [],
           ),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
@@ -52,16 +51,10 @@ class CollectTimeOption extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                         color: Colors.black87,
                       ),
-                      softWrap: true,
-                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                   if (selected)
-                    const Icon(
-                      Icons.check_circle,
-                      color: Colors.green,
-                      size: 20,
-                    ),
+                    Icon(Icons.check_circle, color: Colors.green, size: 20),
                 ],
               ),
               if (subtitle != null) ...[
@@ -69,8 +62,6 @@ class CollectTimeOption extends StatelessWidget {
                 Text(
                   subtitle!,
                   style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
-                  softWrap: true,
-                  overflow: TextOverflow.visible,
                 ),
               ],
             ],
