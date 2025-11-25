@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
 import 'package:nicholaslim80/core/utils/constants/image_path.dart';
 import 'package:nicholaslim80/features/user/schedule_express_%20delivey/Schedule_recepent/widget/schedule_recepent_widget.dart';
+import 'package:nicholaslim80/features/user/schedule_round_delivery/screen/schedule_round_delivery.dart';
 
 class SchedulRecepmenteScreen3 extends StatelessWidget {
   final String title;
@@ -43,8 +44,10 @@ class SchedulRecepmenteScreen3 extends StatelessWidget {
                 ),
 
                 child: ScheduleRecipientWidget(
-                  title: 'Recepent 1',
-                  onPressed: () {},
+                  title: 'Recepent 3',
+                  onPressed: () {
+                    Get.to(ScheduleRoundDelivery());
+                  },
                 ),
               ),
             ],
