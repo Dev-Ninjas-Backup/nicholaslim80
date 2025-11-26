@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
 import 'package:nicholaslim80/core/utils/constants/image_path.dart';
-import 'package:nicholaslim80/features/user/schedule_express_%20delivey/Schedule_recepent/screen/schedule_recepent_screen2.dart';
 import 'package:nicholaslim80/features/user/schedule_express_%20delivey/Schedule_recepent/widget/schedule_recepent_widget.dart';
+import 'package:nicholaslim80/features/user/stacked/stacked_screen/stacked_screen.dart';
 
-class SchedulRecepmenteScreen extends StatelessWidget {
+class StackedSchedulRecepmenteScreen extends StatelessWidget {
   final String title;
 
-  const SchedulRecepmenteScreen({super.key, required this.title});
+  const StackedSchedulRecepmenteScreen({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +46,7 @@ class SchedulRecepmenteScreen extends StatelessWidget {
                   onPressed: () {
                     // Navigate to Screen 2
                     Get.to(
-                      () => SchedulRecepmenteScreen2(title: 'Recipient 2'),
+                      () => StackedScreen(),
                     );
                   },
                 ),

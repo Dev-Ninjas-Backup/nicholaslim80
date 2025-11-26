@@ -7,11 +7,12 @@ import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
 import 'package:nicholaslim80/core/utils/constants/image_path.dart';
 import 'package:nicholaslim80/features/user/collect_form_on_express_delivery/Sender_Part/widget_sender/text_filed_widget.dart';
-import 'package:nicholaslim80/features/user/schedule_express_%20delivey/Schedule_recepent/screen/schedule_recepent_screen1.dart';
 import 'package:nicholaslim80/features/user/schedule_express_%20delivey/Schedule_sender_recepent/controller/sender_schedule_controller.dart';
 
-class SenderScheduleScreen extends StatelessWidget {
-  const SenderScheduleScreen({super.key});
+import '../../Schedule_recepent/screen/schedule_recepent_screen1.dart';
+
+class StackedSenderScheduleScreen extends StatelessWidget {
+  const StackedSenderScheduleScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -122,7 +123,7 @@ class SenderScheduleScreen extends StatelessWidget {
                           onPressed: controller.isFormValid.value
                               ? () {
                                   Get.to(
-                                    SchedulRecepmenteScreen(
+                                    StackedSchedulRecepmenteScreen(
                                       title: 'Recepent 1',
                                     ),
                                   );
