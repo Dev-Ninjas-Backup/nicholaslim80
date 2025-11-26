@@ -7,13 +7,13 @@ import 'package:nicholaslim80/features/user/Veicale_Type_on_Exprees_Delivery/con
 import 'package:nicholaslim80/features/user/express_delivery_1/order_express_delivery/controller/order_controller.dart';
 import 'package:nicholaslim80/features/user/express_delivery_1/order_express_delivery/screen/order_controller_screen.dart';
 
-class OrderReviewWidget extends StatelessWidget {
+class StackOrderReviewWidget extends StatelessWidget {
   final VehicleController vehicleController;
   final OrderController orderController = Get.put(OrderController());
   final double total; // ← Added
   final List<String> calculationHistory; // ← Added
 
-  OrderReviewWidget({
+  StackOrderReviewWidget({
     super.key,
     required this.vehicleController,
     required this.total,

@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
-import 'package:nicholaslim80/features/user/collect_form_on_express_delivery/widget/address_list_widget.dart';
-import 'package:nicholaslim80/features/user/collect_form_on_express_delivery/widget/build_filter_chips.dart';
 
-import '../../../collect_form_on_express_delivery/controller/collect_form_controller.dart';
+import '../controller/controller.dart';
+import '../widget/address_list_widget.dart';
+import '../widget/build_filter_chips.dart';
 
 class StackedCollectFormScreen extends StatelessWidget {
-  final CollectFormController controller;
+  final StackedCollectFormController controller;
 
   const StackedCollectFormScreen({super.key, required this.controller});
 
@@ -51,9 +51,9 @@ class StackedCollectFormScreen extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 16.0),
           child: Column(
             children: [
-              FilterChipsWidget(controller: controller),
+              StackedFilterChipsWidget(controller: controller),
               SizedBox(height: 20),
-              AddressListWidget(controller: controller),
+              StackedAddressListWidget(controller: controller),
             ],
           ),
         ),
