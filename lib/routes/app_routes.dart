@@ -1,6 +1,4 @@
 import 'package:get/get.dart';
-import 'package:get/get_navigation/src/routes/get_route.dart';
-import 'package:get/get_navigation/src/routes/transitions_type.dart';
 import 'package:nicholaslim80/features/onboarding/screen/onboarding_screen.dart';
 import 'package:nicholaslim80/features/splash/screen/splash_screen.dart';
 import 'package:nicholaslim80/features/user/express_delivery_1/express_delivery_to_sendr_or_recepmeant/screen/express_sender_or_recepmeant.dart';
@@ -21,7 +19,7 @@ import 'package:nicholaslim80/features/user/home/screen/home_screen.dart';
 import 'package:nicholaslim80/features/user/refer_and_earn/screen/refer_and_earn_screen.dart';
 import 'package:nicholaslim80/features/user/saved_places/screen/saved_place_screenn.dart';
 
-import '../features/user/stacked/stacked_faq/stacked_FAQ.dart';
+import '../features/user/stacked/stacked_faq/stacked_faq.dart';
 import '../features/user/stacked/stacked_screen/stacked_screen.dart';
 
 class AppRoutes {

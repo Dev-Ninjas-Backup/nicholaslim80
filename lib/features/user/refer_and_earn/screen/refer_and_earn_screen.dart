@@ -146,6 +146,7 @@ class ReferAndEarnScreen extends StatelessWidget {
                   final String message =
                       "Hey! Join this amazing app and earn rewards. Use my referral link: $referralLink";
 
+                  // ignore: deprecated_member_use
                   Share.share(message, subject: "Invite to our app");
                 },
                 color: AppColors.primaryButtonColor,

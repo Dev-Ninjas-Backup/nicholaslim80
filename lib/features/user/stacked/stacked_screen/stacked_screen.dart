@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
+import 'package:nicholaslim80/features/user/express_delivery_1/order_express_delivery/controller/order_controller.dart';
+import 'package:nicholaslim80/features/user/express_delivery_1/order_express_delivery/screen/order_alertdialog_screen.dart';
 
 import 'package:nicholaslim80/routes/app_routes.dart';
 
@@ -19,6 +21,7 @@ class StackedScreen extends StatelessWidget {
     StackedLocationController(),
   );
   final vehicleController = Get.put(StackedVehicleController());
+  final OrderController orderController = Get.put(OrderController());
 
   StackedScreen({super.key});
 
@@ -135,7 +138,11 @@ class StackedScreen extends StatelessWidget {
               StackedVehicleTypeWidget(controller: controller),
 
               SizedBox(height: 24),
-              StackedOrderReviwButtonStatic(),
+              StackedOrderReviewButtonStatic(
+                onPressed: () {
+                  showOrderConfirmationDialog(orderController);
+                },
+              ),
             ],
           ),
         ),

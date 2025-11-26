@@ -6,7 +6,6 @@ import 'package:nicholaslim80/core/utils/constants/image_path.dart';
 import 'package:nicholaslim80/features/user/express_delivery_1/express_delivery_to_sendr_or_recepmeant/screen/express_sender_or_recepmeant.dart';
 import 'package:nicholaslim80/features/user/collect_form_on_express_delivery/Sender_Part/controller_sender/sender_controller.dart';
 import 'package:nicholaslim80/features/user/collect_form_on_express_delivery/Sender_Part/widget_sender/text_filed_widget.dart';
-import 'package:nicholaslim80/features/user/collect_form_on_express_delivery/models/address_model.dart';
 
 import '../model/model.dart';
 

@@ -18,10 +18,10 @@ void showOrderConfirmationDialog(OrderController controller) {
     AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       contentPadding: EdgeInsets.zero,
-      insetPadding: EdgeInsets.symmetric(horizontal: 8), // width বাড়ানোর জন্য
+      insetPadding: EdgeInsets.symmetric(horizontal: 8), 
       content: SingleChildScrollView(
         child: Container(
-          width: Get.width * 0.95, // প্রায় পুরো screen width
+          width: Get.width * 0.95,
           padding: EdgeInsets.all(16),
           child: Column(
             mainAxisSize: MainAxisSize.min,

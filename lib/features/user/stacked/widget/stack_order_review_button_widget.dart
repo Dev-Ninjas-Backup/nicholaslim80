@@ -2,18 +2,20 @@ import 'package:flutter/cupertino.dart' show CupertinoColors;
 import 'package:flutter/material.dart';
 import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 
-class StackedOrderReviwButtonStatic extends StatelessWidget {
-  const StackedOrderReviwButtonStatic({super.key});
+class StackedOrderReviewButtonStatic extends StatelessWidget {
+  final VoidCallback onPressed;
+
+  const StackedOrderReviewButtonStatic({super.key, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(bottom: 70),
-      padding: EdgeInsets.all(5),
+      margin: const EdgeInsets.only(bottom: 70),
+      padding: const EdgeInsets.all(5),
       color: Colors.white,
       child: Row(
         children: [
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
 
           Expanded(
             child: Column(
@@ -28,7 +30,7 @@ class StackedOrderReviwButtonStatic extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  'S\$00.00', // Static text
+                  'S\$00.00',
                   style: getTextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -40,11 +42,11 @@ class StackedOrderReviwButtonStatic extends StatelessWidget {
           ),
 
           FilledButton(
-            onPressed: () {},
+            onPressed: onPressed, // <-- USE CALLBACK HERE
             style: ButtonStyle(
-              backgroundColor: WidgetStateProperty.all(Colors.grey.shade400),
+              backgroundColor: WidgetStateProperty.all(Colors.amber),
               padding: WidgetStateProperty.all(
-                EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
               ),
               shape: WidgetStateProperty.all(
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
@@ -60,7 +62,7 @@ class StackedOrderReviwButtonStatic extends StatelessWidget {
             ),
           ),
 
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
         ],
       ),
     );
