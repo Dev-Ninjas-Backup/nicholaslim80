@@ -75,6 +75,7 @@ class StackedFAQScreen extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
+        // ignore: unnecessary_to_list_in_spreads
         ...items.map((item) => _buildListItem(item)).toList(),
       ],
     );
@@ -98,10 +99,7 @@ class StackedFAQScreen extends StatelessWidget {
           Expanded(
             child: Text(
               text,
-              style: const TextStyle(
-                fontSize: 16,
-                height: 1.4,
-              ),
+              style: const TextStyle(fontSize: 16, height: 1.4),
             ),
           ),
         ],

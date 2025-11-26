@@ -53,7 +53,9 @@ class StackedPickDateTimeDialog extends StatelessWidget {
                 title: Text('Now'),
                 trailing: Radio(
                   value: true,
+                  // ignore: deprecated_member_use
                   groupValue: controller.isNow.value,
+                  // ignore: deprecated_member_use
                   onChanged: (value) => controller.setNow(true),
                 ),
                 onTap: () => controller.setNow(true),
@@ -83,6 +85,7 @@ class StackedPickDateTimeDialog extends StatelessWidget {
 
                   if (pickedDate != null) {
                     TimeOfDay? pickedTime = await showTimePicker(
+                      // ignore: use_build_context_synchronously
                       context: context,
                       initialTime: TimeOfDay.fromDateTime(
                         controller.selectedDateTime.value,

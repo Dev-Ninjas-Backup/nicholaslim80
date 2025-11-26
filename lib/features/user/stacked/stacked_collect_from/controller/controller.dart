@@ -1,8 +1,8 @@
 import 'package:get/get.dart';
 import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
+import 'package:nicholaslim80/features/user/stacked/stacked_collect_from/recipient_part/recipient_screen.dart';
 
 import '../model/model.dart';
-import '../recepent_part/recepent_screen.dart';
 import '../sender_part/screen/screen.dart';
 
 class StackedCollectFormController extends GetxController {
@@ -54,7 +54,7 @@ class StackedCollectFormController extends GetxController {
     isLoading.value = false;
   }
 
-  // ✅ Centralized tap handler
+  
   void onAddressTap(StackedAddressModel address) {
     selectedAddress.value = address;
 
