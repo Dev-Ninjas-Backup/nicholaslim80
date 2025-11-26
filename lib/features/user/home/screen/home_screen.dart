@@ -169,7 +169,9 @@ class HomeScreen extends StatelessWidget {
               subtitle:
                   'Courier takes all bundle packages and delivers together',
               iconPath: IconPath.stacked,
-              onTap: () => ctrl.selectService('Stacked'),
+              onTap: (){
+                Get.toNamed(AppRoutes.stackedScreen);
+              },
             ),
 
             SizedBox(height: 22),

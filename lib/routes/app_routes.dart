@@ -20,6 +20,9 @@ import 'package:nicholaslim80/features/user/home/screen/home_screen.dart';
 import 'package:nicholaslim80/features/user/refer_and_earn/screen/refer_and_earn_screen.dart';
 import 'package:nicholaslim80/features/user/saved_places/screen/saved_place_screenn.dart';
 
+import '../features/user/stacked/stacked_faq/stacked_FAQ.dart';
+import '../features/user/stacked/stacked_screen/stacked_screen.dart';
+
 class AppRoutes {
   static String splashScreen = '/splashScreen';
   static String onboardingScreen = '/onboardingScreen';
@@ -40,6 +43,8 @@ class AppRoutes {
   static String supportScreen = '/supportScreen';
   static String findingRider = '/finding-rider';
   static String connectingRider = '/connecting-rider';
+  static String stackedScreen = '/stackedScreen';
+  static String stackedFAQScreen = '/stackedFAQScreen';
 
   static String riderBottomNavbarScreen = '/riderBottomNavbarScreen';
   static String riderHomeScreen = '/riderHomeScreen';
@@ -76,6 +81,7 @@ class AppRoutes {
   static String getdistanceRadiusScreen() => distanceRadiusScreen;
   static String getexpressDelivery1() => expressDelivery1;
   static String getexpressFaq() => expressFaq;
+  static String getstackedScreen() => stackedScreen;
 
   static String getriderBottomNavbarScreen() => riderBottomNavbarScreen;
   static String getriderHomeScreen() => riderHomeScreen;
@@ -83,6 +89,8 @@ class AppRoutes {
   static String getrecordsScreen() => recordsScreen;
   static String getriderAccountScreen() => riderAccountScreen;
   static String getreferAndEarnScreen() => referAndEarnScreen;
+  static String getrstackedFAQScreen() => stackedFAQScreen;
+
 
   //user notification
   static String getUserNotification() => userNotification;
@@ -133,6 +141,16 @@ class AppRoutes {
     GetPage(
       name: referAndEarnScreen,
       page: () => ReferAndEarnScreen(),
+      transition: Transition.fadeIn,
+    ),
+    GetPage(
+      name: stackedFAQScreen,
+      page: () => StackedFAQScreen(),
+      transition: Transition.fadeIn,
+    ),
+    GetPage(
+      name: stackedScreen,
+      page: () => StackedScreen(),
       transition: Transition.fadeIn,
     ),
     GetPage(
