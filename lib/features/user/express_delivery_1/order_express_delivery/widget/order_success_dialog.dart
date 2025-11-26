@@ -76,7 +76,9 @@ class OrderSuccessDialog {
                           children: [
                             Radio<bool>(
                               value: true,
+                              // ignore: deprecated_member_use
                               groupValue: wantsConfirmationCall.value,
+                              // ignore: deprecated_member_use
                               onChanged: (value) =>
                                   wantsConfirmationCall.value = value!,
                               activeColor: Colors.blue,
@@ -94,7 +96,9 @@ class OrderSuccessDialog {
                           children: [
                             Radio<bool>(
                               value: false,
+                              // ignore: deprecated_member_use
                               groupValue: wantsConfirmationCall.value,
+                              // ignore: deprecated_member_use
                               onChanged: (value) =>
                                   wantsConfirmationCall.value = value!,
                               activeColor: Colors.blue,
