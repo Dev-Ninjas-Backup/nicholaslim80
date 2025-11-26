@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
 
 import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
@@ -111,7 +112,7 @@ class OrderControllerScreen extends GetxController {
                     ),
                   ],
                 ),
-                SizedBox(height: 8),
+                SizedBox(height: 14),
 
                 // ---------- REDEEM COINS ----------
                 Row(
@@ -132,7 +133,7 @@ class OrderControllerScreen extends GetxController {
                     ),
                   ],
                 ),
-                SizedBox(height: 8),
+                SizedBox(height: 14),
 
                 // ---------- FAVOURITE RIDERS ----------
                 Row(
@@ -153,7 +154,7 @@ class OrderControllerScreen extends GetxController {
                     ),
                   ],
                 ),
-                SizedBox(height: 31),
+                SizedBox(height: 30),
 
                 // ---------- SUBTOTAL ----------
                 Row(
@@ -161,11 +162,14 @@ class OrderControllerScreen extends GetxController {
                   children: [
                     Text(
                       'Subtotal:',
-                      style: getTextStyle(fontSize: 12, color: Colors.grey),
+                      style: getTextStyle(
+                        fontSize: 12,
+                        color: Color(0xFF6B6B6B),
+                      ),
                     ),
                     Text(
-                      'S\$45',
-                      style: getTextStyle(fontSize: 12, color: Colors.grey),
+                      '\$45',
+                      style: getTextStyle(fontSize: 12, color: Colors.black),
                     ),
                   ],
                 ),
@@ -175,11 +179,14 @@ class OrderControllerScreen extends GetxController {
                   children: [
                     Text(
                       'Coin/s redeemed:',
-                      style: getTextStyle(fontSize: 12, color: Colors.grey),
+                      style: getTextStyle(
+                        fontSize: 12,
+                        color: Color(0xFF6B6B6B),
+                      ),
                     ),
                     Text(
-                      '-S\$00',
-                      style: getTextStyle(fontSize: 12, color: Colors.grey),
+                      '\$00',
+                      style: getTextStyle(fontSize: 12, color: Colors.black),
                     ),
                   ],
                 ),
@@ -194,13 +201,30 @@ class OrderControllerScreen extends GetxController {
                       style: getTextStyle(fontSize: 12, color: Colors.grey),
                     ),
                     Text(
-                      '-S\$00',
+                      '\$00',
                       style: getTextStyle(fontSize: 12, color: Colors.red),
                     ),
                   ],
                 ),
-                SizedBox(height: 8),
+                SizedBox(height: 10),
 
+                // Row(
+                //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //   children: [
+                //     Text(
+                //       'Total:',
+                //       style: getTextStyle(
+                //         fontSize: 12,
+                //         color: Colors.black,
+                //         fontWeight: FontWeight.w700,
+                //       ),
+                //     ),
+                //     Text(
+                //       '\$40',
+                //       style: getTextStyle(fontSize: 12, color: Colors.black),
+                //     ),
+                //   ],
+                // ),
                 _buildDetailRow("Total Amount:", formattedTotal, isTotal: true),
                 SizedBox(height: 30),
 
