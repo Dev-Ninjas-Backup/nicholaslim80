@@ -236,6 +236,7 @@ class Round4 extends StatelessWidget {
                   ),
 
                 SizedBox(height: 16),
+                Divider(),
 
                 /// ---------------- ADD STOP BUTTON ----------------
                 Center(
