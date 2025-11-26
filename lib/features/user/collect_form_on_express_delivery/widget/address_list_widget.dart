@@ -51,7 +51,7 @@ class AddressListWidget extends StatelessWidget {
                 style: getTextStyle(color: Colors.grey.shade600),
               ),
               onTap: () {
-                controller.onAddressTap(address);
+                // controller.onAddressTap(address);
               },
             );
           },

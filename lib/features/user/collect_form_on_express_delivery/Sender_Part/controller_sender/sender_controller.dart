@@ -35,6 +35,16 @@ class SenderController extends GetxController {
     isFormValid.value = isValid;
   }
 
+  void clearForm() {
+    addressController.clear();
+    floorController.clear();
+    nameController.clear();
+    numberController.clear();
+    noteController.clear();
+    saveAddress.value = false;
+    isFormValid.value = false;
+  }
+
   // Clean up the controllers when the controller is disposed
   @override
   void onClose() {

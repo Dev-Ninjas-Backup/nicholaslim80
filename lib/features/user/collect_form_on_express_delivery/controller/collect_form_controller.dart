@@ -54,15 +54,15 @@ class CollectFormController extends GetxController {
   }
 
   // ✅ Centralized tap handler
-  void onAddressTap(AddressModel address) {
-    selectedAddress.value = address;
+  // void onAddressTap(AddressModel address) {
+  //   selectedAddress.value = address;
 
-    if (selectedFilterIndex.value == 0) {
-      Get.to(() => SenderView(address: address));
-    } else if (selectedFilterIndex.value == 1) {
-      Get.to(() => RecipientView(address: address));
-    }
-  }
+  //   if (selectedFilterIndex.value == 0) {
+  //     Get.to(() => SenderView(address: address));
+  //   } else if (selectedFilterIndex.value == 1) {
+  //     Get.to(() => RecipientView(address: address));
+  //   }
+  // }
 
   // ---------- MOCK DATA ----------
 
