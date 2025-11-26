@@ -2,25 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
-import 'package:nicholaslim80/features/user/%20express_delivery_1/order_express_delivery/screen/order_controller_screen.dart';
-import 'package:nicholaslim80/features/user/%20express_delivery_1/widget/collect_time_widget.dart';
-import 'package:nicholaslim80/features/user/%20express_delivery_1/widget/order_reviw_button_static.dart';
-import 'package:nicholaslim80/features/user/%20express_delivery_1/widget/pick_date_time_dialog.dart';
 import 'package:nicholaslim80/features/user/Veicale_Type_on_Exprees_Delivery/controller/vehicle_Controller.dart';
 import 'package:nicholaslim80/features/user/Veicale_Type_on_Exprees_Delivery/screen/veichale_secation_page.dart';
+import 'package:nicholaslim80/features/user/express_delivery_1/widget/collect_time_widget.dart';
+import 'package:nicholaslim80/features/user/express_delivery_1/widget/order_reviw_button_static.dart';
 
 import 'package:nicholaslim80/routes/app_routes.dart';
 
+import '../../express_delivery_1/widget/pick_date_time_dialog.dart';
 import '../stacked_controller/stacked_controller.dart';
 import '../widget/select_location_widget.dart';
 import '../widget/vehicle_type_widget.dart';
 
 class StackedScreen extends StatelessWidget {
-  final StackedLocationController controller = Get.put(StackedLocationController());
-  final vehicleController = Get.put(VehicleController());
-  final OrderControllerScreen orderController = Get.put(
-    OrderControllerScreen(),
+  final StackedLocationController controller = Get.put(
+    StackedLocationController(),
   );
+  final vehicleController = Get.put(VehicleController());
 
   StackedScreen({super.key});
 
@@ -83,7 +81,7 @@ class StackedScreen extends StatelessWidget {
               ),
               SizedBox(height: 10),
               Obx(
-                    () => IntrinsicHeight(
+                () => IntrinsicHeight(
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
