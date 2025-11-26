@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
-import 'package:nicholaslim80/core/common/widgets/custom_button.dart';
 import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
 import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
 import 'package:nicholaslim80/core/utils/constants/image_path.dart';
 import 'package:nicholaslim80/features/user/finding_raider/controller/rider_controller.dart';
 import 'package:nicholaslim80/features/user/finding_raider/screnn/rate_rider.dart';
+import 'package:nicholaslim80/features/user/finding_raider/widget/button.dart';
 import 'package:nicholaslim80/features/user/finding_raider/widget/custom_icon_text_button.dart';
 import 'package:nicholaslim80/features/user/finding_raider/widget/location_row_widget.dart';
 import 'package:nicholaslim80/features/user/finding_raider/widget/review_rateing.dart';
@@ -232,18 +232,30 @@ class RaiderDetails extends StatelessWidget {
                           ),
                         ),
                         SizedBox(height: 20),
-                        CustomButton(
-                          label: "Share Ride Information",
-                          onPressed: () {
-                            final String referralLink =
-                                "https://yourapp.com/referral?code";
-                            final String message =
-                                "Hey! Join this amazing app and earn rewards. Use my referral link: $referralLink";
+                        // CustomButton(
+                        //   label: "Share Ride Information",
+                        //   onPressed: () {
+                        //     final String referralLink =
+                        //         "";
+                        //     final String message =
+                        //         "Hey! Join this amazing app and earn rewards. Use my referral link: $referralLink";
 
-                            Share.share(message, subject: "Invite to our app");
+                        //     Share.share(message, subject: "Invite to our app");
+                        //   },
+                        //   color: AppColors.primaryButtonColor,
+                        //   textColor: AppColors.primaryFontColor,
+                        // ),
+                        Button(
+                          textColor: Colors.black,
+                          backgroundColor: AppColors.onboardingIndicatorActive,
+                          buttonText: 'Share Ride Information',
+                          onPressed: () {
+                            // ignore: deprecated_member_use
+                            Share.share(
+                              'Inviting friends.',
+                              //subject: 'Optional Subject',
+                            );
                           },
-                          color: AppColors.primaryButtonColor,
-                          textColor: AppColors.primaryFontColor,
                         ),
                         SizedBox(height: 16),
                       ],
