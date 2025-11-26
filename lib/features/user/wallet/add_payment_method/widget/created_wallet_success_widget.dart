@@ -1,0 +1,61 @@
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
+import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
+import 'package:nicholaslim80/features/user/wallet/my_wallet/screen/user_my_wallet.dart';
+
+class CreatedWalletSuccessWidget extends StatefulWidget {
+  const CreatedWalletSuccessWidget({super.key});
+
+  @override
+  State<CreatedWalletSuccessWidget> createState() =>
+      _CreatedWalletSuccessWidgetState();
+}
+
+class _CreatedWalletSuccessWidgetState
+    extends State<CreatedWalletSuccessWidget> {
+  @override
+  void initState() {
+    super.initState();
+
+    Future.delayed(Duration(seconds: 3), () {
+      if (mounted) {
+        Get.to(UserMyWallet());
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.backgroungColor,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                color: Colors.lightGreen,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(Icons.check, color: Colors.white, size: 40),
+            ),
+            SizedBox(height: 20),
+
+            Text(
+              "You have successfully credited to your\n wallet",
+              textAlign: TextAlign.center,
+              style: getTextStyle(
+                fontSize: 17,
+                color: Colors.black,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

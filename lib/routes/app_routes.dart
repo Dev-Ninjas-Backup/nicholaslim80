@@ -1,9 +1,10 @@
+import 'package:get/get.dart';
 import 'package:get/get_navigation/src/routes/get_route.dart';
 import 'package:get/get_navigation/src/routes/transitions_type.dart';
 import 'package:nicholaslim80/features/onboarding/screen/onboarding_screen.dart';
 import 'package:nicholaslim80/features/splash/screen/splash_screen.dart';
-import 'package:nicholaslim80/features/user/%20express_delivery_1/express_delivery_to_sendr_or_recepmeant/screen/express_sender_or_recepmeant.dart';
-import 'package:nicholaslim80/features/user/%20express_delivery_1/screen/express_delivery_1.dart';
+import 'package:nicholaslim80/features/user/express_delivery_1/express_delivery_to_sendr_or_recepmeant/screen/express_sender_or_recepmeant.dart';
+import 'package:nicholaslim80/features/user/express_delivery_1/screen/express_delivery_1.dart';
 import 'package:nicholaslim80/features/user/Express_Delivary_Faq/Screen/express_faq.dart';
 import 'package:nicholaslim80/features/user/finding_raider/screnn/connecting_rider_page.dart';
 import 'package:nicholaslim80/features/user/finding_raider/screnn/finding_rider_page.dart';
@@ -63,6 +64,8 @@ class AppRoutes {
   static String expressDelivery1 = "/expressDelivery1";
   static String expressFaq = "/expressFaq";
   static String expressSenderOrRecepment = "/expressSenderOrRecepment";
+  static String savedPlaceScreen = "/savedPlaceScreen";
+
   // static String scheduledelivery = "/scheduledelivery";
 
   static String getSplashScreen() => splashScreen;
@@ -91,6 +94,7 @@ class AppRoutes {
   static String getreferAndEarnScreen() => referAndEarnScreen;
   static String getrstackedFAQScreen() => stackedFAQScreen;
 
+  static String getsavedPlaceScreen() => savedPlaceScreen;
 
   //user notification
   static String getUserNotification() => userNotification;
@@ -187,6 +191,11 @@ class AppRoutes {
     ),
     GetPage(name: connectingRider, page: () => ConnectingRiderPage()),
     GetPage(name: findingRider, page: () => FindingRiderPage()),
+    GetPage(
+      name: savedPlaceScreen,
+      page: () => SavedPlaceScreen(),
+      transition: Transition.fadeIn,
+    ),
     // GetPage(
     //   name: scheduledelivery,
     //   page: () => ScheduleDelivery(),

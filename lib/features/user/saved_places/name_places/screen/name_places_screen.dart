@@ -5,7 +5,7 @@ import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 import 'package:nicholaslim80/core/common/widgets/custom_button.dart';
 import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
 import 'package:nicholaslim80/features/user/saved_places/controller/saved_places_controller.dart';
-import 'package:nicholaslim80/features/user/saved_places/screen/saved_place_screenn.dart';
+import 'package:nicholaslim80/routes/app_routes.dart';
 
 class NamePlaceScreen extends StatelessWidget {
   final SavedPlaceController controller = Get.find();
@@ -57,12 +57,13 @@ class NamePlaceScreen extends StatelessWidget {
               onPressed: () {
                 if (nameController.text.trim().isNotEmpty) {
                   controller.addNewPlace(nameController.text.trim());
-                  Get.offAll(() => SavedPlaceScreen());
+                  Get.offAll(AppRoutes.getsavedPlaceScreen());
                 }
               },
               color: AppColors.primaryButtonColor,
               textColor: AppColors.primaryFontColor,
             ),
+            SizedBox(height: 90.h),
           ],
         ),
       ),
