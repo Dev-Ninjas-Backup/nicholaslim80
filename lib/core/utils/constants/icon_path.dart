@@ -66,4 +66,6 @@ class IconPath {
   // ignore: non_constant_identifier_names
   static String greyDot = "assets/icons/grey_dot.png";
   static String colorFullArrow = "assets/icons/color_ful_arrow.png";
+  static String nets = "assets/icons/nets.png";
+  static String dbs = "assets/icons/dbs.png";
 }

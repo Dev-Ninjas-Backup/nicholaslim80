@@ -30,14 +30,15 @@ class ProfileScreen extends StatelessWidget {
                     width: 34,
                   ),
                 ),
+                style: getTextStyle(),
               ),
               SizedBox(height: 36),
               ListView.builder(
                 padding: EdgeInsets.zero,
                 shrinkWrap: true,
-              
+
                 itemCount: controller.profileItem.length,
-              
+
                 itemBuilder: (_, index) {
                   return Padding(
                     padding: EdgeInsets.only(bottom: 16),
@@ -67,7 +68,7 @@ class ProfileScreen extends StatelessWidget {
                             GestureDetector(
                               onTap: () {
                                 //
-              
+
                                 //
                               },
                               child: Image.asset(

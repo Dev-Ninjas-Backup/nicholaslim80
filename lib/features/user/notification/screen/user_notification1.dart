@@ -18,7 +18,7 @@ class UserNotification extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            CustomAppBarUser(title: "Notifications"),
+            CustomAppBarUser(title: "Notifications", style: getTextStyle()),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16, vertical: 18),
               child: Obx(

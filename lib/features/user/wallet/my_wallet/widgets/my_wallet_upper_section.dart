@@ -41,6 +41,7 @@ class MyWalletUpperSection extends StatelessWidget {
               onTap: () {
                 Get.offNamed(AppRoutes.bottomNavbarScreen);
               },
+              style: getTextStyle(),
             ),
             SizedBox(height: 16),
             Center(
@@ -67,7 +68,11 @@ class MyWalletUpperSection extends StatelessWidget {
                     child: GestureDetector(
                       onTap: () {
                         controller.selectFundsOrRedeen.value = 0;
+
+                        // Add Funds e niye jao
+                        Get.toNamed(AppRoutes.getuserAddFund());
                       },
+
                       child: Container(
                         padding: EdgeInsets.symmetric(
                           horizontal: 20,

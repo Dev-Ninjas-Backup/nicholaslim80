@@ -1,0 +1,36 @@
+import 'package:get/get.dart';
+import 'package:nicholaslim80/features/user/wallet/loyalty_and_rewards/widget/redeem_bottom_shit.dart';
+
+class LoyaltyAndRewardsController extends GetxController {
+  RxInt points = 60.obs;
+  RxDouble dollarValue = 50.04.obs;
+
+  RxList<Map<String, dynamic>> history = [
+    {"orderId": "#1088", "date": "20 Aug 25"},
+    {"orderId": "#1087", "date": "20 Aug 25"},
+  ].obs;
+
+  void onBack() => Get.back();
+  void showRedeemBottomSheet() {
+    Get.bottomSheet(
+      RedeemBottomSheet(
+        onRedeem: () {
+          Get.back();
+          Get.snackbar("Redeem", "Redeem clicked");
+        },
+        onCancel: () {
+          Get.back();
+        },
+      ),
+      isScrollControlled: true,
+    );
+  }
+
+  void onInfoTap() {
+    Get.snackbar("Info", "Loyalty & Rewards Information");
+  }
+
+  void onConvertPoints() {
+    Get.snackbar("Convert", "Points convert action triggered");
+  }
+}
