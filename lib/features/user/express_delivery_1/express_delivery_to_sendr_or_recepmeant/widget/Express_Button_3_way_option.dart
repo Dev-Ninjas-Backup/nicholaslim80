@@ -7,6 +7,7 @@ import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
 import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
 import 'package:nicholaslim80/features/user/express_delivery_1/controller/express_controller_1.dart';
 import 'package:nicholaslim80/features/user/express_delivery_1/widget/one_way_round_functionality.dart';
+import 'package:nicholaslim80/features/user/express_delivery_1/widget/select_location_widget.dart';
 
 class ExpressButtonWidget3Address extends StatelessWidget {
   const ExpressButtonWidget3Address({super.key, required this.controller});
@@ -106,6 +107,7 @@ class ExpressButtonWidget3Address extends StatelessWidget {
                         ],
                       ),
                       Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           OneWayRoundWidget(
                             controller: LocationController(),
@@ -118,7 +120,16 @@ class ExpressButtonWidget3Address extends StatelessWidget {
                             ),
                           ),
 
-                          SizedBox(height: 8),
+                          Icon(
+                            Icons.fiber_manual_record,
+                            size: 10,
+                            color: Colors.grey,
+                          ),
+                          Icon(
+                            Icons.fiber_manual_record,
+                            size: 10,
+                            color: Colors.grey,
+                          ),
                           OneWayRoundWidget(
                             controller: LocationController(),
                             title: 'Delivered from (Sender: Athena Lin)',
@@ -156,6 +167,7 @@ class ExpressButtonWidget3Address extends StatelessWidget {
                         ],
                       ),
                       Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           OneWayRoundWidget(
                             controller: LocationController(),
@@ -167,7 +179,16 @@ class ExpressButtonWidget3Address extends StatelessWidget {
                               height: 14,
                             ),
                           ),
-                          SizedBox(height: 8),
+                          Icon(
+                            Icons.fiber_manual_record,
+                            size: 10,
+                            color: Colors.grey,
+                          ),
+                          Icon(
+                            Icons.fiber_manual_record,
+                            size: 10,
+                            color: Colors.grey,
+                          ),
                           OneWayRoundWidget(
                             controller: LocationController(),
                             title: 'Deliver to (Recipent: Joseph Low)',
@@ -178,7 +199,16 @@ class ExpressButtonWidget3Address extends StatelessWidget {
                               height: 14,
                             ),
                           ),
-                          SizedBox(height: 8),
+                          Icon(
+                            Icons.fiber_manual_record,
+                            size: 10,
+                            color: Colors.grey,
+                          ),
+                          Icon(
+                            Icons.fiber_manual_record,
+                            size: 10,
+                            color: Colors.grey,
+                          ),
                           OneWayRoundWidget(
                             controller: LocationController(),
                             title: 'Return address (Athena Lin)',
@@ -191,6 +221,8 @@ class ExpressButtonWidget3Address extends StatelessWidget {
                           ),
                         ],
                       ),
+                      Divider(),
+                      CustomAddButton(),
                     ],
                   ),
           ),

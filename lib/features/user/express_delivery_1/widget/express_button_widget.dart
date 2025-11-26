@@ -104,6 +104,7 @@ class ExpressButtonWidget extends StatelessWidget {
                         ],
                       ),
                       Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           OneWayRoundWidget(
                             controller: LocationController(),
@@ -116,7 +117,16 @@ class ExpressButtonWidget extends StatelessWidget {
                             ),
                           ),
 
-                          SizedBox(height: 8),
+                          Icon(
+                            Icons.fiber_manual_record,
+                            size: 10,
+                            color: Colors.grey,
+                          ),
+                          Icon(
+                            Icons.fiber_manual_record,
+                            size: 10,
+                            color: Colors.grey,
+                          ),
                           OneWayRoundWidget(
                             controller: LocationController(),
                             title: 'Delivered from (Sender: Athena Lin)',
@@ -154,6 +164,7 @@ class ExpressButtonWidget extends StatelessWidget {
                         ],
                       ),
                       Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           OneWayRoundWidget(
                             controller: LocationController(),
@@ -165,7 +176,16 @@ class ExpressButtonWidget extends StatelessWidget {
                               height: 14,
                             ),
                           ),
-                          SizedBox(height: 8),
+                          Icon(
+                            Icons.fiber_manual_record,
+                            size: 10,
+                            color: Colors.grey,
+                          ),
+                          Icon(
+                            Icons.fiber_manual_record,
+                            size: 10,
+                            color: Colors.grey,
+                          ),
                           OneWayRoundWidget(
                             controller: LocationController(),
                             title: 'Delivered from (Sender: Athena Lin)',

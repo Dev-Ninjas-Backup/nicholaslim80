@@ -99,28 +99,38 @@ class ExpressToSenderOrRecepment extends StatelessWidget {
                 Obx(
                   () => Row(
                     children: [
-                      CollectTimeOption(
-                        title: "Now",
-                        selected: controller.isNowSelected.value,
-                        onTap: () {
-                          hideKeyboard();
-                          controller.selectNow();
-                        },
+                      Expanded(
+                        child: SizedBox(
+                          height: 70,
+                          child: CollectTimeOption(
+                            title: "Now",
+                            selected: controller.isNowSelected.value,
+                            onTap: () {
+                              hideKeyboard();
+                              controller.selectNow();
+                            },
+                          ),
+                        ),
                       ),
                       SizedBox(width: 16),
-                      CollectTimeOption(
-                        title: "Schedule",
-                        subtitle: "Pick Date and Time",
-                        selected: !controller.isNowSelected.value,
-                        onTap: () {
-                          hideKeyboard();
-                          controller.selectSchedule();
+                      Expanded(
+                        child: SizedBox(
+                          height: 70,
+                          child: CollectTimeOption(
+                            title: "Schedule",
+                            subtitle: "Pick Date and Time",
+                            selected: !controller.isNowSelected.value,
+                            onTap: () {
+                              hideKeyboard();
+                              controller.selectSchedule();
 
-                          showDialog(
-                            context: context,
-                            builder: (_) => PickDateTimeDialog(),
-                          );
-                        },
+                              showDialog(
+                                context: context,
+                                builder: (_) => PickDateTimeDialog(),
+                              );
+                            },
+                          ),
+                        ),
                       ),
                     ],
                   ),
