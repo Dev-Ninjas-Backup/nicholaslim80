@@ -58,37 +58,41 @@ class BottomSummary extends StatelessWidget {
               ),
             ),
             Obx(
-              () => FilledButton(
-                onPressed: vehicleController.selectedVehicle.value != null
-                    ? () {
-                        double total = vehicleController.calculateTotal();
-                        Get.toNamed(
-                          AppRoutes.getexpressSenderOrRecepment(),
-                          arguments: {'totalAmount': total},
-                        );
-                      }
-                    : null,
-                style: ButtonStyle(
-                  backgroundColor: WidgetStateProperty.resolveWith<Color>(
-                    (states) => vehicleController.selectedVehicle.value != null
-                        ? Colors.amber
-                        : Colors.grey.shade400,
-                  ),
-                  padding: WidgetStateProperty.all(
-                    EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-                  ),
-                  shape: WidgetStateProperty.all(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(6),
+              () => SizedBox(
+                height: 50,
+                child: FilledButton(
+                  onPressed: vehicleController.selectedVehicle.value != null
+                      ? () {
+                          double total = vehicleController.calculateTotal();
+                          Get.toNamed(
+                            AppRoutes.getexpressSenderOrRecepment(),
+                            arguments: {'totalAmount': total},
+                          );
+                        }
+                      : null,
+                  style: ButtonStyle(
+                    backgroundColor: WidgetStateProperty.resolveWith<Color>(
+                      (states) =>
+                          vehicleController.selectedVehicle.value != null
+                          ? Colors.amber
+                          : Colors.grey.shade400,
+                    ),
+                    padding: WidgetStateProperty.all(
+                      EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                    ),
+                    shape: WidgetStateProperty.all(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6),
+                      ),
                     ),
                   ),
-                ),
-                child: Text(
-                  'Review Order',
-                  style: getTextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
+                  child: Text(
+                    'Review Order',
+                    style: getTextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
                   ),
                 ),
               ),
