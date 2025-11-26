@@ -4,8 +4,9 @@ import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
 import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 import 'package:nicholaslim80/features/user/Sechedule_veycale_type/screen/veycale_main.dart';
 import 'package:nicholaslim80/features/user/express_delivery_1/controller/express_controller_1.dart';
+import 'package:nicholaslim80/features/user/express_delivery_1/order_express_delivery/screen/order_controller_screen.dart';
 import 'package:nicholaslim80/features/user/express_delivery_1/widget/collect_time_widget.dart';
-import 'package:nicholaslim80/features/user/express_delivery_1/widget/order_reviw_button_static.dart';
+import 'package:nicholaslim80/features/user/express_delivery_1/widget/order_review_widget.dart';
 import 'package:nicholaslim80/features/user/express_delivery_1/widget/pick_date_time_dialog.dart';
 import 'package:nicholaslim80/features/user/express_delivery_1/widget/vehicle_type_widget.dart';
 import 'package:nicholaslim80/features/user/Veicale_Type_on_Exprees_Delivery/controller/vehicle_Controller.dart';
@@ -149,7 +150,14 @@ class ScheduleRoundDelivery extends StatelessWidget {
                 SizedBox(height: 24),
 
                 // 🔹 Order Review Section
-                OrderReviwButtonStatic(),
+                OrderReviewWidget(
+                  vehicleController: vehicleController,
+                  total: 123.45,
+                  calculationHistory: vehicleController.calculationHistory,
+                  onReviewOrderPressed: () {
+                    Get.to(OrderControllerScreen());
+                  },
+                ),
               ],
             ),
           ),
