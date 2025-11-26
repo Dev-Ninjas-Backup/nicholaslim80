@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
-import 'package:nicholaslim80/features/user/schedule_express_%20delivey/Schedule_sender_recepent/screen/schedule_sender_screen.dart';
 import 'package:nicholaslim80/features/user/stacked/widget/stacked_button.dart';
 
+import '../schedule_stacked_ delivey/Schedule_sender_recepent/screen/schedule_sender_screen.dart';
 import '../stacked_controller/stacked_controller.dart';
 
 class StackedSelectLocationWidget extends StatelessWidget {
@@ -53,7 +53,7 @@ class StackedCustomAddButton extends StatelessWidget {
           ),
         ),
         onPressed: () {
-          Get.to(SenderScheduleScreen());
+          Get.to(StackedSenderScheduleScreen());
         },
       ),
     );
