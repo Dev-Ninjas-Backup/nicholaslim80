@@ -5,7 +5,7 @@ import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 import 'package:nicholaslim80/features/user/Veicale_Type_on_Exprees_Delivery/controller/vehicle_Controller.dart';
 import 'package:nicholaslim80/features/user/express_delivery_1/order_express_delivery/controller/order_controller.dart';
-import 'package:nicholaslim80/features/user/express_delivery_1/order_express_delivery/screen/order_controller_screen.dart';
+import 'package:nicholaslim80/features/user/express_delivery_1/order_express_delivery/screen/order_alertdialog_screen.dart';
 
 class OrderReviewWidget extends StatelessWidget {
   final VehicleController vehicleController;
@@ -100,10 +100,11 @@ class OrderReviewWidget extends StatelessWidget {
 
   // Default action if no callback is passed
   void _defaultReviewOrderAction() {
-    final OrderControllerScreen orderControllerScreen =
-        Get.find<OrderControllerScreen>();
-    orderControllerScreen.totalAmount = total;
-    orderControllerScreen.showConfirmationDialog();
+    final OrderController orderController = Get.find<OrderController>();
+    orderController.totalAmount = total;
+
+    // Call the reusable dialog function
+    showOrderConfirmationDialog(orderController);
   }
 
   void _openHistoryPopup(BuildContext context) {
