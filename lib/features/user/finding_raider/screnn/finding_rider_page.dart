@@ -209,7 +209,7 @@ class FindingRiderPage extends StatelessWidget {
                         SizedBox(height: 20),
 
                         Button(
-                          buttonText: 'Share Ride Information',
+                          buttonText: 'Priority order',
                           textColor: Colors.black,
                           backgroundColor: Colors.amber,
                           onPressed: raidercontroller.navigateToConnectingRider,
