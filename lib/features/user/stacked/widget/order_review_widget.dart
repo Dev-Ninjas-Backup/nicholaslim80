@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 import 'package:nicholaslim80/features/user/Veicale_Type_on_Exprees_Delivery/controller/vehicle_Controller.dart';
 import 'package:nicholaslim80/features/user/express_delivery_1/order_express_delivery/controller/order_controller.dart';
-import 'package:nicholaslim80/features/user/express_delivery_1/order_express_delivery/screen/order_controller_screen.dart';
+import 'package:nicholaslim80/features/user/express_delivery_1/order_express_delivery/screen/order_alertdialog_screen.dart';
 
 class OrderReviewWidget extends StatelessWidget {
   final VehicleController vehicleController;
@@ -78,12 +78,15 @@ class OrderReviewWidget extends StatelessWidget {
   }
 
   Widget _reviewOrderButton() {
-    final OrderControllerScreen orderController =
-        Get.find<OrderControllerScreen>();
+    final OrderController orderController = Get.find<OrderController>();
+
     return FilledButton(
       onPressed: () {
+        // Set total dynamically
         orderController.totalAmount = total;
-        orderController.showConfirmationDialog();
+
+        // Call the reusable top-level dialog function
+        showOrderConfirmationDialog(orderController);
       },
       style: FilledButton.styleFrom(
         backgroundColor: Colors.amber,
