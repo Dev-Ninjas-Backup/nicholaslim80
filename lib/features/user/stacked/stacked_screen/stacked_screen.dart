@@ -2,23 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
-import 'package:nicholaslim80/features/user/Veicale_Type_on_Exprees_Delivery/controller/vehicle_Controller.dart';
-import 'package:nicholaslim80/features/user/Veicale_Type_on_Exprees_Delivery/screen/veichale_secation_page.dart';
-import 'package:nicholaslim80/features/user/express_delivery_1/widget/collect_time_widget.dart';
-import 'package:nicholaslim80/features/user/express_delivery_1/widget/order_reviw_button_static.dart';
 
 import 'package:nicholaslim80/routes/app_routes.dart';
 
 import '../../express_delivery_1/widget/pick_date_time_dialog.dart';
 import '../stacked_controller/stacked_controller.dart';
+import '../vehicle_type/controller/controller.dart';
+import '../vehicle_type/screen/screen.dart';
+import '../widget/collect_time_widget.dart';
 import '../widget/select_location_widget.dart';
+import '../widget/stack_order_review_button_widget.dart';
 import '../widget/vehicle_type_widget.dart';
 
 class StackedScreen extends StatelessWidget {
   final StackedLocationController controller = Get.put(
     StackedLocationController(),
   );
-  final vehicleController = Get.put(VehicleController());
+  final vehicleController = Get.put(StackedVehicleController());
 
   StackedScreen({super.key});
 
@@ -85,13 +85,13 @@ class StackedScreen extends StatelessWidget {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      CollectTimeOption(
+                      StackedCollectTimeOption(
                         title: "Now",
                         selected: controller.isNowSelected.value,
                         onTap: controller.selectNow,
                       ),
                       SizedBox(width: 16),
-                      CollectTimeOption(
+                      StackedCollectTimeOption(
                         title: "Schedule",
                         subtitle: "Pick Date and Time",
                         selected: !controller.isNowSelected.value,
@@ -123,7 +123,7 @@ class StackedScreen extends StatelessWidget {
                   ),
                   IconButton(
                     onPressed: () {
-                      Get.to(() => VehicleSelectionPage());
+                      Get.to(() => StackedVehicleSelectionPage());
                     },
                     icon: Icon(Icons.info_outline),
                     color: Colors.black87,
@@ -135,7 +135,7 @@ class StackedScreen extends StatelessWidget {
               StackedVehicleTypeWidget(controller: controller),
 
               SizedBox(height: 24),
-              OrderReviwButtonStatic(),
+              StackedOrderReviwButtonStatic(),
             ],
           ),
         ),

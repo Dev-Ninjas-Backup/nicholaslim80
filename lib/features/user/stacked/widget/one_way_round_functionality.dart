@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
-import 'package:nicholaslim80/features/user/collect_form_on_express_delivery/controller/collect_form_controller.dart';
-
+import '../stacked_collect_from/controller/controller.dart';
 import '../stacked_collect_from/screen/collect_from.dart';
 import '../stacked_controller/stacked_controller.dart';
 
@@ -80,7 +79,7 @@ class StackOneWayRoundWidget extends StatelessWidget {
             onTap: () {
               Get.to(
                     () => StackedCollectFormScreen(
-                  controller: Get.put(CollectFormController()),
+                  controller: Get.put(StackedCollectFormController()),
                 ),
               );
             },
