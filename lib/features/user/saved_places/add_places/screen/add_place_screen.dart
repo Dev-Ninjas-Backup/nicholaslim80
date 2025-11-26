@@ -70,7 +70,6 @@ class AddPlaceScreen extends StatelessWidget {
                 },
               ),
             ),
-            SizedBox(height: 12),
             Row(
               children: [
                 Icon(Icons.near_me_outlined, color: Colors.grey),
@@ -81,6 +80,7 @@ class AddPlaceScreen extends StatelessWidget {
                 ),
               ],
             ),
+            SizedBox(height: 380.h),
           ],
         ),
       ),

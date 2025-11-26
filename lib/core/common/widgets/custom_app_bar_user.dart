@@ -12,6 +12,7 @@ class CustomAppBarUser extends StatelessWidget {
     this.action,
     this.onTap,
     super.key,
+    required TextStyle style,
   });
 
   @override

@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'package:get/get_navigation/src/routes/get_route.dart';
 import 'package:get/get_navigation/src/routes/transitions_type.dart';
 import 'package:nicholaslim80/features/onboarding/screen/onboarding_screen.dart';
@@ -58,6 +59,8 @@ class AppRoutes {
   static String expressDelivery1 = "/expressDelivery1";
   static String expressFaq = "/expressFaq";
   static String expressSenderOrRecepment = "/expressSenderOrRecepment";
+  static String savedPlaceScreen = "/savedPlaceScreen";
+
   // static String scheduledelivery = "/scheduledelivery";
 
   static String getSplashScreen() => splashScreen;
@@ -83,6 +86,7 @@ class AppRoutes {
   static String getrecordsScreen() => recordsScreen;
   static String getriderAccountScreen() => riderAccountScreen;
   static String getreferAndEarnScreen() => referAndEarnScreen;
+  static String getsavedPlaceScreen() => savedPlaceScreen;
 
   //user notification
   static String getUserNotification() => userNotification;
@@ -169,6 +173,11 @@ class AppRoutes {
     ),
     GetPage(name: connectingRider, page: () => ConnectingRiderPage()),
     GetPage(name: findingRider, page: () => FindingRiderPage()),
+    GetPage(
+      name: savedPlaceScreen,
+      page: () => SavedPlaceScreen(),
+      transition: Transition.fadeIn,
+    ),
     // GetPage(
     //   name: scheduledelivery,
     //   page: () => ScheduleDelivery(),

@@ -4,6 +4,7 @@ import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
 import 'package:nicholaslim80/core/utils/constants/image_path.dart';
 import 'package:nicholaslim80/features/user/auth/login/controller/login_signup_controller.dart';
 import 'package:nicholaslim80/features/user/home/model/drawer_model.dart';
+import 'package:nicholaslim80/features/user/home/widgets/logout_dailog_widget.dart';
 import 'package:nicholaslim80/routes/app_routes.dart';
 
 class HomeController extends GetxController {
@@ -52,6 +53,17 @@ class HomeController extends GetxController {
   ].obs;
 
   final selectedVehicleId = RxnString();
+
+  void showLogoutDialog() {
+    Get.dialog(
+      LogoutDialog(
+        onConfirm: () {
+          controller.logout();
+        },
+      ),
+      barrierDismissible: false,
+    );
+  }
 
   void selectService(String service) => selectedService.value = service;
   void selectVehicle(String id) => selectedVehicleId.value = id;
@@ -111,7 +123,7 @@ class HomeController extends GetxController {
         iconUrl: IconPath.logOutIcon,
         iconname: "Logout",
         ontap: () {
-          controller.logout();
+          showLogoutDialog();
         },
       ),
     ]);
