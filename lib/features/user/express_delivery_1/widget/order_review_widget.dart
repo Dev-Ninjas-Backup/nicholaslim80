@@ -1,23 +1,27 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
+import 'package:nicholaslim80/features/user/Veicale_Type_on_Exprees_Delivery/controller/vehicle_Controller.dart';
 import 'package:nicholaslim80/features/user/express_delivery_1/order_express_delivery/controller/order_controller.dart';
 import 'package:nicholaslim80/features/user/express_delivery_1/order_express_delivery/screen/order_controller_screen.dart';
-import 'package:nicholaslim80/features/user/Veicale_Type_on_Exprees_Delivery/controller/vehicle_Controller.dart';
 
 class OrderReviewWidget extends StatelessWidget {
   final VehicleController vehicleController;
   final OrderController orderController = Get.put(OrderController());
-  final double total; // ← Added
-  final List<String> calculationHistory; // ← Added
+  final double total;
+  final List<String> calculationHistory;
+
+  // New: reusable callback
+  final VoidCallback? onReviewOrderPressed;
 
   OrderReviewWidget({
     super.key,
     required this.vehicleController,
     required this.total,
     required this.calculationHistory,
+    this.onReviewOrderPressed, // optional: pass your own function
   });
 
   @override
@@ -66,7 +70,7 @@ class OrderReviewWidget extends StatelessWidget {
         ),
         SizedBox(height: 4),
         Text(
-          'S\$${total.toStringAsFixed(2)}', // ← Using total directly
+          'S\$${total.toStringAsFixed(2)}',
           style: getTextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
@@ -77,14 +81,10 @@ class OrderReviewWidget extends StatelessWidget {
     );
   }
 
+  // Reusable review order button
   Widget _reviewOrderButton() {
-    final OrderControllerScreen orderController =
-        Get.find<OrderControllerScreen>();
     return FilledButton(
-      onPressed: () {
-        orderController.totalAmount = total;
-        orderController.showConfirmationDialog();
-      },
+      onPressed: onReviewOrderPressed ?? _defaultReviewOrderAction,
       style: FilledButton.styleFrom(
         backgroundColor: Colors.amber,
         foregroundColor: Colors.white,
@@ -98,7 +98,14 @@ class OrderReviewWidget extends StatelessWidget {
     );
   }
 
-  // History bottom sheet — using passed list instead of controller
+  // Default action if no callback is passed
+  void _defaultReviewOrderAction() {
+    final OrderControllerScreen orderControllerScreen =
+        Get.find<OrderControllerScreen>();
+    orderControllerScreen.totalAmount = total;
+    orderControllerScreen.showConfirmationDialog();
+  }
+
   void _openHistoryPopup(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -126,22 +133,17 @@ class OrderReviewWidget extends StatelessWidget {
               style: getTextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 12),
-
-            // Using calculationHistory (non-Rx)
             Flexible(
               child: ListView.separated(
                 shrinkWrap: true,
                 itemCount: calculationHistory.length,
                 separatorBuilder: (_, __) => Divider(height: 1),
-                itemBuilder: (_, index) {
-                  return ListTile(
-                    leading: Icon(Icons.check, color: Colors.amber),
-                    title: Text(calculationHistory[index]),
-                  );
-                },
+                itemBuilder: (_, index) => ListTile(
+                  leading: Icon(Icons.check, color: Colors.amber),
+                  title: Text(calculationHistory[index]),
+                ),
               ),
             ),
-
             SizedBox(height: 12),
             Text(
               "Total Amount:",
