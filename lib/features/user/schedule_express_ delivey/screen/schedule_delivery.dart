@@ -8,6 +8,7 @@ import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 import 'package:nicholaslim80/features/user/express_delivery_1/controller/express_controller_1.dart';
 import 'package:nicholaslim80/features/user/express_delivery_1/widget/collect_time_widget.dart';
 import 'package:nicholaslim80/features/user/express_delivery_1/widget/order_review_widget.dart';
+import 'package:nicholaslim80/features/user/express_delivery_1/widget/pick_date_time_dialog.dart';
 import 'package:nicholaslim80/features/user/express_delivery_1/widget/vehicle_type_widget.dart';
 import 'package:nicholaslim80/features/user/Veicale_Type_on_Exprees_Delivery/controller/vehicle_Controller.dart';
 
@@ -93,36 +94,34 @@ class ScheduleDelivery extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 10),
-
                 Obx(
-                  () => Row(
-                    children: [
-                      Expanded(
-                        child: SizedBox(
-                          height: 70,
-                          child: CollectTimeOption(
-                            title: "Now",
-                            selected: controller.isNowSelected.value,
-                            onTap: () {
-                              hideKeyboard();
-                              controller.selectNow();
-                            },
-                          ),
+                  () => IntrinsicHeight(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        CollectTimeOption(
+                          title: "Now",
+                          selected: controller.isNowSelected.value,
+                          onTap: controller.selectNow,
                         ),
-                      ),
-                      SizedBox(width: 16),
-                      Expanded(
-                        child: CollectTimeOption(
+                        SizedBox(width: 16),
+                        CollectTimeOption(
                           title: "Schedule",
                           subtitle: "Pick Date and Time",
                           selected: !controller.isNowSelected.value,
                           onTap: () {
-                            hideKeyboard();
+                            FocusScope.of(context).unfocus();
                             controller.selectSchedule();
+
+                            // Open the date-time dialog
+                            showDialog(
+                              context: context,
+                              builder: (_) => PickDateTimeDialog(),
+                            );
                           },
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
 

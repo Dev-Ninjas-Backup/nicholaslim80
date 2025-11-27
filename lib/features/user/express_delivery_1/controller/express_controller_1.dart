@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
 
 class VehicleModel {
@@ -10,6 +11,7 @@ class LocationController extends GetxController {
   // trip/time state
   var isRoundTrip = false.obs;
   var isNowSelected = true.obs;
+  var scheduledDateTime = Rxn<DateTime>();
 
   // editing state used by widgets that allow inline title edit
   var isEditing = false.obs;
@@ -39,8 +41,25 @@ class LocationController extends GetxController {
     ];
   }
 
-  void selectNow() => isNowSelected.value = true;
-  void selectSchedule() => isNowSelected.value = false;
+  void selectNow() {
+    isNowSelected.value = true;
+    scheduledDateTime.value = null;
+  }
+
+  void selectSchedule([DateTime? time]) {
+    isNowSelected.value = false;
+    if (time != null) {
+      scheduledDateTime.value = time;
+    }
+  }
+
+  String? get formattedScheduledDateTime {
+    if (scheduledDateTime.value == null) {
+      return "Pick Date and Time";
+    }
+    return DateFormat("EEE, dd MMM, hh:mm a").format(scheduledDateTime.value!);
+  }
+
   void toggleTripType(bool isRound) => isRoundTrip.value = isRound;
   // void toggleEdit() => isEditing.value = !isEditing.value;
   void updateTitle(String newTitle) => title.value = newTitle;

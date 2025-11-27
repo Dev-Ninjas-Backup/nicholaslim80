@@ -95,44 +95,34 @@ class ExpressToSenderOrRecepment extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 10),
-
                 Obx(
-                  () => Row(
-                    children: [
-                      Expanded(
-                        child: SizedBox(
-                          height: 70,
-                          child: CollectTimeOption(
-                            title: "Now",
-                            selected: controller.isNowSelected.value,
-                            onTap: () {
-                              hideKeyboard();
-                              controller.selectNow();
-                            },
-                          ),
+                  () => IntrinsicHeight(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        CollectTimeOption(
+                          title: "Now",
+                          selected: controller.isNowSelected.value,
+                          onTap: controller.selectNow,
                         ),
-                      ),
-                      SizedBox(width: 16),
-                      Expanded(
-                        child: SizedBox(
-                          height: 70,
-                          child: CollectTimeOption(
-                            title: "Schedule",
-                            subtitle: "Pick Date and Time",
-                            selected: !controller.isNowSelected.value,
-                            onTap: () {
-                              hideKeyboard();
-                              controller.selectSchedule();
+                        SizedBox(width: 16),
+                        CollectTimeOption(
+                          title: "Schedule",
+                          subtitle: "Pick Date and Time",
+                          selected: !controller.isNowSelected.value,
+                          onTap: () {
+                            FocusScope.of(context).unfocus();
+                            controller.selectSchedule();
 
-                              showDialog(
-                                context: context,
-                                builder: (_) => PickDateTimeDialog(),
-                              );
-                            },
-                          ),
+                            // Open the date-time dialog
+                            showDialog(
+                              context: context,
+                              builder: (_) => PickDateTimeDialog(),
+                            );
+                          },
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
 
