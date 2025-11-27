@@ -3,8 +3,7 @@ import 'package:get/get.dart';
 import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
 import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
-import 'package:nicholaslim80/features/user/express_delivery_1/controller/express_controller_1.dart';
-import 'package:nicholaslim80/features/user/express_delivery_1/widget/one_way_round_functionality.dart';
+import 'package:nicholaslim80/features/user/stacked/widget/stacked_one_way_round_widget.dart';
 
 import '../stacked_controller/stacked_controller.dart';
 
@@ -107,8 +106,8 @@ class StackedButtonWidget extends StatelessWidget {
                       ),
                       Column(
                         children: [
-                          OneWayRoundWidget(
-                            controller: LocationController(),
+                          StackedOneWayRoundWidget(
+                            controller: StackedLocationController(),
                             title: 'Collected from (Sender: Athena Lin)',
                             subtitle: 'Sender Address',
                             icon: Image.asset(
@@ -119,8 +118,8 @@ class StackedButtonWidget extends StatelessWidget {
                           ),
 
                           SizedBox(height: 8),
-                          OneWayRoundWidget(
-                            controller: LocationController(),
+                          StackedOneWayRoundWidget(
+                            controller: StackedLocationController(),
                             title: 'Delivered from (Sender: Athena Lin)',
                             subtitle: 'Delivered Address',
                             icon: Image.asset(
@@ -157,8 +156,8 @@ class StackedButtonWidget extends StatelessWidget {
                       ),
                       Column(
                         children: [
-                          OneWayRoundWidget(
-                            controller: LocationController(),
+                          StackedOneWayRoundWidget(
+                            controller: StackedLocationController(),
                             title: 'Collected from (Sender: Athena Lin)',
                             subtitle: 'Sender Address',
                             icon: Image.asset(
@@ -168,8 +167,8 @@ class StackedButtonWidget extends StatelessWidget {
                             ),
                           ),
                           SizedBox(height: 8),
-                          OneWayRoundWidget(
-                            controller: LocationController(),
+                          StackedOneWayRoundWidget(
+                            controller: StackedLocationController(),
                             title: 'Delivered from (Sender: Athena Lin)',
                             subtitle: 'Delivered Address',
                             icon: Image.asset(

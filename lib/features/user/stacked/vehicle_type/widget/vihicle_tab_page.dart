@@ -14,10 +14,8 @@ class StackedVehicleTabPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final StackedVehicleController controller = Get.put(
-      StackedVehicleController(),
-      tag: vehicleType,
-    );
+    // Use the main controller instance shared with StackedScreen
+    final StackedVehicleController controller = Get.put(StackedVehicleController());
 
     return Column(
       children: [

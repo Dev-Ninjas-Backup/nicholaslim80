@@ -3,14 +3,14 @@ import 'package:get/get.dart';
 import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
 import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
-import 'package:nicholaslim80/features/user/express_delivery_1/controller/express_controller_1.dart';
-import 'package:nicholaslim80/features/user/express_delivery_1/widget/one_way_round_functionality.dart';
-import 'package:nicholaslim80/features/user/schedule_express_%20delivey/Schedule_sender_recepent/screen/schedule_sender_screen.dart';
+import 'package:nicholaslim80/features/user/stacked/schedule_stacked_ delivey/Schedule_sender_recepent/screen/schedule_sender_screen.dart';
+import 'package:nicholaslim80/features/user/stacked/stacked_controller/stacked_controller.dart';
+import 'package:nicholaslim80/features/user/stacked/widget/stacked_one_way_round_widget.dart';
 
 class ScheduleDeliveryButton extends StatelessWidget {
   const ScheduleDeliveryButton({super.key, required this.controller});
 
-  final LocationController controller;
+  final StackedLocationController controller;
 
   @override
   Widget build(BuildContext context) {
@@ -50,8 +50,8 @@ class ScheduleDeliveryButton extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    OneWayRoundWidget(
-                      controller: LocationController(),
+                    StackedOneWayRoundWidget(
+                      controller: StackedLocationController(),
                       title: 'Collected from (Sender: Athena Lin)',
                       subtitle: 'Sender Address',
                       icon: Image.asset(
@@ -70,8 +70,8 @@ class ScheduleDeliveryButton extends StatelessWidget {
                       size: 10,
                       color: Colors.grey,
                     ),
-                    OneWayRoundWidget(
-                      controller: LocationController(),
+                    StackedOneWayRoundWidget(
+                      controller: StackedLocationController(),
                       title: isRound
                           ? 'Delivered from (Sender: Athena Lin)'
                           : 'Deliver to (Recipient: Joseph Low)',
@@ -112,7 +112,7 @@ class ScheduleDeliveryButton extends StatelessWidget {
                       ),
                     ),
                     onPressed: () {
-                      Get.to(SenderScheduleScreen());
+                      Get.to(StackedSenderScheduleScreen());
                     },
                   ),
                 ),
@@ -132,7 +132,7 @@ class OneAndTwoWayButton extends StatelessWidget {
     required this.isRound,
   });
 
-  final LocationController controller;
+  final StackedLocationController controller;
   final bool isRound;
 
   @override
