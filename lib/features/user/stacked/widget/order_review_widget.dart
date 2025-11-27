@@ -1,15 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_instance/src/extension_instance.dart';
+import 'package:get/get.dart';
 import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
-import 'package:nicholaslim80/features/user/Veicale_Type_on_Exprees_Delivery/controller/vehicle_Controller.dart';
-import 'package:nicholaslim80/features/user/express_delivery_1/order_express_delivery/controller/order_controller.dart';
-import 'package:nicholaslim80/features/user/express_delivery_1/order_express_delivery/screen/order_alertdialog_screen.dart';
+import 'package:nicholaslim80/features/user/stacked/vehicle_type/controller/controller.dart';
+import 'package:nicholaslim80/features/user/stacked/order_stacked_delivery/controller/controller.dart';
+import 'package:nicholaslim80/features/user/stacked/order_stacked_delivery/widget/order_confirmation_dialog.dart';
 
 class OrderReviewWidget extends StatelessWidget {
-  final VehicleController vehicleController;
-  final OrderController orderController = Get.put(OrderController());
+  final StackedVehicleController vehicleController;
+  final StackedOrderController orderController = Get.put(StackedOrderController());
   final double total;
   final List<String> calculationHistory;
 
@@ -100,11 +99,8 @@ class OrderReviewWidget extends StatelessWidget {
 
   // Default action if no callback is passed
   void _defaultReviewOrderAction() {
-    final OrderController orderController = Get.find<OrderController>();
-    orderController.totalAmount = total;
-
     // Call the reusable dialog function
-    showOrderConfirmationDialog(orderController);
+    StackedOrderConfirmationDialog.show();
   }
 
   void _openHistoryPopup(BuildContext context) {

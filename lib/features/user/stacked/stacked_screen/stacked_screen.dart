@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
-import 'package:nicholaslim80/features/user/express_delivery_1/order_express_delivery/controller/order_controller.dart';
-import 'package:nicholaslim80/features/user/express_delivery_1/order_express_delivery/screen/order_alertdialog_screen.dart';
+import 'package:nicholaslim80/features/user/stacked/order_stacked_delivery/controller/controller.dart';
+import 'package:nicholaslim80/features/user/stacked/widget/pic_date_time.dart';
 
 import 'package:nicholaslim80/routes/app_routes.dart';
 
-import '../../express_delivery_1/widget/pick_date_time_dialog.dart';
 import '../stacked_controller/stacked_controller.dart';
 import '../vehicle_type/controller/controller.dart';
 import '../vehicle_type/screen/screen.dart';
@@ -21,7 +20,7 @@ class StackedScreen extends StatelessWidget {
     StackedLocationController(),
   );
   final vehicleController = Get.put(StackedVehicleController());
-  final OrderController orderController = Get.put(OrderController());
+  final StackedOrderController orderController = Get.put(StackedOrderController());
 
   StackedScreen({super.key});
 
@@ -105,7 +104,7 @@ class StackedScreen extends StatelessWidget {
                           // Open the date-time dialog
                           showDialog(
                             context: context,
-                            builder: (_) => PickDateTimeDialog(),
+                            builder: (_) => StackedPickDateTimeDialog(),
                           );
                         },
                       ),
@@ -139,9 +138,7 @@ class StackedScreen extends StatelessWidget {
 
               SizedBox(height: 24),
               StackedOrderReviewButtonStatic(
-                onPressed: () {
-                  showOrderConfirmationDialog(orderController);
-                },
+
               ),
             ],
           ),

@@ -1,24 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
-// 🔹 Your App Colors
 import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
-
 import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
-import 'package:nicholaslim80/features/user/express_delivery_1/controller/express_controller_1.dart';
-import 'package:nicholaslim80/features/user/express_delivery_1/widget/collect_time_widget.dart';
-import 'package:nicholaslim80/features/user/express_delivery_1/widget/order_review_widget.dart';
-import 'package:nicholaslim80/features/user/express_delivery_1/widget/vehicle_type_widget.dart';
-import 'package:nicholaslim80/features/user/Veicale_Type_on_Exprees_Delivery/controller/vehicle_Controller.dart';
-
-// 🔹 Other Pages
-import 'package:nicholaslim80/features/user/Veicale_Type_on_Exprees_Delivery/screen/veichale_secation_page.dart';
-import 'package:nicholaslim80/features/user/schedule_express_%20delivey/widget/schedule_delivery_button.dart';
+import 'package:nicholaslim80/features/user/stacked/stacked_controller/stacked_controller.dart';
+import 'package:nicholaslim80/features/user/stacked/widget/collect_time_widget.dart';
+import 'package:nicholaslim80/features/user/stacked/widget/order_review_widget.dart';
+import 'package:nicholaslim80/features/user/stacked/widget/vehicle_type_widget.dart';
+import 'package:nicholaslim80/features/user/stacked/vehicle_type/controller/controller.dart';
+import 'package:nicholaslim80/features/user/stacked/vehicle_type/screen/screen.dart';
+import '../widget/schedule_delivery_button.dart';
 import 'package:nicholaslim80/routes/app_routes.dart';
 
 class ScheduleDelivery extends StatelessWidget {
-  final LocationController controller = Get.put(LocationController());
-  final VehicleController vehicleController = Get.find<VehicleController>();
+  final StackedLocationController controller = Get.put(StackedLocationController());
+  final StackedVehicleController vehicleController = Get.put(StackedVehicleController());
 
   ScheduleDelivery({super.key});
 
@@ -100,7 +95,7 @@ class ScheduleDelivery extends StatelessWidget {
                       Expanded(
                         child: SizedBox(
                           height: 70,
-                          child: CollectTimeOption(
+                          child: StackedCollectTimeOption(
                             title: "Now",
                             selected: controller.isNowSelected.value,
                             onTap: () {
@@ -112,7 +107,7 @@ class ScheduleDelivery extends StatelessWidget {
                       ),
                       SizedBox(width: 16),
                       Expanded(
-                        child: CollectTimeOption(
+                        child: StackedCollectTimeOption(
                           title: "Schedule",
                           subtitle: "Pick Date and Time",
                           selected: !controller.isNowSelected.value,
@@ -143,14 +138,14 @@ class ScheduleDelivery extends StatelessWidget {
                       icon: Icon(Icons.info_outline),
                       onPressed: () {
                         hideKeyboard();
-                        Get.to(() => VehicleSelectionPage());
+                        Get.to(() => StackedVehicleSelectionPage());
                       },
                     ),
                   ],
                 ),
 
                 SizedBox(height: 4),
-                VehicleTypeWidget(controller: controller),
+                StackedVehicleTypeWidget(controller: controller),
 
                 SizedBox(height: 24),
 

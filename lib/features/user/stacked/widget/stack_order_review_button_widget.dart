@@ -1,14 +1,23 @@
 import 'package:flutter/cupertino.dart' show CupertinoColors;
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
+import 'package:nicholaslim80/features/user/stacked/vehicle_type/controller/controller.dart';
+import 'package:nicholaslim80/features/user/stacked/order_stacked_delivery/controller/controller.dart';
+import 'package:nicholaslim80/features/user/stacked/order_stacked_delivery/widget/show_order_confirmation_dialog.dart';
 
 class StackedOrderReviewButtonStatic extends StatelessWidget {
-  final VoidCallback onPressed;
 
-  const StackedOrderReviewButtonStatic({super.key, required this.onPressed});
+  const StackedOrderReviewButtonStatic({super.key, });
 
   @override
   Widget build(BuildContext context) {
+    // Ensure the vehicle controller is available.
+    final StackedVehicleController vehicleController = Get.find<StackedVehicleController>();
+    
+    // Ensure the order controller is available.
+    final StackedOrderController orderController = Get.put(StackedOrderController());
+
     return Container(
       margin: const EdgeInsets.only(bottom: 70),
       padding: const EdgeInsets.all(5),
@@ -18,7 +27,7 @@ class StackedOrderReviewButtonStatic extends StatelessWidget {
           const SizedBox(width: 8),
 
           Expanded(
-            child: Column(
+            child: Obx(() => Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
@@ -30,7 +39,7 @@ class StackedOrderReviewButtonStatic extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  'S\$00.00',
+                  'S\$${vehicleController.calculateTotal().toStringAsFixed(2)}',
                   style: getTextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -38,29 +47,43 @@ class StackedOrderReviewButtonStatic extends StatelessWidget {
                   ),
                 ),
               ],
-            ),
+            )),
           ),
 
-          FilledButton(
-            onPressed: onPressed, // <-- USE CALLBACK HERE
-            style: ButtonStyle(
-              backgroundColor: WidgetStateProperty.all(Colors.amber),
-              padding: WidgetStateProperty.all(
-                const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+          Obx(() {
+            final isReady = vehicleController.selectedVehicle.value != null;
+            
+            return FilledButton(
+              onPressed: isReady
+                  ? () {
+                      // Update total amount in order controller before showing dialog
+                      orderController.totalAmount = vehicleController.calculateTotal();
+                      
+                      // Show the details dialog
+                      showStackedOrderConfirmationDialog(orderController);
+                    }
+                  : null,
+              style: ButtonStyle(
+                backgroundColor: WidgetStateProperty.all(
+                  isReady ? Colors.amber : Colors.grey.shade300,
+                ),
+                padding: WidgetStateProperty.all(
+                  const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                ),
+                shape: WidgetStateProperty.all(
+                  RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                ),
               ),
-              shape: WidgetStateProperty.all(
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+              child: Text(
+                'Review Order',
+                style: getTextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: isReady ? Colors.black : Colors.grey.shade600,
+                ),
               ),
-            ),
-            child: Text(
-              'Review Order',
-              style: getTextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-            ),
-          ),
+            );
+          }),
 
           const SizedBox(width: 8),
         ],
