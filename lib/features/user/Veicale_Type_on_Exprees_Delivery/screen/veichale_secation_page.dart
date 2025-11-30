@@ -7,80 +7,82 @@ import 'package:nicholaslim80/features/user/Veicale_Type_on_Exprees_Delivery/wid
 class VehicleSelectionPage extends StatelessWidget {
   const VehicleSelectionPage({super.key});
 
+  Widget buildTabIcon(BuildContext context, String iconPath, int index) {
+    final tabIndex = DefaultTabController.of(context).index;
+
+    final isSelected = tabIndex == index;
+
+    return Container(
+      padding: const EdgeInsets.all(6),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+
+        // ✅ Selected হলে yellow border
+        border: Border.all(
+          color: isSelected ? Colors.yellow : Colors.transparent,
+          width: .01,
+        ),
+      ),
+      child: Image.asset(iconPath, height: 80, width: 90, fit: BoxFit.cover),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 4,
-      child: Scaffold(
-        backgroundColor: AppColors.backgroungColor,
-        appBar: AppBar(
-          elevation: 0,
-          title: Text(
-            'Vehicle Type',
-            style: getTextStyle(
-              fontSize: 20,
-              color: Colors.black87,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          centerTitle: true,
-          bottom: PreferredSize(
-            preferredSize: Size.fromHeight(50),
-            child: Container(
-              color: AppColors.backgroungColor,
-              margin: EdgeInsets.only(top: 5),
-              child: TabBar(
-                isScrollable: false, // evenly spaced
-                indicator: BoxDecoration(
-                  color: Colors.yellow,
-                  borderRadius: BorderRadius.circular(12),
+      child: Builder(
+        builder: (context) {
+          return Scaffold(
+            backgroundColor: AppColors.backgroungColor,
+
+            appBar: AppBar(
+              elevation: 0,
+              title: Text(
+                'Vehicle Type',
+                style: getTextStyle(
+                  fontSize: 20,
+                  color: Colors.black87,
+                  fontWeight: FontWeight.w700,
                 ),
-                tabs: [
-                  Tab(
-                    icon: Image.asset(
-                      IconPath.bike2,
-                      height: 60,
-                      width: 70,
-                      fit: BoxFit.cover,
+              ),
+              centerTitle: true,
+              backgroundColor: AppColors.backgroungColor,
+
+              bottom: PreferredSize(
+                preferredSize: const Size.fromHeight(50),
+                child: Container(
+                  color: AppColors.backgroungColor,
+                  margin: const EdgeInsets.only(top: 5),
+
+                  child: TabBar(
+                    isScrollable: false,
+                    indicator: BoxDecoration(
+                      color: Colors.yellow,
+                      borderRadius: BorderRadius.circular(12),
                     ),
+
+                    tabs: [
+                      Tab(icon: buildTabIcon(context, IconPath.bike2, 0)),
+                      Tab(icon: buildTabIcon(context, IconPath.car2, 1)),
+                      Tab(icon: buildTabIcon(context, IconPath.shipment, 2)),
+                      Tab(icon: buildTabIcon(context, IconPath.shopcar, 3)),
+                    ],
                   ),
-                  Tab(
-                    icon: Image.asset(
-                      IconPath.car2,
-                      height: 60,
-                      width: 70,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  Tab(
-                    icon: Image.asset(
-                      IconPath.shipment,
-                      height: 60,
-                      width: 70,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  Tab(
-                    icon: Image.asset(
-                      IconPath.shopcar,
-                      height: 60,
-                      width: 70,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
-          ),
-        ),
-        body: TabBarView(
-          children: [
-            VehicleTabPage(vehicleType: 'Courier'),
-            VehicleTabPage(vehicleType: 'Car'),
-            VehicleTabPage(vehicleType: 'Van'),
-            VehicleTabPage(vehicleType: 'Truck'),
-          ],
-        ),
+
+            body: const TabBarView(
+              children: [
+                VehicleTabPage(vehicleType: 'Courier'),
+                VehicleTabPage(vehicleType: 'Car'),
+                VehicleTabPage(vehicleType: 'Van'),
+                VehicleTabPage(vehicleType: 'Truck'),
+              ],
+            ),
+          );
+        },
       ),
     );
   }

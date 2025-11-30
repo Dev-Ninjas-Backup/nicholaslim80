@@ -19,10 +19,6 @@ class ScheduleDeliveryButton extends StatelessWidget {
 
       return Column(
         children: [
-          Card(
-            child: OneAndTwoWayButton(controller: controller, isRound: isRound),
-          ),
-          SizedBox(height: 16),
           Container(
             width: double.infinity,
             padding: EdgeInsets.all(16),
@@ -33,10 +29,19 @@ class ScheduleDeliveryButton extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Card(
+                  child: OneAndTwoWayButton(
+                    controller: controller,
+                    isRound: isRound,
+                  ),
+                ),
+                SizedBox(height: 8),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Image.asset(IconPath.exparess, width: 24, height: 24),
-                    SizedBox(width: 8),
+                    // SizedBox(width: 8),
                     Text(
                       'Fixed route',
                       style: getTextStyle(
@@ -46,7 +51,7 @@ class ScheduleDeliveryButton extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(height: 12),
+                SizedBox(height: 6),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

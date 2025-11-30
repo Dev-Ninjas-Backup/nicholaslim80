@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
+import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
 
 class PromoDialogContent extends StatelessWidget {
   final TextEditingController promoController = TextEditingController();
@@ -14,7 +16,11 @@ class PromoDialogContent extends StatelessWidget {
         TextField(
           controller: promoController,
           decoration: InputDecoration(
-            hintText: "Type your code",
+            hintText: "AZN07",
+            prefixIcon: Padding(
+              padding: EdgeInsets.all(12.0),
+              child: Image.asset(IconPath.promo, width: 24, height: 24),
+            ),
             border: OutlineInputBorder(),
             isDense: true,
             contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
@@ -22,7 +28,9 @@ class PromoDialogContent extends StatelessWidget {
         ),
         SizedBox(height: 40),
         FilledButton(
-          onPressed: () {},
+          onPressed: () {
+            Get.back();
+          },
           style: FilledButton.styleFrom(
             backgroundColor: Colors.amber,
             foregroundColor: Colors.white,

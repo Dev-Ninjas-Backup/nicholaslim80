@@ -18,7 +18,7 @@ void showOrderConfirmationDialog(OrderController controller) {
     AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       contentPadding: EdgeInsets.zero,
-      insetPadding: EdgeInsets.symmetric(horizontal: 8), 
+      insetPadding: EdgeInsets.symmetric(horizontal: 8),
       content: SingleChildScrollView(
         child: Container(
           width: Get.width * 0.95,
@@ -248,7 +248,7 @@ void showOrderConfirmationDialog(OrderController controller) {
                       ),
                     ),
                     child: Text(
-                      'Review Order',
+                      'Confirm Order',
                       style: getTextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,

@@ -74,13 +74,13 @@ class SenderView extends StatelessWidget {
                     CustomTextField(
                       controller: controller.nameController,
                       label: "Contact name*",
-                      suffixIcon: Icon(Icons.person_outline),
                     ),
                     SizedBox(height: 10),
                     CustomTextField(
                       controller: controller.numberController,
                       label: "Contact number*",
                       keyboardType: TextInputType.phone,
+                      suffixIcon: Icon(Icons.person_outline),
                     ),
                     SizedBox(height: 10),
                     CustomTextField(
