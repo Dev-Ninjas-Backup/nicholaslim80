@@ -85,14 +85,14 @@ class ExpressButtonWidget extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+
                         spacing: 8,
                         children: [
-                          Center(
-                            child: Image.asset(
-                              IconPath.exparess,
-                              width: 24,
-                              height: 24,
-                            ),
+                          Image.asset(
+                            IconPath.exparessGrey,
+                            width: 15,
+                            height: 15,
                           ),
                           Text(
                             'Fixed route',
@@ -103,6 +103,7 @@ class ExpressButtonWidget extends StatelessWidget {
                           ),
                         ],
                       ),
+                      SizedBox(height: 4),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -145,14 +146,14 @@ class ExpressButtonWidget extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+
                         spacing: 8,
                         children: [
-                          Center(
-                            child: Image.asset(
-                              IconPath.exparess,
-                              width: 24,
-                              height: 24,
-                            ),
+                          Image.asset(
+                            IconPath.exparessGrey,
+                            width: 15,
+                            height: 15,
                           ),
                           Text(
                             'Fixed route',
@@ -163,6 +164,7 @@ class ExpressButtonWidget extends StatelessWidget {
                           ),
                         ],
                       ),
+                      SizedBox(height: 4),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [

@@ -68,4 +68,5 @@ class IconPath {
   static String colorFullArrow = "assets/icons/color_ful_arrow.png";
   static String nets = "assets/icons/nets.png";
   static String dbs = "assets/icons/dbs.png";
+  static String exparessGrey = "assets/icons/express_grey.png";
 }
