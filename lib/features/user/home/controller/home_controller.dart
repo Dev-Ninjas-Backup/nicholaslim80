@@ -10,7 +10,7 @@ import 'package:nicholaslim80/routes/app_routes.dart';
 class HomeController extends GetxController {
   var controller = Get.put(LoginSignupController());
   final userName = 'Good Morning!'.obs;
-  final parcelStatus = 'Your parcel delivered to destination'.obs;
+  final parcelStatus = 'Live delivery status'.obs;
 
   final walletBalance = 127.45.obs;
   final availablePoints = 500.obs;

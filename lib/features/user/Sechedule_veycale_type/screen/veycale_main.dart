@@ -18,21 +18,21 @@ class SecheduleVehicleSelectionPage extends StatelessWidget {
       length: 4,
       child: Scaffold(
         backgroundColor: AppColors.backgroungColor,
-        appBar: _buildAppBar(),
+        appBar: buildAppBar(),
         body: TabBarView(
-          children: const [
-            _VehicleListContent(type: 'Courier'),
-            _VehicleListContent(type: 'Car'),
-            _VehicleListContent(type: 'Van'),
-            _VehicleListContent(type: 'Truck'),
+          children: [
+            VehicleListContent(type: 'Courier'),
+            VehicleListContent(type: 'Car'),
+            VehicleListContent(type: 'Van'),
+            VehicleListContent(type: 'Truck'),
           ],
         ),
-        bottomNavigationBar: _BottomSummaryPanel(controller: controller),
+        bottomNavigationBar: BottomSummaryPanel(controller: controller),
       ),
     );
   }
 
-  AppBar _buildAppBar() {
+  AppBar buildAppBar() {
     return AppBar(
       elevation: 0,
       backgroundColor: AppColors.backgroungColor,
@@ -46,26 +46,33 @@ class SecheduleVehicleSelectionPage extends StatelessWidget {
         ),
       ),
       bottom: PreferredSize(
-        preferredSize: const Size.fromHeight(60),
+        preferredSize: Size.fromHeight(60),
         child: TabBar(
-          indicatorColor: Colors.amber,
-          indicatorWeight: 3,
-          labelColor: Colors.black,
+          //indicatorColor: Colors.amber,
+          //indicatorWeight: 3,
           unselectedLabelColor: Colors.grey,
+          indicator: BoxDecoration(
+            // ignore: deprecated_member_use
+            color: Colors.amber.withOpacity(0.2),
+            border: Border.all(color: Colors.amber, width: 2),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          labelColor: Colors.black,
+
           tabs: [
-            _buildTabIcon(IconPath.bike2),
-            _buildTabIcon(IconPath.car2),
-            _buildTabIcon(IconPath.shipment),
-            _buildTabIcon(IconPath.shopcar),
+            buildTabIcon(IconPath.bike2),
+            buildTabIcon(IconPath.car2),
+            buildTabIcon(IconPath.shipment),
+            buildTabIcon(IconPath.shopcar),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildTabIcon(String path) {
+  Widget buildTabIcon(String path) {
     return Tab(
-      icon: Image.asset(path, height: 80, width: 80, fit: BoxFit.contain),
+      icon: Image.asset(path, height: 67, width: 67, fit: BoxFit.contain),
     );
   }
 }
@@ -73,17 +80,17 @@ class SecheduleVehicleSelectionPage extends StatelessWidget {
 // ------------------------------------------------------------------------
 // TAB CONTENT
 // ------------------------------------------------------------------------
-class _VehicleListContent extends StatelessWidget {
+class VehicleListContent extends StatelessWidget {
   final String type;
 
-  const _VehicleListContent({required this.type});
+  VehicleListContent({required this.type});
 
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<VehicleSelectionController>();
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -91,7 +98,7 @@ class _VehicleListContent extends StatelessWidget {
             'Select Vehicle',
             style: getTextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: 10),
 
           // List of Vehicles
           ...controller.getVehiclesByType(type).map((vehicle) {
@@ -105,16 +112,16 @@ class _VehicleListContent extends StatelessWidget {
             );
           }),
 
-          const SizedBox(height: 20),
+          SizedBox(height: 20),
 
           // Additional Services for selected type
           Obx(() {
             if (controller.selectedVehicle.value?.type != type) {
-              return const SizedBox.shrink();
+              return SizedBox.shrink();
             }
 
             final services = controller.availableServices;
-            if (services.isEmpty) return const SizedBox.shrink();
+            if (services.isEmpty) return SizedBox.shrink();
 
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -126,7 +133,7 @@ class _VehicleListContent extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 10),
+                SizedBox(height: 10),
                 ...services.map((service) {
                   return ServiceCard(
                     service: service,
@@ -138,7 +145,7 @@ class _VehicleListContent extends StatelessWidget {
             );
           }),
 
-          const SizedBox(height: 140),
+          SizedBox(height: 140),
         ],
       ),
     );
@@ -148,26 +155,26 @@ class _VehicleListContent extends StatelessWidget {
 // ------------------------------------------------------------------------
 // BOTTOM SUMMARY PANEL
 // ------------------------------------------------------------------------
-class _BottomSummaryPanel extends StatelessWidget {
+class BottomSummaryPanel extends StatelessWidget {
   final VehicleSelectionController controller;
-  const _BottomSummaryPanel({required this.controller});
+  const BottomSummaryPanel({required this.controller});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       color: Colors.white,
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       child: SafeArea(
         top: false,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             GestureDetector(
-              onTap: () => _showHistoryModal(context),
+              onTap: () => showHistoryModal(context),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.keyboard_arrow_up, color: Colors.grey),
+                  Icon(Icons.keyboard_arrow_up, color: Colors.grey),
                   Text(
                     "View Breakdown",
                     style: getTextStyle(fontSize: 12, color: Colors.grey),
@@ -176,7 +183,7 @@ class _BottomSummaryPanel extends StatelessWidget {
               ),
             ),
 
-            const Divider(),
+            Divider(),
 
             Row(
               children: [
@@ -217,7 +224,7 @@ class _BottomSummaryPanel extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.amber,
                       disabledBackgroundColor: Colors.grey[300],
-                      padding: const EdgeInsets.symmetric(
+                      padding: EdgeInsets.symmetric(
                         horizontal: 32,
                         vertical: 12,
                       ),
@@ -243,16 +250,16 @@ class _BottomSummaryPanel extends StatelessWidget {
     );
   }
 
-  void _showHistoryModal(BuildContext context) {
+  void showHistoryModal(BuildContext context) {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (_) {
         return Padding(
-          padding: const EdgeInsets.all(20),
+          padding: EdgeInsets.all(20),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -260,27 +267,23 @@ class _BottomSummaryPanel extends StatelessWidget {
               Center(
                 child: Container(width: 40, height: 4, color: Colors.grey[300]),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
               Text(
                 "Price Breakdown",
                 style: getTextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: 10),
 
               Obx(
                 () => Column(
                   children: controller.calculationHistory
                       .map(
                         (item) => Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          padding: EdgeInsets.symmetric(vertical: 4),
                           child: Row(
                             children: [
-                              const Icon(
-                                Icons.check,
-                                size: 16,
-                                color: Colors.amber,
-                              ),
-                              const SizedBox(width: 8),
+                              Icon(Icons.check, size: 16, color: Colors.amber),
+                              SizedBox(width: 8),
                               Text(item, style: getTextStyle(fontSize: 16)),
                             ],
                           ),
@@ -290,7 +293,7 @@ class _BottomSummaryPanel extends StatelessWidget {
                 ),
               ),
 
-              const Divider(height: 30),
+              Divider(height: 30),
 
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -314,7 +317,7 @@ class _BottomSummaryPanel extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
             ],
           ),
         );

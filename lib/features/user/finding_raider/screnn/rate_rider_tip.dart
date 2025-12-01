@@ -8,6 +8,7 @@ import 'package:nicholaslim80/features/user/finding_raider/controller/rider_cont
 import 'package:nicholaslim80/features/user/finding_raider/widget/button.dart';
 import 'package:nicholaslim80/features/user/finding_raider/widget/payment_option_widget.dart';
 import 'package:nicholaslim80/features/user/finding_raider/widget/tip_aleart_dialog.dart';
+import 'package:nicholaslim80/routes/app_routes.dart';
 
 class RateRiderTip extends StatelessWidget {
   final RiderController controller = Get.find<RiderController>();
@@ -122,7 +123,11 @@ class RateRiderTip extends StatelessWidget {
 
                               Center(
                                 child: TextButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    Get.toNamed(
+                                      AppRoutes.getexpressDelivery1(),
+                                    );
+                                  },
                                   child: Text(
                                     'Maybe next time',
                                     style: getTextStyle(
@@ -164,10 +169,7 @@ class RateRiderTip extends StatelessWidget {
                   ? Colors.amber
                   : Colors.white,
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 22,
-                  vertical: 14,
-                ),
+                padding: EdgeInsets.symmetric(horizontal: 22, vertical: 14),
                 child: Text(
                   'S\$${controller.raiderTipOptions[index].toStringAsFixed(0)}',
                   style: TextStyle(

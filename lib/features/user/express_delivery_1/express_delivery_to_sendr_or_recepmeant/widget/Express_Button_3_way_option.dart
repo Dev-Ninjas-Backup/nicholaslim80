@@ -144,6 +144,9 @@ class ExpressButtonWidget3Address extends StatelessWidget {
                           height: 14,
                         ),
                       ),
+                      Divider(),
+
+                      CustomAddButton(),
                     ],
                   )
                 : Column(

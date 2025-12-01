@@ -93,32 +93,34 @@ class ScheduleRoundDelivery extends StatelessWidget {
                 SizedBox(height: 10),
 
                 Obx(
-                  () => Row(
-                    children: [
-                      CollectTimeOption(
-                        title: "Now",
-                        selected: controller.isNowSelected.value,
-                        onTap: () {
-                          hideKeyboard();
-                          controller.selectNow();
-                        },
-                      ),
-                      SizedBox(width: 16),
-                      CollectTimeOption(
-                        title: "Schedule",
-                        subtitle: "Pick Date and Time",
-                        selected: !controller.isNowSelected.value,
-                        onTap: () {
-                          hideKeyboard();
-                          controller.selectSchedule();
+                  () => IntrinsicHeight(
+                    child: Row(
+                      children: [
+                        CollectTimeOption(
+                          title: "Now",
+                          selected: controller.isNowSelected.value,
+                          onTap: () {
+                            hideKeyboard();
+                            controller.selectNow();
+                          },
+                        ),
+                        SizedBox(width: 16),
+                        CollectTimeOption(
+                          title: "Schedule",
+                          subtitle: "Pick Date and Time",
+                          selected: !controller.isNowSelected.value,
+                          onTap: () {
+                            hideKeyboard();
+                            controller.selectSchedule();
 
-                          showDialog(
-                            context: context,
-                            builder: (_) => PickDateTimeDialog(),
-                          );
-                        },
-                      ),
-                    ],
+                            showDialog(
+                              context: context,
+                              builder: (_) => PickDateTimeDialog(),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ),
 

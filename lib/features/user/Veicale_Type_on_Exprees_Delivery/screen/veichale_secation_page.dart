@@ -13,11 +13,10 @@ class VehicleSelectionPage extends StatelessWidget {
     final isSelected = tabIndex == index;
 
     return Container(
-      padding: const EdgeInsets.all(6),
+      padding: EdgeInsets.all(6),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
 
-        // ✅ Selected হলে yellow border
         border: Border.all(
           color: isSelected ? Colors.yellow : Colors.transparent,
           width: .01,
@@ -50,10 +49,10 @@ class VehicleSelectionPage extends StatelessWidget {
               backgroundColor: AppColors.backgroungColor,
 
               bottom: PreferredSize(
-                preferredSize: const Size.fromHeight(50),
+                preferredSize: Size.fromHeight(50),
                 child: Container(
                   color: AppColors.backgroungColor,
-                  margin: const EdgeInsets.only(top: 5),
+                  margin: EdgeInsets.only(top: 5),
 
                   child: TabBar(
                     isScrollable: false,
@@ -73,7 +72,7 @@ class VehicleSelectionPage extends StatelessWidget {
               ),
             ),
 
-            body: const TabBarView(
+            body: TabBarView(
               children: [
                 VehicleTabPage(vehicleType: 'Courier'),
                 VehicleTabPage(vehicleType: 'Car'),
