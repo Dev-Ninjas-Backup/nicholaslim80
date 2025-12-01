@@ -44,13 +44,13 @@ class ScheduleRecipientWidget extends StatelessWidget {
         CustomTextField(
           controller: controller.nameController,
           label: "Contact name*",
-          suffixIcon: Icon(Icons.person_outline),
         ),
         SizedBox(height: 10),
 
         CustomTextField(
           controller: controller.numberController,
           label: "Contact number*",
+          suffixIcon: Icon(Icons.person_outline),
           keyboardType: TextInputType.phone,
         ),
         SizedBox(height: 10),

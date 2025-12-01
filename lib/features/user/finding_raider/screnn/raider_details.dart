@@ -5,11 +5,10 @@ import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
 import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
 import 'package:nicholaslim80/core/utils/constants/image_path.dart';
 import 'package:nicholaslim80/features/user/finding_raider/controller/rider_controller.dart';
-import 'package:nicholaslim80/features/user/finding_raider/screnn/rate_rider.dart';
+import 'package:nicholaslim80/features/user/finding_raider/screnn/review_view.dart';
 import 'package:nicholaslim80/features/user/finding_raider/widget/button.dart';
 import 'package:nicholaslim80/features/user/finding_raider/widget/custom_icon_text_button.dart';
 import 'package:nicholaslim80/features/user/finding_raider/widget/location_row_widget.dart';
-import 'package:nicholaslim80/features/user/finding_raider/widget/review_rateing.dart';
 import 'package:share_plus/share_plus.dart';
 
 class RaiderDetails extends StatelessWidget {
@@ -131,27 +130,44 @@ class RaiderDetails extends StatelessWidget {
                           ],
                         ),
                         SizedBox(height: 16),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            ReviewRating(),
-                            TextButton(
-                              onPressed: () {
-                                Get.to(() => RateRider());
-                              },
-
-                              child: Text(
-                                '(243 Reviews)',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.grey,
-                                  decoration: TextDecoration.underline,
-                                ),
-                              ),
-                            ),
-                          ],
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: CustomIconTextButton(
+                            text: '244 Reviews',
+                            //iconPath: IconPath.message,
+                            borderColor: Colors.black,
+                            textColor: Colors.black,
+                            backgroundColor: AppColors.primaryButtonColor,
+                            onPressed: () {
+                              Get.to(() => ReviewView());
+                            },
+                            //iconPosition: IconPosition.before,
+                          ),
                         ),
+
+                        // Align(
+                        //   alignment: Alignment.centerRight,
+                        //   child: ElevatedButton(
+                        //     onPressed: () {
+                        //       Get.to(() => ReviewView());
+                        //     },
+                        //     style: ElevatedButton.styleFrom(
+                        //       backgroundColor: AppColors.primaryButtonColor,
+                        //       shape: RoundedRectangleBorder(
+                        //         borderRadius: BorderRadius.circular(12),
+                        //       ),
+                        //     ),
+                        //     child: Text(
+                        //       '(243 Reviews)',
+                        //       style: TextStyle(
+                        //         fontSize: 12,
+                        //         fontWeight: FontWeight.w500,
+                        //         color: AppColors.primaryFontColor,
+                        //         decoration: TextDecoration.underline,
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
                         SizedBox(height: 20),
                         Divider(),
                         Row(
