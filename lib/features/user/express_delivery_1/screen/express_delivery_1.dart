@@ -123,6 +123,7 @@ class ExpressDelivery1 extends StatelessWidget {
                   IconButton(
                     onPressed: () {
                       Get.to(() => VehicleSelectionPage());
+                      //Get.to(VehicleTypeScreen());
                     },
                     icon: Icon(Icons.info_outline),
                     color: Colors.black87,
