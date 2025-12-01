@@ -20,60 +20,6 @@ class Round4 extends StatelessWidget {
       return Column(
         children: [
           /// ------------------ ONE WAY | ROUND SWITCH ------------------
-          Card(
-            child: Row(
-              children: [
-                Expanded(
-                  child: GestureDetector(
-                    onTap: () => controller.toggleTripType(false),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: !isRound
-                            ? AppColors.primaryButtonColor
-                            : Colors.transparent,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      padding: EdgeInsets.symmetric(vertical: 12),
-                      alignment: Alignment.center,
-                      child: Text(
-                        "One way",
-                        style: getTextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: GestureDetector(
-                    onTap: () => controller.toggleTripType(true),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: isRound
-                            ? AppColors.primaryButtonColor
-                            : Colors.transparent,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      padding: EdgeInsets.symmetric(vertical: 12),
-                      alignment: Alignment.center,
-                      child: Text(
-                        "Round",
-                        style: getTextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          SizedBox(height: 16),
 
           /// ------------------- MAIN CONTAINER -------------------
           Container(
@@ -86,6 +32,60 @@ class Round4 extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Card(
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () => controller.toggleTripType(false),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: !isRound
+                                  ? AppColors.primaryButtonColor
+                                  : Colors.transparent,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            padding: EdgeInsets.symmetric(vertical: 12),
+                            alignment: Alignment.center,
+                            child: Text(
+                              "One way",
+                              style: getTextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () => controller.toggleTripType(true),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: isRound
+                                  ? AppColors.primaryButtonColor
+                                  : Colors.transparent,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            padding: EdgeInsets.symmetric(vertical: 12),
+                            alignment: Alignment.center,
+                            child: Text(
+                              "Round",
+                              style: getTextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 8),
+
                 /// Title Row
                 Row(
                   spacing: 8,
@@ -165,7 +165,7 @@ class Round4 extends StatelessWidget {
                         title: 'Deliver to (Annie Tan)',
                         subtitle: 'Blk 447 Sengkang Ave 4, S530447',
                         icon: Image.asset(
-                          IconPath.collectIcon,
+                          IconPath.deliveredIcon,
                           width: 14,
                           height: 14,
                         ),
@@ -188,7 +188,7 @@ class Round4 extends StatelessWidget {
                         title: 'Deliver to (Tony Toh)',
                         subtitle: 'Blk 244 Jurong East St 61, S500244',
                         icon: Image.asset(
-                          IconPath.collectIcon,
+                          IconPath.deliveredIcon,
                           width: 14,
                           height: 14,
                         ),

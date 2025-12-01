@@ -5,7 +5,7 @@ enum IconPosition { before, after }
 
 class CustomIconTextButton extends StatelessWidget {
   final String text;
-  final String iconPath;
+  final String? iconPath; // ✅ optional
   final Color borderColor;
   final Color textColor;
   final Color backgroundColor;
@@ -15,7 +15,7 @@ class CustomIconTextButton extends StatelessWidget {
   const CustomIconTextButton({
     super.key,
     required this.text,
-    required this.iconPath,
+    this.iconPath, // ✅ not required anymore
     required this.borderColor,
     required this.textColor,
     required this.backgroundColor,
@@ -25,9 +25,18 @@ class CustomIconTextButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> children = [
-      Image.asset(iconPath, height: 14, width: 14, color: textColor),
-      const SizedBox(width: 6),
+    List<Widget> children = [];
+
+    // ✅ শুধু icon থাকলেই icon render হবে
+    if (iconPath != null) {
+      children.add(
+        Image.asset(iconPath!, height: 14, width: 14, color: textColor),
+      );
+
+      children.add(const SizedBox(width: 6));
+    }
+
+    children.add(
       Text(
         text,
         style: getTextStyle(
@@ -36,9 +45,10 @@ class CustomIconTextButton extends StatelessWidget {
           color: textColor,
         ),
       ),
-    ];
+    );
 
-    if (iconPosition == IconPosition.after) {
+    // ✅ icon পরে দেখাতে চাইলে order reverse
+    if (iconPath != null && iconPosition == IconPosition.after) {
       children = children.reversed.toList();
     }
 
@@ -49,7 +59,7 @@ class CustomIconTextButton extends StatelessWidget {
         onPressed: onPressed,
         style: FilledButton.styleFrom(
           backgroundColor: backgroundColor,
-          padding: EdgeInsets.zero, // fixed height, no extra padding
+          padding: EdgeInsets.zero,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(6),
             side: BorderSide(color: borderColor, width: 1.5),
