@@ -34,8 +34,9 @@ class LocationController extends GetxController {
   // Load initial vehicles
   void loadVehicleData() {
     vehicleList.value = [
-      VehicleModel(IconPath.car2),
       VehicleModel(IconPath.bike2),
+      VehicleModel(IconPath.car2),
+
       VehicleModel(IconPath.shopcar),
       VehicleModel(IconPath.shipment),
     ];
