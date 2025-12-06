@@ -6,7 +6,6 @@ import 'package:nicholaslim80/core/utils/constants/image_path.dart';
 import 'package:nicholaslim80/features/user/auth/verification/controller/verification_controller.dart';
 import 'package:nicholaslim80/features/user/auth/verification/widgets/input_box_widget.dart';
 import 'package:nicholaslim80/features/user/auth/verification/widgets/verify_button_widget.dart';
-
 import '../../../../../routes/app_routes.dart';
 
 class VerificationScreen extends StatelessWidget {
@@ -21,6 +20,7 @@ class VerificationScreen extends StatelessWidget {
       resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
+          // Background image
           Positioned.fill(
             child: Image.asset(ImagePath.backgroundImage, fit: BoxFit.cover),
           ),
@@ -35,19 +35,18 @@ class VerificationScreen extends StatelessWidget {
                 children: [
                   SizedBox(height: media.size.height * 0.02),
 
+                  // Back button
                   GestureDetector(
                     onTap: () {
                       Get.offAllNamed(AppRoutes.loginScreen);
                     },
-
                     child: Container(
                       width: media.size.width * 0.1,
                       height: media.size.width * 0.1,
                       decoration: BoxDecoration(
-                        // ignore: deprecated_member_use
                         color: AppColors.primaryButtonColor.withOpacity(0.6),
                         shape: BoxShape.circle,
-                        boxShadow: [
+                        boxShadow: const [
                           BoxShadow(
                             color: Colors.black12,
                             blurRadius: 4,
@@ -55,12 +54,16 @@ class VerificationScreen extends StatelessWidget {
                           ),
                         ],
                       ),
-                      child: Icon(Icons.arrow_back, color: Colors.black54),
+                      child: const Icon(
+                        Icons.arrow_back,
+                        color: Colors.black54,
+                      ),
                     ),
                   ),
 
                   SizedBox(height: media.size.height * 0.22),
 
+                  // Title & Subtitle
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -75,7 +78,7 @@ class VerificationScreen extends StatelessWidget {
                       ),
                       SizedBox(height: media.size.height * 0.02),
                       Text(
-                        'Enter your OTP here ',
+                        'Enter your OTP here',
                         style: getTextStyle(
                           fontSize: media.size.width * 0.035,
                           color: AppColors.primaryFontColor,
@@ -83,9 +86,8 @@ class VerificationScreen extends StatelessWidget {
                         textAlign: TextAlign.center,
                       ),
                       SizedBox(height: media.size.height * 0.01),
-
                       Text(
-                        'Please input your OTP sent to your phone number ',
+                        'Please input your OTP sent to your phone number',
                         style: getTextStyle(
                           fontSize: media.size.width * 0.029,
                           color: AppColors.primaryFontColor,
@@ -93,19 +95,22 @@ class VerificationScreen extends StatelessWidget {
                         textAlign: TextAlign.center,
                       ),
                       SizedBox(height: media.size.height * 0.01),
-                      Text(
-                        '+65 9** *** **6',
-                        style: getTextStyle(
-                          fontSize: media.size.width * 0.035,
-                          color: AppColors.primaryFontColor,
+                      Obx(
+                        () => Text(
+                          controller.phone.value,
+                          style: getTextStyle(
+                            fontSize: media.size.width * 0.035,
+                            color: AppColors.primaryFontColor,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
-                        textAlign: TextAlign.center,
                       ),
                     ],
                   ),
 
                   SizedBox(height: media.size.height * 0.05),
 
+                  // OTP Input Fields
                   Center(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -122,6 +127,7 @@ class VerificationScreen extends StatelessWidget {
 
                   SizedBox(height: media.size.height * 0.03),
 
+                  // Resend OTP timer
                   Obx(() {
                     return Center(
                       child: controller.canResend
@@ -164,7 +170,7 @@ class VerificationScreen extends StatelessWidget {
 
                   SizedBox(height: media.size.height * 0.08),
 
-                  /// Verify Button
+                  // Verify Button
                   VerifyButton(controller: controller, media: media),
 
                   SizedBox(height: media.size.height * 0.04),

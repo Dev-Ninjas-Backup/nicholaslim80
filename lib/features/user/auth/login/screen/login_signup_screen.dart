@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:country_code_picker/country_code_picker.dart';
 import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
 import 'package:nicholaslim80/core/utils/constants/image_path.dart';
@@ -110,13 +111,13 @@ class LoginSignupScreen extends StatelessWidget {
                                   ),
                                 ),
                               ),
-                              SizedBox(width: 12),
+                              const SizedBox(width: 12),
                               GestureDetector(
                                 onTap: () => controller.toggleSelection(false),
                                 child: AnimatedContainer(
-                                  duration: Duration(milliseconds: 300),
+                                  duration: const Duration(milliseconds: 300),
                                   curve: Curves.easeInOut,
-                                  padding: EdgeInsets.symmetric(
+                                  padding: const EdgeInsets.symmetric(
                                     horizontal: 18,
                                     vertical: 5,
                                   ),
@@ -165,7 +166,7 @@ class LoginSignupScreen extends StatelessWidget {
 
                         const SizedBox(height: 30),
 
-                        // Button-------->
+                        // Button
                         ElevatedButton(
                           onPressed: () {
                             if (controller.isLoginSelected.value) {
@@ -205,10 +206,10 @@ class LoginSignupScreen extends StatelessWidget {
   // Build login fields
   Widget buildLoginFields(LoginSignupController controller) {
     return Column(
-      key: const ValueKey('loginFields'),
+      key: ValueKey('loginFields'),
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Login with your phone number',
           style: TextStyle(
             fontSize: 16,
@@ -219,21 +220,6 @@ class LoginSignupScreen extends StatelessWidget {
         const SizedBox(height: 10),
         _buildPhoneField(controller),
         const SizedBox(height: 10),
-        // GestureDetector(
-        //   onTap: () {},
-        //   child: const Align(
-        //     alignment: Alignment.centerLeft,
-        //     child: Text(
-        //       "Forgot Password?",
-        //       style: TextStyle(
-        //         fontSize: 11,
-        //         color: Color.fromARGB(255, 152, 122, 2),
-        //         decoration: TextDecoration.underline,
-        //         decorationColor: Color.fromARGB(255, 152, 122, 2),
-        //       ),
-        //     ),
-        //   ),
-        // ),
       ],
     );
   }
@@ -250,13 +236,14 @@ class LoginSignupScreen extends StatelessWidget {
           'Your e-mail address',
           keyboardType: TextInputType.emailAddress,
         ),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         _buildPhoneField(controller),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
       ],
     );
   }
 
+  // Updated Phone Field with Left TextField & Right CountryCodePicker
   Widget _buildPhoneField(LoginSignupController controller) {
     return Container(
       height: 52,
@@ -268,29 +255,7 @@ class LoginSignupScreen extends StatelessWidget {
       ),
       child: Row(
         children: [
-          DropdownButtonHideUnderline(
-            child: DropdownButton<String>(
-              value: controller.selectedCountry.value,
-              items: controller.countries
-                  .map(
-                    (country) => DropdownMenuItem(
-                      value: country,
-                      child: Text(
-                        country,
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                    ),
-                  )
-                  .toList(),
-              onChanged: (value) {
-                if (value != null) {
-                  controller.selectCountry(value);
-                }
-              },
-              icon: const Icon(Icons.arrow_drop_down),
-            ),
-          ),
-          const SizedBox(width: 12),
+          // Left: Phone Number TextField
           Expanded(
             child: Obx(
               () => TextField(
@@ -309,6 +274,18 @@ class LoginSignupScreen extends StatelessWidget {
                 ),
               ),
             ),
+          ),
+
+          // Right: Country Code Picker
+          CountryCodePicker(
+            onChanged: (country) {
+              controller.selectedCountry.value = country.dialCode ?? '+1';
+            },
+            initialSelection: controller.selectedCountry.value,
+            favorite: ['+1', '+880'],
+            showCountryOnly: false,
+            showOnlyCountryWhenClosed: false,
+            alignLeft: false,
           ),
         ],
       ),
