@@ -6,43 +6,50 @@ import 'package:nicholaslim80/features/user/auth/login/auth_service/auth_service
 import 'package:nicholaslim80/routes/app_routes.dart';
 
 class LoginSignupController extends GetxController {
+  // ================= STATE =================
   var isLoginSelected = true.obs;
-  var phoneNumber = ''.obs; // Full phone with country code
-  var selectedCountry = '+1'.obs; // Only dial code now
 
-  // User type (default USER)
+  var phoneNumber = ''.obs; // Full phone number with country code
+  var selectedCountry = '+1'.obs; // Dial code only
+
   var selectedUserType = 'USER'.obs;
-
-  late TextEditingController phoneController;
-  late TextEditingController nameController;
-  late TextEditingController emailController;
-
   final List<String> userTypes = ['USER'];
 
+  // ================= TEXT CONTROLLERS =================
+  late TextEditingController phoneController;
+  late TextEditingController emailController;
+  late TextEditingController nameController;
+  late TextEditingController passwordController;
+  late TextEditingController confirmPasswordController;
+
+  // ================= PASSWORD VISIBILITY =================
+  var isLoginPasswordVisible = false.obs;
+  var isSignUpPasswordVisible = false.obs;
+  var isConfirmPasswordVisible = false.obs;
+
+  // ================= INIT =================
+  @override
+  void onInit() {
+    super.onInit();
+
+    phoneController = TextEditingController();
+    emailController = TextEditingController();
+    nameController = TextEditingController();
+    passwordController = TextEditingController();
+    confirmPasswordController = TextEditingController();
+
+    phoneController.addListener(updatePhoneNumber);
+  }
+
+  // ================= UI TOGGLE =================
   void toggleSelection(bool isLogin) {
     isLoginSelected.value = isLogin;
   }
 
-  @override
-  void onInit() {
-    super.onInit();
-    phoneController = TextEditingController();
-    nameController = TextEditingController();
-    emailController = TextEditingController();
-
-    // Update phoneNumber.value automatically with country code
-    phoneController.addListener(() {
-      updatePhoneNumber();
-    });
-  }
-
+  // ================= PHONE =================
   void updatePhoneNumber() {
-    final text = phoneController.text;
-    if (text.isNotEmpty) {
-      phoneNumber.value = '${selectedCountry.value}$text';
-    } else {
-      phoneNumber.value = '';
-    }
+    final text = phoneController.text.trim();
+    phoneNumber.value = text.isNotEmpty ? '${selectedCountry.value}$text' : '';
   }
 
   void clearPhone() {
@@ -52,102 +59,147 @@ class LoginSignupController extends GetxController {
 
   void selectCountry(String countryCode) {
     selectedCountry.value = countryCode;
-    updatePhoneNumber(); // Update full phone whenever country changes
+    updatePhoneNumber();
   }
 
+  // ================= USER TYPE =================
   void selectUserType(String type) {
     selectedUserType.value = type;
   }
 
   // ================= LOGIN =================
-  void onLoginPressed() async {
-    if (phoneNumber.value.isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Please enter your phone number',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.red.withOpacity(0.8),
-        colorText: Colors.white,
-      );
+  Future<void> onLoginPressed() async {
+    if (phoneNumber.value.isEmpty && emailController.text.trim().isEmpty) {
+      _showError("Please enter phone or email");
+      return;
+    }
+    if (passwordController.text.trim().isEmpty) {
+      _showError("Please enter your password");
       return;
     }
 
     try {
-      Get.toNamed(
-        AppRoutes.verificationScreen,
-        arguments: {
-          "phone": phoneNumber.value,
-          "email": emailController.text, // Add email if available
-          "mode": "login",
-        },
+      _showLoader();
+
+      // Call Login API
+      await AuthService.login(
+        phone: phoneNumber.value.isNotEmpty ? phoneNumber.value : null,
+        email: emailController.text.trim().isNotEmpty
+            ? emailController.text.trim()
+            : null,
+        password: passwordController.text.trim(),
       );
+
+      _hideLoader();
+
+      Get.offAllNamed(AppRoutes.getbottomNavbarScreen());
     } catch (e) {
-      Get.snackbar("Login Failed", e.toString());
+      _hideLoader();
+      _showError("Login Failed: $e");
     }
   }
 
   // ================= SIGNUP =================
-  void onSignUpContinuePressed() async {
-    if (nameController.text.isEmpty ||
-        emailController.text.isEmpty ||
-        phoneController.text.isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Please fill all fields',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.red.withOpacity(0.8),
-        colorText: Colors.white,
-      );
+  Future<void> onSignUpContinuePressed() async {
+    if (nameController.text.trim().isEmpty ||
+        emailController.text.trim().isEmpty ||
+        phoneController.text.trim().isEmpty ||
+        passwordController.text.trim().isEmpty ||
+        confirmPasswordController.text.trim().isEmpty) {
+      _showError("Please fill all fields");
+      return;
+    }
+
+    if (passwordController.text.trim() !=
+        confirmPasswordController.text.trim()) {
+      _showError("Passwords do not match");
+      return;
+    }
+
+    if (passwordController.text.trim().length < 6) {
+      _showError("Password must be at least 6 characters");
       return;
     }
 
     try {
-      Get.dialog(
-        const Center(child: CircularProgressIndicator()),
-        barrierDismissible: false,
-      );
+      _showLoader();
 
-      // Signup API call with phone + email (if API supports)
+      // Call Signup API
       await AuthService.signUp(
         phone: phoneNumber.value,
-        email: emailController.text, // Send email too
-        name: nameController.text, // Send name if needed
+        username: nameController.text.trim(),
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
       );
 
-      Get.back();
+      _hideLoader();
 
-      // Navigate to OTP Verification screen
+      // ✅ Navigate to OTP verification or Dashboard
+      // If you want direct dashboard after signup, change to AppRoutes.dashboardScreen
       Get.toNamed(
         AppRoutes.verificationScreen,
         arguments: {
           "phone": phoneNumber.value,
-          "email": emailController.text, // Email required for OTP verification
+          "email": emailController.text.trim(),
           "mode": "signup",
         },
       );
     } catch (e) {
-      // Close loading
-      Get.back();
-
-      Get.snackbar(
-        "Signup Failed",
-        e.toString(),
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.red.withOpacity(0.8),
-        colorText: Colors.white,
-      );
+      _hideLoader();
+      _showError("Signup Failed: $e");
     }
   }
 
+  // ================= LOGOUT =================
   void logout() {
     phoneNumber.value = '';
     selectedUserType.value = 'USER';
     isLoginSelected.value = true;
 
     phoneController.clear();
-    nameController.clear();
     emailController.clear();
+    nameController.clear();
+    passwordController.clear();
+    confirmPasswordController.clear();
 
     Get.offAllNamed(AppRoutes.loginScreen);
+  }
+
+  // ================= HELPERS =================
+  void _showLoader() {
+    if (Get.isDialogOpen == true) return;
+
+    Get.dialog(
+      const Center(child: CircularProgressIndicator()),
+      barrierDismissible: false,
+    );
+  }
+
+  void _hideLoader() {
+    if (Get.isDialogOpen == true) {
+      Get.back();
+    }
+  }
+
+  void _showError(String message) {
+    Get.snackbar(
+      "Error",
+      message,
+      snackPosition: SnackPosition.TOP,
+      backgroundColor: Colors.red.withOpacity(0.85),
+      colorText: Colors.white,
+      duration: const Duration(seconds: 3),
+    );
+  }
+
+  // ================= DISPOSE =================
+  @override
+  void onClose() {
+    phoneController.dispose();
+    emailController.dispose();
+    nameController.dispose();
+    passwordController.dispose();
+    confirmPasswordController.dispose();
+    super.onClose();
   }
 }

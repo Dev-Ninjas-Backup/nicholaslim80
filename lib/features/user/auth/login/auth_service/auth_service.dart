@@ -10,12 +10,19 @@ class AuthService {
   // ================= SIGNUP =================
   static Future<bool> signUp({
     required String phone,
-    required String name,
+    required String username,
     required String email,
+    required String password, // Added password
   }) async {
     final url = Uri.parse(ApiEndPoint.signUp);
 
-    final body = jsonEncode({"phone": phone, "email": email, "role": "USER"});
+    final body = jsonEncode({
+      "phone": phone,
+      "email": email,
+      "username": username,
+      "password": password, // Include password in request
+      "role": "USER",
+    });
 
     logger.i("SIGNUP REQUEST -> POST $url");
     logger.d("Request body: $body");
@@ -44,6 +51,47 @@ class AuthService {
     }
   }
 
+  // ================= LOGIN =================
+  static Future<bool> login({
+    String? phone,
+    String? email,
+    String? password, // Added password
+  }) async {
+    final url = Uri.parse('${ApiEndPoint.baseUrl}/auth/login/request-otp');
+
+    // Include password if your backend requires it
+    final body = jsonEncode({
+      "phone": phone,
+      if (password != null) "password": password,
+      if (email != null) "email": email,
+    });
+
+    logger.i("LOGIN REQUEST -> POST $url");
+    logger.d("Request body: $body");
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {"Content-Type": "application/json"},
+        body: body,
+      );
+
+      logger.d("LOGIN RESPONSE: ${response.body}");
+      logger.d("Status Code: ${response.statusCode}");
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        logger.i("Login success → OTP Sent");
+        return true; // OTP sent successful
+      }
+
+      final error = _extractMessage(response.body) ?? "Login failed";
+      throw Exception(error);
+    } catch (e, st) {
+      logger.e("Login Exception", error: e, stackTrace: st);
+      throw Exception("Login Error: $e");
+    }
+  }
+
   // ================= VERIFY OTP =================
   static Future<String> verifyOtp({
     required String email,
@@ -52,7 +100,6 @@ class AuthService {
   }) async {
     final url = Uri.parse('${ApiEndPoint.baseUrl}/auth/verify');
 
-    // Build request body
     final body = jsonEncode({"email": email, "phone": phone, "otp": otp});
 
     logger.i("VERIFY OTP REQUEST -> POST $url");
@@ -83,7 +130,6 @@ class AuthService {
         return token;
       }
 
-      // Handle error response
       final error = _extractMessage(response.body) ?? "OTP Verification Failed";
       logger.w("OTP verification failed: $error");
       throw Exception(error);

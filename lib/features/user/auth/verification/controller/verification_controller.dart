@@ -17,6 +17,9 @@ class VerificationController extends GetxController {
   RxString phone = ''.obs;
   RxString email = ''.obs;
 
+  // 🔹 UPDATED: mode to distinguish login/signup
+  RxString mode = 'signup'.obs; // default signup
+
   Timer? timer;
 
   bool get canResend => secondsLeft.value == 0;
@@ -27,8 +30,10 @@ class VerificationController extends GetxController {
     super.onInit();
 
     final args = Get.arguments as Map<String, dynamic>?;
-    if (args != null && args.containsKey('phone')) {
-      phone.value = args['phone'];
+    if (args != null) {
+      if (args.containsKey('phone')) phone.value = args['phone'];
+      if (args.containsKey('email')) email.value = args['email'];
+      if (args.containsKey('mode')) mode.value = args['mode']; // 🔹 UPDATED
     }
 
     for (var c in pinControllers) {
@@ -65,17 +70,17 @@ class VerificationController extends GetxController {
         'Success',
         'OTP sent again',
         snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.green.withOpacity(0.8),
+        backgroundColor: Colors.amber,
         colorText: Colors.white,
       );
     } catch (e) {
-      // If server says OTP already sent, show info instead of error
       final msg = e.toString();
       if (msg.contains("OTP sent")) {
         Get.snackbar(
           'Info',
           'OTP already sent. Please wait.',
           snackPosition: SnackPosition.TOP,
+          // ignore: deprecated_member_use
           backgroundColor: Colors.orange.withOpacity(0.8),
           colorText: Colors.white,
         );
@@ -91,6 +96,7 @@ class VerificationController extends GetxController {
     }
   }
 
+  // 🔹 UPDATED: verifyCode now handles both login & signup
   Future<void> verifyCode() async {
     if (!canVerify) return;
 
@@ -107,17 +113,31 @@ class VerificationController extends GetxController {
         email: email.value,
       );
 
-      // Get.back(); // Close loader
-      Get.offAllNamed(AppRoutes.bottomNavbarScreen); // Navigate to main page
-      Get.snackbar(
-        'Success',
-        'OTP Verified Successfully',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.green.withOpacity(0.8),
-        colorText: Colors.white,
-      );
+      Get.back(); // close loader
+
+      if (mode.value == 'login') {
+        // 🔹 UPDATED: after login OTP verification
+        Get.offAllNamed(AppRoutes.bottomNavbarScreen);
+        Get.snackbar(
+          'Success',
+          'Login OTP Verified Successfully',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.green.withOpacity(0.8),
+          colorText: Colors.white,
+        );
+      } else {
+        // 🔹 UPDATED: after signup OTP verification
+        Get.offAllNamed(AppRoutes.bottomNavbarScreen);
+        Get.snackbar(
+          'Success',
+          'Signup OTP Verified Successfully',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.green.withOpacity(0.8),
+          colorText: Colors.white,
+        );
+      }
     } catch (e) {
-      Get.back(); // Close loader
+      Get.back(); // close loader
       Get.snackbar(
         'Verification Failed',
         e.toString(),

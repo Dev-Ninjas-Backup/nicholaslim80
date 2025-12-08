@@ -206,12 +206,12 @@ class LoginSignupScreen extends StatelessWidget {
   // Build login fields
   Widget buildLoginFields(LoginSignupController controller) {
     return Column(
-      key: ValueKey('loginFields'),
+      key: const ValueKey('loginFields'),
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Login with your phone number',
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w400,
             color: Colors.black,
@@ -219,6 +219,11 @@ class LoginSignupScreen extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         _buildPhoneField(controller),
+        const SizedBox(height: 20),
+        buildPasswordField(
+          controller.passwordController,
+          controller.isLoginPasswordVisible,
+        ),
         const SizedBox(height: 10),
       ],
     );
@@ -239,8 +244,57 @@ class LoginSignupScreen extends StatelessWidget {
         const SizedBox(height: 20),
         _buildPhoneField(controller),
         const SizedBox(height: 20),
+        buildPasswordField(
+          controller.passwordController,
+          controller.isSignUpPasswordVisible,
+          'Enter your password',
+        ),
+        const SizedBox(height: 20),
+        buildPasswordField(
+          controller.confirmPasswordController,
+          controller.isConfirmPasswordVisible,
+          'Confirm your password',
+        ),
+        const SizedBox(height: 20),
       ],
     );
+  }
+
+  // Password Field with toggle visibility
+  Widget buildPasswordField(
+    TextEditingController controller,
+    RxBool isVisible, [
+    String hint = 'Password',
+  ]) {
+    return Obx(() {
+      return Container(
+        height: 52,
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        decoration: BoxDecoration(
+          border: Border.all(color: AppColors.subtitleFontColor, width: 1),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: TextField(
+          controller: controller,
+          obscureText: !isVisible.value,
+          decoration: InputDecoration(
+            hintText: hint,
+            border: InputBorder.none,
+            isDense: true,
+            suffixIcon: IconButton(
+              icon: Icon(
+                isVisible.value ? Icons.visibility : Icons.visibility_off,
+                size: 20,
+              ),
+              onPressed: () {
+                isVisible.value = !isVisible.value;
+              },
+            ),
+          ),
+        ),
+      );
+    });
   }
 
   // Updated Phone Field with Left TextField & Right CountryCodePicker
@@ -255,7 +309,6 @@ class LoginSignupScreen extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // Left: Phone Number TextField
           Expanded(
             child: Obx(
               () => TextField(
@@ -275,8 +328,6 @@ class LoginSignupScreen extends StatelessWidget {
               ),
             ),
           ),
-
-          // Right: Country Code Picker
           CountryCodePicker(
             onChanged: (country) {
               controller.selectedCountry.value = country.dialCode ?? '+1';
