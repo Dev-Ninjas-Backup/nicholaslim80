@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:nicholaslim80/features/kamrul_express/screen/kamrul_express_screen.dart';
 import 'package:nicholaslim80/features/onboarding/screen/onboarding_screen.dart';
 import 'package:nicholaslim80/features/splash/screen/splash_screen.dart';
 import 'package:nicholaslim80/features/user/express_delivery_1/express_delivery_to_sendr_or_recepmeant/screen/express_sender_or_recepmeant.dart';
@@ -23,6 +24,8 @@ import '../features/user/stacked/stacked_faq/stacked_faq.dart';
 import '../features/user/stacked/stacked_screen/stacked_screen.dart';
 
 class AppRoutes {
+  static String kamrulExpressScreen = '/kamrulExpressScreen';
+
   static String splashScreen = '/splashScreen';
   static String onboardingScreen = '/onboardingScreen';
   static String loginScreen = '/loginScreen';
@@ -66,6 +69,8 @@ class AppRoutes {
 
   // static String scheduledelivery = "/scheduledelivery";
 
+  static String getKamrulExpressScreen() => kamrulExpressScreen;
+
   static String getSplashScreen() => splashScreen;
   static String getOnboardingScreen() => onboardingScreen;
   static String getLoginScreen() => loginScreen;
@@ -107,6 +112,8 @@ class AppRoutes {
   // static String scheduledelivery() => scheduledelivery;
 
   static List<GetPage> routes = [
+    GetPage(name: kamrulExpressScreen, page: () => KamrulExpressScreen()),
+
     GetPage(name: splashScreen, page: () => SplashScreen()),
     GetPage(name: onboardingScreen, page: () => OnboardingScreen()),
     GetPage(
