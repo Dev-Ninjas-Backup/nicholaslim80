@@ -58,7 +58,7 @@ class HomeController extends GetxController {
     Get.dialog(
       LogoutDialog(
         onConfirm: () {
-          controller.logout();
+          // controller.logout();
         },
       ),
       barrierDismissible: false,
