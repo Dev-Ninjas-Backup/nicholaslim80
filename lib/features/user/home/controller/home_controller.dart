@@ -7,6 +7,8 @@ import 'package:nicholaslim80/features/user/home/model/drawer_model.dart';
 import 'package:nicholaslim80/features/user/home/widgets/logout_dailog_widget.dart';
 import 'package:nicholaslim80/routes/app_routes.dart';
 
+import '../../../../core/shared_prefference_service/shared_pref.dart';
+
 class HomeController extends GetxController {
   var controller = Get.put(LoginSignupController());
   final userName = 'Good Morning!'.obs;
@@ -58,7 +60,8 @@ class HomeController extends GetxController {
     Get.dialog(
       LogoutDialog(
         onConfirm: () {
-          // controller.logout();
+          SharedPreferencesHelper.clearAllData();
+          Get.offAllNamed(AppRoutes.loginScreen);
         },
       ),
       barrierDismissible: false,

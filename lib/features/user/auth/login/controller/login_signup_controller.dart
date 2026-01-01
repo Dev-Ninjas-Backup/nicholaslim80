@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nicholaslim80/core/shared_prefs_service/shared_preference_helper.dart';
+import 'package:nicholaslim80/core/shared_prefference_service/shared_pref.dart';
 import 'package:nicholaslim80/features/user/auth/login/auth_service/auth_service.dart';
 import 'package:nicholaslim80/routes/app_routes.dart';
 
@@ -58,9 +58,9 @@ class LoginSignupController extends GetxController {
         final token = result['body']['access_token'];
         debugPrint("Login Success, token: $token");
 
-        await SharedPreferenceHelper.saveToken(token);
-        await SharedPreferenceHelper.saveUserEmail(email);
-        await SharedPreferenceHelper.setLoggedIn(true);
+        await SharedPreferencesHelper.saveToken(token);
+        // await SharedPreferencesHelper.saveUserEmail(email);
+        // await SharedPreferencesHelper.setLoggedIn(true);
 
         Get.offAllNamed(AppRoutes.bottomNavbarScreen);
       } else {
