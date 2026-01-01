@@ -1,203 +1,132 @@
-// ignore_for_file: deprecated_member_use
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:nicholaslim80/core/shared_prefs_service/shared_preference_helper.dart';
 import 'package:nicholaslim80/features/user/auth/login/auth_service/auth_service.dart';
 import 'package:nicholaslim80/routes/app_routes.dart';
 
 class LoginSignupController extends GetxController {
-  // ================= STATE =================
-  var isLoginSelected = true.obs;
+  // ------------------- Text Controllers -------------------
+  final nameController = TextEditingController();
+  final emailController = TextEditingController();
+  final phoneController = TextEditingController();
+  final passwordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
 
-  var phoneNumber = ''.obs; // Full phone number with country code
-  var selectedCountry = '+1'.obs; // Dial code only
+  // ------------------- Password Visibility -------------------
+  RxBool isLoginPasswordVisible = false.obs;
+  RxBool isSignUpPasswordVisible = false.obs;
+  RxBool isConfirmPasswordVisible = false.obs;
 
-  var selectedUserType = 'USER'.obs;
-  final List<String> userTypes = ['USER'];
+  // ------------------- Login / Signup Toggle -------------------
+  RxBool isLogin = true.obs;
+  RxBool isLoading = false.obs;
 
-  // ================= TEXT CONTROLLERS =================
-  late TextEditingController phoneController;
-  late TextEditingController emailController;
-  late TextEditingController nameController;
-  late TextEditingController passwordController;
-  late TextEditingController confirmPasswordController;
-
-  // ================= PASSWORD VISIBILITY =================
-  var isLoginPasswordVisible = false.obs;
-  var isSignUpPasswordVisible = false.obs;
-  var isConfirmPasswordVisible = false.obs;
-
-  // ================= INIT =================
-  @override
-  void onInit() {
-    super.onInit();
-
-    phoneController = TextEditingController();
-    emailController = TextEditingController();
-    nameController = TextEditingController();
-    passwordController = TextEditingController();
-    confirmPasswordController = TextEditingController();
-
-    phoneController.addListener(updatePhoneNumber);
+  void toggleAuthMode() {
+    isLogin.value = !isLogin.value;
+    debugPrint("Auth Mode Toggled: isLogin=${isLogin.value}");
   }
 
-  // ================= UI TOGGLE =================
-  void toggleSelection(bool isLogin) {
-    isLoginSelected.value = isLogin;
+  // ------------------- Submit -------------------
+  Future<void> submit() async {
+    if (isLogin.value) {
+      await login();
+    } else {
+      await signup();
+    }
   }
 
-  // ================= PHONE =================
-  void updatePhoneNumber() {
-    final text = phoneController.text.trim();
-    phoneNumber.value = text.isNotEmpty ? '${selectedCountry.value}$text' : '';
-  }
+  // ------------------- LOGIN -------------------
+  Future<void> login() async {
+    final email = emailController.text.trim();
+    final password = passwordController.text.trim();
 
-  void clearPhone() {
-    phoneController.clear();
-    phoneNumber.value = '';
-  }
+    debugPrint("Login Attempt: email=$email, password=${'*' * password.length}");
 
-  void selectCountry(String countryCode) {
-    selectedCountry.value = countryCode;
-    updatePhoneNumber();
-  }
-
-  // ================= USER TYPE =================
-  void selectUserType(String type) {
-    selectedUserType.value = type;
-  }
-
-  // ================= LOGIN =================
-  Future<void> onLoginPressed() async {
-    if (phoneNumber.value.isEmpty && emailController.text.trim().isEmpty) {
-      _showError("Please enter phone or email");
+    if (email.isEmpty || password.isEmpty) {
+      Get.snackbar("Error", "Email & Password required");
+      debugPrint("Login Failed: Email or Password empty"); 
       return;
     }
-    if (passwordController.text.trim().isEmpty) {
-      _showError("Please enter your password");
-      return;
-    }
+
+    isLoading.value = true;
 
     try {
-      _showLoader();
+      final result = await AuthService.login(email: email, password: password);
+      debugPrint("Login API Response: $result");
 
-      // Call Login API
-      await AuthService.login(
-        phone: phoneNumber.value.isNotEmpty ? phoneNumber.value : null,
-        email: emailController.text.trim().isNotEmpty
-            ? emailController.text.trim()
-            : null,
-        password: passwordController.text.trim(),
-      );
+      if (result['statusCode'] == 200 || result['statusCode'] == 201) {
+        final token = result['body']['access_token'];
+        debugPrint("Login Success, token: $token");
 
-      _hideLoader();
+        await SharedPreferenceHelper.saveToken(token);
+        await SharedPreferenceHelper.saveUserEmail(email);
+        await SharedPreferenceHelper.setLoggedIn(true);
 
-      Get.offAllNamed(AppRoutes.getbottomNavbarScreen());
-    } catch (e) {
-      _hideLoader();
-      _showError("Login Failed: $e");
+        Get.offAllNamed(AppRoutes.bottomNavbarScreen);
+      } else {
+        Get.snackbar("Login Failed", result['body']['message'] ?? 'Error');
+        debugPrint("Login Failed: ${result['body']['message']}");
+      }
+    } finally {
+      isLoading.value = false;
     }
   }
 
-  // ================= SIGNUP =================
-  Future<void> onSignUpContinuePressed() async {
-    if (nameController.text.trim().isEmpty ||
-        emailController.text.trim().isEmpty ||
-        phoneController.text.trim().isEmpty ||
-        passwordController.text.trim().isEmpty ||
-        confirmPasswordController.text.trim().isEmpty) {
-      _showError("Please fill all fields");
+  // ------------------- SIGNUP -------------------
+  Future<void> signup() async {
+    final username = nameController.text.trim();
+    final email = emailController.text.trim();
+    final phone = phoneController.text.trim();
+    final password = passwordController.text.trim();
+    final confirmPassword = confirmPasswordController.text.trim();
+
+    debugPrint("Signup Attempt: username=$username, email=$email, phone=$phone, password=${'*' * password.length}, confirmPassword=${'*' * confirmPassword.length}");
+    
+    if (username.isEmpty || email.isEmpty || phone.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
+      Get.snackbar("Error", "All fields are required");
+      debugPrint("Signup Failed: Some fields empty");
       return;
     }
 
-    if (passwordController.text.trim() !=
-        confirmPasswordController.text.trim()) {
-      _showError("Passwords do not match");
+    if (password != confirmPassword) {
+      Get.snackbar("Error", "Passwords do not match");
+      debugPrint("Signup Failed: Passwords do not match");
       return;
     }
 
-    if (passwordController.text.trim().length < 6) {
-      _showError("Password must be at least 6 characters");
-      return;
-    }
+    isLoading.value = true;
 
     try {
-      _showLoader();
-
-      // Call Signup API
-      await AuthService.signUp(
-        phone: phoneNumber.value,
-        username: nameController.text.trim(),
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
+      final result = await AuthService.signup(
+        username: username,
+        email: email,
+        phone: phone,
+        password: password,
       );
 
-      _hideLoader();
+      debugPrint("Signup API Response: $result");
 
-      // ✅ Navigate to OTP verification or Dashboard
-      // If you want direct dashboard after signup, change to AppRoutes.dashboardScreen
-      Get.toNamed(
-        AppRoutes.verificationScreen,
-        arguments: {
-          "phone": phoneNumber.value,
-          "email": emailController.text.trim(),
+      if (result['statusCode'] == 201) {
+        // navigate to verification screen
+        debugPrint("Signup Success, navigating to verification screen");
+        Get.toNamed(AppRoutes.verificationScreen, arguments: {
+          "email": email,
           "mode": "signup",
-        },
-      );
-    } catch (e) {
-      _hideLoader();
-      _showError("Signup Failed: $e");
+        });
+      } else {
+        debugPrint("Signup Failed: ${result['body']['message']}");
+        Get.snackbar("Signup Failed", result['body']['message'] ?? 'Error');
+      }
+    } finally {
+      isLoading.value = false;
     }
   }
 
-  // ================= LOGOUT =================
-  void logout() {
-    phoneNumber.value = '';
-    selectedUserType.value = 'USER';
-    isLoginSelected.value = true;
-
-    phoneController.clear();
-    emailController.clear();
-    nameController.clear();
-    passwordController.clear();
-    confirmPasswordController.clear();
-
-    Get.offAllNamed(AppRoutes.loginScreen);
-  }
-
-  // ================= HELPERS =================
-  void _showLoader() {
-    if (Get.isDialogOpen == true) return;
-
-    Get.dialog(
-      const Center(child: CircularProgressIndicator()),
-      barrierDismissible: false,
-    );
-  }
-
-  void _hideLoader() {
-    if (Get.isDialogOpen == true) {
-      Get.back();
-    }
-  }
-
-  void _showError(String message) {
-    Get.snackbar(
-      "Error",
-      message,
-      snackPosition: SnackPosition.TOP,
-      backgroundColor: Colors.red.withOpacity(0.85),
-      colorText: Colors.white,
-      duration: const Duration(seconds: 3),
-    );
-  }
-
-  // ================= DISPOSE =================
   @override
   void onClose() {
-    phoneController.dispose();
-    emailController.dispose();
     nameController.dispose();
+    emailController.dispose();
+    phoneController.dispose();
     passwordController.dispose();
     confirmPasswordController.dispose();
     super.onClose();

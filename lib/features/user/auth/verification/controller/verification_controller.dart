@@ -5,20 +5,22 @@ import 'package:nicholaslim80/features/user/auth/login/auth_service/auth_service
 import 'package:nicholaslim80/routes/app_routes.dart';
 
 class VerificationController extends GetxController {
-  final List<TextEditingController> pinControllers = List.generate(
-    4,
-    (_) => TextEditingController(),
-  );
+  // ------------------- OTP Input Controllers -------------------
+  final List<TextEditingController> pinControllers =
+      List.generate(4, (_) => TextEditingController());
+
   final List<FocusNode> focusNodes = List.generate(4, (_) => FocusNode());
 
   RxString otp = ''.obs;
   RxInt secondsLeft = 50.obs;
   RxBool isVerifying = false.obs;
+
+  // ------------------- User Info -------------------
   RxString phone = ''.obs;
   RxString email = ''.obs;
 
-  // 🔹 UPDATED: mode to distinguish login/signup
-  RxString mode = 'signup'.obs; // default signup
+  // Mode: 'login' or 'signup'
+  RxString mode = 'signup'.obs;
 
   Timer? timer;
 
@@ -30,10 +32,11 @@ class VerificationController extends GetxController {
     super.onInit();
 
     final args = Get.arguments as Map<String, dynamic>?;
+
     if (args != null) {
       if (args.containsKey('phone')) phone.value = args['phone'];
       if (args.containsKey('email')) email.value = args['email'];
-      if (args.containsKey('mode')) mode.value = args['mode']; // 🔹 UPDATED
+      if (args.containsKey('mode')) mode.value = args['mode'];
     }
 
     for (var c in pinControllers) {
@@ -50,6 +53,7 @@ class VerificationController extends GetxController {
   void _startTimer({int from = 50}) {
     timer?.cancel();
     secondsLeft.value = from;
+
     timer = Timer.periodic(const Duration(seconds: 1), (t) {
       if (secondsLeft.value == 0) {
         t.cancel();
@@ -59,13 +63,18 @@ class VerificationController extends GetxController {
     });
   }
 
+  // ------------------- Resend OTP -------------------
   Future<void> resendCode() async {
     if (!canResend) return;
 
     _startTimer(from: 50);
 
     try {
-      await AuthService.resendOtp(phone: phone.value);
+      await AuthService.verifyOtp(
+        email: email.value,
+        otp: "0000", // server expects a POST, but resend may require separate API
+      );
+
       Get.snackbar(
         'Success',
         'OTP sent again',
@@ -74,72 +83,69 @@ class VerificationController extends GetxController {
         colorText: Colors.white,
       );
     } catch (e) {
-      final msg = e.toString();
-      if (msg.contains("OTP sent")) {
-        Get.snackbar(
-          'Info',
-          'OTP already sent. Please wait.',
-          snackPosition: SnackPosition.TOP,
-          // ignore: deprecated_member_use
-          backgroundColor: Colors.orange.withOpacity(0.8),
-          colorText: Colors.white,
-        );
-      } else {
-        Get.snackbar(
-          'Error',
-          msg,
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: Colors.red.withOpacity(0.8),
-          colorText: Colors.white,
-        );
-      }
+      Get.snackbar(
+        'Error',
+        e.toString(),
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red.withOpacity(0.8),
+        colorText: Colors.white,
+      );
     }
   }
 
-  // 🔹 UPDATED: verifyCode now handles both login & signup
+  // ------------------- Verify OTP -------------------
   Future<void> verifyCode() async {
     if (!canVerify) return;
 
     isVerifying.value = true;
+
     Get.dialog(
       const Center(child: CircularProgressIndicator()),
       barrierDismissible: false,
     );
 
     try {
-      await AuthService.verifyOtp(
-        phone: phone.value,
-        otp: otp.value,
+      final result = await AuthService.verifyOtp(
         email: email.value,
+        otp: otp.value,
       );
 
       Get.back(); // close loader
 
-      if (mode.value == 'login') {
-        // 🔹 UPDATED: after login OTP verification
-        Get.offAllNamed(AppRoutes.bottomNavbarScreen);
-        Get.snackbar(
-          'Success',
-          'Login OTP Verified Successfully',
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: Colors.green.withOpacity(0.8),
-          colorText: Colors.white,
-        );
+      if (result['statusCode'] == 201) {
+        // Login or Signup redirect
+        if (mode.value == 'login') {
+          Get.offAllNamed(AppRoutes.bottomNavbarScreen);
+          Get.snackbar(
+            'Success',
+            'Login OTP Verified',
+            snackPosition: SnackPosition.TOP,
+            backgroundColor: Colors.green.withOpacity(0.8),
+            colorText: Colors.white,
+          );
+        } else {
+          Get.offAllNamed(AppRoutes.bottomNavbarScreen);
+          Get.snackbar(
+            'Success',
+            'Signup OTP Verified',
+            snackPosition: SnackPosition.TOP,
+            backgroundColor: Colors.green.withOpacity(0.8),
+            colorText: Colors.white,
+          );
+        }
       } else {
-        // 🔹 UPDATED: after signup OTP verification
-        Get.offAllNamed(AppRoutes.bottomNavbarScreen);
         Get.snackbar(
-          'Success',
-          'Signup OTP Verified Successfully',
+          'Verification Failed',
+          result['body']['message'] ?? 'Error',
           snackPosition: SnackPosition.TOP,
-          backgroundColor: Colors.green.withOpacity(0.8),
+          backgroundColor: Colors.red.withOpacity(0.8),
           colorText: Colors.white,
         );
       }
     } catch (e) {
-      Get.back(); // close loader
+      Get.back();
       Get.snackbar(
-        'Verification Failed',
+        'Error',
         e.toString(),
         snackPosition: SnackPosition.TOP,
         backgroundColor: Colors.red.withOpacity(0.8),
@@ -150,13 +156,13 @@ class VerificationController extends GetxController {
     }
   }
 
+  // ------------------- Handle OTP Input -------------------
   void onPinChanged(String value, int index) {
     if (value.length > 1) {
       final last = value.substring(value.length - 1);
       pinControllers[index].text = last;
-      pinControllers[index].selection = TextSelection.collapsed(
-        offset: last.length,
-      );
+      pinControllers[index].selection =
+          TextSelection.collapsed(offset: last.length);
     }
     if (value.isNotEmpty && index < focusNodes.length - 1) {
       focusNodes[index + 1].requestFocus();

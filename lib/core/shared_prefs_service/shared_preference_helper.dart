@@ -1,20 +1,45 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-class SharedPreferencesHelper {
-  static const String _accessTokenKey = 'accessToken';
+class SharedPreferenceHelper {
+  static SharedPreferences? _prefs;
 
-  static Future<void> saveAccessToken(String token) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_accessTokenKey, token);
+  static const String _tokenKey = 'token';
+  static const String _isLoggedInKey = 'is_logged_in';
+  static const String _userEmailKey = 'user_email';
+
+  static Future<void> init() async {
+    _prefs ??= await SharedPreferences.getInstance();
   }
 
-  static Future<String?> getAccessToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_accessTokenKey);
+  // ================= EXISTING SAFE METHODS =================
+
+  static Future<void> saveToken(String token) async {
+    await _prefs?.setString(_tokenKey, token);
   }
 
-  static Future<void> clearToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_accessTokenKey);
+  static String? getToken() {
+    return _prefs?.getString(_tokenKey);
+  }
+
+  static Future<void> setLoggedIn(bool value) async {
+    await _prefs?.setBool(_isLoggedInKey, value);
+  }
+
+  static bool get isLoggedIn {
+    return _prefs?.getBool(_isLoggedInKey) ?? false;
+  }
+
+  // ================= NEW (REQUIRED) =================
+
+  static Future<void> saveUserEmail(String email) async {
+    await _prefs?.setString(_userEmailKey, email);
+  }
+
+  static String? getUserEmail() {
+    return _prefs?.getString(_userEmailKey);
+  }
+
+  static Future<void> clearAll() async {
+    await _prefs?.clear();
   }
 }

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:country_code_picker/country_code_picker.dart';
 import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
 import 'package:nicholaslim80/core/utils/constants/image_path.dart';
@@ -16,12 +15,14 @@ class LoginSignupScreen extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
+          // Background
           Image.asset(
             ImagePath.backgroundImage,
             fit: BoxFit.cover,
             width: double.infinity,
             height: double.infinity,
           ),
+
           Center(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -29,29 +30,24 @@ class LoginSignupScreen extends StatelessWidget {
                 elevation: 3.0,
                 borderRadius: BorderRadius.circular(10),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 20,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Obx(() {
-                    final isLogin = controller.isLoginSelected.value;
+                    final isLogin = controller.isLogin.value;
 
                     return Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
+                        // Title
                         Text(
                           isLogin ? 'Welcome Back!' : 'Welcome!',
                           style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.black,
-                          ),
+                              fontSize: 20, fontWeight: FontWeight.w700, color: Colors.black),
                         ),
                         const SizedBox(height: 4),
                         Text(
@@ -59,14 +55,13 @@ class LoginSignupScreen extends StatelessWidget {
                               ? 'Log in to continue delivering with ease.'
                               : 'Sign up to continue delivering with ease.',
                           style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: AppColors.subtitleFontColor,
-                          ),
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.subtitleFontColor),
                         ),
                         const SizedBox(height: 20),
 
-                        // Login / Signup Toggle
+                        // Toggle Login / Signup
                         AnimatedContainer(
                           duration: const Duration(milliseconds: 300),
                           curve: Curves.easeInOut,
@@ -87,18 +82,13 @@ class LoginSignupScreen extends StatelessWidget {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               GestureDetector(
-                                onTap: () => controller.toggleSelection(true),
+                                onTap: () => controller.isLogin.value = true,
                                 child: AnimatedContainer(
                                   duration: const Duration(milliseconds: 300),
                                   curve: Curves.easeInOut,
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 18,
-                                    vertical: 5,
-                                  ),
+                                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 5),
                                   decoration: BoxDecoration(
-                                    color: isLogin
-                                        ? AppColors.primaryButtonColor
-                                        : Colors.transparent,
+                                    color: isLogin ? AppColors.primaryButtonColor : Colors.transparent,
                                     borderRadius: BorderRadius.circular(4),
                                   ),
                                   child: Text(
@@ -113,18 +103,13 @@ class LoginSignupScreen extends StatelessWidget {
                               ),
                               const SizedBox(width: 12),
                               GestureDetector(
-                                onTap: () => controller.toggleSelection(false),
+                                onTap: () => controller.isLogin.value = false,
                                 child: AnimatedContainer(
                                   duration: const Duration(milliseconds: 300),
                                   curve: Curves.easeInOut,
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 18,
-                                    vertical: 5,
-                                  ),
+                                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 5),
                                   decoration: BoxDecoration(
-                                    color: !isLogin
-                                        ? AppColors.primaryButtonColor
-                                        : Colors.transparent,
+                                    color: !isLogin ? AppColors.primaryButtonColor : Colors.transparent,
                                     borderRadius: BorderRadius.circular(4),
                                   ),
                                   child: Text(
@@ -142,7 +127,7 @@ class LoginSignupScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 40),
 
-                        // Animated section for Login / Signup fields
+                        // Animated Login / Signup Fields
                         AnimatedSwitcher(
                           duration: const Duration(milliseconds: 400),
                           switchInCurve: Curves.easeInOut,
@@ -163,18 +148,11 @@ class LoginSignupScreen extends StatelessWidget {
                               ? buildLoginFields(controller)
                               : buildSignupFields(controller),
                         ),
-
                         const SizedBox(height: 30),
 
                         // Button
                         ElevatedButton(
-                          onPressed: () {
-                            if (controller.isLoginSelected.value) {
-                              controller.onLoginPressed();
-                            } else {
-                              controller.onSignUpContinuePressed();
-                            }
-                          },
+                          onPressed: () => controller.submit(),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.primaryButtonColor,
                             minimumSize: const Size(double.infinity, 50),
@@ -203,69 +181,42 @@ class LoginSignupScreen extends StatelessWidget {
     );
   }
 
-  // Build login fields
+  // -------------------- Login Fields --------------------
   Widget buildLoginFields(LoginSignupController controller) {
     return Column(
       key: const ValueKey('loginFields'),
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Login with your phone number',
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w400,
-            color: Colors.black,
-          ),
-        ),
         const SizedBox(height: 10),
-        _buildPhoneField(controller),
+        buildTextField(controller.emailController, 'Enter your email', keyboardType: TextInputType.emailAddress),
         const SizedBox(height: 20),
-        buildPasswordField(
-          controller.passwordController,
-          controller.isLoginPasswordVisible,
-        ),
+        buildPasswordField(controller.passwordController, controller.isLoginPasswordVisible),
         const SizedBox(height: 10),
       ],
     );
   }
 
-  // Build signup fields
+  // -------------------- Signup Fields --------------------
   Widget buildSignupFields(LoginSignupController controller) {
     return Column(
       key: const ValueKey('signupFields'),
       children: [
         buildTextField(controller.nameController, 'Your Name'),
         const SizedBox(height: 20),
-        buildTextField(
-          controller.emailController,
-          'Your e-mail address',
-          keyboardType: TextInputType.emailAddress,
-        ),
+        buildTextField(controller.emailController, 'Your e-mail address', keyboardType: TextInputType.emailAddress),
         const SizedBox(height: 20),
-        _buildPhoneField(controller),
+        buildTextField(controller.phoneController, 'Phone Number', keyboardType: TextInputType.phone),
         const SizedBox(height: 20),
-        buildPasswordField(
-          controller.passwordController,
-          controller.isSignUpPasswordVisible,
-          'Enter your password',
-        ),
+        buildPasswordField(controller.passwordController, controller.isSignUpPasswordVisible, 'Enter your password'),
         const SizedBox(height: 20),
-        buildPasswordField(
-          controller.confirmPasswordController,
-          controller.isConfirmPasswordVisible,
-          'Confirm your password',
-        ),
+        buildPasswordField(controller.confirmPasswordController, controller.isConfirmPasswordVisible, 'Confirm your password'),
         const SizedBox(height: 20),
       ],
     );
   }
 
-  // Password Field with toggle visibility
-  Widget buildPasswordField(
-    TextEditingController controller,
-    RxBool isVisible, [
-    String hint = 'Password',
-  ]) {
+  // Password Field
+  Widget buildPasswordField(TextEditingController controller, RxBool isVisible, [String hint = 'Password']) {
     return Obx(() {
       return Container(
         height: 52,
@@ -283,13 +234,8 @@ class LoginSignupScreen extends StatelessWidget {
             border: InputBorder.none,
             isDense: true,
             suffixIcon: IconButton(
-              icon: Icon(
-                isVisible.value ? Icons.visibility : Icons.visibility_off,
-                size: 20,
-              ),
-              onPressed: () {
-                isVisible.value = !isVisible.value;
-              },
+              icon: Icon(isVisible.value ? Icons.visibility : Icons.visibility_off, size: 20),
+              onPressed: () => isVisible.value = !isVisible.value,
             ),
           ),
         ),
@@ -297,57 +243,8 @@ class LoginSignupScreen extends StatelessWidget {
     });
   }
 
-  // Updated Phone Field with Left TextField & Right CountryCodePicker
-  Widget _buildPhoneField(LoginSignupController controller) {
-    return Container(
-      height: 52,
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      decoration: BoxDecoration(
-        border: Border.all(color: AppColors.subtitleFontColor, width: 1),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Obx(
-              () => TextField(
-                controller: controller.phoneController,
-                keyboardType: TextInputType.phone,
-                decoration: InputDecoration(
-                  hintText: 'Enter phone number',
-                  border: InputBorder.none,
-                  isDense: true,
-                  suffixIcon: controller.phoneNumber.value.isNotEmpty
-                      ? GestureDetector(
-                          onTap: controller.clearPhone,
-                          child: const Icon(Icons.clear_outlined, size: 20),
-                        )
-                      : null,
-                ),
-              ),
-            ),
-          ),
-          CountryCodePicker(
-            onChanged: (country) {
-              controller.selectedCountry.value = country.dialCode ?? '+1';
-            },
-            initialSelection: controller.selectedCountry.value,
-            favorite: ['+1', '+880'],
-            showCountryOnly: false,
-            showOnlyCountryWhenClosed: false,
-            alignLeft: false,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget buildTextField(
-    TextEditingController controller,
-    String hintText, {
-    TextInputType keyboardType = TextInputType.text,
-  }) {
+  // Generic Text Field
+  Widget buildTextField(TextEditingController controller, String hintText, {TextInputType keyboardType = TextInputType.text}) {
     return Container(
       height: 52,
       width: double.infinity,
@@ -369,4 +266,6 @@ class LoginSignupScreen extends StatelessWidget {
       ),
     );
   }
+
+  
 }
