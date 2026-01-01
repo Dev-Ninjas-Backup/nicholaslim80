@@ -1,46 +1,77 @@
+import 'dart:convert';
+
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+import 'package:nicholaslim80/core/api_end_point/api_end_point.dart';
 import 'package:nicholaslim80/features/user/notification/model/notification1_model.dart';
+
+import '../../../../core/shared_prefference_service/shared_pref.dart';
 
 class UserNotificationController extends GetxController {
   final RxInt selectNotificationListIndex = 0.obs;
+  final RxBool isLoading = false.obs;
+  final RxInt page = 1.obs;
 
-  var notificationList = [
-    "Notifications (1)",
-    "Order Updates (2)",
-    "Promotions (3)",
-  ];
+  final int limit = 10;
 
-  final RxList notification1 = [].obs;
+  final RxList<Notification1Model> notificationList =
+      <Notification1Model>[].obs;
+
+  final notificationTabs = ["Notifications", "Order Updates", "Promotions"];
 
   @override
   void onInit() {
-
-  notification1Item;
-   
-
+    fetchNotifications();
     super.onInit();
   }
 
+  Future<void> fetchNotifications({bool loadMore = false}) async {
+    if (isLoading.value) return;
 
-  void get notification1Item => notification1.addAll([
-      Notification1Model(
-        title: "Wallet Credited",
-        subTitle: "7 coins added to your wallet successfully.",
-        date: "20-09-25",
-        time: "10:30 am",
-      ),
-      Notification1Model(
-        title: "Promo Applied",
-        subTitle: "10% off applied to your last order!",
-        date: "20-09-25",
-        time: "10:30 am",
-      ),
+    isLoading.value = true;
 
-      Notification1Model(
-        title: "Order Confirmed",
-        subTitle: "Your order #12345 has been confirmed.",
-        date: "20-09-25",
-        time: "10:30 am",
-      ),
-    ]);
+    if (loadMore) {
+      page.value++;
+    } else {
+      page.value = 1;
+      notificationList.clear();
+    }
+
+    try {
+      final token = await SharedPreferencesHelper.getAccessToken();
+      if (token == null || token.isEmpty) {
+        Get.snackbar('Auth Error', 'Token not found');
+        return;
+      }
+
+      final uri = Uri.parse(
+        "${ApiEndPoint.notification}?target_role=RAIDER&type=SMS&isRead=true&page=${page.value}&limit=$limit",
+      );
+
+      final response = await http.get(
+        uri,
+        headers: {'accept': '*/*', 'Authorization': 'Bearer $token'},
+      );
+
+      print('📡 API CALL: $uri');
+      print('📥 STATUS: ${response.statusCode}');
+      print('📥 BODY: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final decoded = json.decode(response.body);
+        final List data = decoded['data'] ?? [];
+        final items = data.map((e) => Notification1Model.fromJson(e)).toList();
+        notificationList.addAll(items);
+      } else {
+        Get.snackbar(
+          'Error',
+          'Failed to load notifications (${response.statusCode})',
+        );
+      }
+    } catch (e) {
+      Get.snackbar('Error', e.toString());
+    } finally {
+      isLoading.value = false;
+    }
+  }
 }
