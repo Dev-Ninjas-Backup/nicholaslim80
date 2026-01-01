@@ -3,6 +3,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:nicholaslim80/routes/app_routes.dart';
+
 import 'core/bindings/controller_binder.dart';
 
 class Nicholaslim extends StatelessWidget {
@@ -18,7 +19,7 @@ class Nicholaslim extends StatelessWidget {
         return GetMaterialApp(
           debugShowCheckedModeBanner: false,
           builder: EasyLoading.init(),
-          initialRoute: AppRoutes.getKamrulExpressScreen(),
+          initialRoute: AppRoutes.getbottomNavbarScreen(),
           getPages: AppRoutes.routes,
           initialBinding: ControllerBinder(),
           themeMode: ThemeMode.system,

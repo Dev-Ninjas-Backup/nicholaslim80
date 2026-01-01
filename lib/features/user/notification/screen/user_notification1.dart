@@ -12,7 +12,8 @@ class UserNotification extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var controller = Get.put(UserNotificationController());
+    final controller = Get.put(UserNotificationController());
+
     return Scaffold(
       backgroundColor: AppColors.backgroungColor,
       body: SingleChildScrollView(
@@ -20,16 +21,16 @@ class UserNotification extends StatelessWidget {
           children: [
             CustomAppBarUser(title: "Notifications", style: getTextStyle()),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
               child: Obx(
                 () => Column(
                   children: [
+                    // Tabs
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
-
                       child: Row(
                         children: List.generate(
-                          controller.notificationList.length,
+                          controller.notificationTabs.length,
                           (index) {
                             final isSelected =
                                 controller.selectNotificationListIndex.value ==
@@ -39,10 +40,9 @@ class UserNotification extends StatelessWidget {
                                 controller.selectNotificationListIndex.value =
                                     index;
                               },
-
                               child: Container(
-                                margin: EdgeInsets.only(right: 10),
-                                padding: EdgeInsets.symmetric(
+                                margin: const EdgeInsets.only(right: 10),
+                                padding: const EdgeInsets.symmetric(
                                   horizontal: 10,
                                   vertical: 5,
                                 ),
@@ -55,99 +55,99 @@ class UserNotification extends StatelessWidget {
                                       ? AppColors.onboardingIndicatorActive
                                       : Colors.transparent,
                                 ),
-                                child: Text(controller.notificationList[index]),
+                                child: Text(controller.notificationTabs[index]),
                               ),
                             );
                           },
                         ),
                       ),
                     ),
-                    SizedBox(height: 40),
+                    const SizedBox(height: 40),
 
-                    ListView.builder(
-                      padding: EdgeInsets.zero,
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: controller.notification1.length,
-                      itemBuilder: (_, index) {
-                        var item = controller.notification1[index];
-                        return Padding(
-                          padding: EdgeInsets.only(bottom: 14),
-                          child: GestureDetector(
-                            onTap: () {
-                              Get.to(ActiveOrderDetailsScreen());
-                            },
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 10,
-                              ),
-
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: AppColors.subtitleFontColor,
-                                  width: 0.5,
-                                ),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Image.asset(
-                                        IconPath.ellipsIcon,
-                                        height: 12,
-                                        width: 12,
-                                        color:
-                                            AppColors.onboardingIndicatorActive,
+                    // Notification List
+                    controller.isLoading.value &&
+                            controller.notificationList.isEmpty
+                        ? const Center(child: CircularProgressIndicator())
+                        : ListView.builder(
+                            padding: EdgeInsets.zero,
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: controller.notificationList.length,
+                            itemBuilder: (_, index) {
+                              final item = controller.notificationList[index];
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 14),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    Get.to(const ActiveOrderDetailsScreen());
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: AppColors.subtitleFontColor,
+                                        width: 0.5,
                                       ),
-                                      SizedBox(width: 8),
-                                      Text(
-                                        item.title,
-                                        style: getTextStyle(
-                                          fontWeight: FontWeight.w600,
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Image.asset(
+                                              IconPath.ellipsIcon,
+                                              height: 12,
+                                              width: 12,
+                                              color: AppColors
+                                                  .onboardingIndicatorActive,
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Text(
+                                              item.title,
+                                              style: getTextStyle(
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(height: 12),
-                                  Text(
-                                    item.subTitle,
-                                    style: getTextStyle(
-                                      fontSize: 12,
-                                      color: Color(0xFF6B6B6B),
+                                        const SizedBox(height: 12),
+                                        Text(
+                                          item.subTitle,
+                                          style: getTextStyle(
+                                            fontSize: 12,
+                                            color: const Color(0xFF6B6B6B),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 12),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              item.date,
+                                              style: getTextStyle(
+                                                fontSize: 12,
+                                                color: const Color(0xFF6B6B6B),
+                                              ),
+                                            ),
+                                            Text(
+                                              item.time,
+                                              style: getTextStyle(
+                                                fontSize: 12,
+                                                color: const Color(0xFF6B6B6B),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                  SizedBox(height: 12),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        item.date,
-                                        style: getTextStyle(
-                                          fontSize: 12,
-                                          color: Color(0xFF6B6B6B),
-                                        ),
-                                      ),
-                                      Text(
-                                        item.time,
-                                        style: getTextStyle(
-                                          fontSize: 12,
-                                          color: Color(0xFF6B6B6B),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
+                                ),
+                              );
+                            },
                           ),
-                        );
-                      },
-                    ),
                   ],
                 ),
               ),
