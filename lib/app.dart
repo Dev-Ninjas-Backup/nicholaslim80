@@ -18,7 +18,7 @@ class Nicholaslim extends StatelessWidget {
         return GetMaterialApp(
           debugShowCheckedModeBanner: false,
           builder: EasyLoading.init(),
-          initialRoute: AppRoutes.getKamrulExpressScreen(),
+          initialRoute: AppRoutes.getbottomNavbarScreen(),
           getPages: AppRoutes.routes,
           initialBinding: ControllerBinder(),
           themeMode: ThemeMode.system,

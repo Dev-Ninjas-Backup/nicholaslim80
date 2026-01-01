@@ -16,9 +16,13 @@ class SavedPlaceScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.backgroungColor,
       appBar: AppBar(
-        title: Text('Saved Place', style: getTextStyle(fontSize: 20.sp)),
+        title: Text(
+          'Saved Place',
+          style: getTextStyle(fontSize: 20.sp, fontWeight: FontWeight.w600),
+        ),
         backgroundColor: AppColors.backgroungColor,
         elevation: 1,
+        centerTitle: true,
         leading: GestureDetector(
           child: Icon(Icons.arrow_back_ios),
           onTap: () {
