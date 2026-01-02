@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1022625670758",
+    "project_id": "nicholaslim",
+    "storage_bucket": "nicholaslim.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1022625670758:android:bf53fdd6f6d995e591afa7",
+        "android_client_info": {
+          "package_name": "com.example.nicholaslim80"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCAMtMsu0BYgNaEpBfUE_bzk-Y6yeClbIM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
