@@ -53,9 +53,9 @@ class UserNotificationController extends GetxController {
         headers: {'accept': '*/*', 'Authorization': 'Bearer $token'},
       );
 
-      print('📡 API CALL: $uri');
-      print('📥 STATUS: ${response.statusCode}');
-      print('📥 BODY: ${response.body}');
+      print(' API CALL: $uri');
+      print(' STATUS: ${response.statusCode}');
+      print(' BODY: ${response.body}');
 
       if (response.statusCode == 200) {
         final decoded = json.decode(response.body);
