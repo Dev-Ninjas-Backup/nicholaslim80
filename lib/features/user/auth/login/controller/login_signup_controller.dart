@@ -40,11 +40,13 @@ class LoginSignupController extends GetxController {
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
 
-    debugPrint("Login Attempt: email=$email, password=${'*' * password.length}");
+    debugPrint(
+      "Login Attempt: email=$email, password=${'*' * password.length}",
+    );
 
     if (email.isEmpty || password.isEmpty) {
       Get.snackbar("Error", "Email & Password required");
-      debugPrint("Login Failed: Email or Password empty"); 
+      debugPrint("Login Failed: Email or Password empty");
       return;
     }
 
@@ -80,9 +82,15 @@ class LoginSignupController extends GetxController {
     final password = passwordController.text.trim();
     final confirmPassword = confirmPasswordController.text.trim();
 
-    debugPrint("Signup Attempt: username=$username, email=$email, phone=$phone, password=${'*' * password.length}, confirmPassword=${'*' * confirmPassword.length}");
-    
-    if (username.isEmpty || email.isEmpty || phone.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
+    debugPrint(
+      "Signup Attempt: username=$username, email=$email, phone=$phone, password=${'*' * password.length}, confirmPassword=${'*' * confirmPassword.length}",
+    );
+
+    if (username.isEmpty ||
+        email.isEmpty ||
+        phone.isEmpty ||
+        password.isEmpty ||
+        confirmPassword.isEmpty) {
       Get.snackbar("Error", "All fields are required");
       debugPrint("Signup Failed: Some fields empty");
       return;
@@ -109,10 +117,10 @@ class LoginSignupController extends GetxController {
       if (result['statusCode'] == 201) {
         // navigate to verification screen
         debugPrint("Signup Success, navigating to verification screen");
-        Get.toNamed(AppRoutes.verificationScreen, arguments: {
-          "email": email,
-          "mode": "signup",
-        });
+        Get.toNamed(
+          AppRoutes.verificationScreen,
+          arguments: {"email": email, "mode": "signup"},
+        );
       } else {
         debugPrint("Signup Failed: ${result['body']['message']}");
         Get.snackbar("Signup Failed", result['body']['message'] ?? 'Error');
