@@ -5,7 +5,7 @@ import 'package:nicholaslim80/app.dart';
 import 'firebase_msg.dart';
 import 'firebase_options.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // 🔥 VehicleController globally initialize
@@ -14,5 +14,5 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   await FirebaseMsg().initFCM();
-  runApp(const Nicholaslim());
+  runApp(Nicholaslim());
 }
