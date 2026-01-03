@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:nicholaslim80/features/kamrul_express/screen/kamrul_express_screen.dart';
 import 'package:nicholaslim80/features/onboarding/screen/onboarding_screen.dart';
 import 'package:nicholaslim80/features/splash/screen/splash_screen.dart';
+import 'package:nicholaslim80/features/user/auth/forgotPassword/screen/forgot_password_screen.dart';
 import 'package:nicholaslim80/features/user/express_delivery_1/express_delivery_to_sendr_or_recepmeant/screen/express_sender_or_recepmeant.dart';
 import 'package:nicholaslim80/features/user/express_delivery_1/screen/express_delivery_1.dart';
 import 'package:nicholaslim80/features/user/Express_Delivary_Faq/Screen/express_faq.dart';
@@ -31,6 +32,7 @@ class AppRoutes {
   static String loginScreen = '/loginScreen';
   static String verificationScreen = '/verificationScreen';
   static String homeScreen = '/homeScreen';
+  static String forgotPasswordScreen = '/forgotPasswordScreen';
   static String ordersScreen = '/ordersScreen';
   static String accountScreen = '/accountScreen';
   static String bottomNavbarScreen = '/bottomnavbarScreen';
@@ -129,6 +131,11 @@ class AppRoutes {
     GetPage(
       name: homeScreen,
       page: () => HomeScreen(),
+      transition: Transition.fadeIn,
+    ),
+    GetPage(
+      name: forgotPasswordScreen,
+      page: () => ForgotPasswordScreen(),
       transition: Transition.fadeIn,
     ),
     GetPage(

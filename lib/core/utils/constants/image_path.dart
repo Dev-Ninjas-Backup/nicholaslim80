@@ -3,6 +3,7 @@ class ImagePath {
   static String onboarding2 = 'assets/images/onboarding2.png';
   static String onboarding3 = 'assets/images/onboarding3.png';
   static String backgroundImage = 'assets/images/background.jpg';
+  static String background = 'assets/images/backgroundimage.jpg';
   static String vehicles1 = 'assets/images/vehicles1.png';
   static String vehicles2 = 'assets/images/vehicles2.png';
   static String profileImage = "assets/images/profileImage.jpg";
