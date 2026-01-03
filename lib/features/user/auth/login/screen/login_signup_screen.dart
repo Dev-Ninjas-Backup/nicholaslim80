@@ -11,7 +11,7 @@ class LoginSignupScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(LoginSignupController());
+    final controller = Get.put(LoginSignupController(), permanent: true);
 
     return Scaffold(
       body: Stack(
@@ -31,7 +31,10 @@ class LoginSignupScreen extends StatelessWidget {
                 elevation: 3.0,
                 borderRadius: BorderRadius.circular(10),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 20,
+                  ),
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -48,7 +51,10 @@ class LoginSignupScreen extends StatelessWidget {
                         Text(
                           isLogin ? 'Welcome Back!' : 'Welcome!',
                           style: const TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.w700, color: Colors.black),
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.black,
+                          ),
                         ),
                         const SizedBox(height: 4),
                         Text(
@@ -56,9 +62,10 @@ class LoginSignupScreen extends StatelessWidget {
                               ? 'Log in to continue delivering with ease.'
                               : 'Sign up to continue delivering with ease.',
                           style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              color: AppColors.subtitleFontColor),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.subtitleFontColor,
+                          ),
                         ),
                         const SizedBox(height: 20),
 
@@ -87,9 +94,14 @@ class LoginSignupScreen extends StatelessWidget {
                                 child: AnimatedContainer(
                                   duration: const Duration(milliseconds: 300),
                                   curve: Curves.easeInOut,
-                                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 5),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 18,
+                                    vertical: 5,
+                                  ),
                                   decoration: BoxDecoration(
-                                    color: isLogin ? AppColors.primaryButtonColor : Colors.transparent,
+                                    color: isLogin
+                                        ? AppColors.primaryButtonColor
+                                        : Colors.transparent,
                                     borderRadius: BorderRadius.circular(4),
                                   ),
                                   child: Text(
@@ -108,9 +120,14 @@ class LoginSignupScreen extends StatelessWidget {
                                 child: AnimatedContainer(
                                   duration: const Duration(milliseconds: 300),
                                   curve: Curves.easeInOut,
-                                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 5),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 18,
+                                    vertical: 5,
+                                  ),
                                   decoration: BoxDecoration(
-                                    color: !isLogin ? AppColors.primaryButtonColor : Colors.transparent,
+                                    color: !isLogin
+                                        ? AppColors.primaryButtonColor
+                                        : Colors.transparent,
                                     borderRadius: BorderRadius.circular(4),
                                   ),
                                   child: Text(
@@ -189,9 +206,16 @@ class LoginSignupScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 10),
-        buildTextField(controller.emailController, 'Enter your email', keyboardType: TextInputType.emailAddress),
+        buildTextField(
+          controller.emailController,
+          'Enter your email',
+          keyboardType: TextInputType.emailAddress,
+        ),
         const SizedBox(height: 20),
-        buildPasswordField(controller.passwordController, controller.isLoginPasswordVisible),
+        buildPasswordField(
+          controller.passwordController,
+          controller.isLoginPasswordVisible,
+        ),
         const SizedBox(height: 10),
         GestureDetector(
           onTap: () => Get.toNamed(AppRoutes.forgotPasswordScreen),
@@ -221,20 +245,40 @@ class LoginSignupScreen extends StatelessWidget {
       children: [
         buildTextField(controller.nameController, 'Your Name'),
         const SizedBox(height: 20),
-        buildTextField(controller.emailController, 'Your e-mail address', keyboardType: TextInputType.emailAddress),
+        buildTextField(
+          controller.emailController,
+          'Your e-mail address',
+          keyboardType: TextInputType.emailAddress,
+        ),
         const SizedBox(height: 20),
-        buildTextField(controller.phoneController, 'Phone Number', keyboardType: TextInputType.phone),
+        buildTextField(
+          controller.phoneController,
+          'Phone Number',
+          keyboardType: TextInputType.phone,
+        ),
         const SizedBox(height: 20),
-        buildPasswordField(controller.passwordController, controller.isSignUpPasswordVisible, 'Enter your password'),
+        buildPasswordField(
+          controller.passwordController,
+          controller.isSignUpPasswordVisible,
+          'Enter your password',
+        ),
         const SizedBox(height: 20),
-        buildPasswordField(controller.confirmPasswordController, controller.isConfirmPasswordVisible, 'Confirm your password'),
+        buildPasswordField(
+          controller.confirmPasswordController,
+          controller.isConfirmPasswordVisible,
+          'Confirm your password',
+        ),
         const SizedBox(height: 20),
       ],
     );
   }
 
   // Password Field
-  Widget buildPasswordField(TextEditingController controller, RxBool isVisible, [String hint = 'Password']) {
+  Widget buildPasswordField(
+    TextEditingController controller,
+    RxBool isVisible, [
+    String hint = 'Password',
+  ]) {
     return Obx(() {
       return Container(
         height: 52,
@@ -252,7 +296,10 @@ class LoginSignupScreen extends StatelessWidget {
             border: InputBorder.none,
             isDense: true,
             suffixIcon: IconButton(
-              icon: Icon(isVisible.value ? Icons.visibility : Icons.visibility_off, size: 20),
+              icon: Icon(
+                isVisible.value ? Icons.visibility : Icons.visibility_off,
+                size: 20,
+              ),
               onPressed: () => isVisible.value = !isVisible.value,
             ),
           ),
@@ -262,7 +309,11 @@ class LoginSignupScreen extends StatelessWidget {
   }
 
   // Generic Text Field
-  Widget buildTextField(TextEditingController controller, String hintText, {TextInputType keyboardType = TextInputType.text}) {
+  Widget buildTextField(
+    TextEditingController controller,
+    String hintText, {
+    TextInputType keyboardType = TextInputType.text,
+  }) {
     return Container(
       height: 52,
       width: double.infinity,
@@ -284,6 +335,4 @@ class LoginSignupScreen extends StatelessWidget {
       ),
     );
   }
-
-  
 }
