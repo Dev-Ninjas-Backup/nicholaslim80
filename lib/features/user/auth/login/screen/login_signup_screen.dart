@@ -4,6 +4,7 @@ import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
 import 'package:nicholaslim80/core/utils/constants/image_path.dart';
 import 'package:nicholaslim80/features/user/auth/login/controller/login_signup_controller.dart';
+import 'package:nicholaslim80/routes/app_routes.dart';
 
 class LoginSignupScreen extends StatelessWidget {
   const LoginSignupScreen({super.key});
@@ -192,6 +193,23 @@ class LoginSignupScreen extends StatelessWidget {
         const SizedBox(height: 20),
         buildPasswordField(controller.passwordController, controller.isLoginPasswordVisible),
         const SizedBox(height: 10),
+        GestureDetector(
+          onTap: () => Get.toNamed(AppRoutes.forgotPasswordScreen),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              "Forgot Password?",
+              style: TextStyle(
+                fontSize: 12,
+                color: AppColors.onboardingIndicatorActive,
+                fontWeight: FontWeight.w500,
+                decoration: TextDecoration.underline,
+                decorationColor: AppColors.primaryButtonColor,
+                decorationThickness: 2.0,
+              ),
+            ),
+          ),
+        ),
       ],
     );
   }
