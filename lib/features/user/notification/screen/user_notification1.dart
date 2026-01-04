@@ -5,7 +5,8 @@ import 'package:nicholaslim80/core/common/widgets/custom_app_bar_user.dart';
 import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
 import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
 import 'package:nicholaslim80/features/user/notification/controller/user_notification_controller.dart';
-import 'package:nicholaslim80/features/user/orders/active_order_details/screen/active_order_details_screen.dart';
+
+import '../../../orders/active_order_details/screen/active_order_details_screen.dart';
 
 class UserNotification extends StatelessWidget {
   const UserNotification({super.key});
@@ -25,7 +26,6 @@ class UserNotification extends StatelessWidget {
               child: Obx(
                 () => Column(
                   children: [
-                    // Tabs
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Row(
@@ -76,10 +76,10 @@ class UserNotification extends StatelessWidget {
                             itemBuilder: (_, index) {
                               final item = controller.notificationList[index];
                               return Padding(
-                                padding: const EdgeInsets.only(bottom: 14),
+                                padding: EdgeInsets.only(bottom: 14),
                                 child: GestureDetector(
                                   onTap: () {
-                                    Get.to(const ActiveOrderDetailsScreen());
+                                    Get.to(ActiveOrderDetailsScreen());
                                   },
                                   child: Container(
                                     padding: const EdgeInsets.all(10),

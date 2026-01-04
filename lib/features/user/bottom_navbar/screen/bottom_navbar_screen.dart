@@ -3,17 +3,17 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
-import 'package:nicholaslim80/features/user/profile/screen/profile_screen.dart';
 import 'package:nicholaslim80/features/user/bottom_navbar/controller/bottom_navabr_cotroller.dart';
 import 'package:nicholaslim80/features/user/home/screen/home_screen.dart';
-import 'package:nicholaslim80/features/user/orders/screen/orders_screen.dart';
+import 'package:nicholaslim80/features/user/order/screen/order_screen.dart';
+import 'package:nicholaslim80/features/user/profile/screen/profile_screen.dart';
 
 class BottomNavbarScreen extends StatelessWidget {
   BottomNavbarScreen({super.key});
 
   final BottomNavbarController controller = Get.put(BottomNavbarController());
 
-  final List<Widget> _screens = [HomeScreen(), OrdersScreen(), ProfileScreen()];
+  final List<Widget> _screens = [HomeScreen(), OrderScreen(), ProfileScreen()];
 
   @override
   Widget build(BuildContext context) {
