@@ -1,9 +1,8 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:nicholaslim80/core/api_end_point/api_end_point.dart';
 
 class AuthService {
-  static const String baseUrl = "http://10.10.20.130:3000/api/v1/auth";
-
   // ------------------- SIGNUP -------------------
   static Future<Map<String, dynamic>> signup({
     required String username,
@@ -12,7 +11,7 @@ class AuthService {
     required String password,
     String roleName = "USER",
   }) async {
-    final url = Uri.parse("$baseUrl/signup");
+    final url = Uri.parse(ApiEndPoint.signUp);
 
     final body = jsonEncode({
       "username": username,
@@ -48,7 +47,7 @@ class AuthService {
     required String email,
     required String otp,
   }) async {
-    final url = Uri.parse("$baseUrl/verify");
+    final url = Uri.parse(ApiEndPoint.verifyOtp);
 
     final body = jsonEncode({"email": email, "otp": otp});
 
@@ -78,7 +77,7 @@ class AuthService {
     required String email,
     required String password,
   }) async {
-    final url = Uri.parse("$baseUrl/login");
+    final url = Uri.parse(ApiEndPoint.login);
 
     final body = jsonEncode({
       "email": email,

@@ -19,6 +19,7 @@ import 'package:nicholaslim80/features/user/auth/verification/screen/verificatio
 import 'package:nicholaslim80/features/user/bottom_navbar/screen/bottom_navbar_screen.dart';
 import 'package:nicholaslim80/features/user/home/screen/home_screen.dart';
 import 'package:nicholaslim80/features/user/refer_and_earn/screen/refer_and_earn_screen.dart';
+import 'package:nicholaslim80/features/user/auth/reset_password/screen/reset_password_screen.dart';
 import 'package:nicholaslim80/features/user/saved_places/screen/saved_place_screenn.dart';
 
 import '../features/user/stacked/stacked_faq/stacked_faq.dart';
@@ -32,6 +33,7 @@ class AppRoutes {
   static String loginScreen = '/loginScreen';
   static String verificationScreen = '/verificationScreen';
   static String homeScreen = '/homeScreen';
+  static String resetPasswordScreen = '/resetPasswordScreen';
   static String forgotPasswordScreen = '/forgotPasswordScreen';
   static String ordersScreen = '/ordersScreen';
   static String accountScreen = '/accountScreen';
@@ -78,6 +80,7 @@ class AppRoutes {
   static String getLoginScreen() => loginScreen;
   static String getverificationScreen() => verificationScreen;
   static String gethomeScreen() => homeScreen;
+  static String getResetPasswordScreen() => resetPasswordScreen;
   static String getordersScreen() => ordersScreen;
   static String getaccountScreen() => accountScreen;
   static String getbottomNavbarScreen() => bottomNavbarScreen;
@@ -131,6 +134,11 @@ class AppRoutes {
     GetPage(
       name: homeScreen,
       page: () => HomeScreen(),
+      transition: Transition.fadeIn,
+    ),
+    GetPage(
+      name: resetPasswordScreen,
+      page: () => ResetPasswordScreen(),
       transition: Transition.fadeIn,
     ),
     GetPage(

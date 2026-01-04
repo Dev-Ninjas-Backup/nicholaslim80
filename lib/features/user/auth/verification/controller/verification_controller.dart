@@ -112,7 +112,7 @@ class VerificationController extends GetxController {
 
       Get.back(); // close loader
 
-      if (result['statusCode'] == 201) {
+      if (result['statusCode'] == 201 || result['statusCode'] == 200) {
         // Login or Signup redirect
         if (mode.value == 'login') {
           Get.offAllNamed(AppRoutes.bottomNavbarScreen);
@@ -123,11 +123,24 @@ class VerificationController extends GetxController {
             backgroundColor: Colors.green.withOpacity(0.8),
             colorText: Colors.white,
           );
-        } else {
-          Get.offAllNamed(AppRoutes.bottomNavbarScreen);
+        } else if (mode.value == 'forgot_password') {
+          Get.offNamed(
+            AppRoutes.resetPasswordScreen,
+            arguments: {"email": email.value},
+          );
           Get.snackbar(
             'Success',
-            'Signup OTP Verified',
+            'OTP Verified. Please reset your password.',
+            snackPosition: SnackPosition.TOP,
+            backgroundColor: Colors.green.withOpacity(0.8),
+            colorText: Colors.white,
+          );
+        } else {
+          // Default to login screen after signup verification as per flow
+          Get.offAllNamed(AppRoutes.loginScreen);
+          Get.snackbar(
+            'Success',
+            'Signup OTP Verified. Please login.',
             snackPosition: SnackPosition.TOP,
             backgroundColor: Colors.green.withOpacity(0.8),
             colorText: Colors.white,
