@@ -1,22 +1,23 @@
 import 'package:get/get.dart';
+import 'package:nicholaslim80/core/shared_prefference_service/shared_pref.dart';
 import 'package:nicholaslim80/routes/app_routes.dart';
-
-import '../../../core/shared_prefference_service/shared_pref.dart';
 
 class SplashController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    _navigateToNext();
+    _navigate();
   }
 
-  void _navigateToNext() async {
-    final bool? isLogin = await SharedPreferencesHelper.checkLogin();
-    if (isLogin != null && isLogin) {
-      Get.offNamed(AppRoutes.getbottomNavbarScreen());
-      return;
+  Future<void> _navigate() async {
+    await Future.delayed(const Duration(seconds: 2));
+
+    final token = await SharedPreferencesHelper.getAccessToken();
+
+    if (token == null || token.isEmpty) {
+      Get.offAllNamed(AppRoutes.getOnboardingScreen());
+    } else {
+      Get.offAllNamed(AppRoutes.getLoginScreen());
     }
-    await Future.delayed(Duration(seconds: 3));
-    Get.offNamed(AppRoutes.getOnboardingScreen());
   }
 }
