@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPreferencesHelper {
@@ -58,6 +57,51 @@ class SharedPreferencesHelper {
     await prefs.remove(_accessTokenKey);
     await prefs.remove(_refreshTokenKey);
     await prefs.setBool(_isLoginKey, false);
+  static const String _userIdKey = 'userId';
+  static const String _selectedRoleKey = 'selectedRole';
+  static const String _categoriesKey = 'categories';
+  static const String _welcomeDialogKey = 'isDriverVerificationDialogShown';
+  static const String _showOnboardKey = 'showOnboard';
+
+  // ================= AUTH =================
+
+  /// Save access token
+  static Future<void> saveToken(String token) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_accessTokenKey, token);
+
+    // legacy (ignored for auth decision)
+    await prefs.setBool('isLogin', true);
+  }
+
+  /// Get access token
+  static Future<String?> getAccessToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_accessTokenKey);
+  }
+
+  /// ✅ SINGLE SOURCE OF TRUTH
+  static Future<bool> checkLogin() async {
+    final token = await getAccessToken();
+    return token != null && token.isNotEmpty;
+  }
+
+  /// 🔥 MUST call on logout
+  static Future<void> clearAllData() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    // auth
+    await prefs.remove(_accessTokenKey);
+    await prefs.remove(_userIdKey);
+    await prefs.remove(_selectedRoleKey);
+
+    // ui flags
+    await prefs.remove(_showOnboardKey);
+    await prefs.remove(_welcomeDialogKey);
+
+    // legacy cleanup
+    await prefs.remove('token');
+    await prefs.remove('isLogin');
   }
 
   // ================= USER =================
@@ -86,7 +130,7 @@ class SharedPreferencesHelper {
 
   // ================= CATEGORIES =================
 
-  /// Save categories (id + name)
+
   static Future<void> saveCategories(
     List<Map<String, String>> categories,
   ) async {
@@ -94,12 +138,16 @@ class SharedPreferencesHelper {
     await prefs.setString(_categoriesKey, jsonEncode(categories));
   }
 
-  /// Get categories
   static Future<List<Map<String, String>>> getCategories() async {
     final prefs = await SharedPreferences.getInstance();
     final json = prefs.getString(_categoriesKey);
     if (json == null) return [];
     return List<Map<String, String>>.from(jsonDecode(json));
+  static Future<List<Map<String, String>>> getCategories() async {
+    final prefs = await SharedPreferences.getInstance();
+    final data = prefs.getString(_categoriesKey);
+    if (data == null) return [];
+    return List<Map<String, String>>.from(jsonDecode(data));
   }
 
   // ================= ONBOARD / DIALOG =================
@@ -122,6 +170,7 @@ class SharedPreferencesHelper {
   static Future<bool> getShowOnboard() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(_showOnboardKey) ?? false;
+
   }
 
   // ================= CLEAR ALL =================
@@ -129,5 +178,6 @@ class SharedPreferencesHelper {
   static Future<void> clearAllData() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
+
   }
 }
