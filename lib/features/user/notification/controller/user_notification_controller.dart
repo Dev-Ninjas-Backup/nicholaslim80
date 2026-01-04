@@ -64,10 +64,10 @@ class UserNotificationController extends GetxController {
         notificationList.addAll(items);
       } else {
         if (loadMore) page.value--; // revert page increment on failure
-        Get.snackbar(
-          'Error',
-          'Failed to load notifications (${response.statusCode})',
-        );
+        // Get.snackbar(
+        //   'Error',
+        //   'Failed to load notifications (${response.statusCode})',
+        // );
       }
     } catch (e) {
       if (loadMore) page.value--; // revert page increment on exception
