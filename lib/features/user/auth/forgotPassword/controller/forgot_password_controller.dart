@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:nicholaslim80/core/api_end_point/api_end_point.dart';
 import 'package:nicholaslim80/features/user/auth/verification/screen/verification_screen.dart';
+import 'package:nicholaslim80/routes/app_routes.dart';
 
 class ForgotPasswordController extends GetxController {
   final inputController = TextEditingController();
@@ -43,7 +44,13 @@ class ForgotPasswordController extends GetxController {
       if (response.statusCode == 200 || response.statusCode == 201) {
         // Navigate to OTP verification screen
         // Get.to(() => ForgetVerificationScreen());
-        Get.to(() => VerificationScreen(), arguments: body);
+        Get.toNamed(
+          AppRoutes.verificationScreen,
+          arguments: {
+            ...body,
+            "mode": "forgot_password",
+          },
+        );
       } else {
         Get.snackbar(
           "Error",

@@ -76,7 +76,7 @@ class ResetPasswordController extends GetxController {
           colorText: Colors.white,
         );
 
-        Get.offAll(() => AppRoutes.loginScreen );
+        Get.offAllNamed(AppRoutes.loginScreen);
       } else {
         _error(responseBody['message'] ?? "Something went wrong");
       }
