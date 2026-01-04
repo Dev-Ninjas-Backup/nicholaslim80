@@ -5,10 +5,11 @@ import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 import 'package:nicholaslim80/core/common/widgets/custom_button.dart';
 import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
 import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
-import 'package:nicholaslim80/features/user/orders/active_order_details/widget/price_and_payment.dart';
-import 'package:nicholaslim80/features/user/orders/active_order_details/widget/reviews_widget.dart';
-import 'package:nicholaslim80/features/user/orders/active_order_details/widget/rider_details.dart';
-import 'package:nicholaslim80/features/user/orders/active_order_details/widget/stop_item_widget.dart';
+
+import '../widget/price_and_payment.dart';
+import '../widget/reviews_widget.dart';
+import '../widget/rider_details.dart';
+import '../widget/stop_item_widget.dart';
 
 class ActiveOrderDetailsScreen extends StatelessWidget {
   const ActiveOrderDetailsScreen({super.key});
@@ -16,10 +17,8 @@ class ActiveOrderDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-    
       backgroundColor: AppColors.backgroungColor,
       body: SafeArea(
-      
         child: Column(
           children: [
             Container(
@@ -57,7 +56,7 @@ class ActiveOrderDetailsScreen extends StatelessWidget {
                 child: Container(
                   padding: EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color:  AppColors.backgroungColor,
+                    color: AppColors.backgroungColor,
                     borderRadius: BorderRadius.vertical(
                       top: Radius.circular(22),
                     ),

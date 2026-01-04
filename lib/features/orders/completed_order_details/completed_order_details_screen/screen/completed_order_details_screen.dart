@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 import 'package:nicholaslim80/core/common/widgets/custom_button.dart';
 import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
-import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
-import 'package:nicholaslim80/features/user/orders/completed_order_details/proof_of_delivery_screen/proof_of_delivery_screen.dart';
+
+import '../../proof_of_delivery_screen/proof_of_delivery_screen.dart';
 
 class CompletedOrderDetailsScreen extends StatelessWidget {
   const CompletedOrderDetailsScreen({super.key});

@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
-import 'package:nicholaslim80/features/user/orders/controller/orders_controller.dart';
-import 'package:nicholaslim80/features/user/orders/widgets/active_order_card.dart';
-import 'package:nicholaslim80/features/user/orders/widgets/cancelled_order_card.dart';
-import 'package:nicholaslim80/features/user/orders/widgets/completed_order_card.dart';
+
+import '../controller/orders_controller.dart';
+import '../widgets/active_order_card.dart';
+import '../widgets/cancelled_order_card.dart';
+import '../widgets/completed_order_card.dart';
 
 class OrdersScreen extends StatelessWidget {
   const OrdersScreen({super.key});

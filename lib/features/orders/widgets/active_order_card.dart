@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
-import 'package:nicholaslim80/features/user/orders/active_order_details/screen/active_order_details_screen.dart';
+
+import '../active_order_details/screen/active_order_details_screen.dart';
 
 class ActiveOrderCard extends StatelessWidget {
   const ActiveOrderCard({super.key});

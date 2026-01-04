@@ -4,6 +4,59 @@ import 'package:shared_preferences/shared_preferences.dart';
 class SharedPreferencesHelper {
   // ================= KEYS =================
   static const String _accessTokenKey = 'accessToken';
+  static const String _refreshTokenKey = 'refreshToken';
+  static const String _userIdKey = 'userId';
+  static const String _selectedRoleKey = 'selectedRole';
+  static const String _categoriesKey = 'categories';
+  static const String _isLoginKey = 'isLogin';
+  static const String _welcomeDialogKey = 'isDriverVerificationDialogShown';
+  static const String _showOnboardKey = 'showOnboard';
+
+  // ================= TOKEN =================
+
+  /// Save access token
+  static Future<void> saveToken(String token) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_accessTokenKey, token);
+    await prefs.setBool(_isLoginKey, true);
+  }
+
+  /// Save refresh token (optional)
+  static Future<void> saveRefreshToken(String token) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_refreshTokenKey, token);
+  }
+
+  /// Get access token (primary)
+  static Future<String?> getAccessToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_accessTokenKey);
+  }
+
+  /// ✅ Alias (for safety – used in HomeController)
+  static Future<String?> getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_accessTokenKey);
+  }
+
+  /// Get refresh token
+  static Future<String?> getRefreshToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_refreshTokenKey);
+  }
+
+  // ================= LOGIN STATE =================
+
+  static Future<bool> isLoggedIn() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_isLoginKey) ?? false;
+  }
+
+  static Future<void> logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_accessTokenKey);
+    await prefs.remove(_refreshTokenKey);
+    await prefs.setBool(_isLoginKey, false);
   static const String _userIdKey = 'userId';
   static const String _selectedRoleKey = 'selectedRole';
   static const String _categoriesKey = 'categories';
@@ -77,6 +130,7 @@ class SharedPreferencesHelper {
 
   // ================= CATEGORIES =================
 
+
   static Future<void> saveCategories(
     List<Map<String, String>> categories,
   ) async {
@@ -84,6 +138,11 @@ class SharedPreferencesHelper {
     await prefs.setString(_categoriesKey, jsonEncode(categories));
   }
 
+  static Future<List<Map<String, String>>> getCategories() async {
+    final prefs = await SharedPreferences.getInstance();
+    final json = prefs.getString(_categoriesKey);
+    if (json == null) return [];
+    return List<Map<String, String>>.from(jsonDecode(json));
   static Future<List<Map<String, String>>> getCategories() async {
     final prefs = await SharedPreferences.getInstance();
     final data = prefs.getString(_categoriesKey);
@@ -111,5 +170,14 @@ class SharedPreferencesHelper {
   static Future<bool> getShowOnboard() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(_showOnboardKey) ?? false;
+
+  }
+
+  // ================= CLEAR ALL =================
+
+  static Future<void> clearAllData() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+
   }
 }

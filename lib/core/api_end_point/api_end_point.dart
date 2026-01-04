@@ -9,4 +9,5 @@ class ApiEndPoint {
   static const String notification = '$baseUrl/notifications';
   static const String logOut = '$baseUrl/auth/logout';
   static const String resetPass = '$baseUrl/auth/forgot/reset-password';
+  static const String order = '$baseUrl/order';
 }
