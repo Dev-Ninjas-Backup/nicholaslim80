@@ -42,6 +42,7 @@ class ReferralCard extends StatelessWidget {
                             style: getTextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
+                              color: Colors.black54,
                             ),
                           ),
                         ),
@@ -80,6 +81,7 @@ class ReferralCard extends StatelessWidget {
                             style: getTextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w500,
+                              color: Colors.black54,
                             ),
                           ),
                         ),
