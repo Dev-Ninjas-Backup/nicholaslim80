@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 import 'package:nicholaslim80/core/common/widgets/custom_button.dart';
 import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
-import 'package:nicholaslim80/features/user/refer_and_earn/widget/redeem_credits_suscess_widget.dart';
 import 'package:nicholaslim80/features/user/refer_and_earn/your_rewards/controller/your_rewards_controller.dart';
 
 class YourRewardsScreen extends StatelessWidget {
@@ -11,7 +10,7 @@ class YourRewardsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final YourRewardsController ctrl = Get.put(YourRewardsController());
+    final YourRewardsController ctrl = Get.put(YourRewardsController(initialCredits: Get.arguments != null && Get.arguments['totalCredits'] != null ? Get.arguments['totalCredits'] as int : 0));
 
     return Scaffold(
       backgroundColor: AppColors.backgroungColor,
@@ -56,11 +55,11 @@ class YourRewardsScreen extends StatelessWidget {
                   ),
                   SizedBox(height: 4),
                   Text(
-                    '${ctrl.totalCredits}',
+                    '${ctrl.totalCredits.value}',
                     style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    '= \$${ctrl.currencyValue.toStringAsFixed(2)}',
+                    '= \$${(ctrl.totalCredits.value * ctrl.currencyValue.value).toStringAsFixed(2)}',
                     style: getTextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
@@ -150,8 +149,8 @@ class YourRewardsScreen extends StatelessWidget {
             SizedBox(height: 10),
             CustomButton(
               label: "Redeem credits to wallet",
-              onPressed: () {
-                Get.to(() => RedeemSuccessScreen());
+              onPressed: () async {
+                await ctrl.redeemCredits();
               },
               color: AppColors.primaryButtonColor,
               textColor: AppColors.primaryFontColor,

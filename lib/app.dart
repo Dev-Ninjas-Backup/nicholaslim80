@@ -17,6 +17,7 @@ class Nicholaslim extends StatelessWidget {
       splitScreenMode: true,
       builder: (_, child) {
         return GetMaterialApp(
+          title: "ZipBee",
           debugShowCheckedModeBanner: false,
           builder: EasyLoading.init(),
           initialRoute: AppRoutes.getSplashScreen(),
