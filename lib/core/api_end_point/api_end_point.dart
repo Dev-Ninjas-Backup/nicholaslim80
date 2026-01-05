@@ -11,9 +11,16 @@ class ApiEndPoint {
   static const String logOut = '$baseUrl/auth/logout';
   static const String resetPass = '$baseUrl/auth/forgot/reset-password';
   static const String order = '$baseUrl/order';
+
+
+  //raider add
+  static const String addRaider = '$baseUrl/my-raider';
+  static const String getRaider = '$baseUrl/my-raider/my-raider';
+
   static const String profile = '$baseUrl/users/me';
   static const String updateProfile = '$baseUrl/users/{id}';
   static const String userMe = '$baseUrl/users/me';
   static const String coinBasePrice = '$baseUrl/coin-management/base-price';
   static const String redeemCoin = '$baseUrl/coin-management/redeem-coin';
+
 }
