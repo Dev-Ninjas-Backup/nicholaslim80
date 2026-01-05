@@ -77,7 +77,7 @@ class HomeController extends GetxController {
 
       if (token == null || token.isEmpty) {
         // No token, just clear local data and navigate
-        await SharedPreferencesHelper.clearAllData();
+        await SharedPreferencesHelper.logout();
         Get.offAllNamed(AppRoutes.loginScreen);
         return;
       }
@@ -100,7 +100,7 @@ class HomeController extends GetxController {
       debugPrint("LOGOUT ERROR: $e");
     } finally {
       // Clear local data and navigate to login
-      await SharedPreferencesHelper.clearAllData();
+      await SharedPreferencesHelper.logout();
       Get.offAllNamed(AppRoutes.loginScreen);
     }
   }

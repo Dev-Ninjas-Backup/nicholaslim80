@@ -30,13 +30,13 @@ class FirebaseMsg {
     String? token = await _messaging.getToken();
     if (token != null) {
       debugPrint('Firebase Messaging Token: $token');
-      await SharedPreferencesHelper.saveToken(token);
+      await SharedPreferencesHelper.saveAccessToken(token);
     }
 
     // Listen for token refresh
     FirebaseMessaging.instance.onTokenRefresh.listen((newToken) async {
       debugPrint('FCM token refreshed: $newToken');
-      await SharedPreferencesHelper.saveToken(newToken);
+      await SharedPreferencesHelper.saveAccessToken(newToken);
     });
 
     // Get controller instance

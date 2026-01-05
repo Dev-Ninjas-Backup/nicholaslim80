@@ -47,7 +47,7 @@ class LoginSignupController extends GetxController {
       if (result['statusCode'] == 200 || result['statusCode'] == 201) {
         final token = result['body']['access_token'];
 
-        await SharedPreferencesHelper.saveToken(token);
+        await SharedPreferencesHelper.saveAccessToken(token);
 
         // 🔥 reset navigation stack
         Get.offAllNamed(AppRoutes.bottomNavbarScreen);
@@ -103,7 +103,7 @@ class LoginSignupController extends GetxController {
 
   // ---------------- LOGOUT ----------------
   Future<void> logout() async {
-    await SharedPreferencesHelper.clearAllData();
+    await SharedPreferencesHelper.logout();
     Get.offAllNamed(AppRoutes.getOnboardingScreen());
   }
 

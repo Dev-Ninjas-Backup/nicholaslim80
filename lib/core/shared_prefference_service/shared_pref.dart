@@ -8,176 +8,109 @@ class SharedPreferencesHelper {
   static const String _userIdKey = 'userId';
   static const String _selectedRoleKey = 'selectedRole';
   static const String _categoriesKey = 'categories';
-  static const String _isLoginKey = 'isLogin';
   static const String _welcomeDialogKey = 'isDriverVerificationDialogShown';
   static const String _showOnboardKey = 'showOnboard';
 
-  // ================= TOKEN =================
-
-  /// Save access token
-  static Future<void> saveToken(String token) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_accessTokenKey, token);
-    await prefs.setBool(_isLoginKey, true);
-  }
-
-  /// Save refresh token (optional)
-  static Future<void> saveRefreshToken(String token) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_refreshTokenKey, token);
-  }
-
-  /// Get access token (primary)
-  static Future<String?> getAccessToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_accessTokenKey);
-  }
-
-  /// ✅ Alias (for safety – used in HomeController)
-  static Future<String?> getToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_accessTokenKey);
-  }
-
-  /// Get refresh token
-  static Future<String?> getRefreshToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_refreshTokenKey);
-  }
-
-  // ================= LOGIN STATE =================
-
-  static Future<bool> isLoggedIn() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_isLoginKey) ?? false;
-  }
-
-  static Future<void> logout() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_accessTokenKey);
-    await prefs.remove(_refreshTokenKey);
-    await prefs.setBool(_isLoginKey, false);
-  static const String _userIdKey = 'userId';
-  static const String _selectedRoleKey = 'selectedRole';
-  static const String _categoriesKey = 'categories';
-  static const String _welcomeDialogKey = 'isDriverVerificationDialogShown';
-  static const String _showOnboardKey = 'showOnboard';
+  // ================= INTERNAL =================
+  static Future<SharedPreferences> get _prefs async =>
+      SharedPreferences.getInstance();
 
   // ================= AUTH =================
 
-  /// Save access token
-  static Future<void> saveToken(String token) async {
-    final prefs = await SharedPreferences.getInstance();
+  static Future<void> saveAccessToken(String token) async {
+    final prefs = await _prefs;
     await prefs.setString(_accessTokenKey, token);
-
-    // legacy (ignored for auth decision)
-    await prefs.setBool('isLogin', true);
   }
 
-  /// Get access token
+  static Future<void> saveRefreshToken(String token) async {
+    final prefs = await _prefs;
+    await prefs.setString(_refreshTokenKey, token);
+  }
+
   static Future<String?> getAccessToken() async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await _prefs;
     return prefs.getString(_accessTokenKey);
   }
 
+  static Future<String?> getRefreshToken() async {
+    final prefs = await _prefs;
+    return prefs.getString(_refreshTokenKey);
+  }
+
   /// ✅ SINGLE SOURCE OF TRUTH
-  static Future<bool> checkLogin() async {
+  static Future<bool> isLoggedIn() async {
     final token = await getAccessToken();
     return token != null && token.isNotEmpty;
   }
 
-  /// 🔥 MUST call on logout
-  static Future<void> clearAllData() async {
-    final prefs = await SharedPreferences.getInstance();
-
-    // auth
+  /// 🔥 Call on logout
+  static Future<void> logout() async {
+    final prefs = await _prefs;
     await prefs.remove(_accessTokenKey);
+    await prefs.remove(_refreshTokenKey);
     await prefs.remove(_userIdKey);
     await prefs.remove(_selectedRoleKey);
-
-    // ui flags
-    await prefs.remove(_showOnboardKey);
-    await prefs.remove(_welcomeDialogKey);
-
-    // legacy cleanup
-    await prefs.remove('token');
-    await prefs.remove('isLogin');
   }
 
   // ================= USER =================
 
   static Future<void> saveUserId(String id) async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await _prefs;
     await prefs.setString(_userIdKey, id);
   }
 
   static Future<String?> getUserId() async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await _prefs;
     return prefs.getString(_userIdKey);
   }
 
   // ================= ROLE =================
 
   static Future<void> saveSelectedRole(String role) async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await _prefs;
     await prefs.setString(_selectedRoleKey, role);
   }
 
   static Future<String?> getSelectedRole() async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await _prefs;
     return prefs.getString(_selectedRoleKey);
   }
 
   // ================= CATEGORIES =================
 
-
   static Future<void> saveCategories(
     List<Map<String, String>> categories,
   ) async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await _prefs;
     await prefs.setString(_categoriesKey, jsonEncode(categories));
   }
 
   static Future<List<Map<String, String>>> getCategories() async {
-    final prefs = await SharedPreferences.getInstance();
-    final json = prefs.getString(_categoriesKey);
-    if (json == null) return [];
-    return List<Map<String, String>>.from(jsonDecode(json));
-  static Future<List<Map<String, String>>> getCategories() async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await _prefs;
     final data = prefs.getString(_categoriesKey);
     if (data == null) return [];
     return List<Map<String, String>>.from(jsonDecode(data));
   }
 
-  // ================= ONBOARD / DIALOG =================
+  // ================= UI FLAGS =================
 
   static Future<void> setWelcomeDialogShown(bool value) async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await _prefs;
     await prefs.setBool(_welcomeDialogKey, value);
   }
 
   static Future<bool> isWelcomeDialogShown() async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await _prefs;
     return prefs.getBool(_welcomeDialogKey) ?? false;
   }
 
   static Future<void> setShowOnboard(bool value) async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await _prefs;
     await prefs.setBool(_showOnboardKey, value);
   }
 
   static Future<bool> getShowOnboard() async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await _prefs;
     return prefs.getBool(_showOnboardKey) ?? false;
-
-  }
-
-  // ================= CLEAR ALL =================
-
-  static Future<void> clearAllData() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.clear();
-
   }
 }
