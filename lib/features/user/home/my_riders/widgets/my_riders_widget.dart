@@ -5,6 +5,7 @@ import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
 import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
 import 'package:nicholaslim80/core/utils/constants/image_path.dart';
 import 'package:nicholaslim80/features/user/home/my_riders/controller/my_riders_controller.dart';
+import 'package:nicholaslim80/features/user/home/my_riders/widgets/add_riders_widget.dart';
 
 class RidersListWidget extends StatelessWidget {
   const RidersListWidget({super.key, required this.controller});
@@ -29,33 +30,40 @@ class RidersListWidget extends StatelessWidget {
                     // Action for See All Riders
                   },
                   child: Center(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(color: AppColors.primaryButtonColor),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      padding: EdgeInsets.symmetric(
-                        vertical: 12,
-                        horizontal: 24,
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.add,
-                            size: 18,
-                            fontWeight: FontWeight.bold,
+                    child: GestureDetector(
+                      onTap: () {
+                        showAddRiderDialog();
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: AppColors.primaryButtonColor,
                           ),
-                          SizedBox(width: 8),
-                          Text(
-                            'Add Rider',
-                            style: getTextStyle(
-                              fontSize: 16,
-                              color: Colors.black,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        padding: EdgeInsets.symmetric(
+                          vertical: 12,
+                          horizontal: 24,
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.add,
+                              size: 18,
                               fontWeight: FontWeight.bold,
                             ),
-                          ),
-                        ],
+                            SizedBox(width: 8),
+                            Text(
+                              'Add Rider',
+                              style: getTextStyle(
+                                fontSize: 16,
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
