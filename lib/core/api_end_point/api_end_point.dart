@@ -12,4 +12,7 @@ class ApiEndPoint {
   static const String order = '$baseUrl/order';
   static const String profile = '$baseUrl/users/me';
   static const String updateProfile = '$baseUrl/users/{id}';
+  static const String userMe = '$baseUrl/users/me';
+  static const String coinBasePrice = '$baseUrl/coin-management/base-price';
+  static const String redeemCoin = '$baseUrl/coin-management/redeem-coin';
 }

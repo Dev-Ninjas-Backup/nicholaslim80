@@ -1,24 +1,73 @@
 import 'package:get/get.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
+import 'package:nicholaslim80/features/user/refer_and_earn/service/refer_and_earn_service.dart';
 import 'package:nicholaslim80/features/user/refer_and_earn/how_it_work/screen/how_it_work_screen.dart';
 import 'package:nicholaslim80/features/user/refer_and_earn/your_rewards/screen/your_rewards_screen.dart';
+import 'package:nicholaslim80/core/api_end_point/api_end_point.dart';
 
 class ReferAndEarnController extends GetxController {
-  final referralCode = 'A22443366'.obs;
-  final referralLink = 'https://www..sg/referral/abx...'.obs;
+  // observable values
+  RxString referralCode = ''.obs;
+  RxString referralLink = ''.obs;
 
+  // future use
+  RxInt rewardPoints = 0.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    fetchReferralInfo();
+  }
+
+  Future<void> fetchReferralInfo() async {
+    final result = await ReferAndEarnService.fetchReferralData();
+
+    if (result['statusCode'] == 200) {
+      final responseBody = result['body'];
+      // The API returns { success: ..., message: ..., data: { ...user... } }
+      final data = responseBody is Map && responseBody.containsKey('data')
+          ? responseBody['data'] as Map<String, dynamic>
+          : (responseBody as Map<String, dynamic>);
+
+      referralCode.value = data['referral_code'] ?? '';
+
+      final rawLink = (data['referral_link'] ?? '').toString();
+      if (rawLink.isNotEmpty) {
+        if (rawLink.startsWith('http')) {
+          referralLink.value = rawLink;
+        } else {
+          referralLink.value = '${ApiEndPoint.baseUrl.replaceAll(RegExp(r"/+"), '')}/$rawLink';
+        }
+      } else {
+        referralLink.value = '';
+      }
+
+      rewardPoints.value = data['reward_points'] ?? 0;
+
+      debugPrint('Referral Code: ${referralCode.value}');
+      debugPrint('Referral Link: ${referralLink.value}');
+      debugPrint('Reward Points: ${rewardPoints.value}');
+    } else {
+      debugPrint('Failed to fetch referral info');
+    }
+  }
+
+  // ---------------- copy actions ----------------
   Future<void> copyCode() async {
     await Clipboard.setData(ClipboardData(text: referralCode.value));
+    Get.snackbar('Copied', 'Referral code copied');
   }
 
   Future<void> copyLink() async {
     await Clipboard.setData(ClipboardData(text: referralLink.value));
+    Get.snackbar('Copied', 'Referral link copied');
   }
 
-  void onInvitePressed() {}
-
+  // ---------------- navigation ----------------
   void openRewards() {
-    Get.to(() => YourRewardsScreen());
+    // pass current reward points to the YourRewardsScreen
+    Get.to(() => YourRewardsScreen(), arguments: {'totalCredits': rewardPoints.value});
   }
 
   void openHowItWorks() {
