@@ -5,7 +5,6 @@ import 'package:nicholaslim80/core/common/widgets/custom_button.dart';
 import 'package:nicholaslim80/features/user/refer_and_earn/controller/refer_and_earn_controller.dart';
 import 'package:nicholaslim80/features/user/refer_and_earn/widget/refar_card_widget.dart';
 import 'package:share_plus/share_plus.dart';
-
 import '../../../../core/utils/constants/app_colors.dart';
 
 class ReferAndEarnScreen extends StatelessWidget {
@@ -141,12 +140,10 @@ class ReferAndEarnScreen extends StatelessWidget {
               CustomButton(
                 label: "Invite friends",
                 onPressed: () {
-                  final String referralLink =
-                      "https://yourapp.com/referral?code=${ctrl.referralCode}";
                   final String message =
-                      "Hey! Join this amazing app and earn rewards. Use my referral link: $referralLink";
+                      "Hey! Join this amazing app and earn rewards.\n\n"
+                      "Use my referral link:\n${ctrl.referralLink.value}";
 
-                  // ignore: deprecated_member_use
                   Share.share(message, subject: "Invite to our app");
                 },
                 color: AppColors.primaryButtonColor,
