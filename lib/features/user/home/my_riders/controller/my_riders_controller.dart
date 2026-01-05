@@ -1,100 +1,194 @@
-import 'package:flutter/material.dart'; // Required for TextEditingController
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:nicholaslim80/core/api_end_point/api_end_point.dart';
+import 'package:nicholaslim80/core/shared_prefference_service/shared_pref.dart';
 import 'package:nicholaslim80/core/utils/constants/image_path.dart';
 
 class MyRidersController extends GetxController {
-  // Sample riders list
-  var ridersList = <Map<String, String>>[].obs;
-
-  // Map to hold love/favorite state
+  var ridersList = <Map<String, dynamic>>[].obs;
   var loveState = <String, bool>{}.obs;
   var swipeProgress = <String, double>{}.obs;
 
-  // Controller for the Dialog Text Field
   final phoneController = TextEditingController(text: "+65");
+  final emailController = TextEditingController();
+
+  final GetConnect _connect = GetConnect();
+  var token = ''.obs;
+  var isLoading = false.obs;
 
   @override
   void onInit() {
     super.onInit();
-    ridersList.addAll([
-      {
-        'name': 'Dylan Simpson',
-        'order-id': 'Order#1233',
-        'image': ImagePath.profile1,
-      },
-      {
-        'name': 'Christine Jason',
-        'order-id': 'Order#1266',
-        'image': ImagePath.profile2,
-      },
-      {
-        'name': 'Michael Brown',
-        'order-id': 'Order#1280',
-        'image': ImagePath.profile3,
-      },
-    ]);
-
-    // Initialize loveState with false for all riders
-    for (var rider in ridersList) {
-      loveState[rider['name'] ?? ''] = false;
-    }
+    _loadToken().then((_) => fetchRiders()); // screen load এ fetch
   }
 
-  // --- ADD RIDER FUNCTION ---
-  void addRider() {
-    String phoneNumber = phoneController.text.trim();
+  // ================= ADD RIDER =================
+  Future<void> addRider() async {
+    final phoneNumber = phoneController.text.trim();
+    final email = emailController.text.trim();
 
-    // Basic Validation: Ensure it's not just the prefix
-    if (phoneNumber.length > 4) {
-      // 1. Create a new rider map
-      // Note: In a real app, you'd fetch the name/image from a DB using the phone number
-      var newRider = {
-        'name': 'Rider $phoneNumber', 
-        'order-id': 'Pending: Order#${1000 + ridersList.length}',
-        'image': ImagePath.profile1, // Default image
-      };
-
-      // 2. Update the list and the loveState map
-      ridersList.add(newRider);
-      loveState[newRider['name']!] = false;
-
-      // 3. Clear the text field and close the dialog
-      phoneController.text = "+65";
-      Get.back(); 
-
+    if (phoneNumber.isEmpty && email.isEmpty) {
       Get.snackbar(
-        "Success", 
-        "Rider added to your list",
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green.withOpacity(0.8),
-        colorText: Colors.white
-      );
-    } else {
-      Get.snackbar(
-        "Invalid Input", 
-        "Please enter a valid phone number",
+        "Invalid Input",
+        "Please enter phone number or email",
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.redAccent,
-        colorText: Colors.white
+        colorText: Colors.white,
       );
+      return;
+    }
+
+    if (phoneNumber.isNotEmpty && phoneNumber.length <= 4) {
+      Get.snackbar(
+        "Invalid Phone",
+        "Phone number too short",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.redAccent,
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    if (token.value.isEmpty) await _loadToken();
+
+    try {
+      isLoading.value = true;
+
+      Map<String, dynamic> body = {"is_fav": false};
+      if (phoneNumber.isNotEmpty) body["find_by"] = phoneNumber;
+      if (email.isNotEmpty) body["email"] = email;
+
+      final response = await _connect.post(
+        ApiEndPoint.addRaider,
+        body,
+        headers: {
+          "Authorization": "Bearer ${token.value}",
+          "Content-Type": "application/json",
+        },
+      );
+
+      print("[ADD RIDER] Status Code: ${response.statusCode}");
+      print("[ADD RIDER] Response Body: ${response.body}");
+
+      if ((response.statusCode == 200 || response.statusCode == 201) &&
+          response.body?['data'] != null) {
+        phoneController.text = "+65";
+        emailController.clear();
+        Get.back();
+
+        Get.snackbar(
+          "Success",
+          "Rider added successfully",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+        );
+
+        await fetchRiders(); // POST করার পর GET করে update
+      } else {
+        Get.snackbar(
+          "Failed",
+          response.body?['message'] ?? "Something went wrong",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.redAccent,
+          colorText: Colors.white,
+        );
+      }
+    } catch (e) {
+      print("[ADD RIDER] Exception: $e");
+      Get.snackbar(
+        "Network/Error",
+        "Server error or network issue occurred",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.redAccent,
+        colorText: Colors.white,
+      );
+    } finally {
+      isLoading.value = false;
     }
   }
 
-  // Toggle favorite
+  // ================= GET RIDERS =================
+  Future<void> fetchRiders() async {
+    if (token.value.isEmpty) await _loadToken();
+
+    try {
+      isLoading.value = true;
+
+      final response = await _connect.get(
+        ApiEndPoint.getRaider,
+        headers: {
+          "Authorization": "Bearer ${token.value}",
+          "Content-Type": "application/json",
+        },
+      );
+
+      print("[FETCH RIDERS] Status Code: ${response.statusCode}");
+      print("[FETCH RIDERS] Response Body: ${response.body}");
+
+      // ===== Corrected: response.body['data']['data'] =====
+      if (response.statusCode == 200 &&
+          response.body?['data'] != null &&
+          response.body['data']['data'] != null) {
+        final List data = response.body['data']['data'];
+        ridersList.clear();
+
+        for (var item in data) {
+          final raider = item['raider'];
+          final riderName = raider['raider_name']?.toString() ?? 'Unknown';
+          final riderMap = {
+            'name': riderName,
+            'order-id': item['find_by']?.toString() ?? 'Pending',
+            'image': ImagePath.profile1,
+          };
+          ridersList.add(riderMap);
+          loveState[riderName] = false;
+        }
+      } else if (response.statusCode == 401) {
+        Get.snackbar(
+          "Unauthorized",
+          "Token expired or invalid. Please login again.",
+          backgroundColor: Colors.redAccent,
+          colorText: Colors.white,
+        );
+      } else {
+        Get.snackbar(
+          "Failed",
+          response.body?['message'] ?? "Unable to fetch riders",
+          backgroundColor: Colors.redAccent,
+          colorText: Colors.white,
+        );
+      }
+    } catch (e) {
+      print("[FETCH RIDERS] Exception: $e");
+      Get.snackbar(
+        "Network/Error",
+        "Server error or network issue occurred",
+        backgroundColor: Colors.redAccent,
+        colorText: Colors.white,
+      );
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
   void toggleLove(String name) {
-    if (loveState.containsKey(name)) {
-      loveState[name] = !loveState[name]!;
-    }
+    loveState[name] = !(loveState[name] ?? false);
   }
 
-  // Call this on swipe update
   void updateSwipeProgress(String name, double progress) {
     swipeProgress[name] = progress;
   }
-  
+
+  Future<void> _loadToken() async {
+    token.value = await SharedPreferencesHelper.getAccessToken() ?? '';
+    print("[TOKEN] Loaded: ${token.value}");
+  }
+
   @override
   void onClose() {
     phoneController.dispose();
+    emailController.dispose();
     super.onClose();
   }
 }

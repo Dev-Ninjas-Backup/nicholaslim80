@@ -4,8 +4,8 @@ import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
 import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
 import 'package:nicholaslim80/core/utils/constants/image_path.dart';
-import 'package:nicholaslim80/features/user/home/my_riders/controller/my_riders_controller.dart';
-import 'package:nicholaslim80/features/user/home/my_riders/widgets/add_riders_widget.dart';
+import '../controller/my_riders_controller.dart';
+import 'add_riders_widget.dart';
 
 class RidersListWidget extends StatelessWidget {
   const RidersListWidget({super.key, required this.controller});
@@ -15,56 +15,43 @@ class RidersListWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(left: 16, right: 16, top: 28),
-      child: Obx(
-        () => ListView.separated(
-          padding: EdgeInsets.only(bottom: 20),
-          itemCount: controller.ridersList.length + 1, // +1 for the button
+      padding: const EdgeInsets.only(left: 16, right: 16, top: 28),
+      child: Obx(() {
+        if (controller.isLoading.value) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        return ListView.separated(
+          padding: const EdgeInsets.only(bottom: 20),
+          itemCount: controller.ridersList.length + 1,
           itemBuilder: (context, index) {
-            // Render button as the last item
             if (index == controller.ridersList.length) {
-              return Padding(
-                padding: EdgeInsets.symmetric(vertical: 20),
+              return Center(
                 child: GestureDetector(
-                  onTap: () {
-                    // Action for See All Riders
-                  },
-                  child: Center(
-                    child: GestureDetector(
-                      onTap: () {
-                        showAddRiderDialog();
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: AppColors.primaryButtonColor,
+                  onTap: showAddRiderDialog,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: AppColors.primaryButtonColor),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 12,
+                      horizontal: 24,
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.add, size: 18),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Add Rider',
+                          style: getTextStyle(
+                            fontSize: 16,
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
                           ),
-                          borderRadius: BorderRadius.circular(8),
                         ),
-                        padding: EdgeInsets.symmetric(
-                          vertical: 12,
-                          horizontal: 24,
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.add,
-                              size: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            SizedBox(width: 8),
-                            Text(
-                              'Add Rider',
-                              style: getTextStyle(
-                                fontSize: 16,
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                      ],
                     ),
                   ),
                 ),
@@ -94,7 +81,7 @@ class RidersListWidget extends StatelessWidget {
                 final progress = controller.swipeProgress[name] ?? 0.0;
 
                 return AnimatedContainer(
-                  duration: Duration(microseconds: 500),
+                  duration: const Duration(milliseconds: 500),
                   color: Color.lerp(
                     AppColors.backgroungColor,
                     const Color.fromARGB(255, 230, 189, 28),
@@ -148,8 +135,8 @@ class RidersListWidget extends StatelessWidget {
           },
           separatorBuilder: (context, index) =>
               const Divider(color: Colors.grey, thickness: 1),
-        ),
-      ),
+        );
+      }),
     );
   }
 }

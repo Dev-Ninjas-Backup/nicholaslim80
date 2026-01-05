@@ -10,4 +10,8 @@ class ApiEndPoint {
   static const String logOut = '$baseUrl/auth/logout';
   static const String resetPass = '$baseUrl/auth/forgot/reset-password';
   static const String order = '$baseUrl/order';
+
+  //raider add
+  static const String addRaider = '$baseUrl/my-raider';
+  static const String getRaider = '$baseUrl/my-raider/my-raider';
 }
