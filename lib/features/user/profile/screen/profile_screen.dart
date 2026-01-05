@@ -13,6 +13,7 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var controller = Get.put(ProfileController());
+
     return Scaffold(
       backgroundColor: AppColors.backgroungColor,
       body: SingleChildScrollView(
@@ -33,59 +34,63 @@ class ProfileScreen extends StatelessWidget {
                 style: getTextStyle(),
               ),
               SizedBox(height: 36),
-              ListView.builder(
-                padding: EdgeInsets.zero,
-                shrinkWrap: true,
-
-                itemCount: controller.profileItem.length,
-
-                itemBuilder: (_, index) {
-                  return Padding(
-                    padding: EdgeInsets.only(bottom: 16),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              Obx(() {
+                if (controller.isLoading.value) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (controller.errorMessage.value.isNotEmpty) {
+                  return Center(child: Text(controller.errorMessage.value));
+                } else {
+                  return ListView.builder(
+                    padding: EdgeInsets.zero,
+                    shrinkWrap: true,
+                    itemCount: controller.profileItem.length,
+                    itemBuilder: (_, index) {
+                      return Padding(
+                        padding: EdgeInsets.only(bottom: 16),
+                        child: Column(
                           children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                  controller.profileItem[index].title,
-                                  style: getTextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w700,
-                                  ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      controller.profileItem[index].title,
+                                      style: getTextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                    Text(
+                                      controller.profileItem[index].subtitle,
+                                      style: getTextStyle(
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                Text(
-                                  controller.profileItem[index].subtitle,
-                                  style: getTextStyle(
-                                    fontWeight: FontWeight.w500,
+                                GestureDetector(
+                                  onTap: () {
+                                    // Handle edit action here
+                                  },
+                                  child: Image.asset(
+                                    IconPath.editIcon,
+                                    height: 18,
+                                    width: 18,
                                   ),
                                 ),
                               ],
                             ),
-                            GestureDetector(
-                              onTap: () {
-                                //
-
-                                //
-                              },
-                              child: Image.asset(
-                                IconPath.editIcon,
-                                height: 18,
-                                width: 18,
-                              ),
-                            ),
+                            SizedBox(height: 5),
+                            Divider(thickness: 0.7),
                           ],
                         ),
-                        SizedBox(height: 5),
-                        Divider(thickness: 0.7),
-                      ],
-                    ),
+                      );
+                    },
                   );
-                },
-              ),
+                }
+              }),
             ],
           ),
         ),
