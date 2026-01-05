@@ -23,7 +23,7 @@ class ProfileScreen extends StatelessWidget {
               CustomAppBarUser(
                 title: "Profile",
                 action: ClipRRect(
-                  borderRadius: BorderRadiusGeometry.circular(50),
+                  borderRadius: BorderRadius.circular(50),
                   child: Image.asset(
                     ImagePath.profileImage,
                     height: 34,
