@@ -10,4 +10,6 @@ class ApiEndPoint {
   static const String logOut = '$baseUrl/auth/logout';
   static const String resetPass = '$baseUrl/auth/forgot/reset-password';
   static const String order = '$baseUrl/order';
+  static const String profile = '$baseUrl/users/me';
+  static const String updateProfile = '$baseUrl/users/{id}';
 }
