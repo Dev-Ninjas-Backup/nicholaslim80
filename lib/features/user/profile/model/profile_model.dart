@@ -4,12 +4,34 @@ class ProfileModel {
 
   ProfileModel({required this.title, required this.subtitle});
 
-  factory ProfileModel.fromJson(Map<String, dynamic> json) {
-    return ProfileModel(
-      title: json['title'] ?? '',
-      subtitle: json['subtitle'] ?? '',
+}
+
+class UserModel {
+  final String username;  // Name
+  final String email;
+  final String phone;
+
+  UserModel({
+    required this.username,
+    required this.email,
+    required this.phone,
+  });
+
+  // Factory method to create UserModel from JSON (Map<String, dynamic>)
+  factory UserModel.fromJson(Map<String, dynamic> json) {
+    return UserModel(
+      username: json['data']['username'],
+      email: json['data']['email'],
+      phone: json['data']['phone'],
     );
   }
 
-  Map<String, dynamic> toJson() => {"title": title, "subtitle": subtitle};
+  // Method to convert UserModel to JSON (Map<String, dynamic>)
+  Map<String, dynamic> toJson() {
+    return {
+      'username': username,
+      'email': email,
+      'phone': phone,
+    };
+  }
 }
