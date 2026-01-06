@@ -13,6 +13,7 @@ class YourRewardsScreen extends StatelessWidget {
     final YourRewardsController ctrl = Get.put(YourRewardsController(
       initialCredits: Get.arguments != null && Get.arguments['totalCredits'] != null ? Get.arguments['totalCredits'] as int : 0,
       referCode: Get.arguments != null && Get.arguments['referralCode'] != null ? Get.arguments['referralCode'] as String : null,
+      initialRewardMoney: Get.arguments != null && Get.arguments['rewardMoney'] != null ? Get.arguments['rewardMoney'] as int : 0,
     ));
 
     return Scaffold(
@@ -61,10 +62,19 @@ class YourRewardsScreen extends StatelessWidget {
                     '${ctrl.totalCredits.value}',
                     style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
                   ),
+                  // Text(
+                  //   '= \$${(ctrl.totalCredits.value * ctrl.currencyValue.value).toStringAsFixed(2)}',
+                  //   style: getTextStyle(
+                  //     fontSize: 12,
+                  //     fontWeight: FontWeight.w600,
+                  //     color: Colors.black54,
+                  //   ),
+                  // ),
+                  // SizedBox(height: 6),
                   Text(
-                    '= \$${(ctrl.totalCredits.value * ctrl.currencyValue.value).toStringAsFixed(2)}',
+                    '= \$${(ctrl.rewardMoney.value ).toStringAsFixed(2)}',
                     style: getTextStyle(
-                      fontSize: 12,
+                      fontSize: 14,
                       fontWeight: FontWeight.w600,
                       color: Colors.black54,
                     ),

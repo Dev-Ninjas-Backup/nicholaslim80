@@ -7,7 +7,12 @@ import 'package:nicholaslim80/core/shared_prefference_service/shared_pref.dart';
 class YourRewardsService {
   static Future<Map<String, dynamic>> fetchBasePrice() async {
     try {
-      final response = await http.get(Uri.parse(ApiEndPoint.coinBasePrice));
+      final token = await SharedPreferencesHelper.getAccessToken();
+      final headers = <String, String>{'accept': '*/*'};
+      if (token != null && token.isNotEmpty) {
+        headers['Authorization'] = 'Bearer $token';
+      }
+      final response = await http.get(Uri.parse(ApiEndPoint.coinBasePrice), headers: headers);
       debugPrint('BASE PRICE RESPONSE: ${response.body}');
       return {
         'statusCode': response.statusCode,
@@ -44,7 +49,12 @@ class YourRewardsService {
   static Future<Map<String, dynamic>> fetchReferralHistory({required String referCode}) async {
     try {
       final url = Uri.parse('${ApiEndPoint.referLoyalty}?refer_code=$referCode');
-      final response = await http.get(url);
+      final token = await SharedPreferencesHelper.getAccessToken();
+      final headers = <String, String>{'accept': '*/*'};
+      if (token != null && token.isNotEmpty) {
+        headers['Authorization'] = 'Bearer $token';
+      }
+      final response = await http.get(url, headers: headers);
       debugPrint('REFERRAL HISTORY REQUEST: $url');
       debugPrint('REFERRAL HISTORY RESPONSE: ${response.body}');
 

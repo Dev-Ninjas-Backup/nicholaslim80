@@ -4,14 +4,17 @@ import 'package:nicholaslim80/features/user/refer_and_earn/your_rewards/service/
 import 'package:nicholaslim80/features/user/refer_and_earn/widget/redeem_credits_suscess_widget.dart';
 
 class YourRewardsController extends GetxController {
-  var totalCredits = 1.obs;
+  var totalCredits = 0.obs;
+  var rewardMoney = 0.obs;
   var currencyValue = 0.0.obs;
   var referralHistory = <Map<String, String>>[].obs;
 
   final String? referCode;
 
-  YourRewardsController({int initialCredits = 0, this.referCode}) {
+  YourRewardsController({int initialCredits = 0, this.referCode, int initialRewardMoney = 0}) {
     totalCredits.value = initialCredits;
+    rewardMoney.value = initialRewardMoney;
+    debugPrint('initialRewardMoney: ${rewardMoney.value}');
   }
 
   @override
@@ -34,7 +37,12 @@ class YourRewardsController extends GetxController {
       final value = body is Map && body.containsKey('data') ? body['data'] : null;
       if (value != null) {
         currencyValue.value = (value as num).toDouble();
+        debugPrint('currencyValue: ${currencyValue.value}');
+      } else {
+        debugPrint('fetchBasePrice: no data field in body: $body');
       }
+    } else {
+      debugPrint('fetchBasePrice failed: ${result['statusCode']} ${result['body']}');
     }
   }
 
@@ -45,8 +53,12 @@ class YourRewardsController extends GetxController {
     final result = await YourRewardsService.fetchReferralHistory(referCode: code);
     debugPrint('fetchReferralHistory full result: $result');
 
-    if (result['statusCode'] == 200) {
-      final body = result['body'];
+    if (result['statusCode'] != 200) {
+      debugPrint('fetchReferralHistory failed: ${result['statusCode']} ${result['body']}');
+      return;
+    }
+
+    final body = result['body'];
       // The endpoint response structure can vary; try to find list inside body or data
       List<dynamic>? list;
       if (body is Map && body.containsKey('data')) {
@@ -59,9 +71,18 @@ class YourRewardsController extends GetxController {
       if (list != null) {
         referralHistory.clear();
         for (var item in list) {
-          // item expected to have username and created_at
-          final username = item['username'] ?? item['name'] ?? '';
-          final createdAt = item['created_at'] ?? item['createdAt'] ?? '';
+          // item expected to have username and created_at; user object may be nested
+          String username = '';
+          if (item is Map) {
+            if (item['user'] is Map) {
+              username = item['user']['username'] ?? item['user']['name'] ?? '';
+            }
+            username = username.isNotEmpty ? username : (item['username'] ?? item['name'] ?? '');
+          }
+
+          final createdAt = (item is Map)
+              ? (item['created_at'] ?? item['createdAt'] ?? item['user']?['created_at'] ?? '')
+              : '';
 
           // format date: keep day, month (short), year
           String dateStr = '';
@@ -82,7 +103,6 @@ class YourRewardsController extends GetxController {
           referralHistory.add({'username': username, 'date': dateStr});
         }
       }
-    }
   }
 
   String _monthShort(int month) {
@@ -100,23 +120,28 @@ class YourRewardsController extends GetxController {
     final result = await YourRewardsService.redeemCoin(coin: coin);
     debugPrint('redeemCredits result: $result');
 
-    final statusCode = result['statusCode'] as int;
     final body = result['body'];
 
     String message = 'Something went wrong';
+    bool isSuccess = false;
 
     if (body is Map) {
       if (body.containsKey('message')) {
         message = body['message'].toString();
-      } else if (body.containsKey('error') && body['error'] is Map && body['error'].containsKey('message')) {
+      }
+      if (body.containsKey('error') && body['error'] is Map && body['error']['message'] != null) {
         message = body['error']['message'].toString();
+      }
+      if (body.containsKey('success')) {
+        isSuccess = body['success'] == true;
       }
     }
 
-    Get.snackbar(statusCode == 200 ? 'Success' : 'Error', message);
+    debugPrint('redeemCredits full response: $result');
 
-    if (statusCode == 200) {
-      // Navigate to success screen
+    Get.snackbar(isSuccess ? 'Success' : 'Error', message);
+
+    if (isSuccess) {
       Get.to(() => RedeemSuccessScreen());
     }
   }
