@@ -1,8 +1,9 @@
 import 'dart:async';
+import 'package:ZipBee/features/user/auth/login/auth_service/auth_service.dart';
+import 'package:ZipBee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nicholaslim80/features/user/auth/login/auth_service/auth_service.dart';
-import 'package:nicholaslim80/routes/app_routes.dart';
+
 
 class VerificationController extends GetxController {
   // ------------------- OTP Input Controllers -------------------

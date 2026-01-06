@@ -1,10 +1,11 @@
+import 'package:ZipBee/core/common/styles/global_text_style.dart';
+import 'package:ZipBee/core/utils/constants/app_colors.dart';
+import 'package:ZipBee/features/user/saved_places/add_places/screen/add_place_screen.dart';
+import 'package:ZipBee/features/user/saved_places/controller/saved_places_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
-import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
-import 'package:nicholaslim80/features/user/saved_places/add_places/screen/add_place_screen.dart';
-import 'package:nicholaslim80/features/user/saved_places/controller/saved_places_controller.dart';
+
 
 class SavedPlaceScreen extends StatelessWidget {
   final SavedPlaceController controller = Get.put(SavedPlaceController());

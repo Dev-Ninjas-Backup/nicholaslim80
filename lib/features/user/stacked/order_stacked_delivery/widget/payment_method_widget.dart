@@ -1,6 +1,6 @@
+import 'package:ZipBee/core/utils/constants/icon_path.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
 
 // Payment Option Model
 class StackedPaymentOption {

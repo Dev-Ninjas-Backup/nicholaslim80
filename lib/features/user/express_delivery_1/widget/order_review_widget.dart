@@ -1,14 +1,14 @@
+import 'package:ZipBee/core/common/styles/global_text_style.dart';
+import 'package:ZipBee/features/user/Veicale_Type_on_Exprees_Delivery/controller/vehicle_secation_controller.dart';
+import 'package:ZipBee/features/user/order/controller/order_controller.dart';
+import 'package:ZipBee/features/user/stacked/show_order_confirmation/show_order_confirmation_dialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_instance/src/extension_instance.dart';
-import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
-import 'package:nicholaslim80/features/user/Veicale_Type_on_Exprees_Delivery/controller/vehicle_Controller.dart';
-import 'package:nicholaslim80/features/user/express_delivery_1/order_express_delivery/controller/order_controller.dart';
-import 'package:nicholaslim80/features/user/express_delivery_1/order_express_delivery/screen/order_alertdialog_screen.dart';
+import 'package:get/get.dart';
+
 
 class OrderReviewWidget extends StatelessWidget {
-  final VehicleController vehicleController;
+  final VehicleSecationController vehicleController;
   final OrderController orderController = Get.put(OrderController());
   final double total;
   final List<String> calculationHistory;
@@ -101,7 +101,7 @@ class OrderReviewWidget extends StatelessWidget {
   // Default action if no callback is passed
   void _defaultReviewOrderAction() {
     final OrderController orderController = Get.find<OrderController>();
-    orderController.totalAmount = total;
+    orderController.totalAmount.value = total;
 
     // Call the reusable dialog function
     showOrderConfirmationDialog(orderController);

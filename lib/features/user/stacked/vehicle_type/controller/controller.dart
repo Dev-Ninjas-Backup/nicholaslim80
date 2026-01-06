@@ -1,7 +1,8 @@
 
+import 'package:ZipBee/core/utils/constants/icon_path.dart';
+import 'package:ZipBee/features/user/stacked/vehicle_type/model/model.dart';
 import 'package:get/get.dart';
-import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
-import 'package:nicholaslim80/features/user/stacked/vehicle_type/model/model.dart';
+
 
 
 class StackedVehicleController extends GetxController {

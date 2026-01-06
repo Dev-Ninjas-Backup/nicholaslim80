@@ -1,9 +1,10 @@
+import 'package:ZipBee/core/common/styles/global_text_style.dart';
+import 'package:ZipBee/core/utils/constants/app_colors.dart';
+import 'package:ZipBee/features/user/Express_Delivary_Faq/widget/express_faq_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
-import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
-import 'package:nicholaslim80/features/user/Express_Delivary_Faq/widget/express_faq_widget.dart';
+
 
 class ExpressFaq extends StatelessWidget {
   const ExpressFaq({super.key});

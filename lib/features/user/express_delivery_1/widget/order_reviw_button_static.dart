@@ -1,6 +1,6 @@
+import 'package:ZipBee/core/common/styles/global_text_style.dart';
 import 'package:flutter/cupertino.dart' show CupertinoColors;
 import 'package:flutter/material.dart';
-import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 
 class OrderReviwButtonStatic extends StatelessWidget {
   const OrderReviwButtonStatic({super.key});

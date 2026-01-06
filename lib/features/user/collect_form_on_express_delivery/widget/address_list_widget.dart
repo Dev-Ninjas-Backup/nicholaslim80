@@ -1,9 +1,8 @@
+import 'package:ZipBee/core/common/styles/global_text_style.dart';
+import 'package:ZipBee/features/user/collect_form_on_express_delivery/controller/collect_form_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 
-import 'package:nicholaslim80/features/user/collect_form_on_express_delivery/controller/collect_form_controller.dart'
-    show CollectFormController;
 
 class AddressListWidget extends StatelessWidget {
   final CollectFormController controller;

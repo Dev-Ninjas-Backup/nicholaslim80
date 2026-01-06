@@ -1,6 +1,6 @@
+import 'package:ZipBee/features/user/home/my_riders/controller/my_riders_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nicholaslim80/features/user/home/my_riders/controller/my_riders_controller.dart';
 
 void showAddRiderDialog() {
   final MyRidersController controller = Get.find<MyRidersController>();

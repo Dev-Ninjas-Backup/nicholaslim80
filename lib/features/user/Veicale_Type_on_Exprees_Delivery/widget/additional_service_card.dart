@@ -1,6 +1,7 @@
+import 'package:ZipBee/core/common/styles/global_text_style.dart';
+import 'package:ZipBee/features/user/Veicale_Type_on_Exprees_Delivery/models/vehicle_data_model.dart';
 import 'package:flutter/material.dart';
-import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
-import 'package:nicholaslim80/features/user/Veicale_Type_on_Exprees_Delivery/models/data_model.dart';
+
 
 class AdditionalServiceCard extends StatelessWidget {
   final AdditionalService service;

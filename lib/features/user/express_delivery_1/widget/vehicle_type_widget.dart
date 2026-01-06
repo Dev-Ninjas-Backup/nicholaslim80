@@ -1,6 +1,6 @@
+import 'package:ZipBee/features/user/express_delivery_1/controller/express_controller_1.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
-import 'package:nicholaslim80/features/user/express_delivery_1/controller/express_controller_1.dart';
 
 class VehicleTypeWidget extends StatelessWidget {
   const VehicleTypeWidget({super.key, required this.controller});

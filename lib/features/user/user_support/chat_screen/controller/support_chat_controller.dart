@@ -1,5 +1,5 @@
+import 'package:ZipBee/features/user/user_support/chat_screen/model/support_chat_model.dart';
 import 'package:get/get.dart';
-import 'package:nicholaslim80/features/user/user_support/chat_screen/model/support_chat_model.dart';
 
 class ChatController extends GetxController {
   var messages = <Message>[].obs;

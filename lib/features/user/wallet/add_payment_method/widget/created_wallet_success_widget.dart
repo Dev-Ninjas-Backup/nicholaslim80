@@ -1,8 +1,9 @@
+import 'package:ZipBee/core/common/styles/global_text_style.dart';
+import 'package:ZipBee/core/utils/constants/app_colors.dart';
+import 'package:ZipBee/features/user/wallet/my_wallet/screen/user_my_wallet.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
-import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
-import 'package:nicholaslim80/features/user/wallet/my_wallet/screen/user_my_wallet.dart';
+
 
 class CreatedWalletSuccessWidget extends StatefulWidget {
   const CreatedWalletSuccessWidget({super.key});

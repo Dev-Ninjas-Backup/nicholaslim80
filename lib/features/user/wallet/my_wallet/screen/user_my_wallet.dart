@@ -1,11 +1,12 @@
+import 'package:ZipBee/core/common/styles/global_text_style.dart';
+import 'package:ZipBee/core/utils/constants/app_colors.dart';
+import 'package:ZipBee/features/user/wallet/loyalty_and_rewards/screen/loyalty_and_rewards_screen.dart';
+import 'package:ZipBee/features/user/wallet/manage_payment/screen/manage_payment_screen.dart';
+import 'package:ZipBee/features/user/wallet/my_wallet/controller/user_my_wallet_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/instance_manager.dart';
 import 'package:get/route_manager.dart';
-import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
-import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
-import 'package:nicholaslim80/features/user/wallet/loyalty_and_rewards/screen/loyalty_and_rewards_screen.dart';
-import 'package:nicholaslim80/features/user/wallet/manage_payment/screen/manage_payment_screen.dart';
-import 'package:nicholaslim80/features/user/wallet/my_wallet/controller/user_my_wallet_controller.dart';
+
 import '../widgets/my_wallet_upper_section.dart';
 
 class UserMyWallet extends StatelessWidget {

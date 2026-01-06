@@ -1,7 +1,6 @@
+import 'package:ZipBee/app.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:nicholaslim80/app.dart';
 
 import 'firebase_msg.dart';
 import 'firebase_options.dart';

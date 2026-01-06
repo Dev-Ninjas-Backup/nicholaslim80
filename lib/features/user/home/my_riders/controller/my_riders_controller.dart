@@ -1,8 +1,9 @@
+import 'package:ZipBee/core/api_end_point/api_end_point.dart';
+import 'package:ZipBee/core/shared_prefference_service/shared_pref.dart';
+import 'package:ZipBee/core/utils/constants/image_path.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nicholaslim80/core/api_end_point/api_end_point.dart';
-import 'package:nicholaslim80/core/shared_prefference_service/shared_pref.dart';
-import 'package:nicholaslim80/core/utils/constants/image_path.dart';
+
 
 class MyRidersController extends GetxController {
   var ridersList = <Map<String, dynamic>>[].obs;

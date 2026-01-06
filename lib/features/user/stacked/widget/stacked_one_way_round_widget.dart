@@ -1,8 +1,9 @@
+import 'package:ZipBee/core/common/styles/global_text_style.dart';
+import 'package:ZipBee/features/user/stacked/stacked_collect_from/controller/controller.dart';
+import 'package:ZipBee/features/user/stacked/stacked_collect_from/screen/collect_from.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
-import 'package:nicholaslim80/features/user/stacked/stacked_collect_from/controller/controller.dart';
-import 'package:nicholaslim80/features/user/stacked/stacked_collect_from/screen/collect_from.dart';
+
 import '../stacked_controller/stacked_controller.dart';
 
 class StackedOneWayRoundWidget extends StatelessWidget {

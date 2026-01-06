@@ -1,9 +1,10 @@
+import 'package:ZipBee/core/common/styles/global_text_style.dart';
+import 'package:ZipBee/core/common/widgets/custom_button.dart';
+import 'package:ZipBee/core/utils/constants/app_colors.dart';
+import 'package:ZipBee/features/user/refer_and_earn/your_rewards/controller/your_rewards_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
-import 'package:nicholaslim80/core/common/widgets/custom_button.dart';
-import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
-import 'package:nicholaslim80/features/user/refer_and_earn/your_rewards/controller/your_rewards_controller.dart';
+
 
 class YourRewardsScreen extends StatelessWidget {
   const YourRewardsScreen({super.key});

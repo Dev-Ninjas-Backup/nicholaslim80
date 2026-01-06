@@ -1,8 +1,8 @@
+import 'package:ZipBee/core/utils/constants/icon_path.dart';
+import 'package:ZipBee/features/user/user_support/chat_screen/screen/support_chat_screen.dart';
+import 'package:ZipBee/features/user/user_support/model/support_option_model.dart';
 import 'package:get/get.dart';
-import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
 
-import 'package:nicholaslim80/features/user/user_support/model/support_option_model.dart';
-import 'package:nicholaslim80/features/user/user_support/chat_screen/screen/support_chat_screen.dart';
 
 class SupportController extends GetxController {
   final options = <SupportOption>[].obs;

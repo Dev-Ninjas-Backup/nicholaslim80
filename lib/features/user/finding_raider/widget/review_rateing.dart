@@ -1,6 +1,6 @@
+import 'package:ZipBee/features/user/finding_raider/controller/rider_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nicholaslim80/features/user/finding_raider/controller/rider_controller.dart';
 
 class ReviewRating extends StatelessWidget {
   final double size;

@@ -1,10 +1,11 @@
+import 'package:ZipBee/core/api_end_point/api_end_point.dart';
+import 'package:ZipBee/features/user/refer_and_earn/how_it_work/screen/how_it_work_screen.dart';
+import 'package:ZipBee/features/user/refer_and_earn/service/refer_and_earn_service.dart';
+import 'package:ZipBee/features/user/refer_and_earn/your_rewards/screen/your_rewards_screen.dart';
 import 'package:get/get.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
-import 'package:nicholaslim80/features/user/refer_and_earn/service/refer_and_earn_service.dart';
-import 'package:nicholaslim80/features/user/refer_and_earn/how_it_work/screen/how_it_work_screen.dart';
-import 'package:nicholaslim80/features/user/refer_and_earn/your_rewards/screen/your_rewards_screen.dart';
-import 'package:nicholaslim80/core/api_end_point/api_end_point.dart';
+
 
 class ReferAndEarnController extends GetxController {
   // observable values

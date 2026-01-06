@@ -1,8 +1,9 @@
+import 'package:ZipBee/core/shared_prefference_service/shared_pref.dart';
+import 'package:ZipBee/features/user/auth/login/auth_service/auth_service.dart';
+import 'package:ZipBee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nicholaslim80/core/shared_prefference_service/shared_pref.dart';
-import 'package:nicholaslim80/features/user/auth/login/auth_service/auth_service.dart';
-import 'package:nicholaslim80/routes/app_routes.dart';
+
 
 class LoginSignupController extends GetxController {
   // ---------------- Text Controllers ----------------

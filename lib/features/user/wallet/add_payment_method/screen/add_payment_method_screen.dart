@@ -1,9 +1,10 @@
+import 'package:ZipBee/core/utils/constants/app_colors.dart';
+import 'package:ZipBee/features/user/finding_raider/widget/button.dart';
+import 'package:ZipBee/features/user/wallet/add_payment_method/controller/add_payment_method_controller.dart';
+import 'package:ZipBee/features/user/wallet/add_payment_method/widget/created_wallet_success_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
-import 'package:nicholaslim80/features/user/finding_raider/widget/button.dart';
-import 'package:nicholaslim80/features/user/wallet/add_payment_method/controller/add_payment_method_controller.dart';
-import 'package:nicholaslim80/features/user/wallet/add_payment_method/widget/created_wallet_success_widget.dart';
+
 
 class AddPaymentMethodScreen extends StatelessWidget {
   AddPaymentMethodScreen({super.key});

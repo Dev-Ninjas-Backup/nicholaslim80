@@ -1,10 +1,11 @@
+import 'package:ZipBee/core/common/styles/global_text_style.dart';
+import 'package:ZipBee/core/common/widgets/custom_app_bar_user.dart';
+import 'package:ZipBee/core/utils/constants/app_colors.dart';
+import 'package:ZipBee/core/utils/constants/icon_path.dart';
+import 'package:ZipBee/features/user/notification/controller/user_notification_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
-import 'package:nicholaslim80/core/common/widgets/custom_app_bar_user.dart';
-import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
-import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
-import 'package:nicholaslim80/features/user/notification/controller/user_notification_controller.dart';
+
 
 import '../../../orders/active_order_details/screen/active_order_details_screen.dart';
 

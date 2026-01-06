@@ -1,6 +1,6 @@
+import 'package:ZipBee/features/user/finding_raider/model/payment_option_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nicholaslim80/features/user/finding_raider/model/payment_option_model.dart';
 import '../controller/rider_controller.dart';
 
 class PaymentOptionWidget extends StatelessWidget {

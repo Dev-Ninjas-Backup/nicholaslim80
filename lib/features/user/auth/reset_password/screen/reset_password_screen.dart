@@ -1,8 +1,9 @@
+import 'package:ZipBee/core/common/styles/global_text_style.dart';
+import 'package:ZipBee/core/utils/constants/app_colors.dart';
+import 'package:ZipBee/features/user/auth/reset_password/controller/reset_password_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
-import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
-import 'package:nicholaslim80/features/user/auth/reset_password/controller/reset_password_controller.dart';
+
 
 class ResetPasswordScreen extends StatelessWidget {
   final ResetPasswordController controller = Get.put(ResetPasswordController());

@@ -1,5 +1,5 @@
+import 'package:ZipBee/core/common/styles/global_text_style.dart';
 import 'package:flutter/material.dart';
-import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 
 class LocationRowWidget extends StatelessWidget {
   final String iconPath;

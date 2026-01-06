@@ -1,10 +1,11 @@
 import 'dart:convert';
 
+import 'package:ZipBee/core/api_end_point/api_end_point.dart';
+import 'package:ZipBee/core/shared_prefference_service/shared_pref.dart';
+import 'package:ZipBee/features/user/order/model/order_model.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'package:nicholaslim80/core/api_end_point/api_end_point.dart';
-import 'package:nicholaslim80/core/shared_prefference_service/shared_pref.dart';
-import 'package:nicholaslim80/features/user/order/model/order_model.dart';
+
 
 class OrderController extends GetxController {
   final RxInt selectOrderListIndex = 0.obs;
@@ -13,6 +14,18 @@ class OrderController extends GetxController {
   final orderTabs = ["Active", "Completed", "Cancelled"];
 
   final RxList<OrderModel> orderList = <OrderModel>[].obs;
+
+  get totalAmount => null;
+
+  final RxBool redeemCoins = false.obs;
+
+  void toggleRedeemCoins(bool? value) => redeemCoins.value = value ?? false;
+
+  get favoriteRiders => null;
+
+  final RxBool toggleFavoriteRiders = false.obs;
+
+  get orderNumber => null;
 
   @override
   void onInit() {

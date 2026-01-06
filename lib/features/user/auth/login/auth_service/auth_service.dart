@@ -1,6 +1,6 @@
 import 'dart:convert';
+import 'package:ZipBee/core/api_end_point/api_end_point.dart';
 import 'package:http/http.dart' as http;
-import 'package:nicholaslim80/core/api_end_point/api_end_point.dart';
 
 class AuthService {
   // ------------------- SIGNUP -------------------

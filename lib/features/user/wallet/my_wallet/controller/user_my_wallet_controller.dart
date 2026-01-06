@@ -1,5 +1,5 @@
+import 'package:ZipBee/features/user/wallet/my_wallet/model/wallet_recent_transactions_model.dart';
 import 'package:get/get.dart';
-import 'package:nicholaslim80/features/user/wallet/my_wallet/model/wallet_recent_transactions_model.dart';
 
 class UserMyWalletController extends GetxController {
   var selectFundsOrRedeen = 0.obs;

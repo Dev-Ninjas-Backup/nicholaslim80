@@ -1,10 +1,11 @@
+import 'package:ZipBee/core/common/styles/global_text_style.dart';
+import 'package:ZipBee/core/utils/constants/icon_path.dart';
+import 'package:ZipBee/features/user/Veicale_Type_on_Exprees_Delivery/models/vehicle_data_model.dart';
 import 'package:flutter/material.dart';
-import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
-import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
-import 'package:nicholaslim80/features/user/Veicale_Type_on_Exprees_Delivery/models/data_model.dart';
+
 
 class VehicleCard extends StatelessWidget {
-  final Vehicle vehicle;
+  final VehicleDataModel vehicle;
   final bool isSelected;
   final VoidCallback onTap;
 

@@ -1,7 +1,8 @@
+import 'package:ZipBee/core/utils/constants/icon_path.dart';
+import 'package:ZipBee/features/user/finding_raider/model/payment_option_model.dart';
+import 'package:ZipBee/features/user/finding_raider/screnn/connecting_rider_page.dart';
 import 'package:get/get.dart';
-import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
-import 'package:nicholaslim80/features/user/finding_raider/model/payment_option_model.dart';
-import 'package:nicholaslim80/features/user/finding_raider/screnn/connecting_rider_page.dart';
+
 
 class RiderController extends GetxController {
   var selectedFare = 0.obs;

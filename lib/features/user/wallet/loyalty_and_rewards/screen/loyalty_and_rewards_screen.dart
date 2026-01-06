@@ -1,7 +1,8 @@
+import 'package:ZipBee/core/common/widgets/custom_button.dart';
+import 'package:ZipBee/core/utils/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nicholaslim80/core/common/widgets/custom_button.dart';
-import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
+
 import '../controller/loyalty_and_rewards_controller.dart';
 
 class LoyaltyAndRewardsScreen extends StatelessWidget {

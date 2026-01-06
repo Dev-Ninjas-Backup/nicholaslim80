@@ -1,7 +1,8 @@
+import 'package:ZipBee/features/user/refer_and_earn/widget/redeem_credits_suscess_widget.dart';
+import 'package:ZipBee/features/user/refer_and_earn/your_rewards/service/your_rewards_service.dart';
 import 'package:get/get.dart';
 import 'package:flutter/foundation.dart';
-import 'package:nicholaslim80/features/user/refer_and_earn/your_rewards/service/your_rewards_service.dart';
-import 'package:nicholaslim80/features/user/refer_and_earn/widget/redeem_credits_suscess_widget.dart';
+
 
 class YourRewardsController extends GetxController {
   var totalCredits = 0.obs;

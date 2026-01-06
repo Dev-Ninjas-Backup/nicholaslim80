@@ -1,26 +1,24 @@
+import 'package:ZipBee/core/common/styles/global_text_style.dart';
+import 'package:ZipBee/core/utils/constants/app_colors.dart';
+import 'package:ZipBee/features/user/Veicale_Type_on_Exprees_Delivery/screen/veichale_secation_page.dart';
+import 'package:ZipBee/features/user/express_delivery_1/controller/express_controller_1.dart';
+import 'package:ZipBee/features/user/express_delivery_1/express_delivery_to_sendr_or_recepmeant/widget/Express_Button_3_way_option.dart';
+import 'package:ZipBee/features/user/express_delivery_1/widget/collect_time_widget.dart';
+import 'package:ZipBee/features/user/express_delivery_1/widget/pick_date_time_dialog.dart';
+import 'package:ZipBee/features/user/express_delivery_1/widget/vehicle_type_widget.dart';
+import 'package:ZipBee/features/user/stacked/vehicle_type/controller/controller.dart';
+import 'package:ZipBee/features/user/stacked/widget/order_review_widget.dart';
+import 'package:ZipBee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 // 🔹 Your App Colors
-import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
 
-import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
-import 'package:nicholaslim80/features/user/express_delivery_1/controller/express_controller_1.dart';
-import 'package:nicholaslim80/features/user/express_delivery_1/express_delivery_to_sendr_or_recepmeant/widget/Express_Button_3_way_option.dart';
-import 'package:nicholaslim80/features/user/express_delivery_1/widget/collect_time_widget.dart';
-import 'package:nicholaslim80/features/user/express_delivery_1/widget/order_review_widget.dart';
-import 'package:nicholaslim80/features/user/express_delivery_1/widget/pick_date_time_dialog.dart';
-import 'package:nicholaslim80/features/user/express_delivery_1/widget/vehicle_type_widget.dart';
-
-// 🔹 Other Pages
-import 'package:nicholaslim80/features/user/Veicale_Type_on_Exprees_Delivery/screen/veichale_secation_page.dart';
-import 'package:nicholaslim80/routes/app_routes.dart';
-
-import '../../../Veicale_Type_on_Exprees_Delivery/controller/vehicle_Controller.dart';
+import '../../../Veicale_Type_on_Exprees_Delivery/controller/vehicle_secation_controller.dart';
 
 class ExpressToSenderOrRecepment extends StatelessWidget {
   final LocationController controller = Get.put(LocationController());
-  final VehicleController vehicleController = Get.find<VehicleController>();
+  final VehicleSecationController vehicleController = Get.find<VehicleSecationController>();
 
   ExpressToSenderOrRecepment({super.key});
 
@@ -156,7 +154,7 @@ class ExpressToSenderOrRecepment extends StatelessWidget {
 
                 // 🔹 Order Review Section
                 OrderReviewWidget(
-                  vehicleController: vehicleController,
+                  vehicleController: Get.find<StackedVehicleController>(),
                   total: vehicleController.calculateTotal(),
                   calculationHistory: vehicleController.calculationHistory
                       .toList(),

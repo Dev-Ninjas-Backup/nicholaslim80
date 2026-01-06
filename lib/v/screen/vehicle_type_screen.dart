@@ -1,10 +1,10 @@
+import 'package:ZipBee/v/controller/vehicle_v1_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nicholaslim80/v/controller/vehicle_controller.dart';
 
 class VehicleTypeScreen extends StatelessWidget {
   // Dependency Injection of Controller
-  final Vcontroller controller = Get.put(Vcontroller());
+  final VehicleV1Controller controller = Get.put(VehicleV1Controller());
 
   // Colors
   final Color primaryYellow = const Color(0xFFFFD54F);
@@ -143,59 +143,75 @@ class VehicleTypeScreen extends StatelessWidget {
                 ],
               ),
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    width: 80,
-                    height: 60,
-                    margin: const EdgeInsets.only(right: 12),
-                    child: vehicle.imagePath.contains('assets')
-                        ? Image.asset(vehicle.imagePath, fit: BoxFit.contain)
-                        : const Icon(
-                            Icons.local_shipping,
-                            color: Colors.amber,
-                            size: 40,
-                          ),
-                  ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              vehicle.name,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15,
-                              ),
-                            ),
-                            Icon(
-                              isSelected
-                                  ? Icons.check_circle_outline
-                                  : Icons.radio_button_off,
-                              color: isSelected
-                                  ? Colors.green
-                                  : Colors.grey[300],
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          vehicle.description,
-                          style: TextStyle(color: textGrey, fontSize: 12),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          vehicle.dimensions,
-                          style: TextStyle(color: textGrey, fontSize: 11),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    Container(
+      width: 80,
+      height: 60,
+      margin: const EdgeInsets.only(right: 12),
+      child: vehicle.imagePath.isNotEmpty
+          ? Image.asset(
+              vehicle.imagePath,
+              fit: BoxFit.contain,
+              errorBuilder: (_, __, ___) => const Icon(
+                Icons.local_shipping,
+                color: Colors.amber,
+                size: 40,
               ),
+            )
+          : const Icon(
+              Icons.local_shipping,
+              color: Colors.amber,
+              size: 40,
+            ),
+    ),
+    Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  vehicle.name,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                  ),
+                ),
+              ),
+              Icon(
+                isSelected
+                    ? Icons.check_circle_outline
+                    : Icons.radio_button_off,
+                color: isSelected ? Colors.green : Colors.grey,
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            vehicle.description,
+            style: TextStyle(
+              color: textGrey,
+              fontSize: 12,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            vehicle.dimensions,
+            style: TextStyle(
+              color: textGrey,
+              fontSize: 11,
+            ),
+          ),
+        ],
+      ),
+    ),
+  ],
+)
+
             ),
           );
         }).toList(),

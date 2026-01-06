@@ -1,10 +1,11 @@
+import 'package:ZipBee/core/common/styles/global_text_style.dart';
+import 'package:ZipBee/core/utils/constants/app_colors.dart';
+import 'package:ZipBee/core/utils/constants/image_path.dart';
+import 'package:ZipBee/features/user/home/my_riders/widgets/delete_alert_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
-import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
-import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
-import 'package:nicholaslim80/core/utils/constants/image_path.dart';
-import 'package:nicholaslim80/features/user/home/my_riders/widgets/delete_alert_dialog.dart';
+import 'package:http/http.dart' as IconPath;
+
 import '../controller/my_riders_controller.dart';
 import 'add_riders_widget.dart';
 
@@ -71,8 +72,8 @@ class RidersListWidget extends StatelessWidget {
               background: Container(
                 alignment: Alignment.centerLeft,
                 padding: const EdgeInsets.symmetric(horizontal: 20),
-                color: AppColors.backgroungColor,
-                child: Image.asset(IconPath.delete, height: 34, width: 34),
+                color: Colors.red,
+                child: Image.asset(IconPath.delete as String, height: 34, width: 34),
               ),
 
               // ✅ confirmDismiss shows delete alert dialog

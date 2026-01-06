@@ -1,10 +1,11 @@
+import 'package:ZipBee/core/common/styles/global_text_style.dart';
+import 'package:ZipBee/core/utils/constants/app_colors.dart';
+import 'package:ZipBee/features/user/finding_raider/controller/review_controller.dart';
+import 'package:ZipBee/features/user/finding_raider/model/review_model.dart';
+import 'package:ZipBee/features/user/finding_raider/screnn/rate_rider_tip.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
-import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
-import 'package:nicholaslim80/features/user/finding_raider/controller/review_controller.dart';
-import 'package:nicholaslim80/features/user/finding_raider/model/review_model.dart';
-import 'package:nicholaslim80/features/user/finding_raider/screnn/rate_rider_tip.dart';
+
 
 class ReviewView extends StatelessWidget {
   ReviewView({super.key});

@@ -1,14 +1,14 @@
 import 'package:get/get.dart';
 
-class Vehicle {
+class VModels {
   final String id;
   final String name;
   final String description;
   final String dimensions;
-  final String imagePath; // Your asset path
+  final String imagePath;
   final double price;
 
-  Vehicle({
+  VModels({
     required this.id,
     required this.name,
     required this.description,
@@ -18,11 +18,13 @@ class Vehicle {
   });
 }
 
-class Service {
+class ServiceV1 {
   final String name;
   final double price;
-  // We use RxBool so the checkbox updates instantly in the UI
-  RxBool isSelected = false.obs;
+  final RxBool isSelected = false.obs;
 
-  Service({required this.name, required this.price});
+  ServiceV1({
+    required this.name,
+    required this.price,
+  });
 }

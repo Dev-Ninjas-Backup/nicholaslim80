@@ -1,8 +1,9 @@
+import 'package:ZipBee/core/utils/constants/app_colors.dart';
+import 'package:ZipBee/core/utils/constants/image_path.dart';
+import 'package:ZipBee/features/splash/controller/splash_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
-import 'package:nicholaslim80/core/utils/constants/image_path.dart';
-import 'package:nicholaslim80/features/splash/controller/splash_controller.dart';
+
 
 class SplashScreen extends StatelessWidget {
   SplashScreen({super.key});
