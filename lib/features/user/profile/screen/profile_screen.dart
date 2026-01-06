@@ -44,50 +44,131 @@ class ProfileScreen extends StatelessWidget {
                   return ListView.builder(
                     padding: EdgeInsets.zero,
                     shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
                     itemCount: controller.profileItem.length,
                     itemBuilder: (_, index) {
-                      return Padding(
-                        padding: EdgeInsets.only(bottom: 16),
-                        child: Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      controller.profileItem[index].title,
-                                      style: getTextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w700,
-                                      ),
+                      return Obx(() {
+                        final isEditing =
+                            controller.editingIndex.value == index;
+
+                        return Padding(
+                          padding: EdgeInsets.only(bottom: 16),
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          controller.profileItem[index].title,
+                                          style: getTextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                        SizedBox(height: 4),
+                                        isEditing
+                                            ? TextField(
+                                                controller: controller
+                                                    .getControllerForIndex(
+                                                      index,
+                                                    ),
+                                                autofocus: true,
+                                                enabled: true,
+                                                keyboardType: index == 1
+                                                    ? TextInputType.emailAddress
+                                                    : index == 2
+                                                    ? TextInputType.phone
+                                                    : TextInputType.text,
+                                                style: getTextStyle(
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                                decoration: InputDecoration(
+                                                  isDense: true,
+                                                  filled: false,
+                                                  contentPadding:
+                                                      EdgeInsets.symmetric(
+                                                        vertical: 8,
+                                                        horizontal: 0,
+                                                      ),
+                                                  border: InputBorder.none,
+                                                  enabledBorder:
+                                                      InputBorder.none,
+                                                  focusedBorder:
+                                                      InputBorder.none,
+                                                ),
+                                              )
+                                            : Text(
+                                                controller
+                                                    .profileItem[index]
+                                                    .subtitle,
+                                                style: getTextStyle(
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                      ],
                                     ),
-                                    Text(
-                                      controller.profileItem[index].subtitle,
-                                      style: getTextStyle(
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                GestureDetector(
-                                  onTap: () {
-                                    // Handle edit action here
-                                  },
-                                  child: Image.asset(
-                                    IconPath.editIcon,
-                                    height: 18,
-                                    width: 18,
                                   ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 5),
-                            Divider(thickness: 0.7),
-                          ],
-                        ),
-                      );
+                                  SizedBox(width: 8),
+                                  isEditing
+                                      ? Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            GestureDetector(
+                                              onTap: () {
+                                                controller.cancelEditing();
+                                              },
+                                              child: Container(
+                                                padding: EdgeInsets.all(4),
+                                                child: Icon(
+                                                  Icons.close,
+                                                  size: 20,
+                                                  color: Colors.red,
+                                                ),
+                                              ),
+                                            ),
+                                            SizedBox(width: 12),
+                                            GestureDetector(
+                                              onTap: () {
+                                                controller.saveProfile(index);
+                                              },
+                                              child: Container(
+                                                padding: EdgeInsets.all(4),
+                                                child: Icon(
+                                                  Icons.check,
+                                                  size: 20,
+                                                  color: Colors.green,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        )
+                                      : GestureDetector(
+                                          onTap: () {
+                                            controller.startEditing(index);
+                                          },
+                                          child: Container(
+                                            padding: EdgeInsets.all(4),
+                                            child: Image.asset(
+                                              IconPath.editIcon,
+                                              height: 18,
+                                              width: 18,
+                                            ),
+                                          ),
+                                        ),
+                                ],
+                              ),
+                              SizedBox(height: 5),
+                              Divider(thickness: 0.7),
+                            ],
+                          ),
+                        );
+                      });
                     },
                   );
                 }
