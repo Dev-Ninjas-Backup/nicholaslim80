@@ -11,6 +11,7 @@ import 'package:ZipBee/features/user/express_delivery_1/express_delivery_to_send
 import 'package:ZipBee/features/user/express_delivery_1/screen/express_delivery_1.dart';
 import 'package:ZipBee/features/user/finding_raider/screnn/connecting_rider_page.dart' show ConnectingRiderPage;
 import 'package:ZipBee/features/user/finding_raider/screnn/finding_rider_page.dart';
+import 'package:ZipBee/features/user/google_map/screen/google_map_screen.dart';
 import 'package:ZipBee/features/user/home/my_riders/screen/my_riders.dart';
 import 'package:ZipBee/features/user/home/screen/home_screen.dart';
 import 'package:ZipBee/features/user/notification/screen/user_notification1.dart';
