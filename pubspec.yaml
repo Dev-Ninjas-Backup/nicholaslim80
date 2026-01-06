@@ -47,7 +47,9 @@ dependencies:
   country_code_picker: ^3.4.1
   firebase_core: ^4.3.0
   firebase_messaging: ^16.1.0
-  flutter_launcher_icons: ^0.13.1
+  google_maps_flutter: ^2.14.0
+  location: ^8.0.1
+  flutter_polyline_points: ^3.1.0
 
 dev_dependencies:
   flutter_test:
