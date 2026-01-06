@@ -8,6 +8,7 @@ import 'package:nicholaslim80/features/user/express_delivery_1/screen/express_de
 import 'package:nicholaslim80/features/user/Express_Delivary_Faq/Screen/express_faq.dart';
 import 'package:nicholaslim80/features/user/finding_raider/screnn/connecting_rider_page.dart';
 import 'package:nicholaslim80/features/user/finding_raider/screnn/finding_rider_page.dart';
+import 'package:nicholaslim80/features/user/google_map/screen/google_map_screen.dart';
 import 'package:nicholaslim80/features/user/home/my_riders/screen/my_riders.dart';
 import 'package:nicholaslim80/features/user/user_support/screen/support_screen.dart';
 import 'package:nicholaslim80/features/user/wallet/add_funds/screen/user_add_funds.dart';
@@ -70,6 +71,9 @@ class AppRoutes {
   static String expressFaq = "/expressFaq";
   static String expressSenderOrRecepment = "/expressSenderOrRecepment";
   static String savedPlaceScreen = "/savedPlaceScreen";
+
+  // google map screen (practice file)
+  static String googleMapScreen = "/googleMapScreen";
 
   // static String scheduledelivery = "/scheduledelivery";
 
@@ -221,5 +225,8 @@ class AppRoutes {
     //   page: () => ScheduleDelivery(),
     //   transition: Transition.fadeIn,
     // ),
+
+    // google map screen (practice file)
+    GetPage(name: googleMapScreen, page: () => GoogleMapScreen()),
   ];
 }
