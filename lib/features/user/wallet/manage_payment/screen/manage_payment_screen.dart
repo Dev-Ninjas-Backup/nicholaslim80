@@ -1,7 +1,8 @@
+import 'package:ZipBee/core/utils/constants/app_colors.dart';
+import 'package:ZipBee/core/utils/constants/icon_path.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
-import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
+
 import '../controller/manage_payment_controller.dart';
 
 class ManagePaymentScreen extends StatelessWidget {

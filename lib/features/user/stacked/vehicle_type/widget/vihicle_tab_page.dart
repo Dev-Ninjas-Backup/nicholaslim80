@@ -1,7 +1,8 @@
+import 'package:ZipBee/core/common/styles/global_text_style.dart';
+import 'package:ZipBee/features/user/stacked/vehicle_type/widget/vehicle_card.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
-import 'package:nicholaslim80/features/user/stacked/vehicle_type/widget/vehicle_card.dart';
+
 
 import '../controller/controller.dart';
 import 'additional_service.dart';

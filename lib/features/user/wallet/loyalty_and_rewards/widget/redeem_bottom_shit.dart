@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
+import 'package:ZipBee/core/utils/constants/app_colors.dart';
 
 class RedeemBottomSheet extends StatelessWidget {
   final VoidCallback? onRedeem;

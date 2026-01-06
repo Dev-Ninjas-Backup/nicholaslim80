@@ -1,5 +1,5 @@
+import 'package:ZipBee/features/user/wallet/loyalty_and_rewards/widget/redeem_bottom_shit.dart';
 import 'package:get/get.dart';
-import 'package:nicholaslim80/features/user/wallet/loyalty_and_rewards/widget/redeem_bottom_shit.dart';
 
 class LoyaltyAndRewardsController extends GetxController {
   RxInt points = 60.obs;

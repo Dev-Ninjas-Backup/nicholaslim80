@@ -1,9 +1,10 @@
+import 'package:ZipBee/core/common/styles/global_text_style.dart';
+import 'package:ZipBee/core/common/widgets/custom_button.dart';
+import 'package:ZipBee/features/user/refer_and_earn/controller/refer_and_earn_controller.dart';
+import 'package:ZipBee/features/user/refer_and_earn/widget/refar_card_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
-import 'package:nicholaslim80/core/common/widgets/custom_button.dart';
-import 'package:nicholaslim80/features/user/refer_and_earn/controller/refer_and_earn_controller.dart';
-import 'package:nicholaslim80/features/user/refer_and_earn/widget/refar_card_widget.dart';
+
 import 'package:share_plus/share_plus.dart';
 import '../../../../core/utils/constants/app_colors.dart';
 

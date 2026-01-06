@@ -1,9 +1,10 @@
 import 'dart:convert';
 
+import 'package:ZipBee/core/api_end_point/api_end_point.dart';
+import 'package:ZipBee/features/user/notification/model/notification1_model.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'package:nicholaslim80/core/api_end_point/api_end_point.dart';
-import 'package:nicholaslim80/features/user/notification/model/notification1_model.dart';
+
 
 import '../../../../core/shared_prefference_service/shared_pref.dart';
 

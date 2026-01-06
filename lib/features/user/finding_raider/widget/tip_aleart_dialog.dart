@@ -1,8 +1,9 @@
+import 'package:ZipBee/core/common/styles/global_text_style.dart';
+import 'package:ZipBee/features/user/express_delivery_1/controller/express_controller_1.dart';
+import 'package:ZipBee/features/user/schedule_express_delivey/screen/schedule_delivery.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
-import 'package:nicholaslim80/features/user/express_delivery_1/controller/express_controller_1.dart';
-import 'package:nicholaslim80/features/user/schedule_express_%20delivey/screen/schedule_delivery.dart';
+
 
 class TipAleartDialog extends StatelessWidget {
   const TipAleartDialog({super.key});

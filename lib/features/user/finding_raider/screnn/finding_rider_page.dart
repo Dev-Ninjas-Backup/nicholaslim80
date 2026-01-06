@@ -1,13 +1,14 @@
+import 'package:ZipBee/core/common/styles/global_text_style.dart';
+import 'package:ZipBee/core/utils/constants/icon_path.dart';
+import 'package:ZipBee/core/utils/constants/image_path.dart';
+import 'package:ZipBee/features/user/finding_raider/controller/rider_controller.dart';
+import 'package:ZipBee/features/user/finding_raider/widget/button.dart';
+import 'package:ZipBee/features/user/finding_raider/widget/cancel_order_dialog.dart';
+import 'package:ZipBee/features/user/finding_raider/widget/location_row_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
-import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
-import 'package:nicholaslim80/core/utils/constants/image_path.dart';
-import 'package:nicholaslim80/features/user/finding_raider/controller/rider_controller.dart';
-import 'package:nicholaslim80/features/user/finding_raider/widget/button.dart';
-import 'package:nicholaslim80/features/user/finding_raider/widget/cancel_order_dialog.dart';
-import 'package:nicholaslim80/features/user/finding_raider/widget/location_row_widget.dart';
+
 
 class FindingRiderPage extends StatelessWidget {
   final RiderController raidercontroller = Get.put(RiderController());

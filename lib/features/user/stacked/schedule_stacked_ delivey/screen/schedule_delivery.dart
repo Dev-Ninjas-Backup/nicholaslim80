@@ -1,19 +1,20 @@
+import 'package:ZipBee/core/common/styles/global_text_style.dart';
+import 'package:ZipBee/core/utils/constants/app_colors.dart';
+import 'package:ZipBee/features/user/express_delivery_1/controller/express_controller_1.dart';
+import 'package:ZipBee/features/user/schedule_express_delivey/widget/schedule_delivery_button.dart';
+import 'package:ZipBee/features/user/stacked/vehicle_type/controller/controller.dart';
+import 'package:ZipBee/features/user/stacked/vehicle_type/screen/screen.dart';
+import 'package:ZipBee/features/user/stacked/widget/collect_time_widget.dart';
+import 'package:ZipBee/features/user/stacked/widget/order_review_widget.dart';
+import 'package:ZipBee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
-import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
-import 'package:nicholaslim80/features/user/stacked/stacked_controller/stacked_controller.dart';
-import 'package:nicholaslim80/features/user/stacked/widget/collect_time_widget.dart';
-import 'package:nicholaslim80/features/user/stacked/widget/order_review_widget.dart';
-import 'package:nicholaslim80/features/user/stacked/widget/vehicle_type_widget.dart';
-import 'package:nicholaslim80/features/user/stacked/vehicle_type/controller/controller.dart';
-import 'package:nicholaslim80/features/user/stacked/vehicle_type/screen/screen.dart';
-import '../widget/schedule_delivery_button.dart';
-import 'package:nicholaslim80/routes/app_routes.dart';
 
 class ScheduleDelivery extends StatelessWidget {
-  final StackedLocationController controller = Get.put(StackedLocationController());
-  final StackedVehicleController vehicleController = Get.put(StackedVehicleController());
+  final LocationController controller = Get.put(LocationController());
+  final StackedVehicleController vehicleController = Get.put(
+    StackedVehicleController(),
+  );
 
   ScheduleDelivery({super.key});
 
@@ -145,8 +146,8 @@ class ScheduleDelivery extends StatelessWidget {
                 ),
 
                 SizedBox(height: 4),
-                StackedVehicleTypeWidget(controller: controller),
 
+                // StackedVehicleTypeWidget(controller: controller),
                 SizedBox(height: 24),
 
                 // 🔹 Order Review Section

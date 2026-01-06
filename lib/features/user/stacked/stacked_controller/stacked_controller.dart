@@ -1,5 +1,5 @@
+import 'package:ZipBee/core/utils/constants/icon_path.dart';
 import 'package:get/get.dart';
-import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
 
 class StackedVehicleModel {
   final String iconPath;

@@ -1,10 +1,11 @@
+import 'package:ZipBee/core/common/styles/global_text_style.dart';
+import 'package:ZipBee/features/user/Veicale_Type_on_Exprees_Delivery/controller/vehicle_secation_controller.dart';
+import 'package:ZipBee/features/user/Veicale_Type_on_Exprees_Delivery/widget/additional_service_card.dart';
+import 'package:ZipBee/features/user/Veicale_Type_on_Exprees_Delivery/widget/buttom_sumary.dart';
+import 'package:ZipBee/features/user/Veicale_Type_on_Exprees_Delivery/widget/vehicale_card.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
-import 'package:nicholaslim80/features/user/Veicale_Type_on_Exprees_Delivery/controller/vehicle_controller.dart';
-import 'package:nicholaslim80/features/user/Veicale_Type_on_Exprees_Delivery/widget/additional_service_card.dart';
-import 'package:nicholaslim80/features/user/Veicale_Type_on_Exprees_Delivery/widget/buttom_sumary.dart';
-import 'package:nicholaslim80/features/user/Veicale_Type_on_Exprees_Delivery/widget/vehicale_card.dart';
+
 
 class VehicleTabPage extends StatelessWidget {
   final String vehicleType;
@@ -13,8 +14,8 @@ class VehicleTabPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final VehicleController controller = Get.put(
-      VehicleController(),
+    final VehicleSecationController controller = Get.put(
+      VehicleSecationController(),
       tag: vehicleType,
     );
 

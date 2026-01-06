@@ -1,9 +1,11 @@
+import 'package:ZipBee/core/utils/constants/app_colors.dart';
+import 'package:ZipBee/core/utils/constants/image_path.dart';
+
+import 'package:ZipBee/features/user/schedule_express_delivey/Schedule_recepent/screen/schedule_recepent_screen2.dart';
+import 'package:ZipBee/features/user/schedule_express_delivey/schedule_recepent/widget/schedule_recepent_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
-import 'package:nicholaslim80/core/utils/constants/image_path.dart';
-import 'package:nicholaslim80/features/user/schedule_express_%20delivey/Schedule_recepent/screen/schedule_recepent_screen2.dart';
-import 'package:nicholaslim80/features/user/schedule_express_%20delivey/Schedule_recepent/widget/schedule_recepent_widget.dart';
+
 
 class SchedulRecepmenteScreen extends StatelessWidget {
   final String title;

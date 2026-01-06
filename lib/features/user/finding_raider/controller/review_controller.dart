@@ -1,7 +1,8 @@
+import 'package:ZipBee/core/utils/constants/app_colors.dart';
+import 'package:ZipBee/features/user/finding_raider/model/review_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
-import 'package:nicholaslim80/features/user/finding_raider/model/review_model.dart';
+
 
 class ReviewController extends GetxController {
   // --- State Variables ---

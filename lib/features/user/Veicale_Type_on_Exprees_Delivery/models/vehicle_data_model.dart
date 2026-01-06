@@ -1,4 +1,4 @@
-class Vehicle {
+class VehicleDataModel {
   final String name;
   final String type; // Courier, Car, Van, Truck
   final double price;
@@ -6,13 +6,13 @@ class Vehicle {
   final String? imageAsset; // optional
   final String? subtitle; // optional
 
-  Vehicle({
+  VehicleDataModel({
     required this.name,
     required this.type,
     required this.price,
     required this.details,
     this.imageAsset,
-    this.subtitle,
+    this.subtitle, required String id, required String description, required String dimensions, required String imagePath,
   });
 }
 

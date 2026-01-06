@@ -1,8 +1,9 @@
+import 'package:ZipBee/core/common/styles/global_text_style.dart';
+import 'package:ZipBee/core/utils/constants/app_colors.dart';
+import 'package:ZipBee/features/user/wallet/add_payment_method/screen/add_payment_method_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
-import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
-import 'package:nicholaslim80/features/user/wallet/add_payment_method/screen/add_payment_method_screen.dart';
+
 import '../controller/user_add_funds_controller.dart';
 
 class UserAddFunds extends StatelessWidget {
@@ -10,7 +11,6 @@ class UserAddFunds extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 👉 এখানে controller register + get করা হচ্ছে
     final UserAddFundsController controller = Get.put(UserAddFundsController());
 
     final media = MediaQuery.of(context);

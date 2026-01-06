@@ -1,7 +1,7 @@
-import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
+import 'package:ZipBee/core/utils/constants/icon_path.dart';
 
-// --- Models ---
 class Vehicle {
+  final String id; // ✅ REQUIRED
   final String name;
   final String type; // Courier, Car, Van, Truck
   final double price;
@@ -10,6 +10,7 @@ class Vehicle {
   final String? subtitle;
 
   Vehicle({
+    required this.id,
     required this.name,
     required this.type,
     required this.price,
@@ -20,96 +21,84 @@ class Vehicle {
 }
 
 class AdditionalService {
+  final String id;
   final String name;
   final double price;
   final List<String> applicableTo;
 
   AdditionalService({
+    required this.id,
     required this.name,
     required this.price,
     required this.applicableTo,
   });
 }
 
-// --- Mock Data ---
 class VehicleData {
   static final List<Vehicle> allVehicles = [
     Vehicle(
+      id: 'courier',
       name: 'Courier',
       type: 'Courier',
       subtitle: 'Perfect for small goods',
-      price: 15.0,
+      price: 15,
       details: '40x30x30 cm - Up to 8 kg',
       imageAsset: IconPath.courierIcon,
     ),
     Vehicle(
+      id: 'car',
       name: 'Car',
       type: 'Car',
-      subtitle: 'Car delivery of medium size items',
-      price: 15.0,
+      subtitle: 'Medium size items',
+      price: 15,
       details: '70x50x50 cm - Up to 20 kg',
       imageAsset: IconPath.realCar,
     ),
     Vehicle(
+      id: 'mpv',
       name: 'MPV',
       type: 'Car',
-      subtitle: 'Ideal for small-medium size carton boxes',
-      price: 25.0,
+      subtitle: 'Small-medium cartons',
+      price: 25,
       details: '110x80x50 cm - Up to 50 kg',
       imageAsset: IconPath.realCar,
     ),
     Vehicle(
+      id: 'van_17',
       name: '1.7 m Van',
       type: 'Van',
-      subtitle: 'Truck delivery of large & bulky items',
-      price: 30.0,
-      details: '160x120x100 cm - Up to 400 kg',
+      price: 30,
+      details: 'Up to 400 kg',
       imageAsset: IconPath.van,
     ),
     Vehicle(
-      name: '2.4 m Van',
-      type: 'Van',
-      subtitle: 'Van delivery of medium-large size items',
-      price: 30.0,
-      details: '160x120x100 cm - Up to 400 kg',
-      imageAsset: IconPath.van,
-    ),
-    Vehicle(
+      id: 'truck_10',
       name: '10 ft Truck',
       type: 'Truck',
-      subtitle: 'Delivery of multiple large items',
-      price: 50.0,
-      details: '420x170x190 cm - Up to 2000 kg',
+      price: 50,
+      details: 'Up to 2000 kg',
       imageAsset: IconPath.trunk1,
-    ),
-    Vehicle(
-      name: '14 ft Truck',
-      type: 'Truck',
-      subtitle: 'Delivery of multiple large items',
-      price: 50.0,
-      details: '420x170x190 cm - Up to 2000 kg',
-      imageAsset: IconPath.trunk2,
     ),
   ];
 
   static final List<AdditionalService> allServices = [
     AdditionalService(
+      id: 'controlled_zone',
       name: 'Controlled zone',
-      price: 15.0,
+      price: 15,
       applicableTo: ['Courier', 'Car'],
     ),
     AdditionalService(
+      id: 'food',
       name: 'Get for me (Food)',
-      price: 30.0,
+      price: 30,
       applicableTo: ['Courier'],
     ),
     AdditionalService(
-      name: 'Get for me (Others)',
-      price: 20.0,
-      applicableTo: ['Courier'],
+      id: 'tailboard',
+      name: 'Tailboard',
+      price: 20,
+      applicableTo: ['Truck'],
     ),
-    AdditionalService(name: 'Door-to-door', price: 30.0, applicableTo: ['Van']),
-    AdditionalService(name: 'Tailboard', price: 20.0, applicableTo: ['Truck']),
-    AdditionalService(name: 'Open/Box', price: 20.0, applicableTo: ['Truck']),
   ];
 }

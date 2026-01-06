@@ -1,6 +1,6 @@
+import 'package:ZipBee/core/common/styles/global_text_style.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 
 class ExpressFaqWidget extends StatelessWidget {
   final String title;

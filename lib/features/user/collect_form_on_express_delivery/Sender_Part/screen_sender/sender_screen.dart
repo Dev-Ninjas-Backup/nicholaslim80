@@ -1,11 +1,12 @@
+import 'package:ZipBee/core/common/styles/global_text_style.dart';
+import 'package:ZipBee/core/utils/constants/app_colors.dart';
+import 'package:ZipBee/core/utils/constants/image_path.dart';
+import 'package:ZipBee/features/user/collect_form_on_express_delivery/Recipient_part/recipient_screen.dart';
+import 'package:ZipBee/features/user/collect_form_on_express_delivery/Sender_Part/controller_sender/sender_controller.dart';
+import 'package:ZipBee/features/user/collect_form_on_express_delivery/Sender_Part/widget_sender/text_filed_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
-import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
-import 'package:nicholaslim80/core/utils/constants/image_path.dart';
-import 'package:nicholaslim80/features/user/collect_form_on_express_delivery/Recipient_part/recipient_screen.dart';
-import 'package:nicholaslim80/features/user/collect_form_on_express_delivery/Sender_Part/controller_sender/sender_controller.dart';
-import 'package:nicholaslim80/features/user/collect_form_on_express_delivery/Sender_Part/widget_sender/text_filed_widget.dart';
+
 
 class SenderView extends StatelessWidget {
   //final AddressModel address;

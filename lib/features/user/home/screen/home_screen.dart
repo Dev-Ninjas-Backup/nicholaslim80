@@ -1,13 +1,14 @@
+import 'package:ZipBee/core/common/styles/global_text_style.dart';
+import 'package:ZipBee/core/utils/constants/app_colors.dart';
+import 'package:ZipBee/core/utils/constants/icon_path.dart';
+import 'package:ZipBee/features/user/home/controller/home_controller.dart';
+import 'package:ZipBee/features/user/home/widgets/drawer.dart';
+import 'package:ZipBee/features/user/home/widgets/small_horizontal_slider_widget.dart';
+import 'package:ZipBee/features/user/home/widgets/vehicle_cards_widget.dart';
+import 'package:ZipBee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
-import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
-import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
-import 'package:nicholaslim80/features/user/home/controller/home_controller.dart';
-import 'package:nicholaslim80/features/user/home/widgets/drawer.dart';
-import 'package:nicholaslim80/features/user/home/widgets/small_horizontal_slider_widget.dart';
-import 'package:nicholaslim80/features/user/home/widgets/vehicle_cards_widget.dart';
-import 'package:nicholaslim80/routes/app_routes.dart';
+
 
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});

@@ -1,7 +1,8 @@
+import 'package:ZipBee/core/common/styles/global_text_style.dart';
+import 'package:ZipBee/features/user/refer_and_earn/controller/refer_and_earn_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
-import 'package:nicholaslim80/features/user/refer_and_earn/controller/refer_and_earn_controller.dart';
+
 
 class ReferralCard extends StatelessWidget {
   const ReferralCard({super.key, required this.ctrl});

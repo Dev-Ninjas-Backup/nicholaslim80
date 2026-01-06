@@ -1,4 +1,4 @@
-name: nicholaslim80
+name: ZipBee
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -47,11 +47,17 @@ dependencies:
   country_code_picker: ^3.4.1
   firebase_core: ^4.3.0
   firebase_messaging: ^16.1.0
-  
+  flutter_launcher_icons: ^0.13.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icons/new_app_icon.png"
+  remove_alpha_ios: true
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

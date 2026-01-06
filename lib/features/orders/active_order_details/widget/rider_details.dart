@@ -1,6 +1,6 @@
+import 'package:ZipBee/core/common/styles/global_text_style.dart';
+import 'package:ZipBee/core/utils/constants/image_path.dart';
 import 'package:flutter/material.dart';
-import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
-import 'package:nicholaslim80/core/utils/constants/image_path.dart';
 
 class RiderDetails extends StatelessWidget {
   const RiderDetails({

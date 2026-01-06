@@ -1,22 +1,23 @@
+import 'package:ZipBee/core/common/styles/global_text_style.dart';
+import 'package:ZipBee/core/utils/constants/app_colors.dart';
+import 'package:ZipBee/features/user/Sechedule_veycale_type/screen/veycale_main.dart';
+import 'package:ZipBee/features/user/Veicale_Type_on_Exprees_Delivery/controller/vehicle_secation_controller.dart';
+import 'package:ZipBee/features/user/express_delivery_1/controller/express_controller_1.dart';
+import 'package:ZipBee/features/user/express_delivery_1/order_express_delivery/screen/order_alertdialog_screen.dart';
+import 'package:ZipBee/features/user/express_delivery_1/widget/collect_time_widget.dart';
+import 'package:ZipBee/features/user/express_delivery_1/widget/order_review_widget.dart';
+import 'package:ZipBee/features/user/express_delivery_1/widget/pick_date_time_dialog.dart';
+import 'package:ZipBee/features/user/express_delivery_1/widget/vehicle_type_widget.dart';
+import 'package:ZipBee/features/user/order/controller/order_controller.dart';
+import 'package:ZipBee/features/user/schedule_round_delivery/widget/round4button.dart';
+import 'package:ZipBee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
-import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
-import 'package:nicholaslim80/features/user/Sechedule_veycale_type/screen/veycale_main.dart';
-import 'package:nicholaslim80/features/user/express_delivery_1/controller/express_controller_1.dart';
-import 'package:nicholaslim80/features/user/express_delivery_1/order_express_delivery/controller/order_controller.dart';
-import 'package:nicholaslim80/features/user/express_delivery_1/order_express_delivery/screen/order_alertdialog_screen.dart';
-import 'package:nicholaslim80/features/user/express_delivery_1/widget/collect_time_widget.dart';
-import 'package:nicholaslim80/features/user/express_delivery_1/widget/order_review_widget.dart';
-import 'package:nicholaslim80/features/user/express_delivery_1/widget/pick_date_time_dialog.dart';
-import 'package:nicholaslim80/features/user/express_delivery_1/widget/vehicle_type_widget.dart';
-import 'package:nicholaslim80/features/user/Veicale_Type_on_Exprees_Delivery/controller/vehicle_Controller.dart';
-import 'package:nicholaslim80/features/user/schedule_round_delivery/widget/round4button.dart';
-import 'package:nicholaslim80/routes/app_routes.dart';
+
 
 class ScheduleRoundDelivery extends StatelessWidget {
   final LocationController controller = Get.put(LocationController());
-  final VehicleController vehicleController = Get.find<VehicleController>();
+  final VehicleSecationController vehicleController = Get.find<VehicleSecationController>();
 
   ScheduleRoundDelivery({super.key});
 
@@ -162,7 +163,7 @@ class ScheduleRoundDelivery extends StatelessWidget {
                     final orderController = Get.put(OrderController());
 
                     // Set the total amount from the review
-                    orderController.totalAmount = 123.45;
+ orderController.totalAmount.value = 123.45;
 
                     // Show the confirmation dialog
                     showOrderConfirmationDialog(orderController);

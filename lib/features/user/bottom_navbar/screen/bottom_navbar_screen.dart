@@ -1,12 +1,13 @@
+import 'package:ZipBee/core/common/styles/global_text_style.dart';
+import 'package:ZipBee/core/utils/constants/app_colors.dart';
+import 'package:ZipBee/features/user/bottom_navbar/controller/bottom_navabr_cotroller.dart';
+import 'package:ZipBee/features/user/home/screen/home_screen.dart';
+import 'package:ZipBee/features/user/order/screen/order_screen.dart';
+import 'package:ZipBee/features/user/profile/screen/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
-import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
-import 'package:nicholaslim80/features/user/bottom_navbar/controller/bottom_navabr_cotroller.dart';
-import 'package:nicholaslim80/features/user/home/screen/home_screen.dart';
-import 'package:nicholaslim80/features/user/order/screen/order_screen.dart';
-import 'package:nicholaslim80/features/user/profile/screen/profile_screen.dart';
+
 
 class BottomNavbarScreen extends StatelessWidget {
   BottomNavbarScreen({super.key});

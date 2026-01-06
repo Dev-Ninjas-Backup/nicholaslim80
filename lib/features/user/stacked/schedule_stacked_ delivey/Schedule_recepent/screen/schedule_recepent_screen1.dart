@@ -1,9 +1,10 @@
+import 'package:ZipBee/core/utils/constants/app_colors.dart';
+import 'package:ZipBee/core/utils/constants/image_path.dart';
+import 'package:ZipBee/features/user/schedule_express_delivey/schedule_recepent/widget/schedule_recepent_widget.dart';
+import 'package:ZipBee/features/user/stacked/stacked_screen/stacked_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
-import 'package:nicholaslim80/core/utils/constants/image_path.dart';
-import 'package:nicholaslim80/features/user/schedule_express_%20delivey/Schedule_recepent/widget/schedule_recepent_widget.dart';
-import 'package:nicholaslim80/features/user/stacked/stacked_screen/stacked_screen.dart';
+
 
 class StackedSchedulRecepmenteScreen extends StatelessWidget {
   final String title;

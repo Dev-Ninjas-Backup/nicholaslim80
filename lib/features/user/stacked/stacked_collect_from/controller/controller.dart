@@ -1,6 +1,7 @@
+import 'package:ZipBee/core/utils/constants/icon_path.dart';
+import 'package:ZipBee/features/user/stacked/stacked_collect_from/recipient_part/recipient_screen.dart';
 import 'package:get/get.dart';
-import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
-import 'package:nicholaslim80/features/user/stacked/stacked_collect_from/recipient_part/recipient_screen.dart';
+
 
 import '../model/model.dart';
 import '../sender_part/screen/screen.dart';

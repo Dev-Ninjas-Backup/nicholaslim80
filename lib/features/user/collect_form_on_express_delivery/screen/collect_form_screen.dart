@@ -1,9 +1,10 @@
+import 'package:ZipBee/core/common/styles/global_text_style.dart';
+import 'package:ZipBee/core/utils/constants/app_colors.dart';
+import 'package:ZipBee/features/user/collect_form_on_express_delivery/widget/address_list_widget.dart';
+import 'package:ZipBee/features/user/collect_form_on_express_delivery/widget/build_filter_chips.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
-import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
-import 'package:nicholaslim80/features/user/collect_form_on_express_delivery/widget/address_list_widget.dart';
-import 'package:nicholaslim80/features/user/collect_form_on_express_delivery/widget/build_filter_chips.dart';
+
 import '../controller/collect_form_controller.dart';
 
 class CollectFormScreen extends StatelessWidget {

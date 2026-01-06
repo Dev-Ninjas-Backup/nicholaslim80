@@ -1,8 +1,8 @@
 import 'dart:convert';
+import 'package:ZipBee/core/api_end_point/api_end_point.dart';
+import 'package:ZipBee/core/shared_prefference_service/shared_pref.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import 'package:nicholaslim80/core/api_end_point/api_end_point.dart';
-import 'package:nicholaslim80/core/shared_prefference_service/shared_pref.dart';
 
 class YourRewardsService {
   static Future<Map<String, dynamic>> fetchBasePrice() async {

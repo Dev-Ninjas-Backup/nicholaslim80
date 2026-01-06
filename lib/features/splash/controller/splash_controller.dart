@@ -1,6 +1,7 @@
+import 'package:ZipBee/core/shared_prefference_service/shared_pref.dart';
+import 'package:ZipBee/routes/app_routes.dart';
 import 'package:get/get.dart';
-import 'package:nicholaslim80/core/shared_prefference_service/shared_pref.dart';
-import 'package:nicholaslim80/routes/app_routes.dart';
+
 
 class SplashController extends GetxController {
   @override
