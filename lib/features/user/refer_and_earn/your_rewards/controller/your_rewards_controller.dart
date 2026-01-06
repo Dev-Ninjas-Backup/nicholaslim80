@@ -6,12 +6,11 @@ import 'package:nicholaslim80/features/user/refer_and_earn/widget/redeem_credits
 class YourRewardsController extends GetxController {
   var totalCredits = 1.obs;
   var currencyValue = 0.0.obs;
-  var referralHistory = [
-    {'name': 'Din Tin', 'date': '20 Aug 25'},
-    {'name': 'John Poh', 'date': '20 Aug 25'},
-  ].obs;
+  var referralHistory = <Map<String, String>>[].obs;
 
-  YourRewardsController({int initialCredits = 0}) {
+  final String? referCode;
+
+  YourRewardsController({int initialCredits = 0, this.referCode}) {
     totalCredits.value = initialCredits;
   }
 
@@ -19,6 +18,12 @@ class YourRewardsController extends GetxController {
   void onInit() {
     super.onInit();
     _loadBasePrice();
+    // fetch referral history if we have a referral code
+    if (referCode != null && referCode!.isNotEmpty) {
+      fetchReferralHistory();
+    } else if (Get.arguments != null && Get.arguments['referralCode'] != null) {
+      fetchReferralHistory();
+    }
   }
 
   Future<void> _loadBasePrice() async {
@@ -31,6 +36,58 @@ class YourRewardsController extends GetxController {
         currencyValue.value = (value as num).toDouble();
       }
     }
+  }
+
+  Future<void> fetchReferralHistory() async {
+    final code = referCode ?? (Get.arguments != null ? Get.arguments['referralCode'] as String? : null);
+    if (code == null || code.isEmpty) return;
+
+    final result = await YourRewardsService.fetchReferralHistory(referCode: code);
+    debugPrint('fetchReferralHistory full result: $result');
+
+    if (result['statusCode'] == 200) {
+      final body = result['body'];
+      // The endpoint response structure can vary; try to find list inside body or data
+      List<dynamic>? list;
+      if (body is Map && body.containsKey('data')) {
+        final d = body['data'];
+        if (d is List) list = d;
+        if (d is Map && d.containsKey('rows')) list = d['rows'];
+      }
+      if (list == null && body is List) list = body;
+
+      if (list != null) {
+        referralHistory.clear();
+        for (var item in list) {
+          // item expected to have username and created_at
+          final username = item['username'] ?? item['name'] ?? '';
+          final createdAt = item['created_at'] ?? item['createdAt'] ?? '';
+
+          // format date: keep day, month (short), year
+          String dateStr = '';
+          try {
+            if (createdAt != null && createdAt.toString().isNotEmpty) {
+              final dt = DateTime.parse(createdAt.toString());
+              dateStr = '${dt.day.toString().padLeft(2, '0')} ${_monthShort(dt.month)} ${dt.year}';
+            }
+          } catch (e) {
+            debugPrint('Date parse error: $e');
+            dateStr = createdAt.toString();
+          }
+
+          // debugprint username and date
+          debugPrint('Referral item - username: $username');
+          debugPrint('Referral item - date: $dateStr');
+
+          referralHistory.add({'username': username, 'date': dateStr});
+        }
+      }
+    }
+  }
+
+  String _monthShort(int month) {
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return months[month - 1];
   }
 
   Future<void> redeemCredits() async {

@@ -66,8 +66,11 @@ class ReferAndEarnController extends GetxController {
 
   // ---------------- navigation ----------------
   void openRewards() {
-    // pass current reward points to the YourRewardsScreen
-    Get.to(() => YourRewardsScreen(), arguments: {'totalCredits': rewardPoints.value});
+    // pass current reward points and referral code to the YourRewardsScreen
+    Get.to(() => YourRewardsScreen(), arguments: {
+      'totalCredits': rewardPoints.value,
+      'referralCode': referralCode.value,
+    });
   }
 
   void openHowItWorks() {

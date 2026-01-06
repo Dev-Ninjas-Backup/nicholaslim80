@@ -40,4 +40,21 @@ class YourRewardsService {
       return {'statusCode': 500, 'body': {}};
     }
   }
+
+  static Future<Map<String, dynamic>> fetchReferralHistory({required String referCode}) async {
+    try {
+      final url = Uri.parse('${ApiEndPoint.referLoyalty}?refer_code=$referCode');
+      final response = await http.get(url);
+      debugPrint('REFERRAL HISTORY REQUEST: $url');
+      debugPrint('REFERRAL HISTORY RESPONSE: ${response.body}');
+
+      return {
+        'statusCode': response.statusCode,
+        'body': jsonDecode(response.body),
+      };
+    } catch (e) {
+      debugPrint('YourRewardsService.fetchReferralHistory error: $e');
+      return {'statusCode': 500, 'body': {}};
+    }
+  }
 }

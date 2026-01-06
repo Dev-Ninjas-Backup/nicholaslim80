@@ -10,7 +10,10 @@ class YourRewardsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final YourRewardsController ctrl = Get.put(YourRewardsController(initialCredits: Get.arguments != null && Get.arguments['totalCredits'] != null ? Get.arguments['totalCredits'] as int : 0));
+    final YourRewardsController ctrl = Get.put(YourRewardsController(
+      initialCredits: Get.arguments != null && Get.arguments['totalCredits'] != null ? Get.arguments['totalCredits'] as int : 0,
+      referCode: Get.arguments != null && Get.arguments['referralCode'] != null ? Get.arguments['referralCode'] as String : null,
+    ));
 
     return Scaffold(
       backgroundColor: AppColors.backgroungColor,
@@ -118,7 +121,7 @@ class YourRewardsScreen extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  item['name']!,
+                                  item['username'] ?? '',
                                   style: getTextStyle(
                                     fontWeight: FontWeight.w700,
                                     fontSize: 16,
@@ -126,7 +129,7 @@ class YourRewardsScreen extends StatelessWidget {
                                 ),
                                 SizedBox(height: 4),
                                 Text(
-                                  'You earned on ${item['date']}',
+                                  'You earned on ${item['date'] ?? ''}',
                                   style: getTextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w500,
