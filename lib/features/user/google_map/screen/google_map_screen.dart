@@ -1,5 +1,5 @@
+import 'package:ZipBee/features/user/google_map/widget/google_map_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:nicholaslim80/features/user/google_map/widget/google_map_widget.dart';
 
 class GoogleMapScreen extends StatelessWidget {
   const GoogleMapScreen({super.key});
