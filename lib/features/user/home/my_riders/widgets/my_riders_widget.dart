@@ -4,6 +4,7 @@ import 'package:nicholaslim80/core/common/styles/global_text_style.dart';
 import 'package:nicholaslim80/core/utils/constants/app_colors.dart';
 import 'package:nicholaslim80/core/utils/constants/icon_path.dart';
 import 'package:nicholaslim80/core/utils/constants/image_path.dart';
+import 'package:nicholaslim80/features/user/home/my_riders/widgets/delete_alert_dialog.dart';
 import '../controller/my_riders_controller.dart';
 import 'add_riders_widget.dart';
 
@@ -25,6 +26,7 @@ class RidersListWidget extends StatelessWidget {
           padding: const EdgeInsets.only(bottom: 20),
           itemCount: controller.ridersList.length + 1,
           itemBuilder: (context, index) {
+            // Add Rider Button
             if (index == controller.ridersList.length) {
               return Center(
                 child: GestureDetector(
@@ -60,10 +62,11 @@ class RidersListWidget extends StatelessWidget {
 
             final rider = controller.ridersList[index];
             final name = rider['name'] ?? '';
-            final id = rider['order-id'] ?? '';
+            final orderId = rider['order-id'] ?? '';
+            final raiderId = rider['raiderId'] ?? 0;
 
             return Dismissible(
-              key: Key(id),
+              key: Key(raiderId.toString()),
               direction: DismissDirection.startToEnd,
               background: Container(
                 alignment: Alignment.centerLeft,
@@ -71,12 +74,30 @@ class RidersListWidget extends StatelessWidget {
                 color: AppColors.backgroungColor,
                 child: Image.asset(IconPath.delete, height: 34, width: 34),
               ),
+
+              // ✅ confirmDismiss shows delete alert dialog
+              confirmDismiss: (direction) async {
+                // Show dialog
+                final shouldDelete = await Get.dialog<bool>(
+                  DeleteRiderDialog(
+                    riderName: name,
+                    onConfirm: () async {
+                      // ✅ Call delete API
+                      await controller.deleteRider(raiderId);
+                      // ✅ After successful deletion, close dialog with true
+                      Get.back(result: true);
+                    },
+                  ),
+                  barrierDismissible: false,
+                );
+
+                // If user confirmed delete, Dismissible will remove the item automatically
+                return shouldDelete ?? false;
+              },
+
               onUpdate: (details) =>
                   controller.updateSwipeProgress(name, details.progress),
-              onDismissed: (_) {
-                controller.ridersList.removeAt(index);
-                controller.loveState.remove(name);
-              },
+
               child: Obx(() {
                 final progress = controller.swipeProgress[name] ?? 0.0;
 
@@ -108,7 +129,7 @@ class RidersListWidget extends StatelessWidget {
                       ),
                     ),
                     subtitle: Text(
-                      id,
+                      orderId,
                       style: getTextStyle(
                         fontSize: 14,
                         color: Colors.grey,
@@ -123,9 +144,7 @@ class RidersListWidget extends StatelessWidget {
                               ? Colors.black
                               : Colors.grey,
                         ),
-                        onPressed: () {
-                          controller.toggleLove(name);
-                        },
+                        onPressed: () => controller.toggleLove(name),
                       ),
                     ),
                   ),

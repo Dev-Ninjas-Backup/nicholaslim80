@@ -14,4 +14,5 @@ class ApiEndPoint {
   //raider add
   static const String addRaider = '$baseUrl/my-raider';
   static const String getRaider = '$baseUrl/my-raider/my-raider';
+  static const String deleteRaider = '$baseUrl/my-raider';
 }

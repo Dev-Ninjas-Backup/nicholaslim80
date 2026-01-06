@@ -19,7 +19,7 @@ class MyRidersController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    _loadToken().then((_) => fetchRiders()); // screen load এ fetch
+    _loadToken().then((_) => fetchRiders());
   }
 
   // ================= ADD RIDER =================
@@ -84,11 +84,11 @@ class MyRidersController extends GetxController {
           colorText: Colors.white,
         );
 
-        await fetchRiders(); // POST করার পর GET করে update
+        await fetchRiders(); // GET updated list
       } else {
         Get.snackbar(
           "Failed",
-          response.body?['message'] ?? "Something went wrong",
+          response.body?['message'] ?? "No data returned from server",
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.redAccent,
           colorText: Colors.white,
@@ -96,6 +96,63 @@ class MyRidersController extends GetxController {
       }
     } catch (e) {
       print("[ADD RIDER] Exception: $e");
+      Get.snackbar(
+        "Network/Error",
+        "Server error or network issue occurred",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.redAccent,
+        colorText: Colors.white,
+      );
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  // ================= DELETE RIDER =================
+  Future<void> deleteRider(int raiderId) async {
+    if (token.value.isEmpty) await _loadToken();
+
+    try {
+      isLoading.value = true;
+
+      final response = await _connect.delete(
+        "${ApiEndPoint.deleteRaider}/$raiderId", // DELETE endpoint
+        headers: {
+          "Authorization": "Bearer ${token.value}",
+          "Content-Type": "application/json",
+        },
+      );
+
+      print("[DELETE RIDER] Status Code: ${response.statusCode}");
+      print("[DELETE RIDER] Response Body: ${response.body}");
+
+      if (response.statusCode == 200) {
+        // Remove from local list immediately
+        ridersList.removeWhere(
+          (rider) => rider['raiderId'] == raiderId.toString(),
+        );
+        ridersList.refresh();
+
+        Get.snackbar(
+          "Deleted",
+          "Rider deleted successfully",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+        );
+
+        await fetchRiders(); // GET updated list
+      } else {
+        Get.snackbar(
+          "Failed",
+          response.body?['message'] ?? "Unable to delete rider",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.redAccent,
+          colorText: Colors.white,
+        );
+      }
+    } catch (e) {
+      print("[DELETE RIDER] Exception: $e");
       Get.snackbar(
         "Network/Error",
         "Server error or network issue occurred",
@@ -126,31 +183,21 @@ class MyRidersController extends GetxController {
       print("[FETCH RIDERS] Status Code: ${response.statusCode}");
       print("[FETCH RIDERS] Response Body: ${response.body}");
 
-      // ===== Corrected: response.body['data']['data'] =====
-      if (response.statusCode == 200 &&
-          response.body?['data'] != null &&
-          response.body['data']['data'] != null) {
-        final List data = response.body['data']['data'];
+      if (response.statusCode == 200 && response.body?['data'] != null) {
+        final List data = response.body['data']['data']; // Nested API
         ridersList.clear();
 
-        for (var item in data) {
-          final raider = item['raider'];
-          final riderName = raider['raider_name']?.toString() ?? 'Unknown';
+        for (var rider in data) {
+          final raiderData = rider['raider'] ?? {};
           final riderMap = {
-            'name': riderName,
-            'order-id': item['find_by']?.toString() ?? 'Pending',
+            'name': raiderData['raider_name'] ?? 'Unknown',
+            'order-id': rider['find_by'] ?? 'Pending',
+            'raiderId': raiderData['id'],
             'image': ImagePath.profile1,
           };
           ridersList.add(riderMap);
-          loveState[riderName] = false;
+          loveState[riderMap['name']] = false;
         }
-      } else if (response.statusCode == 401) {
-        Get.snackbar(
-          "Unauthorized",
-          "Token expired or invalid. Please login again.",
-          backgroundColor: Colors.redAccent,
-          colorText: Colors.white,
-        );
       } else {
         Get.snackbar(
           "Failed",
