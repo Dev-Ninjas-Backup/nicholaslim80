@@ -14,6 +14,7 @@ class ReferAndEarnController extends GetxController {
 
   // future use
   RxInt rewardPoints = 0.obs;
+  RxInt rewardMoney = 0.obs;
 
   @override
   void onInit() {
@@ -45,10 +46,13 @@ class ReferAndEarnController extends GetxController {
       }
 
       rewardPoints.value = data['reward_points'] ?? 0;
+      // also fetch rewardMoney from user data
+      rewardMoney.value = data['rewardMoney'] ?? data['reward_money'] ?? 0;
 
       debugPrint('Referral Code: ${referralCode.value}');
       debugPrint('Referral Link: ${referralLink.value}');
       debugPrint('Reward Points: ${rewardPoints.value}');
+      debugPrint('Reward Money: ${rewardMoney.value}');
     } else {
       debugPrint('Failed to fetch referral info');
     }
@@ -67,8 +71,12 @@ class ReferAndEarnController extends GetxController {
 
   // ---------------- navigation ----------------
   void openRewards() {
-    // pass current reward points to the YourRewardsScreen
-    Get.to(() => YourRewardsScreen(), arguments: {'totalCredits': rewardPoints.value});
+    // pass current reward points, reward money and referral code to the YourRewardsScreen
+    Get.to(() => YourRewardsScreen(), arguments: {
+      'totalCredits': rewardPoints.value,
+      'rewardMoney': rewardMoney.value,
+      'referralCode': referralCode.value,
+    });
   }
 
   void openHowItWorks() {

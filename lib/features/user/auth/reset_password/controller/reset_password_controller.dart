@@ -53,8 +53,8 @@ class ResetPasswordController extends GetxController {
 
     final body = {
       "newPassword": password,
-      if (email.isNotEmpty) "email": email.value,
-      if (phone.isNotEmpty) "phone": phone.value,
+      if (email.value.isNotEmpty) "email": email.value,
+      if (phone.value.isNotEmpty) "phone": phone.value,
     };
 
     debugPrint("RESET PASSWORD BODY => $body");

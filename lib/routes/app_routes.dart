@@ -72,6 +72,9 @@ class AppRoutes {
   static String expressSenderOrRecepment = "/expressSenderOrRecepment";
   static String savedPlaceScreen = "/savedPlaceScreen";
 
+  // google map screen (practice file)
+  static String googleMapScreen = "/googleMapScreen";
+
   // static String scheduledelivery = "/scheduledelivery";
 
   static String getKamrulExpressScreen() => kamrulExpressScreen;
@@ -222,5 +225,8 @@ class AppRoutes {
     //   page: () => ScheduleDelivery(),
     //   transition: Transition.fadeIn,
     // ),
+
+    // google map screen (practice file)
+    GetPage(name: googleMapScreen, page: () => GoogleMapScreen()),
   ];
 }

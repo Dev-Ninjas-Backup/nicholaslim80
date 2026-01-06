@@ -5,21 +5,29 @@ import 'package:flutter/foundation.dart';
 
 
 class YourRewardsController extends GetxController {
-  var totalCredits = 1.obs;
+  var totalCredits = 0.obs;
+  var rewardMoney = 0.obs;
   var currencyValue = 0.0.obs;
-  var referralHistory = [
-    {'name': 'Din Tin', 'date': '20 Aug 25'},
-    {'name': 'John Poh', 'date': '20 Aug 25'},
-  ].obs;
+  var referralHistory = <Map<String, String>>[].obs;
 
-  YourRewardsController({int initialCredits = 0}) {
+  final String? referCode;
+
+  YourRewardsController({int initialCredits = 0, this.referCode, int initialRewardMoney = 0}) {
     totalCredits.value = initialCredits;
+    rewardMoney.value = initialRewardMoney;
+    debugPrint('initialRewardMoney: ${rewardMoney.value}');
   }
 
   @override
   void onInit() {
     super.onInit();
     _loadBasePrice();
+    // fetch referral history if we have a referral code
+    if (referCode != null && referCode!.isNotEmpty) {
+      fetchReferralHistory();
+    } else if (Get.arguments != null && Get.arguments['referralCode'] != null) {
+      fetchReferralHistory();
+    }
   }
 
   Future<void> _loadBasePrice() async {
@@ -30,8 +38,77 @@ class YourRewardsController extends GetxController {
       final value = body is Map && body.containsKey('data') ? body['data'] : null;
       if (value != null) {
         currencyValue.value = (value as num).toDouble();
+        debugPrint('currencyValue: ${currencyValue.value}');
+      } else {
+        debugPrint('fetchBasePrice: no data field in body: $body');
       }
+    } else {
+      debugPrint('fetchBasePrice failed: ${result['statusCode']} ${result['body']}');
     }
+  }
+
+  Future<void> fetchReferralHistory() async {
+    final code = referCode ?? (Get.arguments != null ? Get.arguments['referralCode'] as String? : null);
+    if (code == null || code.isEmpty) return;
+
+    final result = await YourRewardsService.fetchReferralHistory(referCode: code);
+    debugPrint('fetchReferralHistory full result: $result');
+
+    if (result['statusCode'] != 200) {
+      debugPrint('fetchReferralHistory failed: ${result['statusCode']} ${result['body']}');
+      return;
+    }
+
+    final body = result['body'];
+      // The endpoint response structure can vary; try to find list inside body or data
+      List<dynamic>? list;
+      if (body is Map && body.containsKey('data')) {
+        final d = body['data'];
+        if (d is List) list = d;
+        if (d is Map && d.containsKey('rows')) list = d['rows'];
+      }
+      if (list == null && body is List) list = body;
+
+      if (list != null) {
+        referralHistory.clear();
+        for (var item in list) {
+          // item expected to have username and created_at; user object may be nested
+          String username = '';
+          if (item is Map) {
+            if (item['user'] is Map) {
+              username = item['user']['username'] ?? item['user']['name'] ?? '';
+            }
+            username = username.isNotEmpty ? username : (item['username'] ?? item['name'] ?? '');
+          }
+
+          final createdAt = (item is Map)
+              ? (item['created_at'] ?? item['createdAt'] ?? item['user']?['created_at'] ?? '')
+              : '';
+
+          // format date: keep day, month (short), year
+          String dateStr = '';
+          try {
+            if (createdAt != null && createdAt.toString().isNotEmpty) {
+              final dt = DateTime.parse(createdAt.toString());
+              dateStr = '${dt.day.toString().padLeft(2, '0')} ${_monthShort(dt.month)} ${dt.year}';
+            }
+          } catch (e) {
+            debugPrint('Date parse error: $e');
+            dateStr = createdAt.toString();
+          }
+
+          // debugprint username and date
+          debugPrint('Referral item - username: $username');
+          debugPrint('Referral item - date: $dateStr');
+
+          referralHistory.add({'username': username, 'date': dateStr});
+        }
+      }
+  }
+
+  String _monthShort(int month) {
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return months[month - 1];
   }
 
   Future<void> redeemCredits() async {
@@ -44,23 +121,28 @@ class YourRewardsController extends GetxController {
     final result = await YourRewardsService.redeemCoin(coin: coin);
     debugPrint('redeemCredits result: $result');
 
-    final statusCode = result['statusCode'] as int;
     final body = result['body'];
 
     String message = 'Something went wrong';
+    bool isSuccess = false;
 
     if (body is Map) {
       if (body.containsKey('message')) {
         message = body['message'].toString();
-      } else if (body.containsKey('error') && body['error'] is Map && body['error'].containsKey('message')) {
+      }
+      if (body.containsKey('error') && body['error'] is Map && body['error']['message'] != null) {
         message = body['error']['message'].toString();
+      }
+      if (body.containsKey('success')) {
+        isSuccess = body['success'] == true;
       }
     }
 
-    Get.snackbar(statusCode == 200 ? 'Success' : 'Error', message);
+    debugPrint('redeemCredits full response: $result');
 
-    if (statusCode == 200) {
-      // Navigate to success screen
+    Get.snackbar(isSuccess ? 'Success' : 'Error', message);
+
+    if (isSuccess) {
       Get.to(() => RedeemSuccessScreen());
     }
   }
