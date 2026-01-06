@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:nicholaslim80/core/shared_prefference_service/shared_pref.dart';
 import 'package:nicholaslim80/features/user/auth/login/auth_service/auth_service.dart';
@@ -52,7 +53,9 @@ class LoginSignupController extends GetxController {
         // 🔥 reset navigation stack
         Get.offAllNamed(AppRoutes.bottomNavbarScreen);
       } else {
-        Get.snackbar("Login Failed", result['body']['message'] ?? 'Error');
+        // Get.snackbar("Login Failed", result['body']['message'] ?? 'Error');
+        EasyLoading.showError(result['body']['message'] ?? 'Login Failed');
+        EasyLoading.dismiss();
       }
     } finally {
       isLoading.value = false;
@@ -94,7 +97,8 @@ class LoginSignupController extends GetxController {
       if (result['statusCode'] == 201) {
         Get.toNamed(AppRoutes.verificationScreen, arguments: {"email": email});
       } else {
-        Get.snackbar("Signup Failed", result['body']['message'] ?? 'Error');
+          // Get.snackbar("Signup Failed", result['body']['message'] ?? 'Error');
+          EasyLoading.showError(result['body']['message'] ?? 'Signup Failed');
       }
     } finally {
       isLoading.value = false;
