@@ -3,6 +3,7 @@ import 'package:ZipBee/features/user/refer_and_earn/how_it_work/screen/how_it_wo
 import 'package:ZipBee/features/user/refer_and_earn/service/refer_and_earn_service.dart';
 import 'package:ZipBee/features/user/refer_and_earn/your_rewards/screen/your_rewards_screen.dart';
 import 'package:get/get.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 
@@ -61,12 +62,12 @@ class ReferAndEarnController extends GetxController {
   // ---------------- copy actions ----------------
   Future<void> copyCode() async {
     await Clipboard.setData(ClipboardData(text: referralCode.value));
-    Get.snackbar('Copied', 'Referral code copied');
+    EasyLoading.showToast('Referral code copied');
   }
 
   Future<void> copyLink() async {
     await Clipboard.setData(ClipboardData(text: referralLink.value));
-    Get.snackbar('Copied', 'Referral link copied');
+    EasyLoading.showToast('Referral link copied');
   }
 
   // ---------------- navigation ----------------
