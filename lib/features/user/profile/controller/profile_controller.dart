@@ -1,27 +1,26 @@
 import 'dart:convert';
+
 import 'package:ZipBee/core/api_end_point/api_end_point.dart';
 import 'package:ZipBee/core/shared_prefference_service/shared_pref.dart';
-import 'package:ZipBee/features/user/profile/model/profile_model.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
-
 class ProfileController extends GetxController {
+  // ================= OBSERVABLES =================
   var userProfile = UserModel(username: '', email: '', phone: '').obs;
   var isLoading = false.obs;
   var errorMessage = ''.obs;
 
   var profileItem = <ProfileModel>[].obs;
+  var editingIndex = (-1).obs; // Which field is being edited
 
-  // Track which field is being edited
-  var editingIndex = (-1).obs;
-
-  // Text controllers for editing
+  // ================= TEXT CONTROLLERS =================
   final usernameController = TextEditingController();
   final emailController = TextEditingController();
   final phoneController = TextEditingController();
 
+  // ================= SHARED PREF HELPERS =================
   Future<String?> getStoredAccessToken() async {
     return await SharedPreferencesHelper.getAccessToken();
   }
@@ -30,11 +29,12 @@ class ProfileController extends GetxController {
     return await SharedPreferencesHelper.getUserId();
   }
 
+  // ================= FETCH USER PROFILE =================
   Future<void> fetchUserProfile() async {
     final token = await getStoredAccessToken();
 
     if (token == null) {
-      debugPrint('No access token found');
+      errorMessage('No access token found');
       return;
     }
 
@@ -49,31 +49,30 @@ class ProfileController extends GetxController {
 
     try {
       final response = await http.get(Uri.parse(url), headers: headers);
-      debugPrint('Response status: ${response.statusCode}');
-      debugPrint('Response body: ${response.body}');
+      debugPrint('Fetch Response: ${response.statusCode} | ${response.body}');
 
       if (response.statusCode == 200) {
-        var parsedResponse = json.decode(response.body);
+        final parsedResponse = json.decode(response.body);
         userProfile.value = UserModel.fromJson(parsedResponse);
 
-        // Update text controllers
+        // Set text controllers
         usernameController.text = userProfile.value.username;
         emailController.text = userProfile.value.email;
         phoneController.text = userProfile.value.phone;
 
-        // Update profileItem
+        // Update list for UI
         updateProfileItems();
       } else {
-        errorMessage('Failed to load user profile: ${response.statusCode}');
+        errorMessage('Failed to load profile: ${response.statusCode}');
       }
     } catch (error) {
-      errorMessage('Error: $error');
-      debugPrint('Fetch error: $error');
+      errorMessage('Error fetching profile: $error');
     } finally {
       isLoading(false);
     }
   }
 
+  // ================= UPDATE PROFILE LIST =================
   void updateProfileItems() {
     profileItem.clear();
     profileItem.add(
@@ -87,87 +86,72 @@ class ProfileController extends GetxController {
     );
   }
 
+  // ================= EDITING =================
   void startEditing(int index) {
     editingIndex.value = index;
-    debugPrint('Started editing index: $index');
   }
 
   void cancelEditing() {
-    // Reset controllers to original values
     usernameController.text = userProfile.value.username;
     emailController.text = userProfile.value.email;
     phoneController.text = userProfile.value.phone;
     editingIndex.value = -1;
-    debugPrint('Cancelled editing');
   }
 
-  Future<void> saveProfile(int index) async {
+  // ================= UPDATE PROFILE API =================
+  Future<void> updateUserProfile({
+    String? username,
+    String? email,
+    String? phone,
+  }) async {
     final token = await getStoredAccessToken();
     final userId = await getStoredUserID();
 
-    debugPrint('Token: $token');
-    debugPrint('User ID: $userId');
-
     if (token == null || userId == null) {
-      debugPrint('No access token or user ID found');
+      errorMessage('No access token or user ID found');
       return;
     }
 
     isLoading(true);
     errorMessage('');
 
-    final url = ApiEndPoint.updateProfile.replaceAll('{id}', userId);
-    debugPrint('Update URL: $url');
-
+    final url = ApiEndPoint.userProfile.replaceAll('{id}', userId);
     final headers = {
       'Authorization': 'Bearer $token',
       'Content-Type': 'application/json',
     };
 
-    // Prepare updated data
-    final bodyData = {
-      'username': usernameController.text,
-      'email': emailController.text,
-      'phone': phoneController.text,
-    };
-
-    final body = json.encode(bodyData);
-    debugPrint('Update body: $body');
+    final bodyData = <String, dynamic>{};
+    if (username != null) bodyData['username'] = username;
+    if (email != null) bodyData['email'] = email;
+    if (phone != null) bodyData['phone'] = phone;
 
     try {
       final response = await http.patch(
         Uri.parse(url),
         headers: headers,
-        body: body,
+        body: json.encode(bodyData),
       );
-      debugPrint('Update Response status: ${response.statusCode}');
-      debugPrint('Update Response body: ${response.body}');
+      debugPrint('Update Response: ${response.statusCode} | ${response.body}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        var parsedResponse = json.decode(response.body);
-
-        // Check if response has the same structure as fromJson expects
+        final parsedResponse = json.decode(response.body);
         if (parsedResponse['data'] != null) {
           userProfile.value = UserModel.fromJson(parsedResponse);
         } else {
-          // If response structure is different, manually update
           userProfile.value = UserModel(
-            username: usernameController.text,
-            email: emailController.text,
-            phone: phoneController.text,
+            username: username ?? userProfile.value.username,
+            email: email ?? userProfile.value.email,
+            phone: phone ?? userProfile.value.phone,
           );
         }
-
-        // Update profileItem
         updateProfileItems();
-
-        // Exit editing mode
         editingIndex.value = -1;
       } else {
-        debugPrint('Failed to update profile: ${response.statusCode}');
+        errorMessage('Failed to update profile: ${response.statusCode}');
       }
     } catch (error) {
-      debugPrint('Update error: $error');
+      errorMessage('Update error: $error');
     } finally {
       isLoading(false);
     }
@@ -198,5 +182,32 @@ class ProfileController extends GetxController {
     emailController.dispose();
     phoneController.dispose();
     super.onClose();
+  }
+}
+
+// ================= MODELS =================
+class ProfileModel {
+  final String title;
+  final String subtitle;
+  ProfileModel({required this.title, required this.subtitle});
+}
+
+class UserModel {
+  final String username;
+  final String email;
+  final String phone;
+
+  UserModel({required this.username, required this.email, required this.phone});
+
+  factory UserModel.fromJson(Map<String, dynamic> json) {
+    return UserModel(
+      username: json['data']['username'],
+      email: json['data']['email'],
+      phone: json['data']['phone'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {'username': username, 'email': email, 'phone': phone};
   }
 }

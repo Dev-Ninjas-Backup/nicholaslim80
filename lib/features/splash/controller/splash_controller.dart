@@ -2,7 +2,6 @@ import 'package:ZipBee/core/shared_prefference_service/shared_pref.dart';
 import 'package:ZipBee/routes/app_routes.dart';
 import 'package:get/get.dart';
 
-
 class SplashController extends GetxController {
   @override
   void onInit() {
@@ -18,7 +17,7 @@ class SplashController extends GetxController {
     if (token == null || token.isEmpty) {
       Get.offAllNamed(AppRoutes.getOnboardingScreen());
     } else {
-      Get.offAllNamed(AppRoutes.getLoginScreen());
+      Get.offAllNamed(AppRoutes.getbottomNavbarScreen());
     }
   }
 }
