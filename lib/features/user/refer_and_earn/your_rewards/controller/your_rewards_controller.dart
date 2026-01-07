@@ -1,6 +1,7 @@
 import 'package:ZipBee/features/user/refer_and_earn/widget/redeem_credits_suscess_widget.dart';
 import 'package:ZipBee/features/user/refer_and_earn/your_rewards/service/your_rewards_service.dart';
 import 'package:get/get.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter/foundation.dart';
 
 
@@ -114,7 +115,7 @@ class YourRewardsController extends GetxController {
   Future<void> redeemCredits() async {
     final coin = totalCredits.value;
     if (coin <= 0) {
-      Get.snackbar('Error', 'No credits to redeem');
+      EasyLoading.showError('No credits to redeem');
       return;
     }
 
@@ -140,7 +141,11 @@ class YourRewardsController extends GetxController {
 
     debugPrint('redeemCredits full response: $result');
 
-    Get.snackbar(isSuccess ? 'Success' : 'Error', message);
+    if (isSuccess) {
+      EasyLoading.showSuccess(message);
+    } else {
+      EasyLoading.showError(message);
+    }
 
     if (isSuccess) {
       Get.to(() => RedeemSuccessScreen());

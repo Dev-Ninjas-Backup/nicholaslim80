@@ -1,10 +1,8 @@
 import 'package:ZipBee/core/common/styles/global_text_style.dart';
-import 'package:ZipBee/core/common/widgets/custom_app_bar_user.dart';
 import 'package:ZipBee/core/utils/constants/app_colors.dart';
 import 'package:ZipBee/features/user/order/controller/order_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 
 class OrderScreen extends StatelessWidget {
   const OrderScreen({super.key});
@@ -18,9 +16,10 @@ class OrderScreen extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            CustomAppBarUser(title: "Orders", style: getTextStyle()),
+            Text("Orders", style: getTextStyle()),
 
-            /// Tabs
+            const SizedBox(height: 12),
+
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Obx(

@@ -4,6 +4,7 @@ import 'package:ZipBee/core/api_end_point/api_end_point.dart';
 import 'package:ZipBee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:http/http.dart' as http;
 
 
@@ -70,12 +71,7 @@ class ResetPasswordController extends GetxController {
       debugPrint("RESET PASSWORD RESPONSE => $responseBody");
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        Get.snackbar(
-          'Success',
-          responseBody['message'] ?? 'Password reset successfully',
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
-        );
+        EasyLoading.showSuccess(responseBody['message'] ?? 'Password reset successfully');
 
         Get.offAllNamed(AppRoutes.loginScreen);
       } else {
@@ -90,12 +86,7 @@ class ResetPasswordController extends GetxController {
   }
 
   void _error(String msg) {
-    Get.snackbar(
-      'Error',
-      msg,
-      backgroundColor: Colors.redAccent,
-      colorText: Colors.white,
-    );
+    EasyLoading.showError(msg);
   }
 
   @override

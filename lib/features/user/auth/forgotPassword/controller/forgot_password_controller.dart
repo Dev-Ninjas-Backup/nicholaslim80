@@ -4,6 +4,7 @@ import 'package:ZipBee/core/api_end_point/api_end_point.dart';
 import 'package:ZipBee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:http/http.dart' as http;
 
 
@@ -52,23 +53,11 @@ class ForgotPasswordController extends GetxController {
           },
         );
       } else {
-        Get.snackbar(
-          "Error",
-          responseBody['message'] ?? "Something went wrong",
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: Colors.redAccent,
-          colorText: Colors.white,
-        );
+        EasyLoading.showError(responseBody['message'] ?? "Something went wrong");
       }
     } catch (e) {
       debugPrint("SEND OTP ERROR => $e");
-      Get.snackbar(
-        "Error",
-        "Failed to send OTP",
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.redAccent,
-        colorText: Colors.white,
-      );
+      EasyLoading.showError("Failed to send OTP");
     }
   }
 

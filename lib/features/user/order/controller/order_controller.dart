@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'package:ZipBee/core/api_end_point/api_end_point.dart';
 import 'package:ZipBee/core/shared_prefference_service/shared_pref.dart';
 import 'package:ZipBee/features/user/order/model/order_model.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-
 
 class OrderController extends GetxController {
   final RxInt selectOrderListIndex = 0.obs;
@@ -41,9 +41,9 @@ class OrderController extends GetxController {
     try {
       final token = await SharedPreferencesHelper.getAccessToken();
       if (token == null || token.isEmpty) {
-        Get.snackbar("Error", "Authentication token missing");
         return;
       }
+      debugPrint('$token');
 
       final status = orderTabs[selectOrderListIndex.value].toLowerCase();
 
@@ -53,6 +53,7 @@ class OrderController extends GetxController {
         uri,
         headers: {"Authorization": "Bearer $token", "accept": "*/*"},
       );
+      debugPrint("Order Response: ${response.body}");
 
       if (response.statusCode == 200) {
         final decoded = json.decode(response.body);

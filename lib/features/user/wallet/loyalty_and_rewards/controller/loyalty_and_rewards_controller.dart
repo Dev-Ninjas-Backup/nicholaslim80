@@ -1,4 +1,5 @@
 import 'package:ZipBee/features/user/wallet/loyalty_and_rewards/widget/redeem_bottom_shit.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 
 class LoyaltyAndRewardsController extends GetxController {
@@ -16,7 +17,7 @@ class LoyaltyAndRewardsController extends GetxController {
       RedeemBottomSheet(
         onRedeem: () {
           Get.back();
-          Get.snackbar("Redeem", "Redeem clicked");
+          EasyLoading.showSuccess('Redeem clicked');
         },
         onCancel: () {
           Get.back();
@@ -27,10 +28,10 @@ class LoyaltyAndRewardsController extends GetxController {
   }
 
   void onInfoTap() {
-    Get.snackbar("Info", "Loyalty & Rewards Information");
+    EasyLoading.showInfo('Loyalty & Rewards Information');
   }
 
   void onConvertPoints() {
-    Get.snackbar("Convert", "Points convert action triggered");
+    EasyLoading.showInfo('Points convert action triggered');
   }
 }

@@ -3,6 +3,7 @@ import 'package:ZipBee/core/common/widgets/custom_button.dart';
 import 'package:ZipBee/core/utils/constants/app_colors.dart';
 import 'package:ZipBee/features/user/saved_places/controller/saved_places_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
@@ -81,12 +82,12 @@ class NamePlaceScreen extends StatelessWidget {
                 final name = nameController.text.trim();
 
                 if (name.isEmpty) {
-                  Get.snackbar('Error', 'Enter place name');
+                  EasyLoading.showError('Enter place name');
                   return;
                 }
 
                 if (controller.selectedAddress.value.isEmpty) {
-                  Get.snackbar('Error', 'Address not selected');
+                  EasyLoading.showError('Address not selected');
                   return;
                 }
 
