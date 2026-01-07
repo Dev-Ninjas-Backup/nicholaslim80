@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 
 class Button extends StatelessWidget {
@@ -27,11 +28,7 @@ class Button extends StatelessWidget {
         onPressed:
             onPressed ??
             () {
-              Get.snackbar(
-                'Share',
-                'Ride information shared',
-                snackPosition: SnackPosition.BOTTOM,
-              );
+              EasyLoading.showSuccess('Ride information shared');
             },
         style: ElevatedButton.styleFrom(
           backgroundColor: backgroundColor,

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:ZipBee/core/api_end_point/api_end_point.dart';
 import 'package:ZipBee/features/user/notification/model/notification1_model.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
@@ -41,7 +42,7 @@ class UserNotificationController extends GetxController {
 
       final token = await SharedPreferencesHelper.getAccessToken();
       if (token == null || token.isEmpty) {
-        Get.snackbar('Auth Error', 'Token not found');
+        EasyLoading.showError('Token not found');
         return;
       }
 
@@ -72,7 +73,7 @@ class UserNotificationController extends GetxController {
       }
     } catch (e) {
       if (loadMore) page.value--; // revert page increment on exception
-      Get.snackbar('Error', e.toString());
+      EasyLoading.showError(e.toString());
     } finally {
       isLoading.value = false;
     }

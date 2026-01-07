@@ -20,28 +20,23 @@ class ProfileController extends GetxController {
   final emailController = TextEditingController();
   final phoneController = TextEditingController();
 
-  // ================= SHARED PREF HELPERS =================
-  Future<String?> getStoredAccessToken() async {
-    return await SharedPreferencesHelper.getAccessToken();
-  }
-
-  Future<String?> getStoredUserID() async {
-    return await SharedPreferencesHelper.getUserId();
-  }
+  int? userId; // store fetched userId
 
   // ================= FETCH USER PROFILE =================
   Future<void> fetchUserProfile() async {
-    final token = await getStoredAccessToken();
+    debugPrint('➡️ Fetching user profile...');
+    final token = await SharedPreferencesHelper.getAccessToken();
 
-    if (token == null) {
+    if (token == null || token.isEmpty) {
       errorMessage('No access token found');
+      debugPrint('❌ No access token found');
       return;
     }
 
     isLoading(true);
     errorMessage('');
 
-    final url = ApiEndPoint.profile;
+    final url = ApiEndPoint.profile; // /users/me
     final headers = {
       'Authorization': 'Bearer $token',
       'Content-Type': 'application/json',
@@ -49,26 +44,36 @@ class ProfileController extends GetxController {
 
     try {
       final response = await http.get(Uri.parse(url), headers: headers);
-      debugPrint('Fetch Response: ${response.statusCode} | ${response.body}');
+      debugPrint('📥 Response: ${response.statusCode} | ${response.body}');
 
       if (response.statusCode == 200) {
         final parsedResponse = json.decode(response.body);
-        userProfile.value = UserModel.fromJson(parsedResponse);
+        final data = parsedResponse['data'];
+        if (data != null) {
+          userProfile.value = UserModel.fromJsonData(data);
+          userId = data['id']; // store ID in memory
+          debugPrint('✅ User profile loaded: ${userProfile.value.toJson()}');
 
-        // Set text controllers
-        usernameController.text = userProfile.value.username;
-        emailController.text = userProfile.value.email;
-        phoneController.text = userProfile.value.phone;
+          usernameController.text = userProfile.value.username;
+          emailController.text = userProfile.value.email;
+          phoneController.text = userProfile.value.phone;
 
-        // Update list for UI
-        updateProfileItems();
+          updateProfileItems();
+        }
+      } else if (response.statusCode == 401) {
+        errorMessage('Session expired. Please login again.');
+        debugPrint('⚠️ Token expired');
+        Get.offAllNamed('/login');
       } else {
         errorMessage('Failed to load profile: ${response.statusCode}');
+        debugPrint('❌ Failed to load profile: ${response.statusCode}');
       }
     } catch (error) {
       errorMessage('Error fetching profile: $error');
+      debugPrint('❌ Exception fetching profile: $error');
     } finally {
       isLoading(false);
+      debugPrint('⬅️ Finished fetching profile');
     }
   }
 
@@ -84,11 +89,15 @@ class ProfileController extends GetxController {
     profileItem.add(
       ProfileModel(title: 'Phone', subtitle: userProfile.value.phone),
     );
+    debugPrint(
+      '📄 Updated profile items: ${profileItem.map((e) => e.toJson())}',
+    );
   }
 
   // ================= EDITING =================
   void startEditing(int index) {
     editingIndex.value = index;
+    debugPrint('✏️ Start editing index: $index');
   }
 
   void cancelEditing() {
@@ -96,6 +105,7 @@ class ProfileController extends GetxController {
     emailController.text = userProfile.value.email;
     phoneController.text = userProfile.value.phone;
     editingIndex.value = -1;
+    debugPrint('❌ Editing canceled');
   }
 
   // ================= UPDATE PROFILE API =================
@@ -104,18 +114,22 @@ class ProfileController extends GetxController {
     String? email,
     String? phone,
   }) async {
-    final token = await getStoredAccessToken();
-    final userId = await getStoredUserID();
+    if (userId == null) {
+      errorMessage('User ID not found. Cannot update.');
+      return;
+    }
 
-    if (token == null || userId == null) {
-      errorMessage('No access token or user ID found');
+    debugPrint('➡️ Updating user profile...');
+    final token = await SharedPreferencesHelper.getAccessToken();
+    if (token == null || token.isEmpty) {
+      errorMessage('No access token found');
       return;
     }
 
     isLoading(true);
     errorMessage('');
 
-    final url = ApiEndPoint.userProfile.replaceAll('{id}', userId);
+    final url = ApiEndPoint.userProfile.replaceAll('{id}', userId.toString());
     final headers = {
       'Authorization': 'Bearer $token',
       'Content-Type': 'application/json',
@@ -126,18 +140,22 @@ class ProfileController extends GetxController {
     if (email != null) bodyData['email'] = email;
     if (phone != null) bodyData['phone'] = phone;
 
+    debugPrint('📡 PATCH $url');
+    debugPrint('📝 Body: $bodyData');
+
     try {
       final response = await http.patch(
         Uri.parse(url),
         headers: headers,
         body: json.encode(bodyData),
       );
-      debugPrint('Update Response: ${response.statusCode} | ${response.body}');
+      debugPrint('📥 Response: ${response.statusCode} | ${response.body}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final parsedResponse = json.decode(response.body);
-        if (parsedResponse['data'] != null) {
-          userProfile.value = UserModel.fromJson(parsedResponse);
+        final data = parsedResponse['data'];
+        if (data != null) {
+          userProfile.value = UserModel.fromJsonData(data);
         } else {
           userProfile.value = UserModel(
             username: username ?? userProfile.value.username,
@@ -147,11 +165,16 @@ class ProfileController extends GetxController {
         }
         updateProfileItems();
         editingIndex.value = -1;
+        debugPrint('✅ Profile updated successfully');
+      } else if (response.statusCode == 401) {
+        errorMessage('Session expired. Please login again.');
+        Get.offAllNamed('/login');
       } else {
         errorMessage('Failed to update profile: ${response.statusCode}');
       }
     } catch (error) {
       errorMessage('Update error: $error');
+      debugPrint('❌ Exception updating profile: $error');
     } finally {
       isLoading(false);
     }
@@ -172,8 +195,9 @@ class ProfileController extends GetxController {
 
   @override
   void onInit() {
-    fetchUserProfile();
     super.onInit();
+    debugPrint('📌 ProfileController initialized');
+    fetchUserProfile();
   }
 
   @override
@@ -190,6 +214,8 @@ class ProfileModel {
   final String title;
   final String subtitle;
   ProfileModel({required this.title, required this.subtitle});
+
+  Map<String, dynamic> toJson() => {'title': title, 'subtitle': subtitle};
 }
 
 class UserModel {
@@ -199,15 +225,17 @@ class UserModel {
 
   UserModel({required this.username, required this.email, required this.phone});
 
-  factory UserModel.fromJson(Map<String, dynamic> json) {
+  factory UserModel.fromJsonData(Map<String, dynamic> data) {
     return UserModel(
-      username: json['data']['username'],
-      email: json['data']['email'],
-      phone: json['data']['phone'],
+      username: data['username'] ?? '',
+      email: data['email'] ?? '',
+      phone: data['phone'] ?? '',
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {'username': username, 'email': email, 'phone': phone};
-  }
+  Map<String, dynamic> toJson() => {
+    'username': username,
+    'email': email,
+    'phone': phone,
+  };
 }

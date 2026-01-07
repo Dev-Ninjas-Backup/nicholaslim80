@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 
 class UserAddFundsController extends GetxController {
@@ -33,11 +34,7 @@ class UserAddFundsController extends GetxController {
   void onAddFunds() {
     if (!isAddButtonEnabled) return;
 
-    Get.snackbar(
-      'Success',
-      'S\$${selectedAmount.value.toStringAsFixed(2)} added to your wallet.',
-      snackPosition: SnackPosition.BOTTOM,
-    );
+    EasyLoading.showSuccess('S\$${selectedAmount.value.toStringAsFixed(2)} added to your wallet.');
   }
 
   @override

@@ -1,3 +1,4 @@
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import '../model/place_model.dart';
 import '../service/saved_places_service.dart';
@@ -21,11 +22,7 @@ class SavedPlaceController extends GetxController {
       final data = await service.getPlaces();
       savedPlaces.assignAll(data);
     } catch (e) {
-      Get.snackbar(
-        'Load Failed',
-        'Could not load saved places',
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      EasyLoading.showError('Could not load saved places');
     } finally {
       isLoading.value = false;
     }
@@ -37,11 +34,7 @@ class SavedPlaceController extends GetxController {
 
   Future<bool> savePlace(String name) async {
     if (selectedAddress.value.isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Address not selected',
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      EasyLoading.showError('Address not selected');
       return false;
     }
 
@@ -50,11 +43,7 @@ class SavedPlaceController extends GetxController {
 
       await service.addPlace(name: name, address: selectedAddress.value);
 
-      Get.snackbar(
-        'Success',
-        'Place saved successfully',
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      EasyLoading.showSuccess('Place saved successfully');
 
       selectedAddress.value = '';
 
@@ -62,11 +51,7 @@ class SavedPlaceController extends GetxController {
 
       return true;
     } catch (e) {
-      Get.snackbar(
-        'Save Failed',
-        'Unable to save place',
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      EasyLoading.showError('Unable to save place');
       return false;
     } finally {
       isLoading.value = false;
@@ -78,17 +63,9 @@ class SavedPlaceController extends GetxController {
       await service.deletePlace(id);
       savedPlaces.removeWhere((e) => e.id == id);
 
-      Get.snackbar(
-        'Deleted',
-        'Place removed',
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      EasyLoading.showSuccess('Place removed');
     } catch (e) {
-      Get.snackbar(
-        'Delete Failed',
-        'Unable to delete place',
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      EasyLoading.showError('Unable to delete place');
     }
   }
 }
