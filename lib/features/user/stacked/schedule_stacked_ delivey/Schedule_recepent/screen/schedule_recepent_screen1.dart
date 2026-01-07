@@ -1,15 +1,15 @@
 import 'package:ZipBee/core/utils/constants/app_colors.dart';
 import 'package:ZipBee/core/utils/constants/image_path.dart';
-import 'package:ZipBee/features/user/schedule_express_delivey/schedule_recepent/widget/schedule_recepent_widget.dart';
+import 'package:ZipBee/features/user/stacked/schedule_stacked_%20delivey/Schedule_recepent/widget/schedule_recepent_widget_st.dart';
 import 'package:ZipBee/features/user/stacked/stacked_screen/stacked_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 
 class StackedSchedulRecepmenteScreen extends StatelessWidget {
-  final String title;
+  // final String title;
 
-  const StackedSchedulRecepmenteScreen({super.key, required this.title});
+  const StackedSchedulRecepmenteScreen({super.key /*, required this.title*/});
 
   @override
   Widget build(BuildContext context) {
@@ -42,8 +42,8 @@ class StackedSchedulRecepmenteScreen extends StatelessWidget {
                   color: Colors.white,
                   borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
                 ),
-                child: ScheduleRecipientWidget(
-                  title: 'Recipient 1',
+                child: ScheduleRecipientWidgetST(
+                  title: 'Recipient',
                   onPressed: () {
                     // Navigate to Screen 2
                     Get.to(

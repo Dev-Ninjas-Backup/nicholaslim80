@@ -125,7 +125,8 @@ class StackedScreen extends StatelessWidget {
                   ),
                   IconButton(
                     onPressed: () {
-                      Get.to(() => StackedVehicleSelectionPage());
+                      // Pass placeholder initial distance = 2.0 km. Replace with routing-based distance later.
+                      Get.to(() => StackedVehicleSelectionPage(), arguments: {'initialDistanceKm': 2.0});
                     },
                     icon: Icon(Icons.info_outline),
                     color: Colors.black87,

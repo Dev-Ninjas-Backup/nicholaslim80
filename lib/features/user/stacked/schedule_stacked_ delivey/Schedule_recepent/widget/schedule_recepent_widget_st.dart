@@ -5,11 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 
-class ScheduleRecipientWidget extends StatelessWidget {
+class ScheduleRecipientWidgetST extends StatelessWidget {
   final String title;
   final VoidCallback onPressed; // Add this
 
-  const ScheduleRecipientWidget({
+  const ScheduleRecipientWidgetST({
     super.key,
     required this.title,
     required this.onPressed, // Require it
