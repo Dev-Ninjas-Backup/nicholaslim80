@@ -1,6 +1,7 @@
 import 'package:ZipBee/core/utils/constants/app_colors.dart';
 import 'package:ZipBee/features/user/finding_raider/model/review_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 
 
@@ -58,14 +59,7 @@ class ReviewController extends GetxController {
 
   void submitReview() {
     // Here you would usually send data to an API
-    Get.snackbar(
-      "Success",
-      "Review Submitted for ${inputRating.value} stars!",
-      backgroundColor: AppColors.primaryButtonColor,
-      colorText: AppColors.primaryFontColor,
-      snackPosition: SnackPosition.TOP,
-      margin: EdgeInsets.all(20),
-    );
+    EasyLoading.showSuccess('Review Submitted for ${inputRating.value} stars!');
 
     // Optional: Clear input
     // commentController.clear();

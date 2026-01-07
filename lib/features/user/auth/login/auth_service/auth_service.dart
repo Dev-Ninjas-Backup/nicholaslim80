@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:ZipBee/core/api_end_point/api_end_point.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class AuthService {
@@ -24,12 +25,15 @@ class AuthService {
           "role_name": roleName,
         }),
       );
-
+      debugPrint(
+        '📡 Signup Response: ${response.statusCode} | ${response.body}',
+      );
       return {
         "statusCode": response.statusCode,
         "body": jsonDecode(response.body),
       };
     } catch (e) {
+      debugPrint('❌ Signup Error: $e');
       return {
         "statusCode": 500,
         "body": {"message": e.toString()},
@@ -48,12 +52,15 @@ class AuthService {
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({"email": email, "otp": otp}),
       );
-
+      debugPrint(
+        '📡 Verify OTP Response: ${response.statusCode} | ${response.body}',
+      );
       return {
         "statusCode": response.statusCode,
         "body": jsonDecode(response.body),
       };
     } catch (e) {
+      debugPrint('❌ Verify OTP Error: $e');
       return {
         "statusCode": 500,
         "body": {"message": e.toString()},
@@ -72,12 +79,15 @@ class AuthService {
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({"email": email, "password": password}),
       );
-
+      debugPrint(
+        '📡 Login Response: ${response.statusCode} | ${response.body}',
+      );
       return {
         "statusCode": response.statusCode,
         "body": jsonDecode(response.body),
       };
     } catch (e) {
+      debugPrint('❌ Login Error: $e');
       return {
         "statusCode": 500,
         "body": {"message": e.toString()},

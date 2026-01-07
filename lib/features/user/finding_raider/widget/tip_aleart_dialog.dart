@@ -4,7 +4,6 @@ import 'package:ZipBee/features/user/schedule_express_delivey/screen/schedule_de
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-
 class TipAleartDialog extends StatelessWidget {
   const TipAleartDialog({super.key});
 
@@ -41,26 +40,6 @@ class TipAleartDialog extends StatelessWidget {
                 onPressed: () {
                   Get.to(ScheduleDelivery());
                   //Get.back();
-                  Get.snackbar(
-                    '',
-                    '',
-                    snackPosition: SnackPosition.TOP,
-                    // ignore: deprecated_member_use
-                    backgroundColor: Colors.amber.withOpacity(0.8),
-                    colorText: Colors.white,
-                    margin: EdgeInsets.all(10),
-                    duration: Duration(seconds: 2),
-                    titleText: SizedBox.shrink(),
-                    messageText: Text(
-                      '60 Points Now',
-                      textAlign: TextAlign.start,
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  );
                 },
 
                 style: FilledButton.styleFrom(

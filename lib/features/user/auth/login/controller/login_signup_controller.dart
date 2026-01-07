@@ -46,28 +46,37 @@ class LoginSignupController extends GetxController {
     try {
       final result = await AuthService.login(email: email, password: password);
 
+      debugPrint('➡️ Login result: $result');
+
       if (result['statusCode'] == 200 || result['statusCode'] == 201) {
         final token = result['body']['access_token'];
+        final userId = result['body']['user']['id']
+            .toString(); // ✅ Save User ID
+        final fcmToken = await SharedPreferencesHelper.getFcmToken() ?? '';
 
-        if (token == null || token.toString().isEmpty) {
-          EasyLoading.showError("Invalid token received");
+        if (token == null || token.isEmpty || userId.isEmpty) {
+          EasyLoading.showError("Invalid token or user ID");
           return;
         }
 
-        // ✅ SAVE TOKEN FIRST
+        // ✅ Save token + user ID
         await SharedPreferencesHelper.saveToken(token);
+        await SharedPreferencesHelper.saveUserId(userId);
 
-        // ✅ SMALL DELAY TO STABILIZE STORAGE & CONTROLLERS
+        debugPrint('💾 Saved Access Token: $token');
+        debugPrint('💾 Saved User ID: $userId');
+        debugPrint('💾 FCM Token: $fcmToken');
+
+        // ✅ Small delay
         await Future.delayed(const Duration(milliseconds: 300));
 
         EasyLoading.dismiss();
-
-        // ✅ RESET NAVIGATION STACK
         Get.offAllNamed(AppRoutes.getbottomNavbarScreen());
       } else {
         EasyLoading.showError(result['body']['message'] ?? "Login failed");
       }
     } catch (e) {
+      debugPrint('❌ Login Exception: $e');
       EasyLoading.showError("Login error");
     } finally {
       isLoading.value = false;
@@ -107,12 +116,21 @@ class LoginSignupController extends GetxController {
         password: password,
       );
 
+      debugPrint('➡️ Signup result: $result');
+
       if (result['statusCode'] == 201) {
+        final userId = result['body']['user']['id'].toString();
+        await SharedPreferencesHelper.saveUserId(userId);
+        debugPrint('💾 Saved User ID after signup: $userId');
+
         EasyLoading.dismiss();
         Get.toNamed(AppRoutes.verificationScreen, arguments: {"email": email});
       } else {
         EasyLoading.showError(result['body']['message'] ?? "Signup failed");
       }
+    } catch (e) {
+      debugPrint('❌ Signup Exception: $e');
+      EasyLoading.showError("Signup error");
     } finally {
       isLoading.value = false;
     }
