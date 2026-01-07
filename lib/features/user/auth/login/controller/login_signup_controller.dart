@@ -6,14 +6,14 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 
 class LoginSignupController extends GetxController {
-  // ---------------- Text Controllers ----------------
+  // ---------------- TEXT CONTROLLERS ----------------
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final phoneController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
 
-  // ---------------- UI State ----------------
+  // ---------------- UI STATE ----------------
   RxBool isLogin = true.obs;
   RxBool isLoading = false.obs;
 
@@ -21,7 +21,7 @@ class LoginSignupController extends GetxController {
   RxBool isSignUpPasswordVisible = false.obs;
   RxBool isConfirmPasswordVisible = false.obs;
 
-  // ---------------- Submit ----------------
+  // ---------------- SUBMIT ----------------
   Future<void> submit() async {
     if (isLogin.value) {
       await login();
@@ -36,11 +36,12 @@ class LoginSignupController extends GetxController {
     final password = passwordController.text.trim();
 
     if (email.isEmpty || password.isEmpty) {
-      Get.snackbar("Error", "Email & Password required");
+      EasyLoading.showError("Email & Password required");
       return;
     }
 
     isLoading.value = true;
+    EasyLoading.show(status: "Logging in...");
 
     try {
       final result = await AuthService.login(email: email, password: password);
@@ -48,15 +49,26 @@ class LoginSignupController extends GetxController {
       if (result['statusCode'] == 200 || result['statusCode'] == 201) {
         final token = result['body']['access_token'];
 
-        await SharedPreferencesHelper.saveAccessToken(token);
+        if (token == null || token.toString().isEmpty) {
+          EasyLoading.showError("Invalid token received");
+          return;
+        }
 
-        // 🔥 reset navigation stack
-        Get.offAllNamed(AppRoutes.bottomNavbarScreen);
-      } else {
-        // Get.snackbar("Login Failed", result['body']['message'] ?? 'Error');
-        EasyLoading.showError(result['body']['message'] ?? 'Login Failed');
+        // ✅ SAVE TOKEN FIRST
+        await SharedPreferencesHelper.saveToken(token);
+
+        // ✅ SMALL DELAY TO STABILIZE STORAGE & CONTROLLERS
+        await Future.delayed(const Duration(milliseconds: 300));
+
         EasyLoading.dismiss();
+
+        // ✅ RESET NAVIGATION STACK
+        Get.offAllNamed(AppRoutes.getbottomNavbarScreen());
+      } else {
+        EasyLoading.showError(result['body']['message'] ?? "Login failed");
       }
+    } catch (e) {
+      EasyLoading.showError("Login error");
     } finally {
       isLoading.value = false;
     }
@@ -75,16 +87,17 @@ class LoginSignupController extends GetxController {
         phone.isEmpty ||
         password.isEmpty ||
         confirm.isEmpty) {
-      Get.snackbar("Error", "All fields are required");
+      EasyLoading.showError("All fields are required");
       return;
     }
 
     if (password != confirm) {
-      Get.snackbar("Error", "Passwords do not match");
+      EasyLoading.showError("Passwords do not match");
       return;
     }
 
     isLoading.value = true;
+    EasyLoading.show(status: "Creating account...");
 
     try {
       final result = await AuthService.signup(
@@ -95,10 +108,10 @@ class LoginSignupController extends GetxController {
       );
 
       if (result['statusCode'] == 201) {
+        EasyLoading.dismiss();
         Get.toNamed(AppRoutes.verificationScreen, arguments: {"email": email});
       } else {
-        // Get.snackbar("Signup Failed", result['body']['message'] ?? 'Error');
-        EasyLoading.showError(result['body']['message'] ?? 'Signup Failed');
+        EasyLoading.showError(result['body']['message'] ?? "Signup failed");
       }
     } finally {
       isLoading.value = false;
@@ -107,7 +120,7 @@ class LoginSignupController extends GetxController {
 
   // ---------------- LOGOUT ----------------
   Future<void> logout() async {
-    await SharedPreferencesHelper.logout();
+    await SharedPreferencesHelper.clearAllData();
     Get.offAllNamed(AppRoutes.getOnboardingScreen());
   }
 

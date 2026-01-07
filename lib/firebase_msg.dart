@@ -6,50 +6,41 @@ import 'core/shared_prefference_service/shared_pref.dart';
 import 'features/user/notification/controller/user_notification_controller.dart';
 import 'features/user/notification/model/notification1_model.dart';
 
-/// Background message handler
+/// Background handler
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  debugPrint('Background message received: ${message.messageId}');
-  debugPrint('Title: ${message.notification?.title}');
-  debugPrint('Body: ${message.notification?.body}');
-  // Optional: save to local storage for later use
+  debugPrint('🔕 Background message: ${message.messageId}');
 }
 
 class FirebaseMsg {
   final FirebaseMessaging _messaging = FirebaseMessaging.instance;
 
   Future<void> initFCM() async {
-    // Request permission (iOS)
-    NotificationSettings settings = await _messaging.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
-    debugPrint('Permission status: ${settings.authorizationStatus}');
+    // Permission
+    await _messaging.requestPermission(alert: true, badge: true, sound: true);
 
-    // Get initial FCM token
-    String? token = await _messaging.getToken();
-    if (token != null) {
-      debugPrint('Firebase Messaging Token: $token');
-      await SharedPreferencesHelper.saveAccessToken(token);
+    // Get FCM token
+    final fcmToken = await _messaging.getToken();
+    if (fcmToken != null) {
+      debugPrint('🔥 FCM Token: $fcmToken');
+      await SharedPreferencesHelper.saveFcmToken(fcmToken);
     }
 
-    // Listen for token refresh
+    // Token refresh
     FirebaseMessaging.instance.onTokenRefresh.listen((newToken) async {
-      debugPrint('FCM token refreshed: $newToken');
-      await SharedPreferencesHelper.saveAccessToken(newToken);
+      debugPrint('🔄 FCM Token refreshed');
+      await SharedPreferencesHelper.saveFcmToken(newToken);
     });
 
-    // Get controller instance
-    final notificationController = Get.put(UserNotificationController());
+    // Notification controller
+    final notificationController = Get.put(
+      UserNotificationController(),
+      permanent: true,
+    );
 
-    // Foreground notifications → add to in-app list
+    // Foreground messages
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      debugPrint('Foreground message received: ${message.messageId}');
-      debugPrint('Title: ${message.notification?.title}');
-      debugPrint('Body: ${message.notification?.body}');
-
-      // Create notification model safely
       final now = DateTime.now();
+
       final notification = Notification1Model(
         title: message.notification?.title ?? 'No Title',
         subTitle: message.notification?.body ?? 'No Body',
@@ -59,17 +50,14 @@ class FirebaseMsg {
             "${now.hour % 12 == 0 ? 12 : now.hour % 12}:${now.minute.toString().padLeft(2, '0')} ${now.hour >= 12 ? 'PM' : 'AM'}",
       );
 
-      // Add to top of the list
       notificationController.notificationList.insert(0, notification);
     });
 
     // App opened from notification
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      debugPrint('Notification clicked: ${message.messageId}');
-      // Optionally navigate to your notification screen
+    FirebaseMessaging.onMessageOpenedApp.listen((message) {
+      debugPrint('📲 Notification clicked');
     });
 
-    // Background handler
     FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
   }
 }
