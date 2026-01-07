@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 
 class VehicleTypeScreen extends StatelessWidget {
   // Dependency Injection of Controller
-  final VehicleV1Controller controller = Get.put(VehicleV1Controller());
+  final VehicleController controller = Get.put(VehicleController());
 
   // Colors
   final Color primaryYellow = const Color(0xFFFFD54F);

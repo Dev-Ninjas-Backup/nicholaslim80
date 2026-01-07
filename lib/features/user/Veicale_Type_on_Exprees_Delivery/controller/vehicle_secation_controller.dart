@@ -4,76 +4,75 @@ import 'package:ZipBee/core/utils/constants/icon_path.dart';
 import 'package:ZipBee/features/user/Veicale_Type_on_Exprees_Delivery/models/vehicle_data_model.dart';
 import 'package:get/get.dart';
 
-
-class VehicleSecationController extends GetxController {
-  final selectedVehicle = Rxn<VehicleDataModel>();
+class VehicleController extends GetxController {
+  final selectedVehicle = Rxn<Vehicle>();
   final selectedServices = <AdditionalService>[].obs;
   final calculationHistory = <String>[].obs;
 
-  final List<VehicleDataModel> _allVehicles = [
-    VehicleDataModel(
+  final List<Vehicle> _allVehicles = [
+    Vehicle(
       name: 'Courier',
       type: 'Courier',
       subtitle: 'Perfect for small goods, with a faster order pickup time',
       price: 15.0,
       details: '40x30x30 cm - Up to 8 kg',
-      imageAsset: IconPath.courierIcon, id: '', description: '', dimensions: '', imagePath: '',
+      imageAsset: IconPath.courierIcon,
     ),
-    VehicleDataModel(
+    Vehicle(
       name: 'Car',
       type: 'Car',
       subtitle: 'Car delivery of medium size items',
       price: 15.0,
       details: '70x50x50 cm - Up to 20 kg',
-      imageAsset: IconPath.realCar, id: '', description: '', dimensions: '', imagePath: '',
+      imageAsset: IconPath.realCar,
     ),
-    VehicleDataModel(
+    Vehicle(
       name: 'MPV',
       type: 'Car',
       subtitle: 'Ideal for small-medium size carton boxes, mini hamper',
       price: 25.0,
       details: '110x80x50 cm - Up to 50 kg',
-      imageAsset: IconPath.realCar, id: '', description: '', dimensions: '', imagePath: '',
+      imageAsset: IconPath.realCar,
     ),
-    VehicleDataModel(
+    Vehicle(
       name: '1.7 m Van',
       type: 'Van',
       subtitle: 'Truck delivery of large & bulky items',
       price: 30.0,
       details: '160x120x100 cm - Up to 400 kg',
-      imageAsset: IconPath.van, id: '', description: '', dimensions: '', imagePath: '',
+      imageAsset: IconPath.van,
     ),
-    VehicleDataModel(
+    Vehicle(
       name: '2.4 m Van',
       type: 'Van',
       subtitle: 'Van delivery of medium-large size items',
       price: 30.0,
       details: '160x120x100 cm - Up to 400 kg',
-      imageAsset: IconPath.van, id: '', description: '', dimensions: '', imagePath: '',
+      imageAsset: IconPath.van,
     ),
-    VehicleDataModel(
+    Vehicle(
       name: '10 ft Truck',
       type: 'Truck',
       subtitle: 'Delivery of multiple large & bulky items',
       price: 50.0,
       details: '420x170x190 cm - Up to 2000 kg',
-      imageAsset: IconPath.trunk1, id: '', description: '', dimensions: '', imagePath: '',
+      imageAsset: IconPath.trunk1,
     ),
-    VehicleDataModel(
+    Vehicle(
       name: '14 ft Truck',
       type: 'Truck',
       subtitle: 'Delivery of multiple large & bulky items',
       price: 50.0,
       details: '420x170x190 cm - Up to 2000 kg',
-      imageAsset: IconPath.trunk2, id: '', description: '', dimensions: '', imagePath: '',
+      imageAsset: IconPath.trunk2,
     ),
-    VehicleDataModel(
+    Vehicle(
       name: '24 ft Truck',
       type: 'Truck',
       subtitle: 'Delivery of multiple very large & bulky items',
       price: 50.0,
       details: '420x170x190 cm - Up to 2000 kg',
-      imageAsset: IconPath.trunk3, id: '', description: '', dimensions: '', imagePath: '',
+      imageAsset: IconPath.trunk3,
     ),
   ];
 
@@ -98,7 +97,7 @@ class VehicleSecationController extends GetxController {
     AdditionalService(name: 'Open/Box', price: 20.0, applicableTo: ['Truck']),
   ];
 
-  List<VehicleDataModel> getVehiclesForType(String type) =>
+  List<Vehicle> getVehiclesForType(String type) =>
       _allVehicles.where((v) => v.type == type).toList();
 
   List<AdditionalService> getAdditionalServicesForType(String type) {
@@ -109,7 +108,7 @@ class VehicleSecationController extends GetxController {
         .toList();
   }
 
-  void selectVehicle(VehicleDataModel vehicle) {
+  void selectVehicle(Vehicle vehicle) {
     if (selectedVehicle.value == vehicle) {
       selectedVehicle.value = null;
       selectedServices.clear();
@@ -151,5 +150,3 @@ class VehicleSecationController extends GetxController {
 
   bool get isOrderReady => selectedVehicle.value != null;
 }
-
-

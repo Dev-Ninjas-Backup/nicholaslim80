@@ -16,7 +16,7 @@ import 'package:get/get.dart';
 
 class ScheduleDelivery extends StatelessWidget {
   final LocationController controller = Get.put(LocationController());
-  final VehicleSecationController vehicleController = Get.find<VehicleSecationController>();
+  final VehicleController vehicleController = Get.find<VehicleController>();
 
   ScheduleDelivery({super.key});
 

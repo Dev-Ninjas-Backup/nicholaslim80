@@ -16,7 +16,7 @@ import 'package:get/get.dart';
 
 class ExpressDelivery1 extends StatelessWidget {
   final LocationController controller = Get.put(LocationController());
-  final vehicleController = Get.put(VehicleSecationController());
+  final vehicleController = Get.put(VehicleController());
   final OrderController orderController = Get.put(OrderController());
 
   ExpressDelivery1({super.key});
