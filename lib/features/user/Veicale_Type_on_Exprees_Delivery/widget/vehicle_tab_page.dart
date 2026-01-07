@@ -14,8 +14,8 @@ class VehicleTabPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final VehicleSecationController controller = Get.put(
-      VehicleSecationController(),
+    final VehicleController controller = Get.put(
+      VehicleController(),
       tag: vehicleType,
     );
 

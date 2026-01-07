@@ -2,7 +2,7 @@
 import 'package:ZipBee/v/models/v_models.dart';
 import 'package:get/get.dart';
 
-class VehicleV1Controller extends GetxController {
+class VehicleController extends GetxController {
   // 0 = Bike, 1 = Car, 2 = Van, 3 = Truck
   final selectedCategoryIndex = 1.obs;
   final selectedVehicleId = ''.obs;
