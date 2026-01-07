@@ -20,4 +20,6 @@ class ApiEndPoint {
   static const String referLoyalty = '$baseUrl/referloyality';
   static const String userProfile = '$baseUrl/users/{id}';
     static const String toggleFavorite = '$baseUrl/my-raider';
+      static const String vehicleTypes = '$baseUrl/admin/vehicle-types';
+
 }
