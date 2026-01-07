@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:ZipBee/features/user/google_map/widget/consts.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 
 class GoogleMapWidget extends StatefulWidget {
   const GoogleMapWidget({super.key});
@@ -55,7 +55,7 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
           : GoogleMap(
               onMapCreated: (controller) => _mapController.complete(controller),
               initialCameraPosition: const CameraPosition(
-                target: LatLng(23.8022478, 90.3799354),
+                target: LatLng(23.8022478,90.3799354),
                 zoom: 11,
               ),
               markers: {
@@ -64,10 +64,12 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
                     markerId: const MarkerId('current'),
                     position: _currentPosition!,
                     icon: BitmapDescriptor.defaultMarkerWithHue(
-                      BitmapDescriptor.hueAzure,
-                    ),
+                        BitmapDescriptor.hueAzure),
                   ),
-                const Marker(markerId: MarkerId('source'), position: _source),
+                const Marker(
+                  markerId: MarkerId('source'),
+                  position: _source,
+                ),
                 const Marker(
                   markerId: MarkerId('destination'),
                   position: _destination,
@@ -84,7 +86,9 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
   Future<void> _cameraToPosition(LatLng pos) async {
     final controller = await _mapController.future;
     await controller.animateCamera(
-      CameraUpdate.newCameraPosition(CameraPosition(target: pos, zoom: 14)),
+      CameraUpdate.newCameraPosition(
+        CameraPosition(target: pos, zoom: 14),
+      ),
     );
   }
 
@@ -130,9 +134,7 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
       if (permissionGranted != PermissionStatus.granted) return;
     }
 
-    _locationController.onLocationChanged.listen((
-      LocationData currentLocation,
-    ) {
+    _locationController.onLocationChanged.listen((LocationData currentLocation) {
       if (currentLocation.latitude != null &&
           currentLocation.longitude != null) {
         setState(() {
@@ -150,25 +152,22 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
   // Get polyline points using Flutter Polyline Points
   Future<List<LatLng>> getPolyLinePoints() async {
     List<LatLng> polylineCoordinates = [];
-    final PolylinePoints polylinePoints = PolylinePoints(
-      apiKey: GoogleMapAPIKey,
-    );
+    final PolylinePoints polylinePoints = PolylinePoints(apiKey: GoogleMapAPIKey);
 
-    final PolylineResult result = await polylinePoints
-        .getRouteBetweenCoordinates(
-          request: PolylineRequest(
-            origin: PointLatLng(_source.latitude, _source.longitude),
-            destination: PointLatLng(
-              _destination.latitude,
-              _destination.longitude,
-            ),
-            mode: TravelMode.driving,
-          ),
-        );
+    final PolylineResult result =
+        await polylinePoints.getRouteBetweenCoordinates(
+      request: PolylineRequest(
+        origin: PointLatLng(_source.latitude, _source.longitude),
+        destination: PointLatLng(_destination.latitude, _destination.longitude),
+        mode: TravelMode.driving,
+      ),
+    );
 
     if (result.points.isNotEmpty) {
       for (final point in result.points) {
-        polylineCoordinates.add(LatLng(point.latitude, point.longitude));
+        polylineCoordinates.add(
+          LatLng(point.latitude, point.longitude),
+        );
       }
     } else {
       debugPrint("Polyline error: ${result.errorMessage}");
