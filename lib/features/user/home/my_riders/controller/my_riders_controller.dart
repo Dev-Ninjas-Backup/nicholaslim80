@@ -175,6 +175,33 @@ class MyRidersController extends GetxController {
       EasyLoading.dismiss();
     }
   }
+  // Toggle favorite (love) with API
+Future<void> toggleFavoriteApi(String name, int myRaiderId) async {
+  if (token.value.isEmpty) await _loadToken();
+
+  try {
+    loveState[name] = !(loveState[name] ?? false);
+
+    final response = await _connect.patch(
+      "${ApiEndPoint.toggleFavorite}/$myRaiderId", 
+      {"is_fav": loveState[name]},
+      headers: {
+        "Authorization": "Bearer ${token.value}",
+        "Content-Type": "application/json",
+      },
+    );
+
+    if (response.statusCode != 200) {
+      loveState[name] = !(loveState[name] ?? false);
+      ridersList.refresh();
+    }
+  } catch (e) {
+    loveState[name] = !(loveState[name] ?? false);
+    ridersList.refresh();
+  }
+}
+
+
 
   // ================= UI HELPERS =================
   void toggleLove(String name) {

@@ -137,9 +137,12 @@ class RidersListWidget extends StatelessWidget {
                       () => IconButton(
                         icon: Icon(
                           Icons.favorite,
-                          color: controller.loveState[name]! ? Colors.black : Colors.grey,
+                          color: controller.loveState[name]!
+                              ? Colors.black
+                              : Colors.grey,
                         ),
-                        onPressed: () => controller.toggleLove(name),
+                        onPressed: () =>
+                            controller.toggleFavoriteApi(name, myRaiderId),
                       ),
                     ),
                   ),
