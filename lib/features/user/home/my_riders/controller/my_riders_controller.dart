@@ -3,7 +3,7 @@ import 'package:ZipBee/core/shared_prefference_service/shared_pref.dart';
 import 'package:ZipBee/core/utils/constants/image_path.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 class MyRidersController extends GetxController {
   var ridersList = <Map<String, dynamic>>[].obs;
@@ -29,24 +29,12 @@ class MyRidersController extends GetxController {
     final email = emailController.text.trim();
 
     if (phoneNumber.isEmpty && email.isEmpty) {
-      Get.snackbar(
-        "Invalid Input",
-        "Please enter phone number or email",
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.redAccent,
-        colorText: Colors.white,
-      );
+      EasyLoading.showError("Please enter phone number or email");
       return;
     }
 
     if (phoneNumber.isNotEmpty && phoneNumber.length <= 4) {
-      Get.snackbar(
-        "Invalid Phone",
-        "Phone number too short",
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.redAccent,
-        colorText: Colors.white,
-      );
+      EasyLoading.showError("Phone number too short");
       return;
     }
 
@@ -54,6 +42,7 @@ class MyRidersController extends GetxController {
 
     try {
       isLoading.value = true;
+      EasyLoading.show(status: "Adding rider...");
 
       Map<String, dynamic> body = {"is_fav": false};
       if (phoneNumber.isNotEmpty) body["find_by"] = phoneNumber;
@@ -72,52 +61,38 @@ class MyRidersController extends GetxController {
       print("[ADD RIDER] Response Body: ${response.body}");
 
       if ((response.statusCode == 200 || response.statusCode == 201) &&
-          response.body?['data'] != null) {
+          response.body?['success'] == true) {
         phoneController.text = "+65";
         emailController.clear();
         Get.back();
 
-        Get.snackbar(
-          "Success",
-          "Rider added successfully",
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
-        );
+        EasyLoading.showSuccess("Rider added successfully");
 
-        await fetchRiders(); // GET updated list
+        await fetchRiders(); // refresh list
       } else {
-        Get.snackbar(
-          "Failed",
-          response.body?['message'] ?? "No data returned from server",
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.redAccent,
-          colorText: Colors.white,
+        EasyLoading.showError(
+          response.body?['message'] ?? "Failed to add rider",
         );
       }
     } catch (e) {
       print("[ADD RIDER] Exception: $e");
-      Get.snackbar(
-        "Network/Error",
-        "Server error or network issue occurred",
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.redAccent,
-        colorText: Colors.white,
-      );
+      EasyLoading.showError("Network error or server issue");
     } finally {
       isLoading.value = false;
+      EasyLoading.dismiss();
     }
   }
 
   // ================= DELETE RIDER =================
-  Future<void> deleteRider(int raiderId) async {
+  Future<void> deleteRider(int myRaiderId) async {
     if (token.value.isEmpty) await _loadToken();
 
     try {
       isLoading.value = true;
+      EasyLoading.show(status: "Deleting rider...");
 
       final response = await _connect.delete(
-        "${ApiEndPoint.deleteRaider}/$raiderId", // DELETE endpoint
+        "${ApiEndPoint.deleteRaider}/$myRaiderId",
         headers: {
           "Authorization": "Bearer ${token.value}",
           "Content-Type": "application/json",
@@ -127,42 +102,24 @@ class MyRidersController extends GetxController {
       print("[DELETE RIDER] Status Code: ${response.statusCode}");
       print("[DELETE RIDER] Response Body: ${response.body}");
 
-      if (response.statusCode == 200) {
-        // Remove from local list immediately
-        ridersList.removeWhere(
-          (rider) => rider['raiderId'] == raiderId.toString(),
-        );
+      if (response.statusCode == 200 && response.body?['success'] == true) {
+        // Remove from local list
+        ridersList.removeWhere((rider) => rider['myRaiderId'] == myRaiderId);
         ridersList.refresh();
 
-        Get.snackbar(
-          "Deleted",
-          "Rider deleted successfully",
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
-        );
-
-        await fetchRiders(); // GET updated list
+        EasyLoading.showSuccess("Rider deleted successfully");
+        await fetchRiders(); // refresh list
       } else {
-        Get.snackbar(
-          "Failed",
-          response.body?['message'] ?? "Unable to delete rider",
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.redAccent,
-          colorText: Colors.white,
+        EasyLoading.showError(
+          response.body?['message'] ?? "Failed to delete rider",
         );
       }
     } catch (e) {
       print("[DELETE RIDER] Exception: $e");
-      Get.snackbar(
-        "Network/Error",
-        "Server error or network issue occurred",
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.redAccent,
-        colorText: Colors.white,
-      );
+      EasyLoading.showError("Network error or server issue");
     } finally {
       isLoading.value = false;
+      EasyLoading.dismiss();
     }
   }
 
@@ -172,6 +129,7 @@ class MyRidersController extends GetxController {
 
     try {
       isLoading.value = true;
+      EasyLoading.show(status: "Fetching riders...");
 
       final response = await _connect.get(
         ApiEndPoint.getRaider,
@@ -184,42 +142,41 @@ class MyRidersController extends GetxController {
       print("[FETCH RIDERS] Status Code: ${response.statusCode}");
       print("[FETCH RIDERS] Response Body: ${response.body}");
 
-      if (response.statusCode == 200 && response.body?['data'] != null) {
-        final List data = response.body['data']['data']; // Nested API
+      if (response.statusCode == 200 && response.body?['success'] == true) {
+        final List data = response.body['data']['data'] ?? [];
         ridersList.clear();
 
         for (var rider in data) {
           final raiderData = rider['raider'] ?? {};
+
           final riderMap = {
             'name': raiderData['raider_name'] ?? 'Unknown',
             'order-id': rider['find_by'] ?? 'Pending',
-            'raiderId': raiderData['id'],
+            'raiderId': raiderData['id'], // For display/avatar
+            'myRaiderId': rider['id'], // ✅ For delete API
             'image': ImagePath.profile1,
           };
+
           ridersList.add(riderMap);
           loveState[riderMap['name']] = false;
         }
+
+        print("[FETCH RIDERS] Fetched ${ridersList.length} riders.");
       } else {
-        Get.snackbar(
-          "Failed",
+        EasyLoading.showError(
           response.body?['message'] ?? "Unable to fetch riders",
-          backgroundColor: Colors.redAccent,
-          colorText: Colors.white,
         );
       }
     } catch (e) {
       print("[FETCH RIDERS] Exception: $e");
-      Get.snackbar(
-        "Network/Error",
-        "Server error or network issue occurred",
-        backgroundColor: Colors.redAccent,
-        colorText: Colors.white,
-      );
+      EasyLoading.showError("Network error or server issue");
     } finally {
       isLoading.value = false;
+      EasyLoading.dismiss();
     }
   }
 
+  // ================= UI HELPERS =================
   void toggleLove(String name) {
     loveState[name] = !(loveState[name] ?? false);
   }
@@ -228,6 +185,7 @@ class MyRidersController extends GetxController {
     swipeProgress[name] = progress;
   }
 
+  // ================= TOKEN =================
   Future<void> _loadToken() async {
     token.value = await SharedPreferencesHelper.getAccessToken() ?? '';
     print("[TOKEN] Loaded: ${token.value}");
