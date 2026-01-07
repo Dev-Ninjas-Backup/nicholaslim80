@@ -125,7 +125,7 @@ class StackedSenderScheduleScreen extends StatelessWidget {
                               ? () {
                                   Get.to(
                                     StackedSchedulRecepmenteScreen(
-                                      title: 'Recepent 1',
+                                      // title: 'Recepent 1',
                                     ),
                                   );
                                 }
