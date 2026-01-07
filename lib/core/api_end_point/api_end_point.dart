@@ -19,4 +19,5 @@ class ApiEndPoint {
   static const String redeemCoin = '$baseUrl/coin-management/redeem-coin';
   static const String referLoyalty = '$baseUrl/referloyality';
   static const String userProfile = '$baseUrl/users/{id}';
+    static const String toggleFavorite = '$baseUrl/my-raider';
 }
