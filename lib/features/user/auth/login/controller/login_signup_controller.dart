@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 
-
 class LoginSignupController extends GetxController {
   // ---------------- Text Controllers ----------------
   final nameController = TextEditingController();
@@ -98,8 +97,8 @@ class LoginSignupController extends GetxController {
       if (result['statusCode'] == 201) {
         Get.toNamed(AppRoutes.verificationScreen, arguments: {"email": email});
       } else {
-          // Get.snackbar("Signup Failed", result['body']['message'] ?? 'Error');
-          EasyLoading.showError(result['body']['message'] ?? 'Signup Failed');
+        // Get.snackbar("Signup Failed", result['body']['message'] ?? 'Error');
+        EasyLoading.showError(result['body']['message'] ?? 'Signup Failed');
       }
     } finally {
       isLoading.value = false;
