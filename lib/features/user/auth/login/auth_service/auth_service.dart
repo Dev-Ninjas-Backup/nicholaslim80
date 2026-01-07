@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:ZipBee/core/api_end_point/api_end_point.dart';
 import 'package:http/http.dart' as http;
 
@@ -11,28 +12,22 @@ class AuthService {
     required String password,
     String roleName = "USER",
   }) async {
-    final url = Uri.parse(ApiEndPoint.signUp);
-
-    final body = jsonEncode({
-      "username": username,
-      "email": email,
-      "phone": phone,
-      "password": password,
-      "role_name": roleName,
-    });
-
     try {
       final response = await http.post(
-        url,
+        Uri.parse(ApiEndPoint.signUp),
         headers: {"Content-Type": "application/json"},
-        body: body,
+        body: jsonEncode({
+          "username": username,
+          "email": email,
+          "phone": phone,
+          "password": password,
+          "role_name": roleName,
+        }),
       );
-
-      final data = jsonDecode(response.body);
 
       return {
         "statusCode": response.statusCode,
-        "body": data,
+        "body": jsonDecode(response.body),
       };
     } catch (e) {
       return {
@@ -42,27 +37,21 @@ class AuthService {
     }
   }
 
-  // ------------------- VERIFY -------------------
+  // ------------------- VERIFY OTP -------------------
   static Future<Map<String, dynamic>> verifyOtp({
     required String email,
     required String otp,
   }) async {
-    final url = Uri.parse(ApiEndPoint.verifyOtp);
-
-    final body = jsonEncode({"email": email, "otp": otp});
-
     try {
       final response = await http.post(
-        url,
+        Uri.parse(ApiEndPoint.verifyOtp),
         headers: {"Content-Type": "application/json"},
-        body: body,
+        body: jsonEncode({"email": email, "otp": otp}),
       );
-
-      final data = jsonDecode(response.body);
 
       return {
         "statusCode": response.statusCode,
-        "body": data,
+        "body": jsonDecode(response.body),
       };
     } catch (e) {
       return {
@@ -77,25 +66,16 @@ class AuthService {
     required String email,
     required String password,
   }) async {
-    final url = Uri.parse(ApiEndPoint.login);
-
-    final body = jsonEncode({
-      "email": email,
-      "password": password,
-    });
-
     try {
       final response = await http.post(
-        url,
+        Uri.parse(ApiEndPoint.login),
         headers: {"Content-Type": "application/json"},
-        body: body,
+        body: jsonEncode({"email": email, "password": password}),
       );
-
-      final data = jsonDecode(response.body);
 
       return {
         "statusCode": response.statusCode,
-        "body": data,
+        "body": jsonDecode(response.body),
       };
     } catch (e) {
       return {
