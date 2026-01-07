@@ -3,6 +3,7 @@ import 'package:ZipBee/features/user/auth/login/auth_service/auth_service.dart';
 import 'package:ZipBee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 
 class VerificationController extends GetxController {
@@ -76,21 +77,9 @@ class VerificationController extends GetxController {
         otp: "0000", // server expects a POST, but resend may require separate API
       );
 
-      Get.snackbar(
-        'Success',
-        'OTP sent again',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.amber,
-        colorText: Colors.white,
-      );
+      EasyLoading.showSuccess('OTP sent again');
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        e.toString(),
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.red.withOpacity(0.8),
-        colorText: Colors.white,
-      );
+      EasyLoading.showError(e.toString());
     }
   }
 
@@ -117,54 +106,24 @@ class VerificationController extends GetxController {
         // Login or Signup redirect
         if (mode.value == 'login') {
           Get.offAllNamed(AppRoutes.bottomNavbarScreen);
-          Get.snackbar(
-            'Success',
-            'Login OTP Verified',
-            snackPosition: SnackPosition.TOP,
-            backgroundColor: Colors.green.withOpacity(0.8),
-            colorText: Colors.white,
-          );
+          EasyLoading.showSuccess('Login OTP Verified');
         } else if (mode.value == 'forgot_password') {
           Get.offNamed(
             AppRoutes.resetPasswordScreen,
             arguments: {"email": email.value},
           );
-          Get.snackbar(
-            'Success',
-            'OTP Verified. Please reset your password.',
-            snackPosition: SnackPosition.TOP,
-            backgroundColor: Colors.green.withOpacity(0.8),
-            colorText: Colors.white,
-          );
+          EasyLoading.showSuccess('OTP Verified. Please reset your password.');
         } else {
           // Default to login screen after signup verification as per flow
           Get.offAllNamed(AppRoutes.loginScreen);
-          Get.snackbar(
-            'Success',
-            'Signup OTP Verified. Please login.',
-            snackPosition: SnackPosition.TOP,
-            backgroundColor: Colors.green.withOpacity(0.8),
-            colorText: Colors.white,
-          );
+          EasyLoading.showSuccess('Signup OTP Verified. Please login.');
         }
       } else {
-        Get.snackbar(
-          'Verification Failed',
-          result['body']['message'] ?? 'Error',
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: Colors.red.withOpacity(0.8),
-          colorText: Colors.white,
-        );
+        EasyLoading.showError(result['body']['message'] ?? 'Error');
       }
     } catch (e) {
       Get.back();
-      Get.snackbar(
-        'Error',
-        e.toString(),
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.red.withOpacity(0.8),
-        colorText: Colors.white,
-      );
+      EasyLoading.showError(e.toString());
     } finally {
       isVerifying.value = false;
     }
