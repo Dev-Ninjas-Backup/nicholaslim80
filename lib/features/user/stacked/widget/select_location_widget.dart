@@ -1,10 +1,8 @@
 import 'package:ZipBee/core/common/styles/global_text_style.dart';
 import 'package:ZipBee/features/user/stacked/widget/stacked_button.dart';
+import 'package:ZipBee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
-
-import '../schedule_stacked_ delivey/Schedule_sender_recepent/screen/schedule_sender_screen.dart';
 import '../stacked_controller/stacked_controller.dart';
 
 class StackedSelectLocationWidget extends StatelessWidget {
@@ -54,7 +52,8 @@ class StackedCustomAddButton extends StatelessWidget {
           ),
         ),
         onPressed: () {
-          Get.to(StackedSenderScheduleScreen());
+          // Get.to(StackedSenderScheduleScreen()); 
+          Get.toNamed(AppRoutes.stackedSchedulRecepmenteScreen);
         },
       ),
     );

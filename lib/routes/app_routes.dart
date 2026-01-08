@@ -18,6 +18,7 @@ import 'package:ZipBee/features/user/notification/screen/user_notification1.dart
 import 'package:ZipBee/features/user/profile/screen/profile_screen.dart';
 import 'package:ZipBee/features/user/refer_and_earn/screen/refer_and_earn_screen.dart';
 import 'package:ZipBee/features/user/saved_places/screen/saved_place_screenn.dart';
+import 'package:ZipBee/features/user/stacked/schedule_stacked_%20delivey/Schedule_recepent/screen/schedule_recepent_screen1.dart';
 import 'package:ZipBee/features/user/user_support/screen/support_screen.dart';
 import 'package:ZipBee/features/user/wallet/add_funds/screen/user_add_funds.dart';
 import 'package:ZipBee/features/user/wallet/my_wallet/screen/user_my_wallet.dart';
@@ -75,6 +76,8 @@ class AppRoutes {
 
   // google map screen (practice file)
   static String googleMapScreen = "/googleMapScreen";
+
+  static String stackedSchedulRecepmenteScreen = "/stackedSchedulRecepmenteScreen";
 
   // static String scheduledelivery = "/scheduledelivery";
 
@@ -229,5 +232,9 @@ class AppRoutes {
 
     // google map screen (practice file)
     GetPage(name: googleMapScreen, page: () => GoogleMapScreen()),
+    GetPage(
+      name: stackedSchedulRecepmenteScreen, 
+      page: () => StackedSchedulRecepmenteScreen(),
+      ),
   ];
 }

@@ -18,8 +18,12 @@ class ApiEndPoint {
   static const String coinBasePrice = '$baseUrl/coin-management/base-price';
   static const String redeemCoin = '$baseUrl/coin-management/redeem-coin';
   static const String referLoyalty = '$baseUrl/referloyality';
+  static const String vehicleTypes = '$baseUrl/admin/vehicle-types';
   static const String userProfile = '$baseUrl/users/{id}';
+
     static const String toggleFavorite = '$baseUrl/my-raider';
       static const String vehicleTypes = '$baseUrl/admin/vehicle-types';
+
+  static const String getDestination = '$baseUrl/destination';
 
 }

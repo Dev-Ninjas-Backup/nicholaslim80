@@ -49,7 +49,7 @@ class IconPath {
   static String collectIcon = "assets/icons/delivered.png";
   static String courierIcon = "assets/icons/courier.png";
   static String realCar = "assets/icons/real_car.png";
-  static String mpv = "assets/icons/mpv.png";
+  static String suv = "assets/icons/mpv.png";
   static String van = "assets/icons/van1.png";
   static String trunk1 = "assets/icons/trunk1.png";
   static String trunk2 = "assets/icons/trunk2.png";

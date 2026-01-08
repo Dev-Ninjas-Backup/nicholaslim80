@@ -1,8 +1,7 @@
 
-import 'package:ZipBee/core/utils/constants/icon_path.dart';
 import 'package:ZipBee/features/user/stacked/vehicle_type/model/model.dart';
+import 'package:ZipBee/features/user/stacked/vehicle_type/service/vehicle_type_service.dart';
 import 'package:get/get.dart';
-
 
 
 class StackedVehicleController extends GetxController {
@@ -10,73 +9,18 @@ class StackedVehicleController extends GetxController {
   final selectedServices = <StackedAdditionalService>[].obs;
   final calculationHistory = <String>[].obs;
 
-  final List<StackVehicle> _allVehicles = [
-    StackVehicle(
-      name: 'Courier',
-      type: 'Courier',
-      subtitle: 'Perfect for small goods, with a faster order pickup time',
-      price: 15.0,
-      details: '40x30x30 cm - Up to 8 kg',
-      imageAsset: IconPath.courierIcon,
-    ),
-    StackVehicle(
-      name: 'Car',
-      type: 'Car',
-      subtitle: 'Car delivery of medium size items',
-      price: 15.0,
-      details: '70x50x50 cm - Up to 20 kg',
-      imageAsset: IconPath.realCar,
-    ),
-    StackVehicle(
-      name: 'MPV',
-      type: 'Car',
-      subtitle: 'Ideal for small-medium size carton boxes, mini hamper',
-      price: 25.0,
-      details: '110x80x50 cm - Up to 50 kg',
-      imageAsset: IconPath.realCar,
-    ),
-    StackVehicle(
-      name: '1.7 m Van',
-      type: 'Van',
-      subtitle: 'Truck delivery of large & bulky items',
-      price: 30.0,
-      details: '160x120x100 cm - Up to 400 kg',
-      imageAsset: IconPath.van,
-    ),
-    StackVehicle(
-      name: '2.4 m Van',
-      type: 'Van',
-      subtitle: 'Van delivery of medium-large size items',
-      price: 30.0,
-      details: '160x120x100 cm - Up to 400 kg',
-      imageAsset: IconPath.van,
-    ),
-    StackVehicle(
-      name: '10 ft Truck',
-      type: 'Truck',
-      subtitle: 'Delivery of multiple large & bulky items',
-      price: 50.0,
-      details: '420x170x190 cm - Up to 2000 kg',
-      imageAsset: IconPath.trunk1,
-    ),
-    StackVehicle(
-      name: '14 ft Truck',
-      type: 'Truck',
-      subtitle: 'Delivery of multiple large & bulky items',
-      price: 50.0,
-      details: '420x170x190 cm - Up to 2000 kg',
-      imageAsset: IconPath.trunk2,
-    ),
-    StackVehicle(
-      name: '24 ft Truck',
-      type: 'Truck',
-      subtitle: 'Delivery of multiple very large & bulky items',
-      price: 50.0,
-      details: '420x170x190 cm - Up to 2000 kg',
-      imageAsset: IconPath.trunk3,
-    ),
-  ];
+  // lists populated from API
+  final t1 = <StackVehicle>[].obs; // MOTORCYCLE, BICYCLE, ELECTRIC_SCOOTER
+  final t2 = <StackVehicle>[].obs; // CAR, SUV
+  final t3 = <StackVehicle>[].obs; // VAN
+  final t4 = <StackVehicle>[].obs; // TRUCK
 
+  // total route distance (km) used in fare estimation. Default placeholder 1.0
+  // Replace this by real routing API calculation using pickup/destination coords.
+  final totalDistanceKm = 1.0.obs;
+
+
+  // keep default additional services as before but note: API does not provide them
   final List<StackedAdditionalService> _allServices = [
     StackedAdditionalService(
       name: 'Controlled zone',
@@ -98,8 +42,62 @@ class StackedVehicleController extends GetxController {
     StackedAdditionalService(name: 'Open/Box', price: 20.0, applicableTo: ['Truck']),
   ];
 
-  List<StackVehicle> getVehiclesForType(String type) =>
-      _allVehicles.where((v) => v.type == type).toList();
+  @override
+  void onInit() {
+    super.onInit();
+    fetchAndCategorize();
+  }
+
+  Future<void> fetchAndCategorize() async {
+    final res = await VehicleTypeService.fetchVehicleTypes();
+    if (res['statusCode'] != 200) return;
+
+    final body = res['body'];
+    if (body is Map && body['data'] is List) {
+      final list = body['data'] as List;
+      final parsed = list
+          .map((e) => StackVehicle.fromApi(e as Map<String, dynamic>))
+          .where((v) => v.isActive == true)
+          .toList();
+
+      // clear previous
+      t1.clear();
+      t2.clear();
+      t3.clear();
+      t4.clear();
+
+      for (var v in parsed) {
+        final vt = v.type.toUpperCase();
+        if (['MOTORCYCLE', 'BICYCLE', 'ELECTRIC_SCOOTER'].contains(vt)) {
+          t1.add(v);
+        } else if (['CAR', 'SUV'].contains(vt)) {
+          t2.add(v);
+        } else if (vt == 'VAN') {
+          t3.add(v);
+        } else if (vt == 'TRUCK') {
+          t4.add(v);
+        } else {
+          // skip other types
+        }
+      }
+    }
+  }
+
+  List<StackVehicle> getVehiclesForType(String tabKey) {
+    // map older tab keys to categorized lists
+    switch (tabKey) {
+      case 'Courier':
+        return t1;
+      case 'Car':
+        return t2;
+      case 'Van':
+        return t3;
+      case 'Truck':
+        return t4;
+      default:
+        return [];
+    }
+  }
 
   List<StackedAdditionalService> getAdditionalServicesForType(String type) {
     final vehicle = selectedVehicle.value;
@@ -121,18 +119,29 @@ class StackedVehicleController extends GetxController {
     }
   }
 
+  double calculateTotal() {
+    // price calculation = basePrice + (perKmPrice * totalDistanceKm) + selected services
+    final vehicle = selectedVehicle.value;
+    double base = 0.0;
+    double perKm = 0.0;
+    if (vehicle != null) {
+      base = vehicle.basePrice ?? vehicle.price;
+      perKm = vehicle.perKmPrice ?? 0.0;
+    }
+
+    double vehicleCost = base + (perKm * totalDistanceKm.value);
+
+    double total = vehicleCost;
+    total += selectedServices.fold(0.0, (sum, item) => sum + item.price);
+    return total;
+  }
+
   void toggleService(StackedAdditionalService service) {
     selectedServices.contains(service)
         ? selectedServices.remove(service)
         : selectedServices.add(service);
 
     _updateHistory();
-  }
-
-  double calculateTotal() {
-    double total = selectedVehicle.value?.price ?? 0;
-    total += selectedServices.fold(0.0, (sum, item) => sum + item.price);
-    return total;
   }
 
   void _updateHistory() {
@@ -149,5 +158,5 @@ class StackedVehicleController extends GetxController {
     }
   }
 
-  bool get isOrderReady => selectedVehicle.value != null;
+
 }
