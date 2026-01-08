@@ -15,140 +15,84 @@ class MyWalletUpperSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(bottom: 26),
-      decoration: BoxDecoration(
+      padding: const EdgeInsets.only(bottom: 26),
+      decoration: const BoxDecoration(
         color: Color(0xFFFFFDF5),
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(20),
-          bottomRight: Radius.circular(20),
-        ),
-
-        boxShadow: [
-          BoxShadow(
-            color: Color(0xFF000000).withValues(alpha: .24),
-            spreadRadius: -1,
-            blurRadius: 9,
-            offset: Offset(0, 2),
-          ),
-        ],
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
       ),
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 26),
+        padding: const EdgeInsets.symmetric(horizontal: 26),
         child: Column(
           children: [
             CustomAppBarUser(
               title: "My Wallet",
-              onTap: () {
-                Get.offNamed(AppRoutes.bottomNavbarScreen);
-              },
+              onTap: () => Get.offNamed(AppRoutes.bottomNavbarScreen),
               style: getTextStyle(),
             ),
-            SizedBox(height: 16),
-            Center(
-              child: Text(
-                "Current Balance",
-                style: getTextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-              ),
-            ),
-            SizedBox(height: 4),
-            Center(
-              child: Text(
-                "S\$350.00",
+
+            const SizedBox(height: 16),
+            const Text("Current Balance"),
+
+            Obx(
+              () => Text(
+                "\$${controller.currentBalance.value}",
                 style: getTextStyle(fontSize: 32, fontWeight: FontWeight.w700),
               ),
             ),
-            SizedBox(height: 20),
+
+            const SizedBox(height: 20),
 
             Obx(
               () => Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                spacing: 20,
                 children: [
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () {
-                        controller.selectFundsOrRedeen.value = 0;
-
-                        // Add Funds e niye jao
-                        Get.toNamed(AppRoutes.getuserAddFund());
-                      },
-
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 10,
-                        ),
-                        decoration: BoxDecoration(
-                          color: controller.selectFundsOrRedeen.value == 0
-                              ? AppColors.primaryButtonColor
-                              : Color(0xFFFFFAE6),
-
-                          borderRadius: BorderRadius.circular(8),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Color(0xFF000000).withValues(alpha: .24),
-                              spreadRadius: -1,
-                              blurRadius: 9,
-                              offset: Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: Center(
-                          child: Text(
-                            "Add Funds",
-                            style: getTextStyle(
-                              color: controller.selectFundsOrRedeen.value == 0
-                                  ? AppColors.fontColor
-                                  : Color(0xFF9C7C00),
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+                  walletButton(
+                    title: "Add Funds",
+                    selected: controller.selectFundsOrRedeen.value == 0,
+                    onTap: () {
+                      controller.selectFundsOrRedeen.value = 0;
+                      Get.toNamed(AppRoutes.getuserAddFund());
+                    },
                   ),
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () {
-                        controller.selectFundsOrRedeen.value = 1;
-                      },
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 10,
-                        ),
-                        decoration: BoxDecoration(
-                          color: controller.selectFundsOrRedeen.value == 1
-                              ? AppColors.primaryButtonColor
-                              : Color(0xFFFFFAE6),
-                          borderRadius: BorderRadius.circular(8),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Color(0xFF000000).withValues(alpha: .24),
-                              spreadRadius: -1,
-                              blurRadius: 9,
-                              offset: Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: Center(
-                          child: Text(
-                            "Redeem Points",
-                            style: getTextStyle(
-                              color: controller.selectFundsOrRedeen.value == 1
-                                  ? AppColors.fontColor
-                                  : Color(0xFF9C7C00),
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+                  const SizedBox(width: 20),
+                  walletButton(
+                    title: "Redeem Points",
+                    selected: controller.selectFundsOrRedeen.value == 1,
+                    onTap: () => controller.selectFundsOrRedeen.value = 1,
                   ),
                 ],
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget walletButton({
+    required String title,
+    required bool selected,
+    required VoidCallback onTap,
+  }) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          decoration: BoxDecoration(
+            color: selected
+                ? AppColors.primaryButtonColor
+                : const Color(0xFFFFFAE6),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Center(
+            child: Text(
+              title,
+              style: getTextStyle(
+                fontWeight: FontWeight.w700,
+                color: selected ? Colors.black : Colors.brown,
+              ),
+            ),
+          ),
         ),
       ),
     );

@@ -29,16 +29,44 @@ class OrderModel {
       status: json['status'] ?? '',
       date: json['collect_time'] == "ASAP"
           ? "Pick-up ASAP"
-          : (json['collect_time'] ?? "Scheduled Delivery"),
+          : "Scheduled Delivery",
       pickupAddress: json['pickup_address'] ?? "Collect from",
-      senderName: json['sender_name'] ?? "Unknown",
-      dropOffAddress:
-          json['drop_off_address'] ??
-          "Deliver to ${json['total_stops'] ?? 1} destination(s)",
+      senderName: json['sender_name'] ?? "Collect from",
+      dropOffAddress: json['drop_off_address'] ?? "Deliver to",
       deliveryLocation: json['delivery_location'] ?? "",
-      vehicleType: json['vehicle_type_id'] == 1 ? "Motorbike" : "Vehicle",
+      vehicleType: _vehicleName(json['vehicle_type_id']),
       total: double.tryParse(json['total_cost']?.toString() ?? '0') ?? 0,
       showReceipt: json['status'] == "COMPLETED",
     );
+  }
+
+  /// ✅ Add this method to convert OrderModel to JSON
+  Map<String, dynamic> toJson() => {
+    'id': orderId,
+    'status': status,
+    'collect_time': date,
+    'pickup_address': pickupAddress,
+    'sender_name': senderName,
+    'drop_off_address': dropOffAddress,
+    'delivery_location': deliveryLocation,
+    'vehicle_type': vehicleType,
+    'total_cost': total,
+    'showReceipt': showReceipt,
+  };
+
+  // ✅ vehicle name mapping
+  static String _vehicleName(dynamic id) {
+    switch (id) {
+      case 1:
+        return "Motorbike";
+      case 2:
+        return "Bicycle";
+      case 3:
+        return "Car";
+      case 4:
+        return "Truck";
+      default:
+        return "Vehicle";
+    }
   }
 }

@@ -24,12 +24,12 @@ class ProfileController extends GetxController {
 
   // ================= FETCH USER PROFILE =================
   Future<void> fetchUserProfile() async {
-    debugPrint('➡️ Fetching user profile...');
+    debugPrint(' Fetching user profile...');
     final token = await SharedPreferencesHelper.getAccessToken();
 
     if (token == null || token.isEmpty) {
       errorMessage('No access token found');
-      debugPrint('❌ No access token found');
+      debugPrint(' No access token found');
       return;
     }
 
