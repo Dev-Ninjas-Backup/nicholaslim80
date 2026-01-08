@@ -1,4 +1,3 @@
-import 'package:ZipBee/core/utils/constants/app_colors.dart';
 import 'package:ZipBee/features/user/finding_raider/model/review_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
