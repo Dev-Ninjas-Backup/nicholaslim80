@@ -10,20 +10,7 @@ class VehicleModel {
   VehicleModel(this.iconPath);
 }
 
-
 class ExpressDeliveryMain extends GetxController {
-  // trip/time state
-  var isRoundTrip = false.obs;
-  var isNowSelected = true.obs;
-  var scheduledDateTime = Rxn<DateTime>();
- Rx<double> totalAmount = Rx<double>(0.0);
-  // editing state used by widgets that allow inline title edit
-  var isEditing = false.obs;
-
-/// ─────────────────────────
-/// Location Controller
-/// ─────────────────────────
-class LocationController extends GetxController {
   // ─────────────────────────
   // Trip & Time State
   // ─────────────────────────
@@ -35,7 +22,6 @@ class LocationController extends GetxController {
   // UI Editing State
   // ─────────────────────────
   final RxBool isEditing = false.obs;
-
 
   /// fallback title (optional, editable)
   final RxString title = 'Collected from (Sender: Athena Lin)'.obs;
@@ -57,6 +43,16 @@ class LocationController extends GetxController {
   // ─────────────────────────
   final RxList<VehicleModel> vehicleList = <VehicleModel>[].obs;
   final Rxn<VehicleModel> selectedVehicle = Rxn<VehicleModel>();
+
+  // ─────────────────────────
+  // Additional State
+  // ─────────────────────────
+  final RxString orderNumber = '#1233'.obs;
+  final RxBool isDriverAssigned = false.obs;
+  final RxInt countdown = 10.obs;
+  final RxBool redeemCoins = false.obs;
+  final RxBool favoriteRiders = false.obs;
+  final Rx<double> totalAmount = Rx<double>(0.0);
 
   // ─────────────────────────
   // Init
@@ -109,26 +105,18 @@ class LocationController extends GetxController {
     if (scheduledDateTime.value == null) {
       return 'Pick Date and Time';
     }
-    return DateFormat(
-      'EEE, dd MMM, hh:mm a',
-    ).format(scheduledDateTime.value!);
+    return DateFormat('EEE, dd MMM, hh:mm a').format(scheduledDateTime.value!);
   }
 
   // ─────────────────────────
   // 🔥 Sender / Receiver Setter
   // ─────────────────────────
-  void setSender({
-    required String name,
-    required String address,
-  }) {
+  void setSender({required String name, required String address}) {
     senderName.value = name;
     senderAddress.value = address;
   }
 
-  void setReceiver({
-    required String name,
-    required String address,
-  }) {
+  void setReceiver({required String name, required String address}) {
     receiverName.value = name;
     receiverAddress.value = address;
   }
@@ -139,15 +127,10 @@ class LocationController extends GetxController {
   void updateTitle(String newTitle) {
     title.value = newTitle;
   }
-   var orderNumber = '#1233'.obs;
-  var isDriverAssigned = false.obs;
-  var countdown = 10.obs;
 
-  // ✅ Track toggle state
-  RxBool redeemCoins = false.obs;
-  RxBool favoriteRiders = false.obs;
-
-  // Update toggle values
+  // ─────────────────────────
+  // Toggle Methods
+  // ─────────────────────────
   void toggleRedeemCoins(bool value) => redeemCoins.value = value;
   void toggleFavoriteRiders(bool value) => favoriteRiders.value = value;
 }

@@ -14,9 +14,8 @@ class SenderView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final SenderController controller = Get.put(SenderController());
-    final LocationController locationController =
-        Get.find<LocationController>();
-
+    final ExpressDeliveryMain locationController =
+        Get.find<ExpressDeliveryMain>();
     return Scaffold(
       backgroundColor: AppColors.backgroungColor,
       extendBodyBehindAppBar: true,

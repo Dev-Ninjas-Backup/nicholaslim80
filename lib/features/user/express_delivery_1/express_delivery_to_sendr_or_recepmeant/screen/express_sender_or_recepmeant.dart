@@ -100,7 +100,7 @@ class ExpressToSenderOrRecepment extends StatelessWidget {
                         CollectTimeOption(
                           title: "Now",
                           selected: controller.isNowSelected.value,
-                          onTap: controller.selectNow,
+                          onTap: vehicleController.selectedServices,
                         ),
                         SizedBox(width: 16),
                         CollectTimeOption(
@@ -109,7 +109,7 @@ class ExpressToSenderOrRecepment extends StatelessWidget {
                           selected: !controller.isNowSelected.value,
                           onTap: () {
                             FocusScope.of(context).unfocus();
-                            controller.selectSchedule();
+                            vehicleController.calculationHistory();
 
                             // Open the date-time dialog
                             showDialog(

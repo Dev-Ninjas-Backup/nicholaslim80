@@ -4,13 +4,10 @@ import 'package:ZipBee/core/utils/constants/icon_path.dart';
 import 'package:ZipBee/features/user/express_delivery_1/controller/express_controller_1.dart';
 import 'package:ZipBee/features/user/express_delivery_1/widget/one_way_round_functionality.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 
 class ExpressButtonWidget extends StatelessWidget {
-  const ExpressButtonWidget({
-    super.key,
-    required this.controller,
-  });
+  const ExpressButtonWidget({super.key, required this.controller});
 
   final ExpressDeliveryMain controller;
 
@@ -86,13 +83,10 @@ class ExpressButtonWidget extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                /// HEADER
                 Row(
                   children: [
-                    Image.asset(
-                      IconPath.exparessGrey,
-                      width: 15,
-                      height: 15,
-                    ),
+                    Image.asset(IconPath.exparessGrey, width: 15, height: 15),
                     const SizedBox(width: 8),
                     Text(
                       'Fixed route',
@@ -100,112 +94,13 @@ class ExpressButtonWidget extends StatelessWidget {
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                       ),
-
-                      SizedBox(height: 4),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          OneWayRoundWidget(
-                            controller: ExpressDeliveryMain(),
-                            title: 'Collected from (Sender: Athena Lin)',
-                            subtitle: 'Sender Address',
-                            icon: Image.asset(
-                              IconPath.collectIcon,
-                              width: 14,
-                              height: 14,
-                            ),
-                          ),
-
-                          Icon(
-                            Icons.fiber_manual_record,
-                            size: 10,
-                            color: Colors.grey,
-                          ),
-                          Icon(
-                            Icons.fiber_manual_record,
-                            size: 10,
-                            color: Colors.grey,
-                          ),
-                          OneWayRoundWidget(
-                            controller: ExpressDeliveryMain(),
-                            title: 'Delivered from (Sender: Athena Lin)',
-                            subtitle: 'Delivered Address',
-                            icon: Image.asset(
-                              IconPath.deliveredIcon,
-                              width: 14,
-                              height: 14,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  )
-                : Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-
-                        spacing: 8,
-                        children: [
-                          Image.asset(
-                            IconPath.exparessGrey,
-                            width: 15,
-                            height: 15,
-                          ),
-                          Text(
-                            'Fixed route',
-                            style: getTextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 4),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          OneWayRoundWidget(
-                            controller: ExpressDeliveryMain(),
-                            title: 'Collected from (Sender: Athena Lin)',
-                            subtitle: 'Sender Address',
-                            icon: Image.asset(
-                              IconPath.collectIcon,
-                              width: 14,
-                              height: 14,
-                            ),
-                          ),
-                          Icon(
-                            Icons.fiber_manual_record,
-                            size: 10,
-                            color: Colors.grey,
-                          ),
-                          Icon(
-                            Icons.fiber_manual_record,
-                            size: 10,
-                            color: Colors.grey,
-                          ),
-                          OneWayRoundWidget(
-                            controller: ExpressDeliveryMain(),
-                            title: 'Delivered from (Sender: Athena Lin)',
-                            subtitle: 'Delivered Address',
-                            icon: Image.asset(
-                              IconPath.deliveredIcon,
-                              width: 14,
-                              height: 14,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-
                     ),
                   ],
                 ),
+
                 const SizedBox(height: 8),
 
-                /// 🔥 SENDER DATA
+                /// SENDER
                 OneWayRoundWidget(
                   controller: controller,
                   title:
@@ -221,13 +116,19 @@ class ExpressButtonWidget extends StatelessWidget {
                 ),
 
                 const SizedBox(height: 6),
-                const Icon(Icons.fiber_manual_record,
-                    size: 10, color: Colors.grey),
-                const Icon(Icons.fiber_manual_record,
-                    size: 10, color: Colors.grey),
+                const Icon(
+                  Icons.fiber_manual_record,
+                  size: 10,
+                  color: Colors.grey,
+                ),
+                const Icon(
+                  Icons.fiber_manual_record,
+                  size: 10,
+                  color: Colors.grey,
+                ),
                 const SizedBox(height: 6),
 
-                /// 🔥 RECEIVER DATA
+                /// RECEIVER
                 OneWayRoundWidget(
                   controller: controller,
                   title:
@@ -239,7 +140,6 @@ class ExpressButtonWidget extends StatelessWidget {
                     IconPath.deliveredIcon,
                     width: 14,
                     height: 14,
-
                   ),
                 ),
               ],
