@@ -1,7 +1,12 @@
+import 'dart:convert';
+
+import 'package:ZipBee/core/api_end_point/api_end_point.dart';
+import 'package:ZipBee/core/shared_prefference_service/shared_pref.dart';
 import 'package:ZipBee/core/utils/constants/icon_path.dart';
 import 'package:ZipBee/features/user/stacked/stacked_collect_from/recipient_part/recipient_screen.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
-
+import 'package:http/http.dart' as http;
 
 import '../model/model.dart';
 import '../sender_part/screen/screen.dart';
@@ -16,6 +21,11 @@ class StackedCollectFormController extends GetxController {
   // Filter names
   final List<String> filters = ["Recent", "Frequently Used", "Saved"];
 
+  // Raw lists
+  List<StackedAddressModel> _savedList = [];
+  List<StackedAddressModel> _recentList = [];
+  List<StackedAddressModel> _frequentlyList = [];
+
   @override
   void onInit() {
     super.onInit();
@@ -26,85 +36,93 @@ class StackedCollectFormController extends GetxController {
   // Change active filter tab
   void changeFilter(int index) {
     selectedFilterIndex.value = index;
-    fetchAddresses();
+    // show already fetched data if available, otherwise fetch
+    if (_savedList.isNotEmpty || _recentList.isNotEmpty || _frequentlyList.isNotEmpty) {
+      _applyFilter();
+    } else {
+      fetchAddresses();
+    }
   }
 
-  // Fetch address data (simulate API call)
+  // Fetch address data from API and categorize
   Future<void> fetchAddresses() async {
+    if (isLoading.value) return;
+
     isLoading.value = true;
-
-    // Simulated delay
-    await Future.delayed(Duration(milliseconds: 500));
-
-    // Clear previous list
     addressList.clear();
 
-    // Load mock data based on selected filter
-    switch (selectedFilterIndex.value) {
-      case 0:
-        addressList.addAll(_getRecentData());
-        break;
-      case 1:
-        addressList.addAll(_getFrequentlyUsedData());
-        break;
-      case 2:
-        addressList.addAll(_getSavedData());
-        break;
-    }
+    try {
+      final token = await SharedPreferencesHelper.getAccessToken();
+      if (token == null || token.isEmpty) {
+        isLoading.value = false;
+        return;
+      }
 
-    isLoading.value = false;
+      final uri = Uri.parse(ApiEndPoint.getDestination);
+      final response = await http.get(
+        uri,
+        headers: {"Authorization": "Bearer $token", "accept": "*/*"},
+      );
+
+      if (response.statusCode == 200) {
+        final decoded = json.decode(response.body);
+        if (decoded['success'] == true && decoded['data'] != null) {
+          final List list = decoded['data'];
+
+          // Map to model and decide icon
+          List<StackedAddressModel> all = list.map<StackedAddressModel>((e) {
+            String icon = e['type'] == 'SENDER' ? IconPath.location : IconPath.locationBlue;
+            return StackedAddressModel.fromJson(Map<String, dynamic>.from(e), iconPath: icon);
+          }).toList();
+
+          // Categorize
+          _savedList = all.where((a) => a.isSaved == true).toList();
+          _recentList = all.where((a) => a.lastUsedAt != null && a.isSaved == false).toList();
+          _frequentlyList = all.where((a) => a.useCount >= 1 && a.isSaved == false && a.lastUsedAt == null).toList();
+
+          // sort frequently by useCount desc
+          _frequentlyList.sort((a, b) => b.useCount.compareTo(a.useCount));
+
+          _applyFilter();
+        } else {
+          debugPrint('No data in destination response');
+        }
+      } else {
+        debugPrint('Destination API failed: ${response.statusCode}');
+        Get.snackbar('Error', 'Failed to load addresses');
+      }
+    } catch (e) {
+      debugPrint('Error fetching destinations: $e');
+      Get.snackbar('Error', e.toString());
+    } finally {
+      isLoading.value = false;
+    }
   }
 
-  
+  void _applyFilter() {
+    switch (selectedFilterIndex.value) {
+      case 0:
+        addressList.assignAll(_recentList);
+        break;
+      case 1:
+        addressList.assignAll(_frequentlyList);
+        break;
+      case 2:
+        addressList.assignAll(_savedList);
+        break;
+      default:
+        addressList.assignAll(_recentList);
+    }
+  }
+
   void onAddressTap(StackedAddressModel address) {
     selectedAddress.value = address;
 
-    if (selectedFilterIndex.value == 0) {
+    // decide view by address.type
+    if (address.type == 'SENDER') {
       Get.to(() => StackedSenderView(address: address));
-    } else if (selectedFilterIndex.value == 1) {
+    } else {
       Get.to(() => StackedRecipientView(address: address));
     }
-  }
-
-  // ---------- MOCK DATA ----------
-
-  List<StackedAddressModel> _getRecentData() {
-    return [
-      StackedAddressModel(
-        title: 'Current location',
-        subtitle: '420 Ang Mo Kio Ave 4, Singapore 560422',
-        iconPath: IconPath.location,
-      ),
-      StackedAddressModel(
-        title: '778 Sengkang Ave 7',
-        subtitle: '778 Sengkang Ave 7, Singapore 530778',
-        iconPath: IconPath.history,
-      ),
-    ];
-  }
-
-  List<StackedAddressModel> _getFrequentlyUsedData() {
-    return [
-      StackedAddressModel(
-        title: '560 Balestier Road',
-        subtitle: '560 Balestier Road, Singapore 329876',
-        iconPath: IconPath.history,
-      ),
-      StackedAddressModel(
-        title: '222 Sengkang Ave 2',
-        subtitle: '222 Sengkang Ave 2, Singapore 530222',
-        iconPath: IconPath.history,
-      ),
-    ];
-  }
-
-  List<StackedAddressModel> _getSavedData() {
-    return [
-      StackedAddressModel(
-        title: 'Compass Apartment',
-        subtitle: '50 Balestier Road, Singapore 330873',
-        iconPath: IconPath.history,
-      ),
-    ];
   }
 }
