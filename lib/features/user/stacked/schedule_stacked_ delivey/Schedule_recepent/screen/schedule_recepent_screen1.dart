@@ -1,7 +1,8 @@
 import 'package:ZipBee/core/utils/constants/app_colors.dart';
-import 'package:ZipBee/core/utils/constants/image_path.dart';
+import 'package:ZipBee/features/user/google_map/widget/google_map_widget.dart';
 import 'package:ZipBee/features/user/stacked/schedule_stacked_%20delivey/Schedule_recepent/widget/schedule_recepent_widget_st.dart';
 import 'package:ZipBee/features/user/stacked/stacked_screen/stacked_screen.dart';
+import 'package:ZipBee/features/user/collect_form_on_express_delivery/Sender_Part/controller_sender/sender_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -32,23 +33,25 @@ class StackedSchedulRecepmenteScreen extends StatelessWidget {
               SizedBox(
                 height: 240,
                 width: double.infinity,
-                child: Image.asset(ImagePath.map, fit: BoxFit.cover),
+                child: GoogleMapWidget(),
               ),
 
               /// FORM Section
               Container(
                 padding: EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: AppColors.backgroungColor,
                   borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
                 ),
                 child: ScheduleRecipientWidgetST(
                   title: 'Recipient',
-                  onPressed: () {
-                    // Navigate to Screen 2
-                    Get.to(
-                      () => StackedScreen(),
-                    );
+                  onPressed: () async {
+                    // Save destination via API, then navigate to StackedScreen on success
+                    final controller = Get.find<SenderController>();
+                    final ok = await controller.saveDestination();
+                    if (ok) {
+                      Get.to(() => StackedScreen());
+                    }
                   },
                 ),
               ),

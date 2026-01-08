@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:ZipBee/features/user/stacked/schedule_stacked_%20delivey/Schedule_recepent/service/destination_service.dart';
 
 class SenderController extends GetxController {
   // Text Editing Controllers for each input field
@@ -14,6 +16,9 @@ class SenderController extends GetxController {
 
   // Observable boolean for the checkbox
   final saveAddress = false.obs;
+
+  // Loading indicator for network calls
+  final isLoading = false.obs;
 
   @override
   void onInit() {
@@ -43,6 +48,38 @@ class SenderController extends GetxController {
     noteController.clear();
     saveAddress.value = false;
     isFormValid.value = false;
+  }
+
+  /// Creates a destination record on the server. Returns true on success.
+  Future<bool> saveDestination() async {
+    if (!isFormValid.value) return false;
+    isLoading.value = true;
+    EasyLoading.show(status: 'Saving...');
+
+    final body = {
+      'address': addressController.text,
+      'floor_unit': floorController.text,
+      'contact_name': nameController.text,
+      'contact_number': numberController.text,
+      'note_to_driver': noteController.text,
+      'is_saved': saveAddress.value,
+      'type': 'RECEIVER', // fixed as requested
+    };
+
+    final res = await DestinationService.createDestination(body);
+
+    isLoading.value = false;
+    EasyLoading.dismiss();
+
+    final status = res['statusCode'] as int? ?? 500;
+    if (status == 201) {
+      EasyLoading.showSuccess('Destination saved');
+      return true;
+    } else {
+      final msg = (res['body'] as Map<String, dynamic>?)?['message'] ?? 'Failed';
+      EasyLoading.showError(msg.toString());
+      return false;
+    }
   }
 
   // Clean up the controllers when the controller is disposed

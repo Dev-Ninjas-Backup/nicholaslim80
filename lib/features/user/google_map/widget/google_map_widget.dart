@@ -1,10 +1,11 @@
 import 'dart:async';
 
-import 'package:ZipBee/features/user/google_map/widget/consts.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
-import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'package:ZipBee/features/user/google_map/service/service_zone_service.dart';
+import 'package:ZipBee/features/user/collect_form_on_express_delivery/Sender_Part/controller_sender/sender_controller.dart';
+import 'package:get/get.dart';
 
 class GoogleMapWidget extends StatefulWidget {
   const GoogleMapWidget({super.key});
@@ -18,11 +19,13 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
   final Completer<GoogleMapController> _mapController =
       Completer<GoogleMapController>();
 
-  static const LatLng _source = LatLng(23.8295064, 90.5637427); // Green
-  static const LatLng _destination = LatLng(23.7806968, 90.3980995); // Ambon
+  // static const LatLng _source = LatLng(23.8295064, 90.5637427); // Green
+  // static const LatLng _destination = LatLng(23.7806968, 90.3980995); // Ambon
 
   LatLng? _currentPosition;
-  Map<PolylineId, Polyline> polylines = {};
+  LatLng? _initialFocus;
+  Marker? _selectedMarker;
+  // Map<PolylineId, Polyline> polylines = {}; // polyline drawing is commented out per request
 
   @override
   void initState() {
@@ -31,31 +34,50 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
   }
 
   Future<void> _initializeData() async {
-    // Start location tracking
+    // Fetch service zone center (centroid of first zone)
+    final zoneCenter = await ServiceZoneService.getFirstZoneCenter();
+    if (zoneCenter != null) {
+      setState(() {
+        _initialFocus = zoneCenter;
+      });
+      debugPrint('Service zone center: $_initialFocus');
+    }
+
+    // Start location tracking (keeps updating current position marker)
     await getLocationUpdate();
 
-    // Get polyline points
-    final coordinates = await getPolyLinePoints();
-    generatePolyLinePoints(coordinates);
+    // polyline generation and fitting commented out per request
+    // final coordinates = await getPolyLinePoints();
+    // generatePolyLinePoints(coordinates);
 
-    // Fit camera to route
-    await _fitCameraToPolyline(coordinates);
+    // Fit camera to route (only if polyline exists and no initial focus)
+    // if (_initialFocus == null) {
+    //   await _fitCameraToPolyline(coordinates);
+    // }
 
-    // Debug: print all route points
-    for (final p in coordinates) {
-      debugPrint("Route point: ${p.latitude}, ${p.longitude}");
-    }
+    // polyline route printing disabled (polyline generation commented out)
+    // Debug: polyline debug output disabled
   }
 
   @override
   Widget build(BuildContext context) {
+    // Show map as soon as either we have a focus or user location
+    final showMap = _initialFocus != null || _currentPosition != null;
+
     return Scaffold(
-      body: _currentPosition == null
+      body: !showMap
           ? const Center(child: CircularProgressIndicator())
           : GoogleMap(
-              onMapCreated: (controller) => _mapController.complete(controller),
-              initialCameraPosition: const CameraPosition(
-                target: LatLng(23.8022478,90.3799354),
+              onMapCreated: (controller) async {
+                if (!_mapController.isCompleted) _mapController.complete(controller);
+                // Move camera to initial focus if available, otherwise to current position
+                final target = _initialFocus ?? _currentPosition;
+                if (target != null) {
+                  await _cameraToPosition(target);
+                }
+              },
+              initialCameraPosition: CameraPosition(
+                target: _initialFocus ?? const LatLng(23.8022478, 90.3799354),
                 zoom: 11,
               ),
               markers: {
@@ -66,18 +88,34 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
                     icon: BitmapDescriptor.defaultMarkerWithHue(
                         BitmapDescriptor.hueAzure),
                   ),
-                const Marker(
-                  markerId: MarkerId('source'),
-                  position: _source,
-                ),
-                const Marker(
-                  markerId: MarkerId('destination'),
-                  position: _destination,
-                ),
+                if (_selectedMarker != null) _selectedMarker!,
+                // Static source/destination markers commented out per request
+                // const Marker(
+                //   markerId: MarkerId('source'),
+                //   position: _source,
+                // ),
+                // const Marker(
+                //   markerId: MarkerId('destination'),
+                //   position: _destination,
+                // ),
               },
-              polylines: Set<Polyline>.of(polylines.values),
+              // polylines are commented out per request
+              // polylines: Set<Polyline>.of(polylines.values),
               myLocationEnabled: true,
               myLocationButtonEnabled: true,
+              onTap: (latlng) {
+                setState(() {
+                  _selectedMarker = Marker(
+                    markerId: const MarkerId('selected'),
+                    position: latlng,
+                  );
+                });
+
+                // Update the recipient address text field with lat,lng (no geocoding)
+                final sender = Get.put(SenderController());
+                sender.addressController.text = '${latlng.latitude}, ${latlng.longitude}';
+                debugPrint('Map tapped at: ${latlng.latitude}, ${latlng.longitude}');
+              },
             ),
     );
   }
@@ -92,30 +130,6 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
     );
   }
 
-  // Fit camera to polyline bounds
-  Future<void> _fitCameraToPolyline(List<LatLng> points) async {
-    if (points.isEmpty) return;
-
-    double minLat = points.first.latitude;
-    double maxLat = points.first.latitude;
-    double minLng = points.first.longitude;
-    double maxLng = points.first.longitude;
-
-    for (final point in points) {
-      minLat = point.latitude < minLat ? point.latitude : minLat;
-      maxLat = point.latitude > maxLat ? point.latitude : maxLat;
-      minLng = point.longitude < minLng ? point.longitude : minLng;
-      maxLng = point.longitude > maxLng ? point.longitude : maxLng;
-    }
-
-    final bounds = LatLngBounds(
-      southwest: LatLng(minLat, minLng),
-      northeast: LatLng(maxLat, maxLng),
-    );
-
-    final controller = await _mapController.future;
-    controller.animateCamera(CameraUpdate.newLatLngBounds(bounds, 80));
-  }
 
   // Track live location
   Future<void> getLocationUpdate() async {
@@ -143,7 +157,7 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
             currentLocation.longitude!,
           );
         });
-        // _cameraToPosition(_currentPosition!);
+        // Do not auto-move the camera on every location update to preserve user's view
         // debugPrint("Current Location: $_currentPosition");
       }
     });
@@ -151,43 +165,14 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
 
   // Get polyline points using Flutter Polyline Points
   Future<List<LatLng>> getPolyLinePoints() async {
-    List<LatLng> polylineCoordinates = [];
-    final PolylinePoints polylinePoints = PolylinePoints(apiKey: GoogleMapAPIKey);
-
-    final PolylineResult result =
-        await polylinePoints.getRouteBetweenCoordinates(
-      request: PolylineRequest(
-        origin: PointLatLng(_source.latitude, _source.longitude),
-        destination: PointLatLng(_destination.latitude, _destination.longitude),
-        mode: TravelMode.driving,
-      ),
-    );
-
-    if (result.points.isNotEmpty) {
-      for (final point in result.points) {
-        polylineCoordinates.add(
-          LatLng(point.latitude, point.longitude),
-        );
-      }
-    } else {
-      debugPrint("Polyline error: ${result.errorMessage}");
-    }
-
-    return polylineCoordinates;
+    // Polyline generation is currently disabled per request.
+    debugPrint('getPolyLinePoints: polyline generation disabled');
+    return [];
   }
 
-  // Draw polyline on map
+  // Draw polyline on map (disabled)
   void generatePolyLinePoints(List<LatLng> polylineCoordinates) {
-    final PolylineId id = const PolylineId("poly");
-    final Polyline polyline = Polyline(
-      polylineId: id,
-      color: Colors.blue,
-      points: polylineCoordinates,
-      width: 5,
-    );
-
-    setState(() {
-      polylines[id] = polyline;
-    });
+    // polyline drawing disabled per request
+    debugPrint('generatePolyLinePoints: disabled');
   }
 }
