@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:ZipBee/core/shared_prefference_service/shared_pref.dart';
 import 'package:ZipBee/core/utils/constants/icon_path.dart';
 import 'package:ZipBee/core/utils/constants/image_path.dart';
@@ -9,19 +11,23 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
-
 import '../../../../core/api_end_point/api_end_point.dart';
 
 class HomeController extends GetxController {
+  /// ================= CONTROLLERS =================
   var controller = Get.put(LoginSignupController());
+
+  /// ================= OBSERVABLES =================
   final userName = 'Good Morning!'.obs;
   final parcelStatus = 'Live delivery status'.obs;
 
-  final walletBalance = 127.45.obs;
-  final availablePoints = 500.obs;
+  final walletBalance = 0.0.obs; // current wallet balance
+  final availablePoints = 0.obs; // reward points
 
   final selectedService = 'Standard'.obs;
+  final selectedVehicleId = RxnString();
 
+  /// ================= VEHICLES =================
   final vehicles = <Map<String, dynamic>>[
     {
       'id': 'instant',
@@ -57,9 +63,43 @@ class HomeController extends GetxController {
     },
   ].obs;
 
-  final selectedVehicleId = RxnString();
+  /// ================= DRAWER =================
+  var drawerItem = <DrawerModel>[].obs;
 
-  // Show logout dialog
+  /// ================= PROFILE API =================
+  Future<void> fetchUserProfile() async {
+    try {
+      final token = await SharedPreferencesHelper.getAccessToken();
+      if (token == null || token.isEmpty) return;
+
+      final response = await http.get(
+        Uri.parse(ApiEndPoint.profile),
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json",
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final body = jsonDecode(response.body);
+        final data = body['data'];
+
+        /// Bind values
+        userName.value = "Good Morning, ${data['username'] ?? ''}";
+
+        walletBalance.value = (data['currentWalletBalance'] ?? 0).toDouble();
+        availablePoints.value = data['reward_points'] ?? 0;
+
+        debugPrint("✅ Profile loaded with current balance & points");
+      } else {
+        debugPrint("❌ Profile API failed: ${response.statusCode}");
+      }
+    } catch (e) {
+      debugPrint("❌ PROFILE ERROR: $e");
+    }
+  }
+
+  /// ================= LOGOUT =================
   void showLogoutDialog() {
     Get.dialog(
       LogoutDialog(
@@ -71,19 +111,16 @@ class HomeController extends GetxController {
     );
   }
 
-  // Logout function: calls API, clears local data, navigates to login
   Future<void> logout() async {
     try {
       final token = await SharedPreferencesHelper.getAccessToken();
 
       if (token == null || token.isEmpty) {
-        // No token, just clear local data and navigate
         await SharedPreferencesHelper.logout();
         Get.offAllNamed(AppRoutes.loginScreen);
         return;
       }
 
-      // Call logout API
       final response = await http.post(
         Uri.parse(ApiEndPoint.logOut),
         headers: {
@@ -95,75 +132,63 @@ class HomeController extends GetxController {
       if (response.statusCode == 200) {
         debugPrint("Logout API success");
       } else {
-        debugPrint("Logout API failed with status: ${response.statusCode}");
+        debugPrint("Logout API failed: ${response.statusCode}");
       }
     } catch (e) {
       debugPrint("LOGOUT ERROR: $e");
     } finally {
-      // Clear local data and navigate to login
       await SharedPreferencesHelper.logout();
       Get.offAllNamed(AppRoutes.loginScreen);
     }
   }
 
+  /// ================= ACTIONS =================
   void selectService(String service) => selectedService.value = service;
   void selectVehicle(String id) => selectedVehicleId.value = id;
 
-  var drawerItem = <DrawerModel>[].obs;
-
+  /// ================= INIT =================
   @override
   void onInit() {
+    fetchUserProfile();
+
     drawerItem.addAll([
       DrawerModel(
         iconUrl: IconPath.notificationIcon2,
         iconname: "Notifications",
-        ontap: () {
-          Get.toNamed(AppRoutes.getUserNotification());
-        },
+        ontap: () => Get.toNamed(AppRoutes.getUserNotification()),
       ),
       DrawerModel(
         iconUrl: IconPath.savedIcon,
         iconname: "Saved Places",
-        ontap: () {
-          Get.toNamed(AppRoutes.savedPlaces);
-        },
+        ontap: () => Get.toNamed(AppRoutes.savedPlaces),
       ),
       DrawerModel(
         iconUrl: IconPath.walletIcon,
         iconname: "My Wallet",
-        ontap: () {
-          Get.toNamed(AppRoutes.myWalletUser);
-        },
+        ontap: () => Get.toNamed(AppRoutes.myWalletUser),
       ),
       DrawerModel(
         iconUrl: IconPath.referIcon,
         iconname: "Refer & Earn",
-        ontap: () {
-          Get.toNamed(AppRoutes.getreferAndEarnScreen());
-        },
+        ontap: () => Get.toNamed(AppRoutes.getreferAndEarnScreen()),
       ),
       DrawerModel(
         iconUrl: IconPath.ridersicon,
         iconname: "My Riders",
-        ontap: () {
-          Get.toNamed(AppRoutes.myRidersScreen);
-        },
+        ontap: () => Get.toNamed(AppRoutes.myRidersScreen),
       ),
       DrawerModel(
         iconUrl: IconPath.supportIcon,
         iconname: "Support",
-        ontap: () {
-          Get.toNamed(AppRoutes.supportScreen);
-        },
+        ontap: () => Get.toNamed(AppRoutes.supportScreen),
       ),
       DrawerModel(
         iconUrl: IconPath.logOutIcon,
         iconname: "Logout",
-        ontap: () {
-          showLogoutDialog();
-        },
+        ontap: () => showLogoutDialog(),
       ),
     ]);
+
     super.onInit();
   }
 }
