@@ -6,11 +6,10 @@ import 'package:ZipBee/features/user/express_delivery_1/widget/one_way_round_fun
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-
 class ExpressButtonWidget extends StatelessWidget {
   const ExpressButtonWidget({super.key, required this.controller});
 
-  final LocationController controller;
+  final ExpressDeliveryMain controller;
 
   @override
   Widget build(BuildContext context) {
@@ -109,7 +108,7 @@ class ExpressButtonWidget extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           OneWayRoundWidget(
-                            controller: LocationController(),
+                            controller: ExpressDeliveryMain(),
                             title: 'Collected from (Sender: Athena Lin)',
                             subtitle: 'Sender Address',
                             icon: Image.asset(
@@ -130,7 +129,7 @@ class ExpressButtonWidget extends StatelessWidget {
                             color: Colors.grey,
                           ),
                           OneWayRoundWidget(
-                            controller: LocationController(),
+                            controller: ExpressDeliveryMain(),
                             title: 'Delivered from (Sender: Athena Lin)',
                             subtitle: 'Delivered Address',
                             icon: Image.asset(
@@ -170,7 +169,7 @@ class ExpressButtonWidget extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           OneWayRoundWidget(
-                            controller: LocationController(),
+                            controller: ExpressDeliveryMain(),
                             title: 'Collected from (Sender: Athena Lin)',
                             subtitle: 'Sender Address',
                             icon: Image.asset(
@@ -190,7 +189,7 @@ class ExpressButtonWidget extends StatelessWidget {
                             color: Colors.grey,
                           ),
                           OneWayRoundWidget(
-                            controller: LocationController(),
+                            controller: ExpressDeliveryMain(),
                             title: 'Delivered from (Sender: Athena Lin)',
                             subtitle: 'Delivered Address',
                             icon: Image.asset(

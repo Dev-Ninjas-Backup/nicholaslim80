@@ -6,11 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 
-
 class SelectLocationWidget extends StatelessWidget {
   const SelectLocationWidget({super.key, required this.controller});
 
-  final LocationController controller;
+  final ExpressDeliveryMain controller;
 
   @override
   Widget build(BuildContext context) {

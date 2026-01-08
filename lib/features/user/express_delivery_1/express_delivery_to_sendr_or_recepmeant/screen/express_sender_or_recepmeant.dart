@@ -16,7 +16,7 @@ import 'package:get/get.dart';
 import '../../../Veicale_Type_on_Exprees_Delivery/controller/vehicle_secation_controller.dart';
 
 class ExpressToSenderOrRecepment extends StatelessWidget {
-  final LocationController controller = Get.put(LocationController());
+  final ExpressDeliveryMain controller = Get.put(ExpressDeliveryMain());
   final VehicleController vehicleController = Get.find<VehicleController>();
 
   ExpressToSenderOrRecepment({super.key});
@@ -153,7 +153,7 @@ class ExpressToSenderOrRecepment extends StatelessWidget {
 
                 // 🔹 Order Review Section
                 OrderReviewWidget(
-                     vehicleController: vehicleController,
+                  vehicleController: vehicleController,
                   total: vehicleController.calculateTotal(),
                   calculationHistory: vehicleController.calculationHistory
                       .toList(),

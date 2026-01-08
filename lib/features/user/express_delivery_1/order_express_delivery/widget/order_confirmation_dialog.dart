@@ -1,11 +1,11 @@
 import 'package:ZipBee/core/common/styles/global_text_style.dart';
-import 'package:ZipBee/features/user/order/controller/order_controller.dart';
+import 'package:ZipBee/features/user/express_delivery_1/controller/express_controller_1.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 
 class OrderConfirmationDialog {
-  static final OrderController controller = Get.put(OrderController());
+  static final ExpressDeliveryMain controller = Get.put(ExpressDeliveryMain());
 
   static void show() {
     Get.dialog(

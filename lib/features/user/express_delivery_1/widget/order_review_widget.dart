@@ -42,7 +42,7 @@ class OrderReviewWidget extends StatelessWidget {
           SizedBox(width: 12),
           Expanded(child: _totalInfo()),
           SizedBox(width: 12),
-          _reviewOrderButton(),
+          // _reviewOrderButton(),
         ],
       ),
     );
@@ -81,31 +81,31 @@ class OrderReviewWidget extends StatelessWidget {
     );
   }
 
-  // Reusable review order button
-  Widget _reviewOrderButton() {
-    return FilledButton(
-      onPressed: onReviewOrderPressed ?? _defaultReviewOrderAction,
-      style: FilledButton.styleFrom(
-        backgroundColor: Colors.amber,
-        foregroundColor: Colors.white,
-        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-      ),
-      child: Text(
-        'Review Order',
-        style: getTextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-      ),
-    );
-  }
+  // // Reusable review order button
+  // Widget _reviewOrderButton() {
+  //   return FilledButton(
+  //     onPressed: onReviewOrderPressed ?? _defaultReviewOrderAction,
+  //     style: FilledButton.styleFrom(
+  //       backgroundColor: Colors.amber,
+  //       foregroundColor: Colors.white,
+  //       padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+  //       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+  //     ),
+  //     child: Text(
+  //       'Review Order',
+  //       style: getTextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+  //     ),
+  //   );
+  // }
 
   // Default action if no callback is passed
-  void _defaultReviewOrderAction() {
-    final OrderController orderController = Get.find<OrderController>();
-    orderController.totalAmount.value = total;
+  // void _defaultReviewOrderAction() {
+  //   final OrderController orderController = Get.find<OrderController>();
+  //   orderController.totalAmount.value = total;
 
-    // Call the reusable dialog function
-    showOrderConfirmationDialog(orderController);
-  }
+  //   // Call the reusable dialog function
+  //   showOrderConfirmationDialog(orderController);
+  // }
 
   void _openHistoryPopup(BuildContext context) {
     showModalBottomSheet(
