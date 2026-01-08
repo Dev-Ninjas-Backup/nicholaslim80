@@ -7,7 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ExpressButtonWidget extends StatelessWidget {
-  const ExpressButtonWidget({super.key, required this.controller});
+  const ExpressButtonWidget({
+    super.key,
+    required this.controller,
+  });
 
   final ExpressDeliveryMain controller;
 
@@ -18,6 +21,7 @@ class ExpressButtonWidget extends StatelessWidget {
 
       return Column(
         children: [
+          /// ONE WAY / ROUND
           Card(
             child: Row(
               children: [
@@ -25,20 +29,19 @@ class ExpressButtonWidget extends StatelessWidget {
                   child: GestureDetector(
                     onTap: () => controller.toggleTripType(false),
                     child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      alignment: Alignment.center,
                       decoration: BoxDecoration(
                         color: !isRound
                             ? AppColors.primaryButtonColor
                             : Colors.transparent,
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      padding: EdgeInsets.symmetric(vertical: 12),
-                      alignment: Alignment.center,
                       child: Text(
-                        "One way",
+                        'One way',
                         style: getTextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black,
                         ),
                       ),
                     ),
@@ -48,20 +51,19 @@ class ExpressButtonWidget extends StatelessWidget {
                   child: GestureDetector(
                     onTap: () => controller.toggleTripType(true),
                     child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      alignment: Alignment.center,
                       decoration: BoxDecoration(
                         color: isRound
                             ? AppColors.primaryButtonColor
                             : Colors.transparent,
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      padding: EdgeInsets.symmetric(vertical: 12),
-                      alignment: Alignment.center,
                       child: Text(
-                        "Round",
+                        'Round',
                         style: getTextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black,
                         ),
                       ),
                     ),
@@ -71,38 +73,34 @@ class ExpressButtonWidget extends StatelessWidget {
             ),
           ),
 
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
 
+          /// ROUTE INFO
           Container(
             width: double.infinity,
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: Colors.grey[100],
               borderRadius: BorderRadius.circular(10),
             ),
-            child: isRound
-                ? Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-
-                        spacing: 8,
-                        children: [
-                          Image.asset(
-                            IconPath.exparessGrey,
-                            width: 15,
-                            height: 15,
-                          ),
-                          Text(
-                            'Fixed route',
-                            style: getTextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Image.asset(
+                      IconPath.exparessGrey,
+                      width: 15,
+                      height: 15,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Fixed route',
+                      style: getTextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
                       ),
+
                       SizedBox(height: 4),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -201,7 +199,51 @@ class ExpressButtonWidget extends StatelessWidget {
                         ],
                       ),
                     ],
+
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+
+                /// 🔥 SENDER DATA
+                OneWayRoundWidget(
+                  controller: controller,
+                  title:
+                      'Collected from (Sender: ${controller.senderName.value.isEmpty ? 'N/A' : controller.senderName.value})',
+                  subtitle: controller.senderAddress.value.isEmpty
+                      ? 'Sender Address'
+                      : controller.senderAddress.value,
+                  icon: Image.asset(
+                    IconPath.collectIcon,
+                    width: 14,
+                    height: 14,
                   ),
+                ),
+
+                const SizedBox(height: 6),
+                const Icon(Icons.fiber_manual_record,
+                    size: 10, color: Colors.grey),
+                const Icon(Icons.fiber_manual_record,
+                    size: 10, color: Colors.grey),
+                const SizedBox(height: 6),
+
+                /// 🔥 RECEIVER DATA
+                OneWayRoundWidget(
+                  controller: controller,
+                  title:
+                      'Delivered to (Receiver: ${controller.receiverName.value.isEmpty ? 'N/A' : controller.receiverName.value})',
+                  subtitle: controller.receiverAddress.value.isEmpty
+                      ? 'Delivered Address'
+                      : controller.receiverAddress.value,
+                  icon: Image.asset(
+                    IconPath.deliveredIcon,
+                    width: 14,
+                    height: 14,
+
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       );

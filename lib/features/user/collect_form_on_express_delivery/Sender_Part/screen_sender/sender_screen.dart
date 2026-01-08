@@ -1,156 +1,175 @@
 import 'package:ZipBee/core/common/styles/global_text_style.dart';
 import 'package:ZipBee/core/utils/constants/app_colors.dart';
-import 'package:ZipBee/core/utils/constants/image_path.dart';
 import 'package:ZipBee/features/user/collect_form_on_express_delivery/Recipient_part/recipient_screen.dart';
 import 'package:ZipBee/features/user/collect_form_on_express_delivery/Sender_Part/controller_sender/sender_controller.dart';
 import 'package:ZipBee/features/user/collect_form_on_express_delivery/Sender_Part/widget_sender/text_filed_widget.dart';
+import 'package:ZipBee/features/user/google_map/widget/google_map_widget.dart';
+import 'package:ZipBee/features/user/express_delivery_1/controller/express_controller_1.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-
 class SenderView extends StatelessWidget {
-  //final AddressModel address;
   const SenderView({super.key});
 
   @override
   Widget build(BuildContext context) {
     final SenderController controller = Get.put(SenderController());
+    final LocationController locationController =
+        Get.find<LocationController>();
 
     return Scaffold(
       backgroundColor: AppColors.backgroungColor,
+      extendBodyBehindAppBar: true,
+
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          onPressed: () => Get.back(),
-          icon: Icon(Icons.arrow_back, color: Colors.black),
+        leading: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: InkWell(
+            onTap: () => Get.back(),
+            borderRadius: BorderRadius.circular(30),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: const Icon(Icons.arrow_back, color: Colors.black),
+            ),
+          ),
         ),
       ),
-      extendBodyBehindAppBar: true,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              /// MAP SECTION
-              SizedBox(
-                height: 240,
-                width: double.infinity,
-                child: Image.asset(
-                  ImagePath.map,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                ),
-              ),
 
-              /// FORM SECTION
-              Container(
-                padding: EdgeInsets.all(20.0),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Sender",
-                      style: getTextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            SizedBox(
+              height: 240,
+              width: double.infinity,
+              child: GoogleMapWidget(),
+            ),
+
+            Container(
+              padding: const EdgeInsets.all(20.0),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Sender",
+                    style: getTextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+
+                  CustomTextField(
+                    controller: controller.addressController,
+                    label: "Address*",
+                  ),
+                  const SizedBox(height: 10),
+
+                  CustomTextField(
+                    controller: controller.floorController,
+                    label: "Floor or unit no.*",
+                  ),
+                  const SizedBox(height: 10),
+
+                  CustomTextField(
+                    controller: controller.nameController,
+                    label: "Contact name*",
+                  ),
+                  const SizedBox(height: 10),
+
+                  CustomTextField(
+                    controller: controller.numberController,
+                    label: "Contact number*",
+                    keyboardType: TextInputType.phone,
+                  ),
+                  const SizedBox(height: 10),
+
+                  CustomTextField(
+                    controller: controller.noteController,
+                    label: "Note to driver",
+                    maxLines: 2,
+                  ),
+                  const SizedBox(height: 8),
+
+                  Row(
+                    children: [
+                      Obx(
+                        () => Checkbox(
+                          value: controller.saveAddress.value,
+                          onChanged: (v) =>
+                              controller.saveAddress.value = v ?? false,
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 10),
-                    CustomTextField(
-                      controller: controller.addressController,
-                      label: "Address*",
-                    ),
-                    SizedBox(height: 10),
-                    CustomTextField(
-                      controller: controller.floorController,
-                      label: "Floor or unit no.*",
-                      maxLines: 1,
-                      maxLength: 120,
-                    ),
-                    SizedBox(height: 10),
-                    CustomTextField(
-                      controller: controller.nameController,
-                      label: "Contact name*",
-                    ),
-                    SizedBox(height: 10),
-                    CustomTextField(
-                      controller: controller.numberController,
-                      label: "Contact number*",
-                      keyboardType: TextInputType.phone,
-                      suffixIcon: Icon(Icons.person_outline),
-                    ),
-                    SizedBox(height: 10),
-                    CustomTextField(
-                      controller: controller.noteController,
-                      label: "Note to driver",
-                      maxLines: 2,
-                      maxLength: 120,
-                    ),
-                    SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Obx(
-                          () => Checkbox(
-                            value: controller.saveAddress.value,
-                            onChanged: (value) =>
-                                controller.saveAddress.value = value ?? false,
+                      Text(
+                        "Save this address",
+                        style: getTextStyle(
+                          color: Colors.grey.shade600,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+
+                  /// ✅ CONFIRM
+                  Obx(
+                    () => SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: controller.isFormValid.value
+                            ? () {
+                                /// 🔥 SET SENDER DATA
+                                locationController.setSender(
+                                  name: controller.nameController.text,
+                                  address: controller.addressController.text,
+                                );
+
+                                Get.to(const RecipientView());
+
+                                /// clear after navigation
+                                controller.clearForm();
+                              }
+                            : null,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: controller.isFormValid.value
+                              ? Colors.yellow.shade700
+                              : Colors.grey.shade300,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        Text(
-                          "Save this address",
+                        child: Text(
+                          "Confirm",
                           style: getTextStyle(
-                            color: Colors.grey.shade600,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 16),
-
-                    /// CONFIRM BUTTON
-                    Obx(
-                      () => SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: controller.isFormValid.value
-                              ? () {
-                                  controller.clearForm();
-                                  Get.to(RecipientView());
-                                  // Get.toNamed(
-                                  //   AppRoutes.getexpressSenderOrRecepment(),
-                                  // );
-                                }
-                              : null,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: controller.isFormValid.value
-                                ? Colors.yellow.shade700
-                                : Colors.grey.shade300,
-                            padding: EdgeInsets.symmetric(vertical: 16),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          child: Text(
-                            "Confirm",
-                            style: getTextStyle(
-                              fontSize: 18,
-                              color: controller.isFormValid.value
-                                  ? Colors.black
-                                  : Colors.grey.shade600,
-                            ),
+                            fontSize: 18,
+                            color: controller.isFormValid.value
+                                ? Colors.black
+                                : Colors.grey.shade600,
                           ),
                         ),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
