@@ -36,7 +36,7 @@ class ScheduleRecipientWidgetST extends StatelessWidget {
 
         CustomTextField(
           controller: controller.floorController,
-          label: "Floor or unit no.*",
+          label: "Details Address (Floor, Building, Street)*",
           maxLines: 1,
           maxLength: 120,
         ),

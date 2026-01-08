@@ -1,80 +1,31 @@
 // ignore_for_file: file_names
 
+import 'dart:convert';
+
+import 'package:ZipBee/core/api_end_point/api_end_point.dart';
 import 'package:ZipBee/core/utils/constants/icon_path.dart';
 import 'package:ZipBee/features/user/Veicale_Type_on_Exprees_Delivery/models/vehicle_data_model.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+import 'package:logger/logger.dart';
 
 class VehicleController extends GetxController {
+  final Logger _logger = Logger(
+    printer: PrettyPrinter(
+      methodCount: 1,
+      errorMethodCount: 5,
+      lineLength: 80,
+      printEmojis: true,
+      printTime: false,
+    ),
+  );
+
   final selectedVehicle = Rxn<Vehicle>();
   final selectedServices = <AdditionalService>[].obs;
   final calculationHistory = <String>[].obs;
 
-  final List<Vehicle> _allVehicles = [
-    Vehicle(
-      name: 'Courier',
-      type: 'Courier',
-      subtitle: 'Perfect for small goods, with a faster order pickup time',
-      price: 15.0,
-      details: '40x30x30 cm - Up to 8 kg',
-      imageAsset: IconPath.courierIcon,
-    ),
-    Vehicle(
-      name: 'Car',
-      type: 'Car',
-      subtitle: 'Car delivery of medium size items',
-      price: 15.0,
-      details: '70x50x50 cm - Up to 20 kg',
-      imageAsset: IconPath.realCar,
-    ),
-    Vehicle(
-      name: 'MPV',
-      type: 'Car',
-      subtitle: 'Ideal for small-medium size carton boxes, mini hamper',
-      price: 25.0,
-      details: '110x80x50 cm - Up to 50 kg',
-      imageAsset: IconPath.realCar,
-    ),
-    Vehicle(
-      name: '1.7 m Van',
-      type: 'Van',
-      subtitle: 'Truck delivery of large & bulky items',
-      price: 30.0,
-      details: '160x120x100 cm - Up to 400 kg',
-      imageAsset: IconPath.van,
-    ),
-    Vehicle(
-      name: '2.4 m Van',
-      type: 'Van',
-      subtitle: 'Van delivery of medium-large size items',
-      price: 30.0,
-      details: '160x120x100 cm - Up to 400 kg',
-      imageAsset: IconPath.van,
-    ),
-    Vehicle(
-      name: '10 ft Truck',
-      type: 'Truck',
-      subtitle: 'Delivery of multiple large & bulky items',
-      price: 50.0,
-      details: '420x170x190 cm - Up to 2000 kg',
-      imageAsset: IconPath.trunk1,
-    ),
-    Vehicle(
-      name: '14 ft Truck',
-      type: 'Truck',
-      subtitle: 'Delivery of multiple large & bulky items',
-      price: 50.0,
-      details: '420x170x190 cm - Up to 2000 kg',
-      imageAsset: IconPath.trunk2,
-    ),
-    Vehicle(
-      name: '24 ft Truck',
-      type: 'Truck',
-      subtitle: 'Delivery of multiple very large & bulky items',
-      price: 50.0,
-      details: '420x170x190 cm - Up to 2000 kg',
-      imageAsset: IconPath.trunk3,
-    ),
-  ];
+  final isLoading = false.obs;
+  final List<Vehicle> _allVehicles = [];
 
   final List<AdditionalService> _allServices = [
     AdditionalService(
@@ -97,6 +48,75 @@ class VehicleController extends GetxController {
     AdditionalService(name: 'Open/Box', price: 20.0, applicableTo: ['Truck']),
   ];
 
+  @override
+  void onInit() {
+    _logger.i('VehicleController init');
+    fetchVehicleTypes();
+    super.onInit();
+  }
+
+  // ================= API =================
+
+  Future<void> fetchVehicleTypes() async {
+    try {
+      isLoading.value = true;
+      _logger.i('Fetching vehicle types');
+
+      final response = await http.get(
+        Uri.parse(ApiEndPoint.vehicleTypes),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      _logger.i('API status: ${response.statusCode}');
+
+      if (response.statusCode == 200) {
+        final decoded = jsonDecode(response.body);
+
+        if (decoded['success'] == true) {
+          final List data = decoded['data'];
+
+          _allVehicles
+            ..clear()
+            ..addAll(
+              data.map<Vehicle>((e) => Vehicle(
+                    id: e['id'] ?? 0,
+                    name: e['vehicle_type'],
+                    type: _mapType(e['vehicle_type']),
+                    subtitle: _buildSubtitle(e['vehicle_type']),
+                    price: double.parse(e['base_price'].toString()),
+                    details:
+                        "${e['dimension']} - Up to ${e['max_load']} kg",
+                    imageAsset: _mapIcon(e['vehicle_type']),
+                    peakPricing: e['peak_pricing'] ?? false,
+                  )),
+            );
+
+          _logger.i(
+            'Vehicle loaded: ${_allVehicles.length}',
+          );
+        } else {
+          _logger.w(
+            'API success=false | message: ${decoded['message']}',
+          );
+        }
+      } else {
+        _logger.e('API failed: ${response.statusCode}');
+      }
+    } catch (e, stack) {
+      _logger.e(
+        'Vehicle API exception',
+        error: e,
+        stackTrace: stack,
+      );
+      Get.snackbar('Error', 'Failed to load vehicle types');
+    } finally {
+      isLoading.value = false;
+      update();
+    }
+  }
+
+  // ================= HELPERS =================
+
   List<Vehicle> getVehiclesForType(String type) =>
       _allVehicles.where((v) => v.type == type).toList();
 
@@ -109,15 +129,12 @@ class VehicleController extends GetxController {
   }
 
   void selectVehicle(Vehicle vehicle) {
-    if (selectedVehicle.value == vehicle) {
-      selectedVehicle.value = null;
-      selectedServices.clear();
-      calculationHistory.clear();
-    } else {
-      selectedVehicle.value = vehicle;
-      selectedServices.clear();
-      _updateHistory();
-    }
+    selectedVehicle.value =
+        selectedVehicle.value == vehicle ? null : vehicle;
+    selectedServices.clear();
+    _updateHistory();
+
+    _logger.i('Vehicle selected: ${vehicle.name}');
   }
 
   void toggleService(AdditionalService service) {
@@ -125,12 +142,13 @@ class VehicleController extends GetxController {
         ? selectedServices.remove(service)
         : selectedServices.add(service);
 
+    _logger.i('Service toggled: ${service.name}');
     _updateHistory();
   }
 
   double calculateTotal() {
     double total = selectedVehicle.value?.price ?? 0;
-    total += selectedServices.fold(0.0, (sum, item) => sum + item.price);
+    total += selectedServices.fold(0.0, (s, e) => s + e.price);
     return total;
   }
 
@@ -144,9 +162,39 @@ class VehicleController extends GetxController {
     }
 
     for (var s in selectedServices) {
-      calculationHistory.add("${s.name}: S\$${s.price.toStringAsFixed(2)}");
+      calculationHistory.add(
+        "${s.name}: S\$${s.price.toStringAsFixed(2)}",
+      );
     }
   }
 
   bool get isOrderReady => selectedVehicle.value != null;
+
+  // ================= MAPPERS =================
+
+  String _mapType(String apiType) {
+    final t = apiType.toLowerCase();
+    if (t.contains('truck')) return 'Truck';
+    if (t.contains('van')) return 'Van';
+    if (t.contains('car') || t.contains('suv')) return 'Car';
+    return 'Courier';
+  }
+
+  String _buildSubtitle(String type) {
+    final t = type.toLowerCase();
+    if (t.contains('truck')) return 'Delivery of large & bulky items';
+    if (t.contains('van')) return 'Van delivery of medium-large items';
+    if (t.contains('car') || t.contains('suv')) {
+      return 'Car delivery of medium size items';
+    }
+    return 'Perfect for small goods, with a faster order pickup time';
+  }
+
+  String _mapIcon(String type) {
+    final t = type.toLowerCase();
+    if (t.contains('truck')) return IconPath.trunk1;
+    if (t.contains('van')) return IconPath.van;
+    if (t.contains('car') || t.contains('suv')) return IconPath.realCar;
+    return IconPath.courierIcon;
+  }
 }
