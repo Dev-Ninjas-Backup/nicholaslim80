@@ -23,5 +23,6 @@ class ApiEndPoint {
   static const String userProfile = '$baseUrl/users/{id}';
   static const String toggleFavorite = '$baseUrl/my-raider';
   static const String getDestination = '$baseUrl/destination';
-
+  static const String walletHistory =
+      '$baseUrl/wallet/user/walletHistory/{userId}';
 }

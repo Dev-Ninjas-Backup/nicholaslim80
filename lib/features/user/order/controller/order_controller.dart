@@ -29,7 +29,10 @@ class OrderController extends GetxController {
   int page = 1;
   final int limit = 20;
 
-  // Status mapping
+  // ✅ sender name from profile
+  String senderName = "Collect from";
+
+  // ---------------- STATUS ----------------
   String get selectedStatus {
     switch (selectOrderListIndex.value) {
       case 0:
@@ -43,135 +46,123 @@ class OrderController extends GetxController {
     }
   }
 
+  // To track if all pages loaded
+  final RxBool allLoaded = false.obs;
+
   @override
   void onInit() {
     super.onInit();
-    debugPrint("OrderController initialized. Fetching orders...");
+    fetchProfile();
     fetchOrders(isRefresh: true);
   }
 
-  /// Fetch all destinations for current user
-  Future<List<Map<String, dynamic>>> fetchAllDestinations() async {
+  // =================================================
+  // PROFILE API (ONLY FOR USER NAME)
+  // =================================================
+  Future<void> fetchProfile() async {
     try {
       final token = await SharedPreferencesHelper.getAccessToken();
-      debugPrint("Access token for destinations: $token");
-
-      if (token == null || token.isEmpty) return [];
-
-      final uri = Uri.parse(ApiEndPoint.getDestination);
-      debugPrint("Fetching all destinations: $uri");
+      if (token == null || token.isEmpty) return;
 
       final response = await http.get(
-        uri,
-        headers: {"Authorization": "Bearer $token", "accept": "*/*"},
+        Uri.parse(ApiEndPoint.profile),
+        headers: {"Authorization": "Bearer $token"},
       );
-
-      debugPrint("Destinations response status: ${response.statusCode}");
-      debugPrint("Destinations response body: ${response.body}");
 
       if (response.statusCode == 200) {
         final decoded = json.decode(response.body);
-        if (decoded['success'] == true && decoded['data'] != null) {
-          debugPrint("Total destinations fetched: ${decoded['data'].length}");
-          return List<Map<String, dynamic>>.from(decoded['data']);
-        }
+        senderName = decoded['data']['username'] ?? "Collect from";
+        debugPrint("Profile fetched: $senderName");
       }
     } catch (e) {
-      debugPrint("Error fetching destinations: $e");
+      debugPrint("Profile error: $e");
     }
-    return [];
   }
 
+  // =================================================
+  // ORDERS
+  // =================================================
   Future<void> fetchOrders({bool isRefresh = false}) async {
-    if (isLoading.value) {
-      debugPrint("Already loading orders. Skipping fetch.");
-      return;
-    }
+    if (isLoading.value || allLoaded.value) return;
 
     if (isRefresh) {
       page = 1;
       orderList.clear();
-      debugPrint("Refreshing orders. Page reset to 1, order list cleared.");
+      allLoaded.value = false;
     }
 
     isLoading.value = true;
-    debugPrint(
-      "Fetching orders... Status: $selectedStatus, Page: $page, Limit: $limit",
-    );
 
     try {
       final token = await SharedPreferencesHelper.getAccessToken();
-      debugPrint("Access token for order API: $token");
       if (token == null || token.isEmpty) return;
-
-      // --- Fetch all destinations once ---
-      final allDestinations = await fetchAllDestinations();
 
       final uri = Uri.parse(
         "${ApiEndPoint.order}?status=$selectedStatus&page=$page&limit=$limit",
       );
-      debugPrint("Order API URL: $uri");
+
+      debugPrint("Fetching orders: $uri");
 
       final response = await http.get(
         uri,
         headers: {"Authorization": "Bearer $token", "accept": "*/*"},
       );
 
-      debugPrint("Order response status: ${response.statusCode}");
-      debugPrint("Order response body: ${response.body}");
-
       if (response.statusCode == 200) {
         final decoded = json.decode(response.body);
         final List list = decoded['data']['data'];
-        debugPrint("Number of orders fetched: ${list.length}");
+
+        if (list.isEmpty) {
+          allLoaded.value = true;
+        }
 
         for (var e in list) {
           e['status'] = selectedStatus;
-          debugPrint("Processing order ID: ${e['id']}");
 
-          // --- Map pickup and dropoff using allDestinations ---
-          Map<String, dynamic>? pickupData = allDestinations.firstWhere(
-            (d) =>
-                d['id'] == e['pickup_destination_id'] && d['type'] == 'SENDER',
-            orElse: () => {},
-          );
-          Map<String, dynamic>? dropoffData = allDestinations.firstWhere(
-            (d) =>
-                d['id'] == e['dropoff_destination_id'] &&
-                d['type'] == 'RECEIVER',
+          // -------- orderStops mapping --------
+          final List stops = e['orderStops'] ?? [];
+
+          final pickup = stops.firstWhere(
+            (s) => s['type'] == 'PICKUP',
             orElse: () => {},
           );
 
-          e['sender_name'] = pickupData['contact_name'] ?? "Unknown";
-          e['pickup_address'] = pickupData['addressFromApr'] ?? "Collect from";
-          e['delivery_location'] =
-              dropoffData['addressFromApr'] ?? "Delivery Location";
-          e['drop_off_address'] =
-              e['drop_off_address'] ??
-              "Deliver to ${e['total_stops'] ?? 1} destination(s)";
+          final drops = stops.where((s) => s['type'] == 'DROP').toList();
 
-          final order = OrderModel.fromJson(e);
-          debugPrint(
-            "Mapped order: ${order.orderId}, Sender: ${order.senderName}, Delivery: ${order.deliveryLocation}",
-          );
+          e['pickup_address'] = pickup['address'] ?? "Collect from";
+          e['sender_name'] = senderName;
+          e['drop_off_address'] = drops.isNotEmpty
+              ? drops.first['address']
+              : "Deliver to";
 
-          orderList.add(order);
+          e['delivery_location'] = drops.length > 1
+              ? drops.last['address']
+              : "";
+
+          orderList.add(OrderModel.fromJson(e));
         }
 
+        debugPrint("Orders loaded: ${orderList.length}");
         page++;
-        debugPrint("Orders loaded. Next page: $page");
       } else {
-        debugPrint(
-          "Failed to load orders. Status code: ${response.statusCode}",
-        );
         Get.snackbar("Error", "Failed to load orders");
       }
     } catch (e) {
-      debugPrint("Error in fetchOrders: $e");
       Get.snackbar("Error", e.toString());
     } finally {
       isLoading.value = false;
-      debugPrint("Order loading finished.");
+    }
+  }
+
+  /// Pull-to-refresh
+  Future<void> refreshOrders() async {
+    await fetchOrders(isRefresh: true);
+  }
+
+  /// Load more for pagination
+  Future<void> loadMoreOrders() async {
+    if (!allLoaded.value && !isLoading.value) {
+      await fetchOrders();
     }
   }
 }

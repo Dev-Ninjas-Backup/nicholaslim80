@@ -4,6 +4,9 @@ import 'package:ZipBee/features/user/order/controller/order_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../active_order_details/screen/active_order_details_screen.dart';
+import '../completed_order_details/completed_order_details_screen/screen/completed_order_details_screen.dart';
+
 class OrderScreen extends StatelessWidget {
   const OrderScreen({super.key});
 
@@ -86,76 +89,101 @@ class OrderScreen extends StatelessWidget {
                   itemBuilder: (_, index) {
                     final item = controller.orderList[index];
 
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: 14),
-                      padding: const EdgeInsets.all(14),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(color: AppColors.subtitleFontColor),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          /// Top row
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "#${item.orderId} • ${item.date}",
-                                style: getTextStyle(
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              if (item.showReceipt)
+                    return GestureDetector(
+                      onTap: () {
+                        if (controller.selectOrderListIndex.value == 0) {
+                          Get.to(() => ActiveOrderDetailsScreen(order: item));
+                        } else if (controller.selectOrderListIndex.value == 1) {
+                          Get.to(
+                            () => CompletedOrderDetailsScreen(order: item),
+                          );
+                        } else if (controller.selectOrderListIndex.value == 2) {
+                          Get.to(() => (order: item));
+                        }
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.only(bottom: 14),
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(
+                            color: AppColors.subtitleFontColor,
+                          ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            /// Top row: Order ID + Pick-up Date & Timer
+                            Text(
+                              "#${item.orderId} Pick-up Date & Timer ${item.date}",
+                              style: getTextStyle(fontWeight: FontWeight.w600),
+                            ),
+
+                            const SizedBox(height: 8),
+
+                            /// Collect from (senderName)
+                            Text(
+                              "Collect from (${item.senderName})",
+                              style: getTextStyle(),
+                            ),
+
+                            const SizedBox(height: 4),
+
+                            /// Deliver to X destinations
+                            Builder(
+                              builder: (_) {
+                                final drops = <String>[];
+                                // Try to get multiple drop-off names (example from dropOffAddress)
+                                if (item.dropOffAddress.isNotEmpty) {
+                                  drops.addAll(
+                                    item.dropOffAddress.split(','),
+                                  ); // if API returns comma separated names
+                                } else {
+                                  drops.add("Recipient");
+                                }
+                                final count = drops.length;
+                                final names = drops.join(", ");
+
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Deliver to $count destinations",
+                                      style: getTextStyle(),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      "($names)",
+                                      style: getTextStyle(
+                                        color: AppColors.subtitleFontColor,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
+                            ),
+
+                            const SizedBox(height: 12),
+
+                            /// Vehicle + Total
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
                                 Text(
-                                  "Send e-receipt",
+                                  "Vehicle Type: ${item.vehicleType}",
+                                  style: getTextStyle(),
+                                ),
+                                Text(
+                                  "Total: S\$${item.total.toStringAsFixed(2)}",
                                   style: getTextStyle(
-                                    color: Colors.green,
-                                    fontWeight: FontWeight.w600,
+                                    fontWeight: FontWeight.w700,
                                   ),
                                 ),
-                            ],
-                          ),
-
-                          const Divider(height: 20),
-
-                          /// Collect from + sender
-                          Text(
-                            "${item.pickupAddress} (${item.senderName})",
-                            style: getTextStyle(),
-                          ),
-
-                          const SizedBox(height: 8),
-
-                          /// Deliver to
-                          Text(item.dropOffAddress, style: getTextStyle()),
-
-                          /// Location under destination
-                          const SizedBox(height: 4),
-                          Text(
-                            item.deliveryLocation,
-                            style: getTextStyle(
-                              color: AppColors.subtitleFontColor,
-                              fontSize: 12,
+                              ],
                             ),
-                          ),
-
-                          const SizedBox(height: 12),
-
-                          /// Vehicle + amount
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(item.vehicleType, style: getTextStyle()),
-                              Text(
-                                "S\$${item.total.toStringAsFixed(2)}",
-                                style: getTextStyle(
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     );
                   },
