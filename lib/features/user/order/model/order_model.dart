@@ -19,13 +19,26 @@ class OrderModel {
 
   factory OrderModel.fromJson(Map<String, dynamic> json) {
     return OrderModel(
-      orderId: json['orderId'] ?? '',
+      /// 🔹 API has `id`
+      orderId: json['id']?.toString() ?? '',
+
+      /// 🔹 API status comes from tab (ONGOING / COMPLETED / CANCELLED)
       status: json['status'] ?? '',
-      date: json['date'] ?? '',
-      pickupAddress: json['pickup_address'] ?? '',
-      dropOffAddress: json['dropoff_address'] ?? '',
-      vehicleType: json['vehicle_type'] ?? 'Car',
-      total: (json['total'] ?? 0).toDouble(),
+
+      /// 🔹 API has no date → fallback text
+      date: "ASAP Delivery",
+
+      /// 🔹 API has no pickup address → fallback
+      pickupAddress: "Collect from sender",
+
+      /// 🔹 API has no dropoff address → fallback using stops
+      dropOffAddress: "Deliver to ${json['total_stops'] ?? 1} destination(s)",
+
+      /// 🔹 vehicle_type_id mapping
+      vehicleType: json['vehicle_type_id'] == 1 ? "Motorbike" : "Vehicle",
+
+      /// 🔹 API total_cost is STRING
+      total: double.tryParse(json['total_cost']?.toString() ?? '0') ?? 0,
     );
   }
 }
