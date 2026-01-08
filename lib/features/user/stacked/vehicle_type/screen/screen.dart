@@ -2,8 +2,9 @@ import 'package:ZipBee/core/common/styles/global_text_style.dart';
 import 'package:ZipBee/core/utils/constants/app_colors.dart';
 import 'package:ZipBee/core/utils/constants/icon_path.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-
+import '../controller/controller.dart';
 import '../widget/vihicle_tab_page.dart';
 
 class StackedVehicleSelectionPage extends StatelessWidget {
@@ -11,6 +12,18 @@ class StackedVehicleSelectionPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // ensure single shared controller for all tabs
+    final controller = Get.put(StackedVehicleController());
+
+    // If navigated with initialDistanceKm, assign it after first frame to avoid update during build
+    final args = Get.arguments as Map<String, dynamic>?;
+    if (args != null && args['initialDistanceKm'] != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        controller.totalDistanceKm.value = (args['initialDistanceKm'] as num).toDouble();
+        debugPrint('Initial distance passed: ${controller.totalDistanceKm.value} km');
+      });
+    }
+
     return DefaultTabController(
       length: 4,
       child: Scaffold(
@@ -38,7 +51,7 @@ class StackedVehicleSelectionPage extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 tabs: [
-                  Tab(
+                    Tab(
                     icon: Image.asset(
                       IconPath.bike2,
                       height: 60,

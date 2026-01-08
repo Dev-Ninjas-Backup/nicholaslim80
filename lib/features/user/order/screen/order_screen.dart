@@ -16,12 +16,13 @@ class OrderScreen extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            Text("Orders", style: getTextStyle()),
-
+            const SizedBox(height: 12),
+            Text("Orders", style: getTextStyle(fontWeight: FontWeight.w700)),
             const SizedBox(height: 12),
 
+            /// Tabs
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Obx(
                 () => Container(
                   padding: const EdgeInsets.all(4),
@@ -39,15 +40,15 @@ class OrderScreen extends StatelessWidget {
                         child: GestureDetector(
                           onTap: () {
                             controller.selectOrderListIndex.value = index;
-                            controller.fetchOrders();
+                            controller.fetchOrders(isRefresh: true);
                           },
                           child: Container(
                             padding: const EdgeInsets.symmetric(vertical: 10),
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
                               color: isSelected
                                   ? AppColors.primaryButtonColor
                                   : Colors.transparent,
+                              borderRadius: BorderRadius.circular(8),
                             ),
                             alignment: Alignment.center,
                             child: Text(
@@ -65,6 +66,8 @@ class OrderScreen extends StatelessWidget {
                 ),
               ),
             ),
+
+            const SizedBox(height: 16),
 
             /// Order List
             Expanded(
@@ -87,82 +90,59 @@ class OrderScreen extends StatelessWidget {
                       margin: const EdgeInsets.only(bottom: 14),
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
-                        color: AppColors.backgroungColor,
                         borderRadius: BorderRadius.circular(14),
-                        border: Border.all(
-                          color: AppColors.subtitleFontColor,
-                          width: 0.6,
-                        ),
+                        border: Border.all(color: AppColors.subtitleFontColor),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          /// Date + Reorder
+                          /// Top row
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                item.date,
+                                "#${item.orderId} • ${item.date}",
                                 style: getTextStyle(
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
-                              Row(
-                                children: [
-                                  const Icon(Icons.refresh, size: 16),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    "Re-Order",
-                                    style: getTextStyle(
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-
-                          const Divider(height: 24),
-
-                          /// Pickup
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Icon(Icons.radio_button_unchecked),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: Text(
-                                  item.pickupAddress,
+                              if (item.showReceipt)
+                                Text(
+                                  "Send e-receipt",
                                   style: getTextStyle(
+                                    color: Colors.green,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
-                              ),
                             ],
                           ),
 
-                          const SizedBox(height: 10),
+                          const Divider(height: 20),
 
-                          /// Dropoff
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Icon(Icons.location_on_outlined),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: Text(
-                                  item.dropOffAddress,
-                                  style: getTextStyle(
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                            ],
+                          /// Collect from + sender
+                          Text(
+                            "${item.pickupAddress} (${item.senderName})",
+                            style: getTextStyle(),
+                          ),
+
+                          const SizedBox(height: 8),
+
+                          /// Deliver to
+                          Text(item.dropOffAddress, style: getTextStyle()),
+
+                          /// Location under destination
+                          const SizedBox(height: 4),
+                          Text(
+                            item.deliveryLocation,
+                            style: getTextStyle(
+                              color: AppColors.subtitleFontColor,
+                              fontSize: 12,
+                            ),
                           ),
 
                           const SizedBox(height: 12),
 
-                          /// Vehicle + Price
+                          /// Vehicle + amount
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -171,22 +151,6 @@ class OrderScreen extends StatelessWidget {
                                 "S\$${item.total.toStringAsFixed(2)}",
                                 style: getTextStyle(
                                   fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ],
-                          ),
-
-                          const SizedBox(height: 8),
-
-                          /// Delivery
-                          Row(
-                            children: [
-                              const Icon(Icons.inventory_2_outlined, size: 18),
-                              const SizedBox(width: 6),
-                              Text(
-                                "Delivery",
-                                style: getTextStyle(
-                                  color: AppColors.subtitleFontColor,
                                 ),
                               ),
                             ],

@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 
 
 import '../controller/controller.dart';
-import 'additional_service.dart';
+// additional services UI commented out
 import 'bottom_summery.dart';
 
 class StackedVehicleTabPage extends StatelessWidget {
@@ -15,8 +15,8 @@ class StackedVehicleTabPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Use the main controller instance shared with StackedScreen
-    final StackedVehicleController controller = Get.put(StackedVehicleController());
+    // Use the shared controller instance provided by parent screen
+    final StackedVehicleController controller = Get.find<StackedVehicleController>();
 
     return Column(
       children: [
@@ -44,19 +44,23 @@ class StackedVehicleTabPage extends StatelessWidget {
                     children: vehicles
                         .map(
                           (vehicle) => Padding(
-                        padding: EdgeInsets.only(bottom: 14),
-                        child: StackedVehicleCard(
-                          vehicle: vehicle,
-                          isSelected: selectedVehicle?.name == vehicle.name,
-                          onTap: () => controller.selectVehicle(vehicle),
-                        ),
-                      ),
-                    )
+                            padding: EdgeInsets.only(bottom: 14),
+                            child: StackedVehicleCard(
+                              vehicle: vehicle,
+                              // ensure object identity so same-title/type entries are independently selectable
+                              isSelected: selectedVehicle == vehicle,
+                              onTap: () => controller.selectVehicle(vehicle),
+                            ),
+                          ),
+                        )
                         .toList(),
                   );
                 }),
 
-                // Additional services list
+                // Additional services UI commented out as API does not provide this data
+                // If needed in future, the following block can be re-enabled and
+                // the controller's `_allServices` may be replaced with API-provided data.
+                /*
                 Obx(() {
                   final selectedVehicle = controller.selectedVehicle.value;
                   if (selectedVehicle == null) return SizedBox.shrink();
@@ -93,6 +97,7 @@ class StackedVehicleTabPage extends StatelessWidget {
                     ],
                   );
                 }),
+                */
               ],
             ),
           ),

@@ -35,7 +35,7 @@ class StackedAdditionalServiceCard extends StatelessWidget {
         ),
 
         trailing: Text(
-          '+S\$${service.price.toStringAsFixed(2)}',
+          '+\$${service.price.toStringAsFixed(2)}',
           style: getTextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 14,
