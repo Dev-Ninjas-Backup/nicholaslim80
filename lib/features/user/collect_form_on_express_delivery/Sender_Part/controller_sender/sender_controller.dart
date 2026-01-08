@@ -4,40 +4,31 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:ZipBee/features/user/stacked/schedule_stacked_%20delivey/Schedule_recepent/service/destination_service.dart';
 
 class SenderController extends GetxController {
-  // Text Editing Controllers for each input field
   final addressController = TextEditingController();
   final floorController = TextEditingController();
   final nameController = TextEditingController();
   final numberController = TextEditingController();
   final noteController = TextEditingController();
 
-  // Observable boolean to track if the form is valid
   final isFormValid = false.obs;
-
-  // Observable boolean for the checkbox
   final saveAddress = false.obs;
-
-  // Loading indicator for network calls
   final isLoading = false.obs;
 
   @override
   void onInit() {
     super.onInit();
-    // Add listeners to required fields to trigger validation on change
     addressController.addListener(validateForm);
     floorController.addListener(validateForm);
     nameController.addListener(validateForm);
     numberController.addListener(validateForm);
   }
 
-  // Checks if all required fields are non-empty
   void validateForm() {
-    final isValid =
+    isFormValid.value =
         addressController.text.isNotEmpty &&
         floorController.text.isNotEmpty &&
         nameController.text.isNotEmpty &&
         numberController.text.isNotEmpty;
-    isFormValid.value = isValid;
   }
 
   void clearForm() {
@@ -50,11 +41,11 @@ class SenderController extends GetxController {
     isFormValid.value = false;
   }
 
-  /// Creates a destination record on the server. Returns true on success.
-  Future<bool> saveDestination() async {
+  Future<bool> saveDestination({String type = 'RECEIVER'}) async {
     if (!isFormValid.value) return false;
-    isLoading.value = true;
+
     EasyLoading.show(status: 'Saving...');
+    isLoading.value = true;
 
     final body = {
       'address': addressController.text,
@@ -63,26 +54,28 @@ class SenderController extends GetxController {
       'contact_number': numberController.text,
       'note_to_driver': noteController.text,
       'is_saved': saveAddress.value,
-      'type': 'RECEIVER', // fixed as requested
+      'type': type, // SENDER / RECEIVER
     };
 
     final res = await DestinationService.createDestination(body);
 
-    isLoading.value = false;
     EasyLoading.dismiss();
+    isLoading.value = false;
 
-    final status = res['statusCode'] as int? ?? 500;
-    if (status == 201) {
+    final status = res['statusCode'] ?? 500;
+
+    if (status == 201 || status == 200) {
       EasyLoading.showSuccess('Destination saved');
       return true;
     } else {
-      final msg = (res['body'] as Map<String, dynamic>?)?['message'] ?? 'Failed';
-      EasyLoading.showError(msg.toString());
+      final msg =
+          (res['body'] as Map<String, dynamic>?)?['message'] ??
+              'Something went wrong';
+      EasyLoading.showError(msg);
       return false;
     }
   }
 
-  // Clean up the controllers when the controller is disposed
   @override
   void onClose() {
     addressController.dispose();
