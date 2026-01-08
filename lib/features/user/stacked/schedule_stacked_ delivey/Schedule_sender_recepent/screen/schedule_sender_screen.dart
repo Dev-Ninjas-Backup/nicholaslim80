@@ -1,8 +1,11 @@
 import 'package:ZipBee/core/common/styles/global_text_style.dart';
 import 'package:ZipBee/core/utils/constants/app_colors.dart';
-import 'package:ZipBee/core/utils/constants/image_path.dart';
+import 'package:ZipBee/features/user/google_map/widget/google_map_widget.dart';
 import 'package:ZipBee/features/user/collect_form_on_express_delivery/Sender_Part/widget_sender/text_filed_widget.dart';
-import 'package:ZipBee/features/user/schedule_express_delivey/schedule_sender_recepent/controller/sender_schedule_controller.dart';
+import 'package:ZipBee/features/user/stacked/schedule_stacked_ delivey/Schedule_sender_recepent/controller/sender_schedule_controller.dart';
+import 'package:ZipBee/features/user/stacked/stacked_screen/stacked_screen.dart';
+import 'package:ZipBee/features/user/stacked/stacked_collect_from/model/model.dart';
+import 'package:ZipBee/features/user/stacked/stacked_controller/stacked_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/src/extension_instance.dart';
@@ -10,16 +13,27 @@ import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 
 
-import '../../Schedule_recepent/screen/schedule_recepent_screen1.dart';
-
 class StackedSenderScheduleScreen extends StatelessWidget {
-  const StackedSenderScheduleScreen({super.key});
+  final StackedAddressModel? address;
+
+  const StackedSenderScheduleScreen({super.key, this.address});
 
   @override
   Widget build(BuildContext context) {
     final SenderScheduleController controller = Get.put(
       SenderScheduleController(),
     );
+
+    // Prefill if address provided and fields empty
+    if (address != null) {
+      if (controller.addressController.text.isEmpty) {
+        controller.addressController.text = address!.addressFromApr.isNotEmpty ? address!.addressFromApr : address!.address;
+      }
+      if (controller.floorController.text.isEmpty) controller.floorController.text = address!.floorUnit;
+      if (controller.nameController.text.isEmpty) controller.nameController.text = address!.contactName;
+      if (controller.numberController.text.isEmpty) controller.numberController.text = address!.contactNumber;
+      controller.saveAddress.value = address!.isSaved;
+    }
 
     return Scaffold(
       backgroundColor: AppColors.backgroungColor,
@@ -36,22 +50,18 @@ class StackedSenderScheduleScreen extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              // MAP SECTION
+              /// MAP SECTION
               SizedBox(
                 height: 240,
                 width: double.infinity,
-                child: Image.asset(
-                  ImagePath.map,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                ),
+                child: GoogleMapWidget(),
               ),
 
-              // FORM SECTION
+              /// FORM SECTION
               Container(
                 padding: EdgeInsets.all(20.0),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: AppColors.backgroungColor,
                   borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
                 ),
                 child: Column(
@@ -122,12 +132,26 @@ class StackedSenderScheduleScreen extends StatelessWidget {
                         width: double.infinity,
                         child: ElevatedButton(
                           onPressed: controller.isFormValid.value
-                              ? () {
-                                  Get.to(
-                                    StackedSchedulRecepmenteScreen(
-                                      // title: 'Recepent 1',
-                                    ),
-                                  );
+                              ? () async {
+                                  final ok = await controller.saveDestination(type: 'SENDER');
+                                  if (ok) {
+                                    // Extract and store data in StackedLocationController
+                                    final locationController = Get.find<StackedLocationController>();
+                                    locationController.updateSenderData(
+                                      AddressData(
+                                        id: 0, // Will be from API response if available
+                                        address: controller.addressController.text,
+                                        addressFromApr: controller.addressController.text,
+                                        floorUnit: controller.floorController.text,
+                                        contactName: controller.nameController.text,
+                                        contactNumber: controller.numberController.text,
+                                        noteToDriver: controller.noteController.text,
+                                        isSaved: controller.saveAddress.value,
+                                        type: 'SENDER',
+                                      ),
+                                    );
+                                    Get.to(() => StackedScreen());
+                                  }
                                 }
                               : null,
                           style: ElevatedButton.styleFrom(

@@ -51,7 +51,7 @@ class SenderController extends GetxController {
   }
 
   /// Creates a destination record on the server. Returns true on success.
-  Future<bool> saveDestination() async {
+  Future<bool> saveDestination({String type = 'RECEIVER'}) async {
     if (!isFormValid.value) return false;
     isLoading.value = true;
     EasyLoading.show(status: 'Saving...');
@@ -63,7 +63,7 @@ class SenderController extends GetxController {
       'contact_number': numberController.text,
       'note_to_driver': noteController.text,
       'is_saved': saveAddress.value,
-      'type': 'RECEIVER', // fixed as requested
+      'type': type,
     };
 
     final res = await DestinationService.createDestination(body);

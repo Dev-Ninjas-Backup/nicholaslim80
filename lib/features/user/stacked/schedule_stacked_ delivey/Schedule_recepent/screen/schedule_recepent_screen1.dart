@@ -2,15 +2,17 @@ import 'package:ZipBee/core/utils/constants/app_colors.dart';
 import 'package:ZipBee/features/user/google_map/widget/google_map_widget.dart';
 import 'package:ZipBee/features/user/stacked/schedule_stacked_%20delivey/Schedule_recepent/widget/schedule_recepent_widget_st.dart';
 import 'package:ZipBee/features/user/stacked/stacked_screen/stacked_screen.dart';
+import 'package:ZipBee/features/user/stacked/stacked_controller/stacked_controller.dart';
+import 'package:ZipBee/features/user/stacked/stacked_collect_from/model/model.dart';
 import 'package:ZipBee/features/user/collect_form_on_express_delivery/Sender_Part/controller_sender/sender_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 
 class StackedSchedulRecepmenteScreen extends StatelessWidget {
-  // final String title;
+  final StackedAddressModel? address;
 
-  const StackedSchedulRecepmenteScreen({super.key /*, required this.title*/});
+  const StackedSchedulRecepmenteScreen({super.key, this.address});
 
   @override
   Widget build(BuildContext context) {
@@ -45,11 +47,27 @@ class StackedSchedulRecepmenteScreen extends StatelessWidget {
                 ),
                 child: ScheduleRecipientWidgetST(
                   title: 'Recipient',
+                  address: address,
                   onPressed: () async {
-                    // Save destination via API, then navigate to StackedScreen on success
+                    // Save destination via API, then update controller and navigate
                     final controller = Get.find<SenderController>();
-                    final ok = await controller.saveDestination();
+                    final ok = await controller.saveDestination(type: 'RECEIVER');
                     if (ok) {
+                      // Extract and store data in StackedLocationController
+                      final locationController = Get.find<StackedLocationController>();
+                      locationController.updateReceiverData(
+                        AddressData(
+                          id: 0, // Will be from API response if available
+                          address: controller.addressController.text,
+                          addressFromApr: controller.addressController.text,
+                          floorUnit: controller.floorController.text,
+                          contactName: controller.nameController.text,
+                          contactNumber: controller.numberController.text,
+                          noteToDriver: controller.noteController.text,
+                          isSaved: controller.saveAddress.value,
+                          type: 'RECEIVER',
+                        ),
+                      );
                       Get.to(() => StackedScreen());
                     }
                   },
