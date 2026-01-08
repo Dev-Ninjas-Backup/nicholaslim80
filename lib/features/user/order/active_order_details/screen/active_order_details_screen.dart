@@ -225,7 +225,7 @@ class PriceAndPayment extends StatelessWidget {
           children: [
             Text("Total", style: getTextStyle(fontWeight: FontWeight.w600)),
             Text(
-              "S\$${order.total.toStringAsFixed(2)}",
+              "\$${order.total.toStringAsFixed(2)}",
               style: getTextStyle(fontWeight: FontWeight.bold),
             ),
           ],

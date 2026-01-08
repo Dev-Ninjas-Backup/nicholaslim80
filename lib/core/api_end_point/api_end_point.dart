@@ -28,6 +28,7 @@ class ApiEndPoint {
 
 
   static const String getDestination = '$baseUrl/destination';
+  static const String homePageAd = '$baseUrl/advertise/role-based';
   static const String walletHistory =
       '$baseUrl/wallet/user/walletHistory/{userId}';
 }
