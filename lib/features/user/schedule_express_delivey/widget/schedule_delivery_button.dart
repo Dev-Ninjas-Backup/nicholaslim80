@@ -7,11 +7,10 @@ import 'package:ZipBee/features/user/schedule_express_delivey/schedule_sender_re
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-
 class ScheduleDeliveryButton extends StatelessWidget {
   const ScheduleDeliveryButton({super.key, required this.controller});
 
-  final LocationController controller;
+  final ExpressDeliveryMain controller;
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +56,7 @@ class ScheduleDeliveryButton extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     OneWayRoundWidget(
-                      controller: LocationController(),
+                      controller: ExpressDeliveryMain(),
                       title: 'Collected from (Sender: Athena Lin)',
                       subtitle: 'Sender Address',
                       icon: Image.asset(
@@ -77,7 +76,7 @@ class ScheduleDeliveryButton extends StatelessWidget {
                       color: Colors.grey,
                     ),
                     OneWayRoundWidget(
-                      controller: LocationController(),
+                      controller: ExpressDeliveryMain(),
                       title: isRound
                           ? 'Delivered from (Sender: Athena Lin)'
                           : 'Deliver to (Recipient: Joseph Low)',
@@ -138,7 +137,7 @@ class OneAndTwoWayButton extends StatelessWidget {
     required this.isRound,
   });
 
-  final LocationController controller;
+  final ExpressDeliveryMain controller;
   final bool isRound;
 
   @override

@@ -10,6 +10,16 @@ class VehicleModel {
   VehicleModel(this.iconPath);
 }
 
+
+class ExpressDeliveryMain extends GetxController {
+  // trip/time state
+  var isRoundTrip = false.obs;
+  var isNowSelected = true.obs;
+  var scheduledDateTime = Rxn<DateTime>();
+ Rx<double> totalAmount = Rx<double>(0.0);
+  // editing state used by widgets that allow inline title edit
+  var isEditing = false.obs;
+
 /// ─────────────────────────
 /// Location Controller
 /// ─────────────────────────
@@ -25,6 +35,7 @@ class LocationController extends GetxController {
   // UI Editing State
   // ─────────────────────────
   final RxBool isEditing = false.obs;
+
 
   /// fallback title (optional, editable)
   final RxString title = 'Collected from (Sender: Athena Lin)'.obs;
@@ -128,4 +139,15 @@ class LocationController extends GetxController {
   void updateTitle(String newTitle) {
     title.value = newTitle;
   }
+   var orderNumber = '#1233'.obs;
+  var isDriverAssigned = false.obs;
+  var countdown = 10.obs;
+
+  // ✅ Track toggle state
+  RxBool redeemCoins = false.obs;
+  RxBool favoriteRiders = false.obs;
+
+  // Update toggle values
+  void toggleRedeemCoins(bool value) => redeemCoins.value = value;
+  void toggleFavoriteRiders(bool value) => favoriteRiders.value = value;
 }

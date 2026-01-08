@@ -9,11 +9,10 @@ import 'package:ZipBee/features/user/express_delivery_1/widget/select_location_w
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-
 class ExpressButtonWidget3Address extends StatelessWidget {
   const ExpressButtonWidget3Address({super.key, required this.controller});
 
-  final LocationController controller;
+  final ExpressDeliveryMain controller;
 
   @override
   Widget build(BuildContext context) {
@@ -114,7 +113,7 @@ class ExpressButtonWidget3Address extends StatelessWidget {
                       ),
 
                       OneWayRoundWidget(
-                        controller: LocationController(),
+                        controller: ExpressDeliveryMain(),
                         title: 'Collected from (Sender: Athena Lin)',
                         subtitle: 'Sender Address',
                         icon: Image.asset(
@@ -136,7 +135,7 @@ class ExpressButtonWidget3Address extends StatelessWidget {
                       ),
 
                       OneWayRoundWidget(
-                        controller: LocationController(),
+                        controller: ExpressDeliveryMain(),
                         title: 'Delivered from (Sender: Athena Lin)',
                         subtitle: 'Delivered Address',
                         icon: Image.asset(
@@ -174,7 +173,7 @@ class ExpressButtonWidget3Address extends StatelessWidget {
                       ),
 
                       OneWayRoundWidget(
-                        controller: LocationController(),
+                        controller: ExpressDeliveryMain(),
                         title: 'Collected from (Sender: Athena Lin)',
                         subtitle: 'Sender Address',
                         icon: Image.asset(
@@ -196,7 +195,7 @@ class ExpressButtonWidget3Address extends StatelessWidget {
                       ),
 
                       OneWayRoundWidget(
-                        controller: LocationController(),
+                        controller: ExpressDeliveryMain(),
                         title: 'Deliver to (Recipent: Joseph Low)',
                         subtitle: 'Blk 222 Sengkang Ave 2, S530222',
                         icon: Image.asset(
@@ -218,7 +217,7 @@ class ExpressButtonWidget3Address extends StatelessWidget {
                       ),
 
                       OneWayRoundWidget(
-                        controller: LocationController(),
+                        controller: ExpressDeliveryMain(),
                         title: 'Return address (Athena Lin)',
                         subtitle: 'Blk 657 Ang Mo Kio Ave 9, S560657',
                         icon: Image.asset(

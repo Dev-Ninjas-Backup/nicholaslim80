@@ -12,7 +12,7 @@ class ExpressButtonWidget extends StatelessWidget {
     required this.controller,
   });
 
-  final LocationController controller;
+  final ExpressDeliveryMain controller;
 
   @override
   Widget build(BuildContext context) {
@@ -100,6 +100,106 @@ class ExpressButtonWidget extends StatelessWidget {
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                       ),
+
+                      SizedBox(height: 4),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          OneWayRoundWidget(
+                            controller: ExpressDeliveryMain(),
+                            title: 'Collected from (Sender: Athena Lin)',
+                            subtitle: 'Sender Address',
+                            icon: Image.asset(
+                              IconPath.collectIcon,
+                              width: 14,
+                              height: 14,
+                            ),
+                          ),
+
+                          Icon(
+                            Icons.fiber_manual_record,
+                            size: 10,
+                            color: Colors.grey,
+                          ),
+                          Icon(
+                            Icons.fiber_manual_record,
+                            size: 10,
+                            color: Colors.grey,
+                          ),
+                          OneWayRoundWidget(
+                            controller: ExpressDeliveryMain(),
+                            title: 'Delivered from (Sender: Athena Lin)',
+                            subtitle: 'Delivered Address',
+                            icon: Image.asset(
+                              IconPath.deliveredIcon,
+                              width: 14,
+                              height: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  )
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+
+                        spacing: 8,
+                        children: [
+                          Image.asset(
+                            IconPath.exparessGrey,
+                            width: 15,
+                            height: 15,
+                          ),
+                          Text(
+                            'Fixed route',
+                            style: getTextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 4),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          OneWayRoundWidget(
+                            controller: ExpressDeliveryMain(),
+                            title: 'Collected from (Sender: Athena Lin)',
+                            subtitle: 'Sender Address',
+                            icon: Image.asset(
+                              IconPath.collectIcon,
+                              width: 14,
+                              height: 14,
+                            ),
+                          ),
+                          Icon(
+                            Icons.fiber_manual_record,
+                            size: 10,
+                            color: Colors.grey,
+                          ),
+                          Icon(
+                            Icons.fiber_manual_record,
+                            size: 10,
+                            color: Colors.grey,
+                          ),
+                          OneWayRoundWidget(
+                            controller: ExpressDeliveryMain(),
+                            title: 'Delivered from (Sender: Athena Lin)',
+                            subtitle: 'Delivered Address',
+                            icon: Image.asset(
+                              IconPath.deliveredIcon,
+                              width: 14,
+                              height: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+
                     ),
                   ],
                 ),
@@ -139,6 +239,7 @@ class ExpressButtonWidget extends StatelessWidget {
                     IconPath.deliveredIcon,
                     width: 14,
                     height: 14,
+
                   ),
                 ),
               ],
