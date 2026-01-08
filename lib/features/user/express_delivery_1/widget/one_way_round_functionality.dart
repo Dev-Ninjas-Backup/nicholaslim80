@@ -7,7 +7,7 @@ import 'package:get/get.dart';
 import '../controller/express_controller_1.dart';
 
 class OneWayRoundWidget extends StatelessWidget {
-  final LocationController controller;
+  final ExpressDeliveryMain controller;
   final String title;
   final String subtitle;
   final Widget icon;

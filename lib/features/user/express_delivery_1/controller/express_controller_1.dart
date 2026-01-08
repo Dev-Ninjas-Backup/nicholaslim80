@@ -7,12 +7,12 @@ class VehicleModel {
   VehicleModel(this.iconPath);
 }
 
-class LocationController extends GetxController {
+class ExpressDeliveryMain extends GetxController {
   // trip/time state
   var isRoundTrip = false.obs;
   var isNowSelected = true.obs;
   var scheduledDateTime = Rxn<DateTime>();
-
+ Rx<double> totalAmount = Rx<double>(0.0);
   // editing state used by widgets that allow inline title edit
   var isEditing = false.obs;
 
@@ -69,4 +69,15 @@ class LocationController extends GetxController {
   void selectVehicle(VehicleModel vehicle) {
     selectedVehicle.value = vehicle;
   }
+   var orderNumber = '#1233'.obs;
+  var isDriverAssigned = false.obs;
+  var countdown = 10.obs;
+
+  // ✅ Track toggle state
+  RxBool redeemCoins = false.obs;
+  RxBool favoriteRiders = false.obs;
+
+  // Update toggle values
+  void toggleRedeemCoins(bool value) => redeemCoins.value = value;
+  void toggleFavoriteRiders(bool value) => favoriteRiders.value = value;
 }

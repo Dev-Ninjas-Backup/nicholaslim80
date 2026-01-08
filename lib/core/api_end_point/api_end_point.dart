@@ -22,7 +22,7 @@ class ApiEndPoint {
   static const String userProfile = '$baseUrl/users/{id}';
 
     static const String toggleFavorite = '$baseUrl/my-raider';
-      static const String vehicleTypes = '$baseUrl/admin/vehicle-types';
+      //static const String vehicleTypes = '$baseUrl/admin/vehicle-types';
 
   static const String getDestination = '$baseUrl/destination';
 

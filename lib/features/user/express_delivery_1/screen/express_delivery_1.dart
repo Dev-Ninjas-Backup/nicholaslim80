@@ -14,10 +14,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ExpressDelivery1 extends StatelessWidget {
-  final LocationController controller = Get.put(LocationController());
-  final vehicleController = Get.put<VehicleController>;
+  final ExpressDeliveryMain controller = Get.put(ExpressDeliveryMain());
+
+  final VehicleController vehicleController = Get.put(VehicleController());
 
   final OrderController orderController = Get.put(OrderController());
+
+ 
 
   ExpressDelivery1({super.key});
 
@@ -121,9 +124,15 @@ class ExpressDelivery1 extends StatelessWidget {
                     ),
                   ),
                   IconButton(
-                    onPressed: () {
-                      Get.to(() => VehicleSelectionPage());
-                      //Get.to(VehicleTypeScreen());
+                    onPressed: () async {
+                      final result = await Get.to(() => VehicleSelectionPage());
+                      if (result != null) {
+                        print('Value$result');
+                        controller.selectedVehicle.value =
+                            result['selectedVehicle'];
+                      }
+                      controller.totalAmount.value = result['totalAmount'];
+
                     },
                     icon: Icon(Icons.info_outline),
                     color: Colors.black87,

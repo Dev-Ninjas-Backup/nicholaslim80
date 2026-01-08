@@ -1,12 +1,12 @@
 import 'package:ZipBee/core/common/styles/global_text_style.dart';
+import 'package:ZipBee/features/user/express_delivery_1/controller/express_controller_1.dart';
 import 'package:ZipBee/features/user/finding_raider/screnn/finding_rider_page.dart';
-import 'package:ZipBee/features/user/order/controller/order_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 
 class OrderSuccessDialog {
-  static final OrderController controller = Get.find<OrderController>();
+  static final ExpressDeliveryMain controller = Get.find<ExpressDeliveryMain>();
   static final RxBool wantsConfirmationCall = true.obs;
 
   static void show() {

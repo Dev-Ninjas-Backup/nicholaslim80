@@ -14,9 +14,8 @@ import 'package:ZipBee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-
 class ScheduleRoundDelivery extends StatelessWidget {
-  final LocationController controller = Get.put(LocationController());
+  final ExpressDeliveryMain controller = Get.put(ExpressDeliveryMain());
   final VehicleController vehicleController = Get.find<VehicleController>();
 
   ScheduleRoundDelivery({super.key});
@@ -163,7 +162,7 @@ class ScheduleRoundDelivery extends StatelessWidget {
                     final orderController = Get.put(OrderController());
 
                     // Set the total amount from the review
- orderController.totalAmount.value = 123.45;
+                    orderController.totalAmount.value = 123.45;
 
                     // Show the confirmation dialog
                     showOrderConfirmationDialog(orderController);

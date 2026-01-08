@@ -7,11 +7,10 @@ import 'package:ZipBee/features/user/schedule_express_delivey/schedule_sender_re
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-
 class Round4 extends StatelessWidget {
   const Round4({super.key, required this.controller});
 
-  final LocationController controller;
+  final ExpressDeliveryMain controller;
 
   @override
   Widget build(BuildContext context) {
@@ -116,7 +115,7 @@ class Round4 extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       OneWayRoundWidget(
-                        controller: LocationController(),
+                        controller: ExpressDeliveryMain(),
                         title: 'Collected from (Sender: Athena Lin)',
                         subtitle: 'Blk 657 Ang Mo Kio Ave 9, S560657',
                         icon: Image.asset(
@@ -139,7 +138,7 @@ class Round4 extends StatelessWidget {
                       ),
 
                       OneWayRoundWidget(
-                        controller: LocationController(),
+                        controller: ExpressDeliveryMain(),
                         title: 'Deliver to (Recipient: Joseph Low)',
                         subtitle: 'Blk 222 Sengkang Ave 2, S530222',
                         icon: Image.asset(
@@ -162,7 +161,7 @@ class Round4 extends StatelessWidget {
                       ),
 
                       OneWayRoundWidget(
-                        controller: LocationController(),
+                        controller: ExpressDeliveryMain(),
                         title: 'Deliver to (Annie Tan)',
                         subtitle: 'Blk 447 Sengkang Ave 4, S530447',
                         icon: Image.asset(
@@ -185,7 +184,7 @@ class Round4 extends StatelessWidget {
                       ),
 
                       OneWayRoundWidget(
-                        controller: LocationController(),
+                        controller: ExpressDeliveryMain(),
                         title: 'Deliver to (Tony Toh)',
                         subtitle: 'Blk 244 Jurong East St 61, S500244',
                         icon: Image.asset(
@@ -203,7 +202,7 @@ class Round4 extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       OneWayRoundWidget(
-                        controller: LocationController(),
+                        controller: ExpressDeliveryMain(),
                         title: 'Collected from (Sender: Athena Lin)',
                         subtitle: 'Sender Address',
                         icon: Image.asset(
@@ -224,7 +223,7 @@ class Round4 extends StatelessWidget {
                         color: Colors.grey,
                       ),
                       OneWayRoundWidget(
-                        controller: LocationController(),
+                        controller: ExpressDeliveryMain(),
                         title: 'Delivered from (Sender: Athena Lin)',
                         subtitle: 'Delivered Address',
                         icon: Image.asset(

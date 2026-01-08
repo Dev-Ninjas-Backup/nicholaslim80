@@ -10,7 +10,7 @@ class TipAleartDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // ignore: unused_local_variable
-    final locationController = Get.put(LocationController());
+    final locationController = Get.put(ExpressDeliveryMain());
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),

@@ -1,20 +1,24 @@
 import 'package:ZipBee/core/common/styles/global_text_style.dart';
-import 'package:flutter/cupertino.dart' show CupertinoColors;
+import 'package:ZipBee/features/user/express_delivery_1/controller/express_controller_1.dart';
+import 'package:ZipBee/features/user/stacked/show_order_confirmation/show_order_confirmation_dialog.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class OrderReviwButtonStatic extends StatelessWidget {
-  const OrderReviwButtonStatic({super.key});
+  final ExpressDeliveryMain controller = Get.find<ExpressDeliveryMain>();
+
+  OrderReviwButtonStatic({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(bottom: 70),
-      padding: EdgeInsets.all(5),
+      margin: const EdgeInsets.only(bottom: 70),
+      padding: const EdgeInsets.all(5),
       color: Colors.white,
       child: Row(
         children: [
-          SizedBox(width: 8),
-
+          const SizedBox(width: 8),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -27,40 +31,40 @@ class OrderReviwButtonStatic extends StatelessWidget {
                     color: CupertinoColors.secondaryLabel,
                   ),
                 ),
-                Text(
-                  'S\$00.00', // Static text
-                  style: getTextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
+                Obx(
+                  () => Text(
+                    controller.totalAmount.value.toString(),
+                    style: getTextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
                   ),
                 ),
               ],
             ),
           ),
+      Obx(
+  () => FilledButton(
+    style: FilledButton.styleFrom(
+      backgroundColor: controller.totalAmount.value > 0
+          ? Colors.amber
+          : Colors.grey,
+    ),
+    onPressed: controller.totalAmount.value > 0
+    ? () {
+        showOrderConfirmationDialog(controller); // ✅ function call kore dialog show
+      }
+    : null,
+ // disables the button when value <= 0
+    child: const Text(
+      'Review Order',
+      style: TextStyle(color: Colors.black),
+    ),
+  ),
+),
 
-          FilledButton(
-            onPressed: () {},
-            style: ButtonStyle(
-              backgroundColor: WidgetStateProperty.all(Colors.grey.shade400),
-              padding: WidgetStateProperty.all(
-                EdgeInsets.symmetric(vertical: 10, horizontal: 12),
-              ),
-              shape: WidgetStateProperty.all(
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-              ),
-            ),
-            child: Text(
-              'Review Order',
-              style: getTextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-            ),
-          ),
-
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
         ],
       ),
     );

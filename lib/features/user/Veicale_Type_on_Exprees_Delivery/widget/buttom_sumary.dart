@@ -65,9 +65,11 @@ class BottomSummary extends StatelessWidget {
                   onPressed: vehicleController.selectedVehicle.value != null
                       ? () {
                           double total = vehicleController.calculateTotal();
-                          Get.to(
-                            ExpressDelivery1(),
-                            arguments: {'totalAmount': total},
+                          Get.back(
+                            result: {
+                              'totalAmount': total,
+                          
+                            },
                           );
                         }
                       : null,

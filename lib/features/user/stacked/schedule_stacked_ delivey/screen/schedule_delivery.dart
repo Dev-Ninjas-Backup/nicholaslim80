@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ScheduleDelivery extends StatelessWidget {
-  final LocationController controller = Get.put(LocationController());
+  final ExpressDeliveryMain controller = Get.put(ExpressDeliveryMain());
   final StackedVehicleController vehicleController = Get.put(
     StackedVehicleController(),
   );
