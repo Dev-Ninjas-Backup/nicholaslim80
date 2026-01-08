@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 
 
 class VehicleCard extends StatelessWidget {
-  final VehicleDataModel vehicle;
+  final Vehicle vehicle;
   final bool isSelected;
   final VoidCallback onTap;
 
@@ -58,7 +58,7 @@ class VehicleCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      vehicle.subtitle ?? '',
+                      vehicle.subtitle ,
                       style: getTextStyle(
                         fontWeight: FontWeight.w500,
                         fontSize: 14,

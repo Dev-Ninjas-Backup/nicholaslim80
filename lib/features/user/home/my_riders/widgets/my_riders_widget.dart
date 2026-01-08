@@ -1,10 +1,10 @@
 import 'package:ZipBee/core/common/styles/global_text_style.dart';
 import 'package:ZipBee/core/utils/constants/app_colors.dart';
+import 'package:ZipBee/core/utils/constants/icon_path.dart';
 import 'package:ZipBee/core/utils/constants/image_path.dart';
 import 'package:ZipBee/features/user/home/my_riders/widgets/delete_alert_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart' as IconPath;
 
 import '../controller/my_riders_controller.dart';
 import 'add_riders_widget.dart';
@@ -31,7 +31,7 @@ class RidersListWidget extends StatelessWidget {
             if (index == controller.ridersList.length) {
               return Center(
                 child: GestureDetector(
-                  onTap: showAddRiderDialog,
+                  onTap: () => showAddRiderDialog(),
                   child: Container(
                     decoration: BoxDecoration(
                       border: Border.all(color: AppColors.primaryButtonColor),
@@ -64,35 +64,31 @@ class RidersListWidget extends StatelessWidget {
             final rider = controller.ridersList[index];
             final name = rider['name'] ?? '';
             final orderId = rider['order-id'] ?? '';
-            final raiderId = rider['raiderId'] ?? 0;
+            final myRaiderId = rider['myRaiderId'] ?? 0; // ✅ Correct ID
 
             return Dismissible(
-              key: Key(raiderId.toString()),
+              key: Key(myRaiderId.toString()),
               direction: DismissDirection.startToEnd,
               background: Container(
                 alignment: Alignment.centerLeft,
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 color: Colors.red,
-                child: Image.asset(IconPath.delete as String, height: 34, width: 34),
+                child: Image.asset(IconPath.delete, height: 34, width: 34),
               ),
 
-              // ✅ confirmDismiss shows delete alert dialog
+              // ✅ Confirm before delete
               confirmDismiss: (direction) async {
-                // Show dialog
                 final shouldDelete = await Get.dialog<bool>(
                   DeleteRiderDialog(
                     riderName: name,
                     onConfirm: () async {
                       // ✅ Call delete API
-                      await controller.deleteRider(raiderId);
-                      // ✅ After successful deletion, close dialog with true
+                      await controller.deleteRider(myRaiderId);
                       Get.back(result: true);
                     },
                   ),
                   barrierDismissible: false,
                 );
-
-                // If user confirmed delete, Dismissible will remove the item automatically
                 return shouldDelete ?? false;
               },
 
@@ -145,7 +141,8 @@ class RidersListWidget extends StatelessWidget {
                               ? Colors.black
                               : Colors.grey,
                         ),
-                        onPressed: () => controller.toggleLove(name),
+                        onPressed: () =>
+                            controller.toggleFavoriteApi(name, myRaiderId),
                       ),
                     ),
                   ),

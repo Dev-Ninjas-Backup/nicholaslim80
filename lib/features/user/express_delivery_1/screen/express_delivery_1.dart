@@ -13,10 +13,10 @@ import 'package:ZipBee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-
 class ExpressDelivery1 extends StatelessWidget {
   final LocationController controller = Get.put(LocationController());
-  final vehicleController = Get.put(VehicleSecationController());
+  final vehicleController = Get.put<VehicleController>;
+
   final OrderController orderController = Get.put(OrderController());
 
   ExpressDelivery1({super.key});
