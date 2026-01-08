@@ -96,18 +96,53 @@ class OrderScreen extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            item.date,
-                            style: getTextStyle(fontWeight: FontWeight.w600),
+                          /// Top row
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "#${item.orderId} • ${item.date}",
+                                style: getTextStyle(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              if (item.showReceipt)
+                                Text(
+                                  "Send e-receipt",
+                                  style: getTextStyle(
+                                    color: Colors.green,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                            ],
                           ),
+
                           const Divider(height: 20),
 
-                          Text(item.pickupAddress, style: getTextStyle()),
+                          /// Collect from + sender
+                          Text(
+                            "${item.pickupAddress} (${item.senderName})",
+                            style: getTextStyle(),
+                          ),
+
                           const SizedBox(height: 8),
 
+                          /// Deliver to
                           Text(item.dropOffAddress, style: getTextStyle()),
+
+                          /// Location under destination
+                          const SizedBox(height: 4),
+                          Text(
+                            item.deliveryLocation,
+                            style: getTextStyle(
+                              color: AppColors.subtitleFontColor,
+                              fontSize: 12,
+                            ),
+                          ),
+
                           const SizedBox(height: 12),
 
+                          /// Vehicle + amount
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [

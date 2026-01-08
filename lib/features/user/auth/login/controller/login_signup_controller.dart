@@ -46,28 +46,32 @@ class LoginSignupController extends GetxController {
     try {
       final result = await AuthService.login(email: email, password: password);
 
+      debugPrint('📡 Login Response: ${result}');
       debugPrint('➡️ Login result: $result');
 
       if (result['statusCode'] == 200 || result['statusCode'] == 201) {
         final token = result['body']['access_token'];
-        final userId = result['body']['user']['id']
-            .toString(); // ✅ Save User ID
-        final fcmToken = await SharedPreferencesHelper.getFcmToken() ?? '';
+        final refreshToken = result['body']['refresh_token'];
+        final expiresIn = result['body']['expires_in'];
 
-        if (token == null || token.isEmpty || userId.isEmpty) {
-          EasyLoading.showError("Invalid token or user ID");
+        if (token == null || token.isEmpty) {
+          EasyLoading.showError("Invalid token received");
           return;
         }
 
-        // ✅ Save token + user ID
+        // Save token
         await SharedPreferencesHelper.saveToken(token);
-        await SharedPreferencesHelper.saveUserId(userId);
+
+        // Optional: Save refresh token
+        if (refreshToken != null) {
+          await SharedPreferencesHelper.saveRefreshToken(refreshToken);
+        }
 
         debugPrint('💾 Saved Access Token: $token');
-        debugPrint('💾 Saved User ID: $userId');
-        debugPrint('💾 FCM Token: $fcmToken');
+        debugPrint('💾 Saved Refresh Token: $refreshToken');
+        debugPrint('💾 Expires In: $expiresIn');
 
-        // ✅ Small delay
+        // Small delay for smooth UI
         await Future.delayed(const Duration(milliseconds: 300));
 
         EasyLoading.dismiss();

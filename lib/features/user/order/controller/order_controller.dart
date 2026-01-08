@@ -81,13 +81,23 @@ class OrderController extends GetxController {
         final decoded = json.decode(response.body);
         final List list = decoded['data']['data'];
 
-        orderList.assignAll(
+        // --- ONLY CHANGE: map API fields instead of hardcoded ---
+        orderList.addAll(
           list.map((e) {
-            // inject status for UI
             e['status'] = selectedStatus;
+
+            // Use actual API fields if available
+            e['sender_name'] = e['sender_name'] ?? "Unknown";
+            e['pickup_address'] = e['pickup_address'] ?? "Collect from";
+            e['drop_off_address'] =
+                e['drop_off_address'] ??
+                "Deliver to ${e['total_stops'] ?? 1} destination(s)";
+            e['delivery_location'] = e['delivery_location'] ?? "";
+
             return OrderModel.fromJson(e);
           }).toList(),
         );
+        // --- END OF CHANGE ---
 
         page++;
       } else {
