@@ -7,7 +7,7 @@ import 'package:get/get.dart';
 
 
 class BottomSummary extends StatelessWidget {
-  final VehicleSecationController vehicleController;
+  final VehicleController vehicleController;
   final List<String> couriers;
 
   const BottomSummary({

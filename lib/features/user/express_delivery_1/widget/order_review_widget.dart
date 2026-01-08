@@ -8,7 +8,7 @@ import 'package:get/get.dart';
 
 
 class OrderReviewWidget extends StatelessWidget {
-  final VehicleSecationController vehicleController;
+  final VehicleController vehicleController;
   final OrderController orderController = Get.put(OrderController());
   final double total;
   final List<String> calculationHistory;
