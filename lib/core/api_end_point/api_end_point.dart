@@ -34,5 +34,6 @@ class ApiEndPoint {
   static const String walletHistory =
       '$baseUrl/wallet/user/walletHistory/{userId}';
   static const String createOrder = '$baseUrl/order/indivitual';
+  static const String orderEstimate = '$baseUrl/coin-management/redeem-coin';
 
 }

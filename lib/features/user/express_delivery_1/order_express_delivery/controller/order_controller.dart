@@ -1,36 +1,59 @@
+import 'dart:convert';
+import 'package:ZipBee/core/api_end_point/api_end_point.dart';
+import 'package:ZipBee/core/shared_prefference_service/shared_pref.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 
 class OrderController extends GetxController {
-  var orderNumber = '#1233'.obs;
-  var isDriverAssigned = false.obs;
-  var countdown = 10.obs;
-  double totalAmount = 0.00;
-
-  // ✅ Track toggle state
   RxBool redeemCoins = false.obs;
-  RxBool favoriteRiders = false.obs;
+  RxBool isLoading = false.obs;
+  RxDouble totalAmount = 0.0.obs;
 
-  // Update toggle values
-  void toggleRedeemCoins(bool value) => redeemCoins.value = value;
-  void toggleFavoriteRiders(bool value) => favoriteRiders.value = value;
+  /// Toggle redeem coins
+  void toggleRedeemCoins(bool value) {
+    redeemCoins.value = value;
+    orderEstimateApi();
+  }
 
-  // @override
-  // void onInit() {
-  //   super.onInit();
+  /// Call API to estimate total order amount
+  Future<void> orderEstimateApi() async {
+    try {
+      isLoading.value = true;
 
-  //   // // COUNTDOWN TIMER
-  //   // ever(countdown, (value) {
-  //   //   if (countdown.value == 0) return;
-  //   // });
+      final token = await SharedPreferencesHelper.getToken();
+      if (token == null || token.isEmpty) {
+        Get.snackbar("Session Expired", "Please login again");
+        return;
+      }
 
-  //   // countdownTimer();
-  //   autoNavigate();
-  // }
+      final body = {"redeem_coin": redeemCoins.value};
+      print("📦 REQUEST BODY: $body");
 
-  // void countdownTimer() async {
-  //   for (int i = 10; i >= 0; i--) {
-  //     await Future.delayed(const Duration(seconds: 1));
-  //     countdown.value = i;
-  //   }
-  // }
+      final response = await http.post(
+        Uri.parse(ApiEndPoint.orderEstimate),
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Authorization": "Bearer $token",
+        },
+        body: jsonEncode(body),
+      );
+
+      print("📡 STATUS CODE: ${response.statusCode}");
+      print("📨 RESPONSE BODY: ${response.body}");
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        totalAmount.value =
+            double.tryParse(data['data']['total_amount'].toString()) ?? 0.0;
+      } else {
+        Get.snackbar("API Error", response.body.toString());
+      }
+    } catch (e) {
+      print("❌ ERROR: $e");
+      Get.snackbar("Exception", e.toString());
+    } finally {
+      isLoading.value = false;
+    }
+  }
 }

@@ -1,9 +1,8 @@
 import 'dart:convert';
-
 import 'package:ZipBee/core/shared_prefference_service/shared_pref.dart';
 import 'package:ZipBee/core/utils/constants/icon_path.dart';
+import 'package:ZipBee/features/user/express_delivery_1/order_express_delivery/screen/order_alertdialog_screen.dart';
 import 'package:ZipBee/features/user/express_delivery_1/service/order_api_service.dart';
-import 'package:ZipBee/features/user/stacked/show_order_confirmation/show_order_confirmation_dialog.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
@@ -17,6 +16,9 @@ class VehicleModel {
 }
 
 class ExpressDeliveryMain extends GetxController {
+  // ─────────────────────────
+  // Map Vehicle to ID
+  // ─────────────────────────
   int _mapVehicleToId(VehicleModel? vehicle) {
     if (vehicle == null) return 1;
 
@@ -45,19 +47,13 @@ class ExpressDeliveryMain extends GetxController {
   // UI Editing State
   // ─────────────────────────
   final RxBool isEditing = false.obs;
-
-  /// fallback title (optional, editable)
   final RxString title = 'Collected from (Sender: Athena Lin)'.obs;
 
   // ─────────────────────────
-  // 🔥 Sender Info
+  // Sender & Receiver Info
   // ─────────────────────────
   final RxString senderName = ''.obs;
   final RxString senderAddress = ''.obs;
-
-  // ─────────────────────────
-  // 🔥 Receiver Info
-  // ─────────────────────────
   final RxString receiverName = ''.obs;
   final RxString receiverAddress = ''.obs;
 
@@ -75,11 +71,20 @@ class ExpressDeliveryMain extends GetxController {
   final RxInt countdown = 10.obs;
   final RxBool redeemCoins = false.obs;
   final RxBool favoriteRiders = false.obs;
-  final Rx<double> totalAmount = Rx<double>(0.0);
+  final Rx<double> totalAmount = 0.0.obs;
+  final RxBool isLoading = false.obs;
 
-  // ─────────────────────────
-  // Init
-  // ─────────────────────────
+  final Logger _logger = Logger(
+    printer: PrettyPrinter(
+      methodCount: 1,
+      errorMethodCount: 5,
+      lineLength: 90,
+      colors: true,
+      printEmojis: true,
+      printTime: false,
+    ),
+  );
+
   @override
   void onInit() {
     super.onInit();
@@ -132,7 +137,7 @@ class ExpressDeliveryMain extends GetxController {
   }
 
   // ─────────────────────────
-  // 🔥 Sender / Receiver Setter
+  // Sender / Receiver Setter
   // ─────────────────────────
   void setSender({required String name, required String address}) {
     senderName.value = name;
@@ -157,7 +162,9 @@ class ExpressDeliveryMain extends GetxController {
   void toggleRedeemCoins(bool value) => redeemCoins.value = value;
   void toggleFavoriteRiders(bool value) => favoriteRiders.value = value;
 
-  final RxBool isLoading = false.obs;
+  // ─────────────────────────
+  // Create Order
+  // ─────────────────────────
   Future<void> createOrder() async {
     if (totalAmount.value <= 0) {
       _logger.w("Order blocked: totalAmount is 0");
@@ -167,7 +174,6 @@ class ExpressDeliveryMain extends GetxController {
     isLoading.value = true;
 
     try {
-      // 🔐 TOKEN
       final token = await SharedPreferencesHelper.getAccessToken();
       if (token == null || token.isEmpty) {
         _logger.e("Access token missing or expired");
@@ -175,14 +181,11 @@ class ExpressDeliveryMain extends GetxController {
         return;
       }
 
-      // ✅ BACKEND-COMPATIBLE BODY
       final body = {
         "route_type": isRoundTrip.value ? "ROUND" : "ONE_WAY",
         "delivery_type": "EXPRESS",
         "collect_time": isNowSelected.value ? "ASAP" : "SCHEDULED",
-        "vehicle_type_id": _mapVehicleToId(
-          selectedVehicle.value,
-        ), // must return int
+        "vehicle_type_id": _mapVehicleToId(selectedVehicle.value),
         "destinations": [
           {"type": "SENDER", "address": senderAddress.value},
           {"type": "RECEIVER", "address": receiverAddress.value},
@@ -206,7 +209,15 @@ class ExpressDeliveryMain extends GetxController {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         _logger.i("Order Created Successfully");
-        showOrderConfirmationDialog(this);
+
+        // ✅ Null-safe: Pass order data to dialog
+        final orderData = data['data']?['order'];
+        if (orderData != null) {
+          showOrderConfirmationDialog(orderData);
+        } else {
+          _logger.w("Order data missing in response");
+          Get.snackbar("Success", "Order created but no details available");
+        }
       } else {
         final errorMessage = data['message'] is List
             ? (data['message'] as List).join('\n')
@@ -222,15 +233,4 @@ class ExpressDeliveryMain extends GetxController {
       isLoading.value = false;
     }
   }
-
-  final Logger _logger = Logger(
-    printer: PrettyPrinter(
-      methodCount: 1,
-      errorMethodCount: 5,
-      lineLength: 90,
-      colors: true,
-      printEmojis: true,
-      printTime: false,
-    ),
-  );
 }
