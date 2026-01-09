@@ -71,6 +71,7 @@ class UserNotification extends StatelessWidget {
                             physics: const NeverScrollableScrollPhysics(),
                             itemCount: controller.notificationList.length,
                             itemBuilder: (_, index) {
+                              // ignore: unused_local_variable
                               final item = controller.notificationList[index];
                               return Padding(
                                 padding: EdgeInsets.only(bottom: 14),
