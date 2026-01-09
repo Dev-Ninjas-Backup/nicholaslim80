@@ -12,12 +12,12 @@ class OrderReviwButtonStatic extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 70),
-      padding: const EdgeInsets.all(5),
+      margin: EdgeInsets.only(bottom: 70),
+      padding: EdgeInsets.all(5),
       color: Colors.white,
       child: Row(
         children: [
-          const SizedBox(width: 8),
+          SizedBox(width: 8),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -56,15 +56,12 @@ class OrderReviwButtonStatic extends StatelessWidget {
                     }
                   : null,
               child: controller.isLoading.value
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
+                  ? SizedBox(
+                      height: 30,
+                      width: 30,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Text(
-                      'Review Order',
-                      style: TextStyle(color: Colors.black),
-                    ),
+                  : Text('Review Order', style: TextStyle(color: Colors.black)),
             ),
           ),
 
