@@ -9,11 +9,12 @@ import 'package:ZipBee/features/user/order/controller/order_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-
 /// Show order confirmation dialog (reusable)
-void showOrderConfirmationDialog(OrderController controller) {
+void showOrderConfirmationDialog(orderData) {
+  final OrderController controller = Get.find<OrderController>();
+
   final String formattedTotal =
-      "S\$${controller.totalAmount.toStringAsFixed(2)}";
+      "S\$${controller.totalAmount.value.toStringAsFixed(2)}";
 
   Get.dialog(
     AlertDialog(
@@ -118,12 +119,14 @@ void showOrderConfirmationDialog(OrderController controller) {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  Obx(
-                    () => CustomToggleSwitch(
+                  Obx(() {
+                    return CustomToggleSwitch(
                       value: controller.redeemCoins.value,
-                      onChanged: controller.toggleRedeemCoins,
-                    ),
-                  ),
+                      onChanged: (val) {
+                        controller.toggleRedeemCoins(val);
+                      },
+                    );
+                  }),
                 ],
               ),
               SizedBox(height: 14),
