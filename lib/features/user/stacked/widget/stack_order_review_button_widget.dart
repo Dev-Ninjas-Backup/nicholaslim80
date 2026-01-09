@@ -56,12 +56,20 @@ class StackedOrderReviewButtonStatic extends StatelessWidget {
             
             return FilledButton(
               onPressed: isReady
-                  ? () {
-                      // Update total amount in order controller before showing dialog
-                      orderController.totalAmount = vehicleController.calculateTotal();
-                      
-                      // Show the details dialog
-                      showStackedOrderConfirmationDialog(orderController);
+                  ? () async {
+                      // call placeOrder which will POST and GET the order, set controller.totalAmount
+                      final ok = await orderController.placeOrder(
+                        locationController: Get.find(),
+                        vehicleController: vehicleController,
+                      );
+
+                      if (ok) {
+                        // Show the server-backed confirmation dialog with server total
+                        showStackedOrderConfirmationDialog(orderController);
+                      } else {
+                        // Show error
+                        debugPrint('Order placement failed');
+                      }
                     }
                   : null,
               style: ButtonStyle(

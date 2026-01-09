@@ -32,9 +32,9 @@ class SenderScheduleController extends GetxController {
     isFormValid.value = isValid;
   }
 
-  /// Save destination via API. Returns true on success.
-  Future<bool> saveDestination({String type = 'SENDER'}) async {
-    if (!isFormValid.value) return false;
+  /// Save destination via API. Returns parsed response body on success, otherwise null.
+  Future<Map<String, dynamic>?> saveDestination({String type = 'SENDER'}) async {
+    if (!isFormValid.value) return null;
     isLoading.value = true;
     EasyLoading.show(status: 'Saving...');
 
@@ -56,11 +56,11 @@ class SenderScheduleController extends GetxController {
     final status = res['statusCode'] as int? ?? 500;
     if (status == 201) {
       EasyLoading.showSuccess('Destination saved');
-      return true;
+      return (res['body'] as Map<String, dynamic>?);
     } else {
       final msg = (res['body'] as Map<String, dynamic>?)?['message'] ?? 'Failed';
       EasyLoading.showError(msg.toString());
-      return false;
+      return null;
     }
   }
 

@@ -6,6 +6,7 @@ import 'package:ZipBee/features/user/stacked/stacked_collect_from/screen/collect
 import 'package:ZipBee/features/user/stacked/stacked_collect_from/controller/controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ZipBee/features/user/stacked/order_stacked_delivery/controller/controller.dart';
 
 
 import '../stacked_controller/stacked_controller.dart';
@@ -105,6 +106,25 @@ class StackedButtonWidget extends StatelessWidget {
                               fontWeight: FontWeight.w600,
                             ),
                           ),
+                          SizedBox(width: 8),
+                          // Toggle for Fixed route
+                          Obx(() {
+                            final orderController = Get.put(StackedOrderController());
+                            return Row(
+                              children: [
+                                Text(
+                                  orderController.isFixed.value ? 'On' : 'Off',
+                                  style: getTextStyle(fontSize: 12, color: Colors.grey),
+                                ),
+                                SizedBox(width: 6),
+                                Switch(
+                                  value: orderController.isFixed.value,
+                                  onChanged: (v) => orderController.isFixed.value = v,
+                                  activeColor: Colors.amber,
+                                ),
+                              ],
+                            );
+                          }),
                         ],
                       ),
                       Column(
@@ -214,6 +234,25 @@ class StackedButtonWidget extends StatelessWidget {
                               fontWeight: FontWeight.w600,
                             ),
                           ),
+                          SizedBox(width: 8),
+                          // Toggle for Fixed route
+                          Obx(() {
+                            final orderController = Get.put(StackedOrderController());
+                            return Row(
+                              children: [
+                                Text(
+                                  orderController.isFixed.value ? 'On' : 'Off',
+                                  style: getTextStyle(fontSize: 12, color: Colors.grey),
+                                ),
+                                SizedBox(width: 6),
+                                Switch(
+                                  value: orderController.isFixed.value,
+                                  onChanged: (v) => orderController.isFixed.value = v,
+                                  activeColor: Colors.amber,
+                                ),
+                              ],
+                            );
+                          }),
                         ],
                       ),
                       Column(
