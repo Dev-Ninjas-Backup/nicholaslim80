@@ -33,4 +33,6 @@ class ApiEndPoint {
   static const String adClick = '$baseUrl/advertise/{id}/click';
   static const String walletHistory =
       '$baseUrl/wallet/user/walletHistory/{userId}';
+  static const String createOrder = '$baseUrl/order/indivitual';
+
 }

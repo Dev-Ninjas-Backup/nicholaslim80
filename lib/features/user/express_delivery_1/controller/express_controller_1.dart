@@ -1,6 +1,12 @@
+import 'dart:convert';
+
+import 'package:ZipBee/core/shared_prefference_service/shared_pref.dart';
 import 'package:ZipBee/core/utils/constants/icon_path.dart';
+import 'package:ZipBee/features/user/express_delivery_1/service/order_api_service.dart';
+import 'package:ZipBee/features/user/stacked/show_order_confirmation/show_order_confirmation_dialog.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:logger/logger.dart';
 
 /// ─────────────────────────
 /// Vehicle Model
@@ -11,6 +17,23 @@ class VehicleModel {
 }
 
 class ExpressDeliveryMain extends GetxController {
+  int _mapVehicleToId(VehicleModel? vehicle) {
+    if (vehicle == null) return 1;
+
+    switch (vehicle.iconPath) {
+      case "assets/icons/bike.png":
+        return 1;
+      case "assets/icons/car.png":
+        return 2;
+      case "assets/icons/shop_car.png":
+        return 3;
+      case "assets/icons/shipment.png":
+        return 4;
+      default:
+        return 1;
+    }
+  }
+
   // ─────────────────────────
   // Trip & Time State
   // ─────────────────────────
@@ -133,4 +156,81 @@ class ExpressDeliveryMain extends GetxController {
   // ─────────────────────────
   void toggleRedeemCoins(bool value) => redeemCoins.value = value;
   void toggleFavoriteRiders(bool value) => favoriteRiders.value = value;
+
+  final RxBool isLoading = false.obs;
+  Future<void> createOrder() async {
+    if (totalAmount.value <= 0) {
+      _logger.w("Order blocked: totalAmount is 0");
+      return;
+    }
+
+    isLoading.value = true;
+
+    try {
+      // 🔐 TOKEN
+      final token = await SharedPreferencesHelper.getAccessToken();
+      if (token == null || token.isEmpty) {
+        _logger.e("Access token missing or expired");
+        Get.snackbar("Session Expired", "Please login again");
+        return;
+      }
+
+      // ✅ BACKEND-COMPATIBLE BODY
+      final body = {
+        "route_type": isRoundTrip.value ? "ROUND" : "ONE_WAY",
+        "delivery_type": "EXPRESS",
+        "collect_time": isNowSelected.value ? "ASAP" : "SCHEDULED",
+        "vehicle_type_id": _mapVehicleToId(
+          selectedVehicle.value,
+        ), // must return int
+        "destinations": [
+          {"type": "SENDER", "address": senderAddress.value},
+          {"type": "RECEIVER", "address": receiverAddress.value},
+        ],
+        if (!isNowSelected.value && scheduledDateTime.value != null)
+          "scheduled_time": scheduledDateTime.value!.toIso8601String(),
+      };
+
+      _logger.i("Create Order → Request Body");
+      _logger.d(body);
+
+      final response = await OrderService.createOrderApi(
+        body: body,
+        token: token,
+      );
+
+      _logger.i("Status Code → ${response.statusCode}");
+      _logger.d("Response → ${response.body}");
+
+      final data = jsonDecode(response.body);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        _logger.i("Order Created Successfully");
+        showOrderConfirmationDialog(this);
+      } else {
+        final errorMessage = data['message'] is List
+            ? (data['message'] as List).join('\n')
+            : data['message']?.toString() ?? "Order Failed";
+
+        _logger.e("Order Failed", error: data);
+        Get.snackbar("Error", errorMessage);
+      }
+    } catch (e, s) {
+      _logger.f("Create Order Exception", error: e, stackTrace: s);
+      Get.snackbar("Error", "Something went wrong");
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  final Logger _logger = Logger(
+    printer: PrettyPrinter(
+      methodCount: 1,
+      errorMethodCount: 5,
+      lineLength: 90,
+      colors: true,
+      printEmojis: true,
+      printTime: false,
+    ),
+  );
 }

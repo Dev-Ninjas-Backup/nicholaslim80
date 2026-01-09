@@ -44,25 +44,30 @@ class OrderReviwButtonStatic extends StatelessWidget {
               ],
             ),
           ),
-      Obx(
-  () => FilledButton(
-    style: FilledButton.styleFrom(
-      backgroundColor: controller.totalAmount.value > 0
-          ? Colors.amber
-          : Colors.grey,
-    ),
-    onPressed: controller.totalAmount.value > 0
-    ? () {
-        showOrderConfirmationDialog(controller); // ✅ function call kore dialog show
-      }
-    : null,
- // disables the button when value <= 0
-    child: const Text(
-      'Review Order',
-      style: TextStyle(color: Colors.black),
-    ),
-  ),
-),
+          Obx(
+            () => FilledButton(
+              style: FilledButton.styleFrom(
+                backgroundColor: controller.totalAmount.value > 0
+                    ? Colors.amber
+                    : Colors.grey,
+              ),
+              onPressed: controller.totalAmount.value > 0
+                  ? () {
+                      controller.createOrder(); // 🔥 API CALL
+                    }
+                  : null,
+              child: controller.isLoading.value
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Text(
+                      'Review Order',
+                      style: TextStyle(color: Colors.black),
+                    ),
+            ),
+          ),
 
           const SizedBox(width: 8),
         ],
