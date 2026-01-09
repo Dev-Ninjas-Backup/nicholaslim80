@@ -7,6 +7,7 @@ import 'package:ZipBee/features/user/stacked/stacked_collect_from/recipient_part
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 import '../model/model.dart';
 import '../sender_part/screen/screen.dart';
@@ -89,11 +90,11 @@ class StackedCollectFormController extends GetxController {
         }
       } else {
         debugPrint('Destination API failed: ${response.statusCode}');
-        Get.snackbar('Error', 'Failed to load addresses');
+        EasyLoading.showError('Failed to load addresses');
       }
     } catch (e) {
       debugPrint('Error fetching destinations: $e');
-      Get.snackbar('Error', e.toString());
+      EasyLoading.showError(e.toString());
     } finally {
       isLoading.value = false;
     }

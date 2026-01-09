@@ -7,12 +7,24 @@ import 'package:ZipBee/features/user/stacked/order_stacked_delivery/widget/order
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/widget/payment_method_widget.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/widget/promo_dialog_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
+import 'package:ZipBee/features/user/stacked/stacked_screen/stacked_screen.dart';
 
 /// Show order confirmation dialog (reusable)
 void showStackedOrderConfirmationDialog(StackedOrderController controller) {
   final String formattedTotal =
-      "S\$${controller.totalAmount.toStringAsFixed(2)}";
+      "\$${controller.totalAmount.toStringAsFixed(2)}";
+
+  // Ensure payment controller exists
+  StackedPaymentController paymentCtrl;
+  try {
+    paymentCtrl = Get.find<StackedPaymentController>();
+  } catch (_) {
+    paymentCtrl = Get.put(StackedPaymentController());
+  }
+
+  final codCollectFrom = 'RECEIVER'.obs;
 
   Get.dialog(
     AlertDialog(
@@ -180,8 +192,8 @@ void showStackedOrderConfirmationDialog(StackedOrderController controller) {
                         imageAsset: "assets/icons/stripe_icon.png",
                       ),
                       StackedPaymentOption(
-                        title: "Wallet ",
-                        subtitle: "S\$10.50",
+                        title: "Wallet",
+                        subtitle: "\$10.50",
                         imageAsset: IconPath.wallet,
                       ),
                       StackedPaymentOption(
@@ -193,14 +205,49 @@ void showStackedOrderConfirmationDialog(StackedOrderController controller) {
                   ),
                 ],
               ),
-              SizedBox(height: 44),
+              SizedBox(height: 12),
+
+              // If Cash selected show collect-from selector
+              Obx(() {
+                final selected = paymentCtrl.selectedTitle.value.toLowerCase();
+                if (selected.contains('cash')) {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Cash Collect from:',
+                        style: getTextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                      ),
+                      Obx(() => DropdownButton<String>(
+                            value: codCollectFrom.value,
+                            items: [
+                              DropdownMenuItem(value: 'SENDER', child: Text('Sender')),
+                              DropdownMenuItem(value: 'RECEIVER', child: Text('Receiver')),
+                            ],
+                            onChanged: (v) {
+                              if (v != null) codCollectFrom.value = v;
+                            },
+                          )),
+                    ],
+                  );
+                }
+
+                return SizedBox.shrink();
+              }),
+
+              SizedBox(height: 32),
 
               // Buttons
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   FilledButton(
-                    onPressed: () => Get.back(),
+                    onPressed: () {
+                      // Close dialog and reset to a fresh Stacked screen
+                      Get.back();
+                      controller.cancelAndReset();
+                      Get.off(() => StackedScreen());
+                    },
                     style: FilledButton.styleFrom(
                       backgroundColor: Colors.white,
                       foregroundColor: Colors.white,
@@ -230,11 +277,40 @@ void showStackedOrderConfirmationDialog(StackedOrderController controller) {
                   ),
                   FilledButton(
                     onPressed: () async {
-                      Get.back(); // Close details dialog
-                      StackedOrderConfirmationDialog.show(); // Show "Congratulations"
-                      await Future.delayed(Duration(seconds: 3));
-                      Get.back(); // Close "Congratulations"
-                      StackedOrderSuccessDialog.show(); // Show "Confirmed"
+                      // Determine payment values
+                      String selected = paymentCtrl.selectedTitle.value.toLowerCase();
+                      String paymentMethodApi;
+                      String? paymentMethodId;
+                      String? codCollect;
+
+                      if (selected.contains('cash')) {
+                        paymentMethodApi = 'COD';
+                        codCollect = codCollectFrom.value;
+                      } else if (selected.contains('wallet')) {
+                        paymentMethodApi = 'WALLET';
+                      } else {
+                        // default map stripe/other to ONLINE_PAY
+                        paymentMethodApi = 'ONLINE_PAY';
+                        paymentMethodId = null; // integrate stripe later
+                      }
+
+                      final ok = await controller.confirmPlaceOrder(
+                        paymentMethod: paymentMethodApi,
+                        paymentMethodId: paymentMethodId,
+                        codCollectFrom: codCollect,
+                      );
+
+                      if (ok) {
+                        debugPrint('Final placed total: ${controller.totalAmount}');
+                        Get.back(); // Close dialog
+                        EasyLoading.showSuccess('Order placed: S\$${controller.totalAmount.toStringAsFixed(2)}');
+                        StackedOrderConfirmationDialog.show(); // Show "Congratulations"
+                        await Future.delayed(Duration(seconds: 3));
+                        Get.back(); // Close "Congratulations"
+                        StackedOrderSuccessDialog.show(); // Show "Confirmed"
+                      } else {
+                        EasyLoading.showError('Failed to place order');
+                      }
                     },
                     style: FilledButton.styleFrom(
                       backgroundColor: Colors.amber,
@@ -248,7 +324,7 @@ void showStackedOrderConfirmationDialog(StackedOrderController controller) {
                       ),
                     ),
                     child: Text(
-                      'Review Order',
+                      'Place Order',
                       style: getTextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,

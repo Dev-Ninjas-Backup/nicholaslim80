@@ -1,23 +1,37 @@
 import 'package:ZipBee/core/common/styles/global_text_style.dart';
 import 'package:ZipBee/features/user/collect_form_on_express_delivery/Sender_Part/controller_sender/sender_controller.dart';
 import 'package:ZipBee/features/user/collect_form_on_express_delivery/Sender_Part/widget_sender/text_filed_widget.dart';
+import 'package:ZipBee/features/user/stacked/stacked_collect_from/model/model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 
 class ScheduleRecipientWidgetST extends StatelessWidget {
   final String title;
-  final VoidCallback onPressed; // Add this
+  final VoidCallback onPressed;
+  final StackedAddressModel? address;
 
   const ScheduleRecipientWidgetST({
     super.key,
     required this.title,
-    required this.onPressed, // Require it
+    required this.onPressed,
+    this.address,
   });
 
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(SenderController());
+
+    // Prefill if address provided and fields empty
+    if (address != null) {
+      if (controller.addressController.text.isEmpty) {
+        controller.addressController.text = address!.addressFromApr.isNotEmpty ? address!.addressFromApr : address!.address;
+      }
+      if (controller.floorController.text.isEmpty) controller.floorController.text = address!.floorUnit;
+      if (controller.nameController.text.isEmpty) controller.nameController.text = address!.contactName;
+      if (controller.numberController.text.isEmpty) controller.numberController.text = address!.contactNumber;
+      controller.saveAddress.value = address!.isSaved;
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

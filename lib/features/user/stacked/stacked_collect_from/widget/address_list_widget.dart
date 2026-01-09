@@ -2,12 +2,20 @@ import 'package:ZipBee/core/common/styles/global_text_style.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import 'package:ZipBee/features/user/stacked/schedule_stacked_ delivey/Schedule_sender_recepent/screen/schedule_sender_screen.dart';
+import 'package:ZipBee/features/user/stacked/schedule_stacked_ delivey/Schedule_recepent/screen/schedule_recepent_screen1.dart';
+
 import '../controller/controller.dart';
 
 class StackedAddressListWidget extends StatelessWidget {
   final StackedCollectFormController controller;
+  final String? addressType; // 'SENDER' or 'RECEIVER'
 
-  const StackedAddressListWidget({super.key, required this.controller});
+  const StackedAddressListWidget({
+    super.key,
+    required this.controller,
+    this.addressType,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +58,13 @@ class StackedAddressListWidget extends StatelessWidget {
                 style: getTextStyle(color: Colors.grey.shade600),
               ),
               onTap: () {
-                controller.onAddressTap(address);
+                // Route based on addressType
+                if (addressType == 'RECEIVER') {
+                  Get.to(() => StackedSchedulRecepmenteScreen(address: address));
+                } else {
+                  // Default to SENDER
+                  Get.to(() => StackedSenderScheduleScreen(address: address));
+                }
               },
             );
           },

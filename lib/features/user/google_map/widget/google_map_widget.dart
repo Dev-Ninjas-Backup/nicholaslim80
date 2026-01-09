@@ -27,6 +27,9 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
   Marker? _selectedMarker;
   // Map<PolylineId, Polyline> polylines = {}; // polyline drawing is commented out per request
 
+  // Subscription for location updates — canceled on dispose to avoid setState after dispose
+  StreamSubscription<LocationData>? _locSub;
+
   @override
   void initState() {
     super.initState();
@@ -148,9 +151,10 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
       if (permissionGranted != PermissionStatus.granted) return;
     }
 
-    _locationController.onLocationChanged.listen((LocationData currentLocation) {
+    _locSub = _locationController.onLocationChanged.listen((LocationData currentLocation) {
       if (currentLocation.latitude != null &&
           currentLocation.longitude != null) {
+        if (!mounted) return; // avoid calling setState after dispose
         setState(() {
           _currentPosition = LatLng(
             currentLocation.latitude!,
@@ -174,5 +178,11 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
   void generatePolyLinePoints(List<LatLng> polylineCoordinates) {
     // polyline drawing disabled per request
     debugPrint('generatePolyLinePoints: disabled');
+  }
+
+  @override
+  void dispose() {
+    _locSub?.cancel();
+    super.dispose();
   }
 }

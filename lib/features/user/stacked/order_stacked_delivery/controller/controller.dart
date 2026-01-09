@@ -1,4 +1,12 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
+
+import 'package:ZipBee/features/user/stacked/stacked_controller/stacked_controller.dart';
+import 'package:ZipBee/features/user/stacked/vehicle_type/controller/controller.dart';
+import 'package:ZipBee/features/user/stacked/widget/pic_date_time.dart';
+import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/order_service.dart';
+import 'package:ZipBee/features/user/stacked/order_stacked_delivery/widget/payment_method_widget.dart';
 
 class StackedOrderController extends GetxController {
   var orderNumber = '#1233'.obs;
@@ -6,9 +14,12 @@ class StackedOrderController extends GetxController {
   var countdown = 10.obs;
   
   // New properties for Order Confirmation Details
-  var totalAmount = 0.0; // Will be set before showing dialog
+  var totalAmount = 0.0; // Will be set before showing dialog (server value)
   var redeemCoins = false.obs;
   var favoriteRiders = false.obs;
+
+  // Route options
+  var isFixed = false.obs; // Fixed route toggle
 
   void toggleRedeemCoins(bool value) {
     redeemCoins.value = value;
@@ -18,23 +29,217 @@ class StackedOrderController extends GetxController {
     favoriteRiders.value = value;
   }
 
-// @override
-// void onInit() {
-//   super.onInit();
+  /// Place order by building payload from controllers, call POST endpoint,
+  /// then GET the created order, debugPrint responses, update `totalAmount`
+  /// and return true on success. Returns false on validation or server error.
+  int? lastOrderId;
 
-//   // // COUNTDOWN TIMER
-//   // ever(countdown, (value) {
-//   //   if (countdown.value == 0) return;
-//   // });
+  Future<bool> placeOrder({
+    required StackedLocationController locationController,
+    required StackedVehicleController vehicleController,
+  }) async {
+    // Validate required fields
+    final vehicle = vehicleController.selectedVehicle.value;
+    final sender = locationController.senderData.value;
+    final receiver = locationController.receiverData.value;
 
-//   // countdownTimer();
-//   autoNavigate();
-// }
+    if (vehicle == null) {
+      EasyLoading.showError('Please select a vehicle');
+      return false;
+    }
 
-// void countdownTimer() async {
-//   for (int i = 10; i >= 0; i--) {
-//     await Future.delayed(const Duration(seconds: 1));
-//     countdown.value = i;
-//   }
-// }
+    if (sender == null) {
+      EasyLoading.showError('Please select a pickup address');
+      return false;
+    }
+
+    if (receiver == null) {
+      EasyLoading.showError('Please select at least one recipient address');
+      return false;
+    }
+
+    // Build destinations array - currently supports sender + one receiver
+    final destinations = <Map<String, dynamic>>[];
+
+    destinations.add({
+      'address': sender.address,
+      'floor_unit': sender.floorUnit,
+      'contact_name': sender.contactName,
+      'contact_number': sender.contactNumber,
+      'note_to_driver': sender.noteToDriver,
+      'is_saved': sender.isSaved,
+      'type': 'SENDER',
+    });
+
+    // Add primary receiver - if you support more stops later, append here
+    destinations.add({
+      'address': receiver.address,
+      'floor_unit': receiver.floorUnit,
+      'contact_name': receiver.contactName,
+      'contact_number': receiver.contactNumber,
+      'note_to_driver': receiver.noteToDriver,
+      'is_saved': receiver.isSaved,
+      'type': 'RECEIVER',
+    });
+
+    // Collect time
+    String collectTime = 'ASAP';
+    String? scheduledTime;
+    StackedScheduleController? schedCtrl;
+    try {
+      schedCtrl = Get.find<StackedScheduleController>();
+    } catch (_) {
+      schedCtrl = null;
+    }
+
+    if (schedCtrl != null && !schedCtrl.isNow.value) {
+      scheduledTime = schedCtrl.selectedDateTime.value.toUtc().toIso8601String();
+      collectTime = 'SCHEDULED';
+    }
+
+    final payload = {
+      'route_type': locationController.isRoundTrip.value ? 'ROUND' : 'ONE_WAY',
+      'isFixed': isFixed.value,
+      'delivery_type': 'STACKED',
+      'vehicle_type_id': vehicle.id,
+      'collect_time': collectTime, // sends either 'ASAP' or 'SCHEDULED'
+      if (scheduledTime != null) 'scheduled_time': scheduledTime,
+      'has_additional_services': false,
+      'notify_favorite_raider': false,
+      'destinations': destinations,
+    };
+
+    debugPrint('Placing order payload: $payload');
+
+    final res = await OrderService.createOrder(payload);
+
+    // Debug print full response
+    debugPrint('CreateOrder full response: ${res}');
+
+    final status = res['statusCode'] as int? ?? 500;
+    if (status == 201) {
+      EasyLoading.showSuccess('Order created');
+      final body = res['body'] as Map<String, dynamic>;
+      final data = body['data'] as Map<String, dynamic>? ?? {};
+
+      // Extract total cost - try order.total_cost then pricingSummary.totalCost
+      double serverTotal = 0.0;
+      try {
+        final orderMap = data['order'] as Map<String, dynamic>?;
+        if (orderMap != null && orderMap['total_cost'] != null) {
+          serverTotal = double.tryParse(orderMap['total_cost'].toString()) ?? 0.0;
+        } else if (data['pricingSummary'] != null && data['pricingSummary']['totalCost'] != null) {
+          serverTotal = (data['pricingSummary']['totalCost'] as num).toDouble();
+        }
+      } catch (e) {
+        debugPrint('Error parsing server total: $e');
+      }
+
+      debugPrint('Server total_cost: $serverTotal');
+
+      // If order id is present, fetch order details and store lastOrderId
+      int? orderId;
+      try {
+        final orderMap = data['order'] as Map<String, dynamic>?;
+        orderId = orderMap != null && orderMap['id'] != null ? (orderMap['id'] as int) : null;
+      } catch (_) {
+        orderId = null;
+      }
+
+      if (orderId != null) {
+        // save for later 'place' call
+        lastOrderId = orderId;
+        final getRes = await OrderService.getOrder(orderId);
+        debugPrint('Get order full response: $getRes');
+      }
+
+      // Update controller total to server value and return success
+      totalAmount = serverTotal;
+      return true;
+    } else {
+      final msg = (res['body'] as Map<String, dynamic>?)?['message'] ?? 'Failed to create order';
+      debugPrint('PlaceOrder failed: $msg');
+      EasyLoading.showError(msg.toString());
+      return false;
+    }
+  }
+
+  /// After creating an order (lastOrderId must be present), finalize/place it.
+  Future<bool> confirmPlaceOrder({
+    required String paymentMethod, // COD | WALLET | ONLINE_PAY
+    String? paymentMethodId,
+    String? codCollectFrom, // SENDER | RECEIVER
+  }) async {
+    if (lastOrderId == null) {
+      EasyLoading.showError('No order available to place');
+      debugPrint('confirmPlaceOrder: lastOrderId is null');
+      return false;
+    }
+
+    final body = <String, dynamic>{
+      'paymentMethod': paymentMethod,
+      if (paymentMethodId != null) 'paymentMethodId': paymentMethodId,
+      if (paymentMethod == 'COD' && codCollectFrom != null) 'codCollectFrom': codCollectFrom,
+    }..removeWhere((k, v) => v == null);
+
+    debugPrint('Placing final order (place) payload: $body');
+
+    final res = await OrderService.placeOrder(lastOrderId!, body);
+    debugPrint('Place order full response: $res');
+
+    final status = res['statusCode'] as int? ?? 500;
+    if (status == 201) {
+      try {
+        final data = (res['body'] as Map<String, dynamic>)['data'] as Map<String, dynamic>? ?? {};
+        final serverTotal = double.tryParse((data['total_cost'] ?? '').toString()) ?? totalAmount;
+        debugPrint('Placed order total_cost: $serverTotal');
+        totalAmount = serverTotal;
+        EasyLoading.showSuccess('Order placed: S\$${serverTotal.toStringAsFixed(2)}');
+      } catch (e) {
+        debugPrint('Error parsing placed order total: $e');
+      }
+
+      return true;
+    } else {
+      final msg = (res['body'] as Map<String, dynamic>?)?['message'] ?? 'Failed to place order';
+      debugPrint('confirmPlaceOrder failed: $msg');
+      EasyLoading.showError(msg.toString());
+      return false;
+    }
+  }
+
+  /// Cancel and reset the flow back to a clean StackedScreen state
+  void cancelAndReset() {
+    try {
+      final loc = Get.find<StackedLocationController>();
+      loc.senderData.value = null;
+      loc.receiverData.value = null;
+    } catch (_) {}
+
+    try {
+      final vc = Get.find<StackedVehicleController>();
+      vc.selectedVehicle.value = null;
+      vc.selectedServices.clear();
+      vc.calculationHistory.clear();
+    } catch (_) {}
+
+    try {
+      final sched = Get.find<StackedScheduleController>();
+      sched.setNow(true);
+    } catch (_) {}
+
+    // reset payment selector if present
+    try {
+      final pay = Get.find<StackedPaymentController>();
+      pay.selectedIndex.value = 0;
+      pay.selectedTitle.value = 'Select';
+    } catch (_) {}
+
+    // reset controller state
+    lastOrderId = null;
+    totalAmount = 0.0;
+  }
 }
+
+
+
