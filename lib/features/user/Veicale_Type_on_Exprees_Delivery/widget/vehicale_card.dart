@@ -36,8 +36,8 @@ class VehicleCard extends StatelessWidget {
             children: [
               // Vehicle image
               Image.asset(
-                (vehicle.imageAsset != null && vehicle.imageAsset!.isNotEmpty)
-                    ? vehicle.imageAsset!
+                (vehicle.imageAsset.isNotEmpty)
+                    ? vehicle.imageAsset
                     : IconPath.bike,
                 width: 50,
                 height: 50,
