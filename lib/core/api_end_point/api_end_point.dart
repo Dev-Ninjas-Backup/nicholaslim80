@@ -24,6 +24,8 @@ class ApiEndPoint {
   static const String toggleFavorite = '$baseUrl/my-raider';
   static const String getDestination = '$baseUrl/destination';
   static const String homePageAd = '$baseUrl/advertise/role-based';
+  static const String adImpression = '$baseUrl/advertise/{id}/impression';
+  static const String adClick = '$baseUrl/advertise/{id}/click';
   static const String walletHistory =
       '$baseUrl/wallet/user/walletHistory/{userId}';
 }
