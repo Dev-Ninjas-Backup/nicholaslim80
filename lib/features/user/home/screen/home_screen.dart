@@ -9,7 +9,6 @@ import 'package:ZipBee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -17,6 +16,7 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("jsdhdff ${ctrl.availablePoints.value}");
     const padding = 16.0;
     final media = MediaQuery.of(context);
     final width = media.size.width;
@@ -100,25 +100,27 @@ class HomeScreen extends StatelessWidget {
             SizedBox(height: 16),
 
             // Wallet & Points Cards
-            Row(
-              children: [
-                Expanded(
-                  child: borderedInfoCard(
-                    title: 'Wallet Balance',
-                    valueBuilder: () =>
-                        '\$${ctrl.walletBalance.value.toStringAsFixed(2)}',
-                    iconPath: IconPath.wallet,
+            Obx(
+              () => Row(
+                children: [
+                  Expanded(
+                    child: borderedInfoCard(
+                      title: 'Wallet Balance',
+                      valueBuilder: () =>
+                          '\$${ctrl.walletBalance.value.toStringAsFixed(2)}',
+                      iconPath: IconPath.wallet,
+                    ),
                   ),
-                ),
-                SizedBox(width: 16),
-                Expanded(
-                  child: borderedInfoCard(
-                    title: 'Available Points',
-                    valueBuilder: () => '${ctrl.availablePoints.value}',
-                    iconPath: IconPath.points,
+                  SizedBox(width: 16),
+                  Expanded(
+                    child: borderedInfoCard(
+                      title: 'Available Points',
+                      valueBuilder: () => '${ctrl.availablePoints.value}',
+                      iconPath: IconPath.points,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
 
             SizedBox(height: 30),
@@ -170,7 +172,7 @@ class HomeScreen extends StatelessWidget {
               subtitle:
                   'Courier takes all bundle packages and delivers together',
               iconPath: IconPath.stacked,
-              onTap: (){
+              onTap: () {
                 Get.toNamed(AppRoutes.stackedScreen);
               },
             ),

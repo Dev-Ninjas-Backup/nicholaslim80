@@ -82,15 +82,29 @@ class HomeController extends GetxController {
 
       if (response.statusCode == 200) {
         final body = jsonDecode(response.body);
-        final data = body['data'];
+        if (body['success'] == true && body['data'] != null) {
+          final data = body['data'];
 
-        /// Bind values
-        userName.value = "Good Morning, ${data['username'] ?? ''}";
+          /// Bind username safely
+          userName.value =
+              "Good Morning, ${data['username']?.toString().trim() ?? ''}";
 
-        walletBalance.value = (data['currentWalletBalance'] ?? 0).toDouble();
-        availablePoints.value = data['reward_points'] ?? 0;
+          /// Bind current wallet balance safely
+          walletBalance.value = (data['currentWalletBalance'] != null)
+              ? double.tryParse(data['currentWalletBalance'].toString()) ?? 0
+              : 0;
 
-        debugPrint("✅ Profile loaded with current balance & points");
+          /// Bind reward points safely
+          availablePoints.value = (data['reward_points'] != null)
+              ? int.tryParse(data['reward_points'].toString()) ?? 0
+              : 0;
+
+          debugPrint(
+            "Profile loaded: wallet=${walletBalance.value}, points=${availablePoints.value}",
+          );
+        } else {
+          debugPrint("❌ Profile API returned success=false");
+        }
       } else {
         debugPrint("❌ Profile API failed: ${response.statusCode}");
       }
