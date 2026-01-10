@@ -3,6 +3,7 @@ import 'package:ZipBee/core/shared_prefference_service/shared_pref.dart';
 import 'package:ZipBee/core/utils/constants/icon_path.dart';
 import 'package:ZipBee/features/user/express_delivery_1/order_express_delivery/screen/order_alertdialog_screen.dart';
 import 'package:ZipBee/features/user/express_delivery_1/service/order_api_service.dart';
+import 'package:ZipBee/features/user/home/controller/home_controller.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
@@ -35,6 +36,8 @@ class ExpressDeliveryMain extends GetxController {
         return 1;
     }
   }
+
+  final HomeController homeCtrl = Get.find<HomeController>();
 
   // ─────────────────────────
   // Trip & Time State
@@ -183,7 +186,10 @@ class ExpressDeliveryMain extends GetxController {
 
       final body = {
         "route_type": isRoundTrip.value ? "ROUND" : "ONE_WAY",
-        "delivery_type": "EXPRESS",
+
+        /// EXPRESS | STANDARD
+        "delivery_type": homeCtrl.deliveryType.value.toUpperCase(),
+
         "collect_time": isNowSelected.value ? "ASAP" : "SCHEDULED",
         "vehicle_type_id": _mapVehicleToId(selectedVehicle.value),
         "destinations": [

@@ -1,7 +1,9 @@
 import 'package:ZipBee/app.dart';
+import 'package:ZipBee/features/user/auth/login/controller/login_signup_controller.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:get/get.dart';
 
 import 'firebase_msg.dart';
 import 'firebase_options.dart';
@@ -13,7 +15,7 @@ void _configEasyLoading() {
     ..loadingStyle = EasyLoadingStyle.dark
     ..indicatorSize = 45.0
     ..radius = 10.0
-    ..maskColor = Colors.black.withValues(alpha: .5)
+    ..maskColor = Colors.black.withOpacity(0.5)
     ..userInteractions = false
     ..dismissOnTap = false;
 }
@@ -21,10 +23,18 @@ void _configEasyLoading() {
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  Get.put<LoginSignupController>(
+    LoginSignupController(),
+    permanent: true,
+  );
+
   await FirebaseMsg().initFCM();
-  
+
   _configEasyLoading();
-  
+
   runApp(const Nicholaslim());
 }
