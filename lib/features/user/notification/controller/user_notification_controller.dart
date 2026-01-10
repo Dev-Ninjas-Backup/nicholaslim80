@@ -24,7 +24,7 @@ class UserNotificationController extends GetxController {
   final RxList<Notification1Model> notificationList =
       <Notification1Model>[].obs;
 
-  // Tabs (can be used to filter API requests if needed)
+  // Tabs
   final notificationTabs = ["Notifications", "Order Updates", "Promotions"];
 
   @override
@@ -60,12 +60,24 @@ class UserNotificationController extends GetxController {
         return;
       }
 
+      // Determine type based on tab
+      String type = "";
+      switch (selectNotificationListIndex.value) {
+        case 1:
+          type = "ORDER_UPDATE";
+          break;
+        case 2:
+          type = "PROMOTION";
+          break;
+        default:
+          type = ""; // All types
+      }
+
       // API URL
       final uri = Uri.parse(
         "${ApiEndPoint.notification}"
-        "?target_role=RAIDER"
-        "&type=SMS"
-        "&isRead=true"
+        "?target_role=USER"
+        "${type.isNotEmpty ? "&type=$type" : ""}"
         "&page=${page.value}"
         "&limit=$limit",
       );
@@ -106,7 +118,7 @@ class UserNotificationController extends GetxController {
     }
   }
 
-  /// Optional: Method to change tab
+  /// Change tab
   void changeTab(int index) {
     if (selectNotificationListIndex.value != index) {
       selectNotificationListIndex.value = index;
