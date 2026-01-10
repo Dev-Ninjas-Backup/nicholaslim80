@@ -83,12 +83,13 @@ class OrderController extends GetxController {
   // ORDERS
   // =================================================
   Future<void> fetchOrders({bool isRefresh = false}) async {
-    if (isLoading.value || allLoaded.value) return;
+    // ✅ Allow fetch for first page even if allLoaded is true
+    if (isLoading.value) return;
 
     if (isRefresh) {
       page = 1;
       orderList.clear();
-      allLoaded.value = false;
+      allLoaded.value = false; // ✅ reset for new tab
     }
 
     isLoading.value = true;
@@ -113,13 +114,13 @@ class OrderController extends GetxController {
         final List list = decoded['data']['data'];
 
         if (list.isEmpty) {
+          // ✅ No orders on this page, mark allLoaded
           allLoaded.value = true;
         }
 
         for (var e in list) {
           e['status'] = selectedStatus;
 
-          // -------- orderStops mapping --------
           final List stops = e['orderStops'] ?? [];
 
           final pickup = stops.firstWhere(
@@ -163,6 +164,15 @@ class OrderController extends GetxController {
   Future<void> loadMoreOrders() async {
     if (!allLoaded.value && !isLoading.value) {
       await fetchOrders();
+    }
+  }
+
+  /// ✅ Call this when switching tabs
+  void onTabChanged(int index) {
+    if (selectOrderListIndex.value != index) {
+      selectOrderListIndex.value = index;
+      allLoaded.value = false; // reset loaded
+      fetchOrders(isRefresh: true); // fetch for new tab
     }
   }
 }
