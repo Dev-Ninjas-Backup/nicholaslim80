@@ -12,7 +12,9 @@ class OrderScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(OrderController());
+    final controller = Get.isRegistered<OrderController>()
+        ? Get.find<OrderController>()
+        : Get.put(OrderController());
 
     return Scaffold(
       backgroundColor: AppColors.backgroungColor,
@@ -75,7 +77,8 @@ class OrderScreen extends StatelessWidget {
             /// Order List
             Expanded(
               child: Obx(() {
-                if (controller.isLoading.value) {
+                if (controller.isLoading.value &&
+                    controller.orderList.isEmpty) {
                   return const Center(child: CircularProgressIndicator());
                 }
 
@@ -83,110 +86,127 @@ class OrderScreen extends StatelessWidget {
                   return const Center(child: Text("No Orders Found"));
                 }
 
-                return ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  itemCount: controller.orderList.length,
-                  itemBuilder: (_, index) {
-                    final item = controller.orderList[index];
+                return NotificationListener<ScrollNotification>(
+                  onNotification: (ScrollNotification scrollInfo) {
+                    if (!controller.isLoading.value &&
+                        scrollInfo.metrics.pixels ==
+                            scrollInfo.metrics.maxScrollExtent) {
+                      controller.loadMoreOrders();
+                    }
+                    return false;
+                  },
+                  child: ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    itemCount: controller.orderList.length,
+                    itemBuilder: (_, index) {
+                      final item = controller.orderList[index];
 
-                    return GestureDetector(
-                      onTap: () {
-                        if (controller.selectOrderListIndex.value == 0) {
-                          Get.to(() => ActiveOrderDetailsScreen(order: item));
-                        } else if (controller.selectOrderListIndex.value == 1) {
-                          Get.to(
-                            () => CompletedOrderDetailsScreen(order: item),
-                          );
-                        } else if (controller.selectOrderListIndex.value == 2) {
-                          Get.to(() => (order: item));
-                        }
-                      },
-                      child: Container(
-                        margin: const EdgeInsets.only(bottom: 14),
-                        padding: const EdgeInsets.all(14),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(14),
-                          border: Border.all(
-                            color: AppColors.subtitleFontColor,
+                      return GestureDetector(
+                        onTap: () {
+                          if (controller.selectOrderListIndex.value == 0) {
+                            Get.to(() => ActiveOrderDetailsScreen(order: item));
+                          } else if (controller.selectOrderListIndex.value ==
+                              1) {
+                            Get.to(
+                              () => CompletedOrderDetailsScreen(order: item),
+                            );
+                          } else if (controller.selectOrderListIndex.value ==
+                              2) {
+                            Get.to(
+                              () => (order: item),
+                            ); // Keep your original code
+                          }
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.only(bottom: 14),
+                          padding: const EdgeInsets.all(14),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                              color: AppColors.subtitleFontColor,
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              /// Top row: Order ID + Pick-up Date & Timer
+                              Text(
+                                "#${item.orderId} Pick-up Date & Timer ${item.date}",
+                                style: getTextStyle(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+
+                              const SizedBox(height: 8),
+
+                              /// Collect from (senderName)
+                              Text(
+                                "Collect from (${item.senderName})",
+                                style: getTextStyle(),
+                              ),
+
+                              const SizedBox(height: 4),
+
+                              /// Deliver to X destinations
+                              Builder(
+                                builder: (_) {
+                                  final drops = <String>[];
+                                  if (item.dropOffAddress.isNotEmpty) {
+                                    drops.addAll(
+                                      item.dropOffAddress.split(','),
+                                    );
+                                  } else {
+                                    drops.add("Recipient");
+                                  }
+                                  final count = drops.length;
+                                  final names = drops.join(", ");
+
+                                  return Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "Deliver to $count destinations",
+                                        style: getTextStyle(),
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        "($names)",
+                                        style: getTextStyle(
+                                          color: AppColors.subtitleFontColor,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              ),
+
+                              const SizedBox(height: 12),
+
+                              /// Vehicle + Total
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    "Vehicle Type: ${item.vehicleType}",
+                                    style: getTextStyle(),
+                                  ),
+                                  Text(
+                                    "Total: S\$${item.total.toStringAsFixed(2)}",
+                                    style: getTextStyle(
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            /// Top row: Order ID + Pick-up Date & Timer
-                            Text(
-                              "#${item.orderId} Pick-up Date & Timer ${item.date}",
-                              style: getTextStyle(fontWeight: FontWeight.w600),
-                            ),
-
-                            const SizedBox(height: 8),
-
-                            /// Collect from (senderName)
-                            Text(
-                              "Collect from (${item.senderName})",
-                              style: getTextStyle(),
-                            ),
-
-                            const SizedBox(height: 4),
-
-                            /// Deliver to X destinations
-                            Builder(
-                              builder: (_) {
-                                final drops = <String>[];
-                                // Try to get multiple drop-off names (example from dropOffAddress)
-                                if (item.dropOffAddress.isNotEmpty) {
-                                  drops.addAll(
-                                    item.dropOffAddress.split(','),
-                                  ); // if API returns comma separated names
-                                } else {
-                                  drops.add("Recipient");
-                                }
-                                final count = drops.length;
-                                final names = drops.join(", ");
-
-                                return Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      "Deliver to $count destinations",
-                                      style: getTextStyle(),
-                                    ),
-                                    const SizedBox(height: 2),
-                                    Text(
-                                      "($names)",
-                                      style: getTextStyle(
-                                        color: AppColors.subtitleFontColor,
-                                        fontSize: 12,
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              },
-                            ),
-
-                            const SizedBox(height: 12),
-
-                            /// Vehicle + Total
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "Vehicle Type: ${item.vehicleType}",
-                                  style: getTextStyle(),
-                                ),
-                                Text(
-                                  "Total: S\$${item.total.toStringAsFixed(2)}",
-                                  style: getTextStyle(
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 );
               }),
             ),
