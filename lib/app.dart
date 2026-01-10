@@ -12,21 +12,25 @@ class Nicholaslim extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-      designSize: Size(360, 690),
+      designSize: const Size(360, 690),
       minTextAdapt: true,
       splitScreenMode: true,
-      builder: (_, child) {
+      builder: (context, child) {
         return GetMaterialApp(
           title: "ZipBee",
           debugShowCheckedModeBanner: false,
-          builder: EasyLoading.init(),
+
+          builder: (context, widget) {
+            widget = EasyLoading.init()(context, widget);
+            return widget;
+          },
+
           initialRoute: AppRoutes.getSplashScreen(),
-          // initialRoute: AppRoutes.googleMapScreen, // for testing google map 
           getPages: AppRoutes.routes,
+
           initialBinding: ControllerBinder(),
+
           themeMode: ThemeMode.system,
-          // theme: AppTheme.lightTheme,
-          // darkTheme: AppTheme.darkTheme,
         );
       },
     );

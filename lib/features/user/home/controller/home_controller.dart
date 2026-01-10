@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:ZipBee/core/shared_prefference_service/shared_pref.dart';
 import 'package:ZipBee/core/utils/constants/icon_path.dart';
 import 'package:ZipBee/core/utils/constants/image_path.dart';
-import 'package:ZipBee/features/user/auth/login/controller/login_signup_controller.dart';
 import 'package:ZipBee/features/user/home/model/drawer_model.dart';
 import 'package:ZipBee/features/user/home/widgets/logout_dailog_widget.dart';
 import 'package:ZipBee/routes/app_routes.dart';
@@ -15,7 +14,6 @@ import '../../../../core/api_end_point/api_end_point.dart';
 
 class HomeController extends GetxController {
   /// ================= CONTROLLERS =================
-  var controller = Get.put(LoginSignupController());
 
   /// ================= OBSERVABLES =================
   final userName = 'Good Morning!'.obs;
@@ -62,6 +60,21 @@ class HomeController extends GetxController {
       'image': AssetImage(ImagePath.vehicles1),
     },
   ].obs;
+
+  /// express | standard
+  final deliveryType = 'standard'.obs;
+
+  /// AppBar bottom text
+  String get parcelStatusText {
+    return deliveryType.value == 'express'
+        ? 'Express Delivery'
+        : 'Standard Delivery';
+  }
+
+  /// call from HomeScreen
+  void selectDeliveryType(String type) {
+    deliveryType.value = type;
+  }
 
   /// ================= DRAWER =================
   var drawerItem = <DrawerModel>[].obs;

@@ -8,6 +8,7 @@ import 'package:ZipBee/features/user/express_delivery_1/widget/order_reviw_butto
 import 'package:ZipBee/features/user/express_delivery_1/widget/pick_date_time_dialog.dart';
 import 'package:ZipBee/features/user/express_delivery_1/widget/select_location_widget.dart';
 import 'package:ZipBee/features/user/express_delivery_1/widget/vehicle_type_widget.dart';
+import 'package:ZipBee/features/user/home/controller/home_controller.dart';
 import 'package:ZipBee/features/user/order/controller/order_controller.dart';
 import 'package:ZipBee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
@@ -19,8 +20,7 @@ class ExpressDelivery1 extends StatelessWidget {
   final VehicleController vehicleController = Get.put(VehicleController());
 
   final OrderController orderController = Get.put(OrderController());
-
- 
+  final HomeController homeCtrl = Get.find<HomeController>();
 
   ExpressDelivery1({super.key});
 
@@ -38,14 +38,17 @@ class ExpressDelivery1 extends StatelessWidget {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              'Express Delivery',
-              style: getTextStyle(
-                fontSize: 20,
-                color: Colors.black87,
-                fontWeight: FontWeight.w700,
+            Obx(
+              () => Text(
+                homeCtrl.parcelStatusText,
+                style: getTextStyle(
+                  fontSize: 20,
+                  color: Colors.black87,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
+
             SizedBox(width: 4.0),
             IconButton(
               icon: Icon(Icons.info_outline, color: Colors.black87, size: 20),
@@ -132,7 +135,6 @@ class ExpressDelivery1 extends StatelessWidget {
                             result['selectedVehicle'];
                       }
                       controller.totalAmount.value = result['totalAmount'];
-
                     },
                     icon: Icon(Icons.info_outline),
                     color: Colors.black87,

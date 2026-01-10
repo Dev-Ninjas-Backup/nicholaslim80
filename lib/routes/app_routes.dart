@@ -9,9 +9,11 @@ import 'package:ZipBee/features/user/auth/verification/screen/verification_scree
 import 'package:ZipBee/features/user/bottom_navbar/screen/bottom_navbar_screen.dart';
 import 'package:ZipBee/features/user/express_delivery_1/express_delivery_to_sendr_or_recepmeant/screen/express_sender_or_recepmeant.dart';
 import 'package:ZipBee/features/user/express_delivery_1/screen/express_delivery_1.dart';
-import 'package:ZipBee/features/user/finding_raider/screnn/connecting_rider_page.dart' show ConnectingRiderPage;
+import 'package:ZipBee/features/user/finding_raider/screnn/connecting_rider_page.dart'
+    show ConnectingRiderPage;
 import 'package:ZipBee/features/user/finding_raider/screnn/finding_rider_page.dart';
 import 'package:ZipBee/features/user/google_map/screen/google_map_screen.dart';
+import 'package:ZipBee/features/user/home/controller/home_controller.dart';
 import 'package:ZipBee/features/user/home/my_riders/screen/my_riders.dart';
 import 'package:ZipBee/features/user/home/screen/home_screen.dart';
 import 'package:ZipBee/features/user/notification/screen/user_notification1.dart';
@@ -23,7 +25,6 @@ import 'package:ZipBee/features/user/user_support/screen/support_screen.dart';
 import 'package:ZipBee/features/user/wallet/add_funds/screen/user_add_funds.dart';
 import 'package:ZipBee/features/user/wallet/my_wallet/screen/user_my_wallet.dart';
 import 'package:get/get.dart';
-
 
 import '../features/user/stacked/stacked_faq/stacked_faq.dart';
 import '../features/user/stacked/stacked_screen/stacked_screen.dart';
@@ -77,7 +78,8 @@ class AppRoutes {
   // google map screen (practice file)
   static String googleMapScreen = "/googleMapScreen";
 
-  static String stackedSchedulRecepmenteScreen = "/stackedSchedulRecepmenteScreen";
+  static String stackedSchedulRecepmenteScreen =
+      "/stackedSchedulRecepmenteScreen";
 
   // static String scheduledelivery = "/scheduledelivery";
 
@@ -168,6 +170,9 @@ class AppRoutes {
       name: bottomNavbarScreen,
       page: () => BottomNavbarScreen(),
       transition: Transition.fadeIn,
+      binding: BindingsBuilder(() {
+        Get.put<HomeController>(HomeController(), permanent: true);
+      }),
     ),
 
     GetPage(
@@ -233,8 +238,8 @@ class AppRoutes {
     // google map screen (practice file)
     GetPage(name: googleMapScreen, page: () => GoogleMapScreen()),
     GetPage(
-      name: stackedSchedulRecepmenteScreen, 
+      name: stackedSchedulRecepmenteScreen,
       page: () => StackedSchedulRecepmenteScreen(),
-      ),
+    ),
   ];
 }

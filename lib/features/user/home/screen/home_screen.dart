@@ -12,7 +12,7 @@ import 'package:get/get.dart';
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final HomeController ctrl = Get.put(HomeController());
+  final HomeController ctrl = Get.find<HomeController>();
 
   @override
   Widget build(BuildContext context) {
@@ -36,6 +36,7 @@ class HomeScreen extends StatelessWidget {
             _scaffoldKey.currentState?.openDrawer();
           },
         ),
+
         title: Obx(
           () => Text(
             ctrl.userName.value,
@@ -46,6 +47,7 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
         ),
+
         actions: [
           IconButton(
             icon: Icon(
@@ -73,9 +75,10 @@ class HomeScreen extends StatelessWidget {
                     width: 26,
                   ),
                   SizedBox(width: 6),
+
                   Obx(
                     () => Text(
-                      ctrl.parcelStatus.value,
+                      ctrl.parcelStatusText,
                       style: getTextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
@@ -142,13 +145,15 @@ class HomeScreen extends StatelessWidget {
                       subtitle:
                           'Courier takes only your package and delivers instantly',
                       iconPath: IconPath.parcel,
-                      selected: ctrl.selectedService.value == 'Express',
+                      selected: ctrl.deliveryType.value == 'express',
                       onTap: () {
+                        ctrl.selectDeliveryType('express');
                         Get.toNamed(AppRoutes.expressDelivery1);
                       },
                     ),
                   ),
                 ),
+
                 SizedBox(width: 16),
                 Expanded(
                   child: Obx(
@@ -157,8 +162,11 @@ class HomeScreen extends StatelessWidget {
                       subtitle:
                           'Choose available time with flexible delivery charges',
                       iconPath: IconPath.select,
-                      selected: ctrl.selectedService.value == 'Standard',
-                      onTap: () => ctrl.selectService('Standard'),
+                      selected: ctrl.deliveryType.value == 'standard',
+                      onTap: () {
+                        ctrl.selectDeliveryType('standard');
+                        Get.toNamed(AppRoutes.expressDelivery1);
+                      },
                     ),
                   ),
                 ),
