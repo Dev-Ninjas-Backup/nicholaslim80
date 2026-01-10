@@ -1,293 +1,303 @@
-import 'package:ZipBee/core/common/styles/global_text_style.dart';
-import 'package:ZipBee/core/utils/constants/icon_path.dart';
-import 'package:ZipBee/features/user/express_delivery_1/order_express_delivery/controller/order_express_controller.dart';
-import 'package:ZipBee/features/user/express_delivery_1/order_express_delivery/widget/custom_toggoe_switich_widget.dart';
-import 'package:ZipBee/features/user/express_delivery_1/order_express_delivery/widget/order_confirmation_dialog.dart';
-import 'package:ZipBee/features/user/express_delivery_1/order_express_delivery/widget/order_success_dialog.dart';
 import 'package:ZipBee/features/user/express_delivery_1/order_express_delivery/widget/payment_method_widget.dart';
-import 'package:ZipBee/features/user/express_delivery_1/order_express_delivery/widget/promo_dilog_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ZipBee/core/common/styles/global_text_style.dart';
+import 'package:ZipBee/core/utils/constants/icon_path.dart';
+import '../controller/order_express_controller.dart'; // Adjust path
 
-/// Show order confirmation dialog (reusable)
-void showOrderConfirmationDialog(orderData) {
-  final OrderControllerExpress controller = Get.find<OrderControllerExpress>();
+class OrderConfirmationSheet {
+  static void show(int orderId) {
+    final controller = Get.find<OrderControllerExpress>();
+    controller.fetchOrderById(orderId);
 
-  final String formattedTotal =
-      "S\$${controller.totalAmount.value.toStringAsFixed(2)}";
+    Get.bottomSheet(
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        padding: const EdgeInsets.fromLTRB(20, 12, 20, 30),
+        child: Obx(() {
+          if (controller.isLoading.value && controller.lastOrderData.isEmpty) {
+            return const SizedBox(
+              height: 300,
+              child: Center(child: CircularProgressIndicator()),
+            );
+          }
 
-  Get.dialog(
-    AlertDialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      contentPadding: EdgeInsets.zero,
-      insetPadding: EdgeInsets.symmetric(horizontal: 8),
-      content: SingleChildScrollView(
-        child: Container(
-          width: Get.width * 0.95,
-          padding: EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Your Order",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-              ),
-              SizedBox(height: 22),
-
-              // Promo Code Row
-              Row(
-                children: [
-                  Image.asset(IconPath.promo, height: 24, width: 24),
-                  SizedBox(width: 8),
-                  Text(
-                    'Promo Code',
-                    style: getTextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
+          return SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Handle bar for drag
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  Spacer(),
-                  GestureDetector(
-                    onTap: () {
-                      Get.dialog(
-                        AlertDialog(
-                          insetPadding: EdgeInsets.symmetric(horizontal: 16),
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  "Confirm Your Order",
+                  style: getTextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // --- Promo & Options Section ---
+                _buildSectionLabel("Offers & Discounts"),
+                _buildPromoRow(),
+                const Divider(height: 32),
+
+                _buildToggleRow(
+                  title: "Redeem 10 Coins",
+                  value: controller.redeemCoins.value,
+                  onChanged: controller.toggleRedeemCoins,
+                ),
+                _buildToggleRow(
+                  title: "Favourite Riders",
+                  value: controller.favoriteRiders.value,
+                  onChanged: controller.toggleFavoriteRiders,
+                ),
+
+                const SizedBox(height: 24),
+
+                // --- Price Breakdown Section ---
+                _buildSectionLabel("Payment Summary"),
+                const SizedBox(height: 8),
+                _buildPriceRow("Subtotal", controller.subtotal),
+                _buildPriceRow(
+                  "Coin/s Redeemed",
+                  controller.redeemedAmount,
+                  isDiscount: true,
+                ),
+                _buildPriceRow("Saved", "S\$0.00", isDiscount: true),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8),
+                  child: Divider(),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Total Amount",
+                      style: getTextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      controller.totalAmount,
+                      style: getTextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.amber,
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Payment Method:',
+                      style: getTextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.grey,
+                      ),
+                    ),
+                    PaymentMethodSelector(
+                      options: [
+                        PaymentOption(
+                          title: "Stripe",
+                          subtitle: "Instant payment",
+                          imageAsset: "assets/icons/stripe_icon.png",
+                        ),
+                        PaymentOption(
+                          title: "Wallet ",
+                          subtitle: "S\$10.50",
+                          imageAsset: IconPath.wallet,
+                        ),
+                        PaymentOption(
+                          title: "Cash",
+                          subtitle: "To be paid by sender or receipent",
+                          imageAsset: IconPath.cash,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                SizedBox(height: 20),
+
+                // --- Action Buttons ---
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () => Get.back(),
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          side: const BorderSide(color: Colors.red),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
-                            side: BorderSide(color: Colors.amber, width: 2),
                           ),
-                          title: Row(
-                            children: [
-                              Text(
-                                "Promo Code",
+                        ),
+                        child: Text(
+                          "Cancel",
+                          style: getTextStyle(
+                            color: Colors.red,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          bool success = await controller.confirmOrder(orderId);
+                          if (success) {
+                            
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.amber,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: controller.isLoading.value
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : Text(
+                                "Confirm Order",
                                 style: getTextStyle(
-                                  fontSize: 20,
+                                  color: Colors.black,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              Spacer(),
-                              InkWell(
-                                onTap: () => Get.back(),
-                                child: Icon(
-                                  Icons.cancel_outlined,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ],
-                          ),
-                          content: Builder(
-                            builder: (context) {
-                              final width =
-                                  MediaQuery.of(context).size.width * 0.8;
-                              return SizedBox(
-                                width: width,
-                                child: PromoDialogContent(),
-                              );
-                            },
-                          ),
-                        ),
-                      );
-                    },
-                    child: Container(
-                      width: 130,
-                      height: 27,
-                      padding: EdgeInsets.symmetric(horizontal: 8),
-                      alignment: Alignment.centerLeft,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Text(
-                        "Enter code",
-                        style: getTextStyle(color: Colors.grey, fontSize: 13),
                       ),
                     ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 14),
+                  ],
+                ),
+              ],
+            ),
+          );
+        }),
+      ),
+    );
+  }
 
-              // Redeem Coins
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Redeem 10 Coins',
-                    style: getTextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  Obx(() {
-                    return CustomToggleSwitch(
-                      value: controller.redeemCoins.value,
-                      onChanged: (val) {
-                        controller.toggleRedeemCoins(val);
-                      },
-                    );
-                  }),
-                ],
-              ),
-              SizedBox(height: 14),
+  static Widget _buildSectionLabel(String text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Text(
+        text.toUpperCase(),
+        style: getTextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.bold,
+          color: Colors.grey,
+        ),
+      ),
+    );
+  }
 
-              // Favourite Riders
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Favourite Riders',
-                    style: getTextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  Obx(
-                    () => CustomToggleSwitch(
-                      value: controller.favoriteRiders.value,
-                      onChanged: controller.toggleFavoriteRiders,
-                    ),
-                  ),
-                ],
+  static Widget _buildPromoRow() {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.amber.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.amber.withOpacity(0.2)),
+      ),
+      child: Row(
+        children: [
+          Image.asset(IconPath.promo, height: 24),
+          const SizedBox(width: 12),
+          Text("Promo Code", style: getTextStyle(fontWeight: FontWeight.w600)),
+          const Spacer(),
+          TextButton(
+            onPressed: () {},
+            child: Text(
+              "Add Code",
+              style: getTextStyle(
+                color: Colors.amber,
+                fontWeight: FontWeight.bold,
               ),
-              SizedBox(height: 30),
-
-              // Subtotal & Total
-              buildDetailRow("Subtotal:", "\$45"),
-              SizedBox(height: 10),
-              buildDetailRow("Coin/s redeemed:", "\$00"),
-              SizedBox(height: 24),
-              Divider(),
-              SizedBox(height: 24),
-              buildDetailRow("Saved:", "\$00", isTotal: false),
-              SizedBox(height: 10),
-              buildDetailRow("Total Amount:", formattedTotal, isTotal: true),
-              SizedBox(height: 30),
-
-              // Payment Method
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Payment Method:',
-                    style: getTextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  PaymentMethodSelector(
-                    options: [
-                      PaymentOption(
-                        title: "Stripe",
-                        subtitle: "Instant payment",
-                        imageAsset: "assets/icons/stripe_icon.png",
-                      ),
-                      PaymentOption(
-                        title: "Wallet ",
-                        subtitle: "S\$10.50",
-                        imageAsset: IconPath.wallet,
-                      ),
-                      PaymentOption(
-                        title: "Cash",
-                        subtitle: "To be paid by sender or receipent",
-                        imageAsset: IconPath.cash,
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              SizedBox(height: 44),
-
-              // Buttons
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  FilledButton(
-                    onPressed: () => Get.back(),
-                    style: FilledButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: Colors.white,
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(6),
-                        side: BorderSide(color: Colors.red, width: 1.5),
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        Text(
-                          'Cancel order',
-                          style: getTextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.red,
-                          ),
-                        ),
-                        SizedBox(width: 3),
-                        Image.asset(IconPath.cencell, height: 14, width: 14),
-                      ],
-                    ),
-                  ),
-                  FilledButton(
-                    onPressed: () async {
-                      Get.back();
-                      OrderConfirmationDialog.show();
-                      await Future.delayed(Duration(seconds: 3));
-                      Get.back();
-                      OrderSuccessDialog.show();
-                    },
-                    style: FilledButton.styleFrom(
-                      backgroundColor: Colors.amber,
-                      foregroundColor: Colors.white,
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                    ),
-                    child: Text(
-                      'Confirm Order',
-                      style: getTextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
-    ),
-  );
-}
+    );
+  }
 
-/// Helper function now top-level so it can be accessed from anywhere
-Widget buildDetailRow(String title, String value, {bool isTotal = false}) {
-  return Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: [
-      Text(
-        title,
-        style: getTextStyle(
-          fontSize: isTotal ? 16 : 12,
-          fontWeight: isTotal ? FontWeight.bold : FontWeight.w500,
-        ),
+  static Widget _buildToggleRow({
+    required String title,
+    required bool value,
+    required Function(bool) onChanged,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            title,
+            style: getTextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+          ),
+          Switch.adaptive(
+            value: value,
+            activeColor: Colors.amber,
+            onChanged: onChanged,
+          ),
+        ],
       ),
-      Text(
-        value,
-        style: getTextStyle(
-          fontSize: isTotal ? 16 : 12,
-          fontWeight: isTotal ? FontWeight.bold : FontWeight.w500,
-        ),
+    );
+  }
+
+  static Widget _buildPriceRow(
+    String label,
+    String value, {
+    bool isDiscount = false,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: getTextStyle(color: Colors.grey.shade600, fontSize: 14),
+          ),
+          Text(
+            value,
+            style: getTextStyle(
+              fontWeight: isDiscount ? FontWeight.bold : FontWeight.normal,
+              color: isDiscount ? Colors.green : Colors.black,
+            ),
+          ),
+        ],
       ),
-    ],
-  );
+    );
+  }
 }

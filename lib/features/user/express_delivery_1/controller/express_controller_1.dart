@@ -165,75 +165,73 @@ class ExpressDeliveryMain extends GetxController {
   // ─────────────────────────
   // Create Order
   // ─────────────────────────
-Future<void> createOrder() async {
-  if (totalAmount.value <= 0) {
-    _logger.w("Order blocked: totalAmount is 0");
-    return;
-  }
-
-  isLoading.value = true;
-
-  try {
-    final token = await SharedPreferencesHelper.getAccessToken();
-
-    // ✅ Token check
-    if (token == null || token.isEmpty) {
-      _logger.e("Access token missing or expired");
-      Get.snackbar("Session Expired", "Please login again");
+  Future<void> createOrder() async {
+    if (totalAmount.value <= 0) {
+      _logger.w("Order blocked: totalAmount is 0");
       return;
     }
 
-    final body = {
-      "route_type": isRoundTrip.value ? "ROUND" : "ONE_WAY",
-      "delivery_type": "EXPRESS",
-      "collect_time": isNowSelected.value ? "ASAP" : "SCHEDULED",
-      "vehicle_type_id": _mapVehicleToId(selectedVehicle.value),
-      "destinations": [
-        {"type": "SENDER", "address": senderAddress.value},
-        {"type": "RECEIVER", "address": receiverAddress.value},
-      ],
-      if (!isNowSelected.value && scheduledDateTime.value != null)
-        "scheduled_time": scheduledDateTime.value!.toIso8601String(),
-    };
+    isLoading.value = true; // loader ON
 
-    _logger.i("Create Order → Request Body");
-    _logger.d(body);
-
-    // ✅ Send token as Bearer in header
-    final response = await OrderService.createOrderApi(
-      body: body,
-      token: token,
-    );
-
-    _logger.i("Status Code → ${response.statusCode}");
-    _logger.d("Response → ${response.body}");
-
-    final data = jsonDecode(response.body);
-
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      _logger.i("Order Created Successfully");
-
-      final orderData = data['data']?['order'];
-      if (orderData != null) {
-        showOrderConfirmationDialog(orderData);
-      } else {
-        _logger.w("Order data missing in response");
-        Get.snackbar("Success", "Order created but no details available");
+    try {
+      final token = await SharedPreferencesHelper.getAccessToken();
+      if (token == null || token.isEmpty) {
+        _logger.e("Access token missing or expired");
+        isLoading.value = false;
+        Get.snackbar("Session Expired", "Please login again");
+        return;
       }
-    } else {
-      final errorMessage = data['message'] is List
-          ? (data['message'] as List).join('\n')
-          : data['message']?.toString() ?? "Order Failed";
 
-      _logger.e("Order Failed", error: data);
-      Get.snackbar("Error", errorMessage);
+      final body = {
+        "route_type": isRoundTrip.value ? "ROUND" : "ONE_WAY",
+        "delivery_type": "EXPRESS",
+        "collect_time": isNowSelected.value ? "ASAP" : "SCHEDULED",
+        "vehicle_type_id": _mapVehicleToId(selectedVehicle.value),
+        "destinations": [
+          {"type": "SENDER", "address": senderAddress.value},
+          {"type": "RECEIVER", "address": receiverAddress.value},
+        ],
+        if (!isNowSelected.value && scheduledDateTime.value != null)
+          "scheduled_time": scheduledDateTime.value!.toIso8601String(),
+      };
+
+      _logger.i("Create Order → Request Body");
+      _logger.d(body);
+
+      final response = await OrderService.createOrderApi(
+        body: body,
+        token: token,
+      );
+
+      _logger.i("Status Code → ${response.statusCode}");
+      _logger.d("Response → ${response.body}");
+
+      final data = jsonDecode(response.body);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        _logger.i("Order Created Successfully");
+
+        final orderData = data['data']?['order'];
+        if (orderData != null && orderData is Map<String, dynamic>) {
+          // Pass the order id to the confirmation dialog so it can display the order number
+          OrderConfirmationSheet.show(orderData['id']);
+        } else {
+          _logger.w("Order data missing or invalid in response");
+          Get.snackbar("Success", "Order created but no details available");
+        }
+      } else {
+        final errorMessage = data['message'] is List
+            ? (data['message'] as List).join('\n')
+            : data['message']?.toString() ?? "Order Failed";
+
+        _logger.e("Order Failed", error: data);
+        Get.snackbar("Error", errorMessage);
+      }
+    } catch (e, s) {
+      _logger.f("Create Order Exception", error: e, stackTrace: s);
+      Get.snackbar("Error", "Something went wrong");
+    } finally {
+      isLoading.value = false; // loader OFF
     }
-  } catch (e, s) {
-    _logger.f("Create Order Exception", error: e, stackTrace: s);
-    Get.snackbar("Error", "Something went wrong");
-  } finally {
-    isLoading.value = false;
   }
-}
-
 }

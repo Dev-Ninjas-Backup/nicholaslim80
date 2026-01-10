@@ -3,13 +3,13 @@ import 'package:ZipBee/core/utils/constants/app_colors.dart';
 import 'package:ZipBee/features/user/Sechedule_veycale_type/screen/veycale_main.dart';
 import 'package:ZipBee/features/user/Veicale_Type_on_Exprees_Delivery/controller/vehicle_secation_controller.dart';
 import 'package:ZipBee/features/user/express_delivery_1/controller/express_controller_1.dart';
-import 'package:ZipBee/features/user/express_delivery_1/order_express_delivery/screen/order_alertdialog_screen.dart';
 import 'package:ZipBee/features/user/express_delivery_1/widget/collect_time_widget.dart';
 import 'package:ZipBee/features/user/express_delivery_1/widget/order_review_widget.dart';
 import 'package:ZipBee/features/user/express_delivery_1/widget/pick_date_time_dialog.dart';
 import 'package:ZipBee/features/user/express_delivery_1/widget/vehicle_type_widget.dart';
 import 'package:ZipBee/features/user/order/controller/order_controller.dart';
 import 'package:ZipBee/features/user/schedule_round_delivery/widget/round4button.dart';
+import 'package:ZipBee/features/user/stacked/show_order_confirmation/show_order_confirmation_dialog.dart';
 import 'package:ZipBee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -165,7 +165,7 @@ class ScheduleRoundDelivery extends StatelessWidget {
                     orderController.totalAmount.value = 123.45;
 
                     // Show the confirmation dialog
-                    showOrderConfirmationDialog(orderController);
+                    showOrderConfirmationDialog(orderController.totalAmount.value.toInt());
                   },
                 ),
               ],
