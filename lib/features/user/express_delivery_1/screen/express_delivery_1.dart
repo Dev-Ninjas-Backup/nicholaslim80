@@ -3,12 +3,12 @@ import 'package:ZipBee/core/utils/constants/app_colors.dart';
 import 'package:ZipBee/features/user/Veicale_Type_on_Exprees_Delivery/controller/vehicle_secation_controller.dart';
 import 'package:ZipBee/features/user/Veicale_Type_on_Exprees_Delivery/screen/veichale_secation_page.dart';
 import 'package:ZipBee/features/user/express_delivery_1/controller/express_controller_1.dart';
+import 'package:ZipBee/features/user/express_delivery_1/order_express_delivery/controller/order_express_controller.dart';
 import 'package:ZipBee/features/user/express_delivery_1/widget/collect_time_widget.dart';
 import 'package:ZipBee/features/user/express_delivery_1/widget/order_reviw_button_static.dart';
 import 'package:ZipBee/features/user/express_delivery_1/widget/pick_date_time_dialog.dart';
 import 'package:ZipBee/features/user/express_delivery_1/widget/select_location_widget.dart';
 import 'package:ZipBee/features/user/express_delivery_1/widget/vehicle_type_widget.dart';
-import 'package:ZipBee/features/user/order/controller/order_controller.dart';
 import 'package:ZipBee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -18,7 +18,8 @@ class ExpressDelivery1 extends StatelessWidget {
 
   final VehicleController vehicleController = Get.put(VehicleController());
 
-  final OrderController orderController = Get.put(OrderController());
+ final OrderControllerExpress orderControllerExpress =
+      Get.put(OrderControllerExpress());
 
  
 

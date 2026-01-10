@@ -4,19 +4,25 @@ import 'package:ZipBee/core/shared_prefference_service/shared_pref.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
-class OrderController extends GetxController {
+class OrderControllerExpress extends GetxController {
   RxBool redeemCoins = false.obs;
+  RxBool favoriteRiders = false.obs;
   RxBool isLoading = false.obs;
   RxDouble totalAmount = 0.0.obs;
 
   /// Toggle redeem coins
   void toggleRedeemCoins(bool value) {
     redeemCoins.value = value;
-    orderEstimateApi();
+    redeemCoinApi();
+  }
+
+  /// Toggle favourite riders option
+  void toggleFavoriteRiders(bool value) {
+    favoriteRiders.value = value;
   }
 
   /// Call API to estimate total order amount
-  Future<void> orderEstimateApi() async {
+  Future<void> redeemCoinApi() async {
     try {
       isLoading.value = true;
 
@@ -30,7 +36,7 @@ class OrderController extends GetxController {
       print("📦 REQUEST BODY: $body");
 
       final response = await http.post(
-        Uri.parse(ApiEndPoint.orderEstimate),
+        Uri.parse(ApiEndPoint.redeemCoin),
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json",
