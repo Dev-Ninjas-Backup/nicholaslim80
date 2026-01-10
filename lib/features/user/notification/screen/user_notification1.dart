@@ -23,6 +23,7 @@ class UserNotification extends StatelessWidget {
               child: Obx(
                 () => Column(
                   children: [
+                    // Tabs
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Row(
@@ -33,10 +34,7 @@ class UserNotification extends StatelessWidget {
                                 controller.selectNotificationListIndex.value ==
                                 index;
                             return GestureDetector(
-                              onTap: () {
-                                controller.selectNotificationListIndex.value =
-                                    index;
-                              },
+                              onTap: () => controller.changeTab(index),
                               child: Container(
                                 margin: const EdgeInsets.only(right: 10),
                                 padding: const EdgeInsets.symmetric(
@@ -71,79 +69,70 @@ class UserNotification extends StatelessWidget {
                             physics: const NeverScrollableScrollPhysics(),
                             itemCount: controller.notificationList.length,
                             itemBuilder: (_, index) {
-                              // ignore: unused_local_variable
                               final item = controller.notificationList[index];
                               return Padding(
-                                padding: EdgeInsets.only(bottom: 14),
-                                child: GestureDetector(
-                                  // onTap: () {
-                                  //   Get.to(
-                                  //     ActiveOrderDetailsScreen(order: item),
-                                  //   );
-                                  // },
-                                  // child: Container(
-                                  //   padding: const EdgeInsets.all(10),
-                                  //   decoration: BoxDecoration(
-                                  //     border: Border.all(
-                                  //       color: AppColors.subtitleFontColor,
-                                  //       width: 0.5,
-                                  //     ),
-                                  //     borderRadius: BorderRadius.circular(10),
-                                  //   ),
-                                  //   child: Column(
-                                  //     crossAxisAlignment:
-                                  //         CrossAxisAlignment.start,
-                                  //     children: [
-                                  //       Row(
-                                  //         children: [
-                                  //           Image.asset(
-                                  //             IconPath.ellipsIcon,
-                                  //             height: 12,
-                                  //             width: 12,
-                                  //             color: AppColors
-                                  //                 .onboardingIndicatorActive,
-                                  //           ),
-                                  //           const SizedBox(width: 8),
-                                  //           Text(
-                                  //             item.title,
-                                  //             style: getTextStyle(
-                                  //               fontWeight: FontWeight.w600,
-                                  //             ),
-                                  //           ),
-                                  //         ],
-                                  //       ),
-                                  //       const SizedBox(height: 12),
-                                  //       Text(
-                                  //         item.subTitle,
-                                  //         style: getTextStyle(
-                                  //           fontSize: 12,
-                                  //           color: const Color(0xFF6B6B6B),
-                                  //         ),
-                                  //       ),
-                                  //       const SizedBox(height: 12),
-                                  //       Row(
-                                  //         mainAxisAlignment:
-                                  //             MainAxisAlignment.spaceBetween,
-                                  //         children: [
-                                  //           Text(
-                                  //             item.date,
-                                  //             style: getTextStyle(
-                                  //               fontSize: 12,
-                                  //               color: const Color(0xFF6B6B6B),
-                                  //             ),
-                                  //           ),
-                                  //           Text(
-                                  //             item.time,
-                                  //             style: getTextStyle(
-                                  //               fontSize: 12,
-                                  //               color: const Color(0xFF6B6B6B),
-                                  //             ),
-                                  //           ),
-                                  //         ],
-                                  //       ),
-                                  //     ],
-                                  //   ),
-                                  // ),
+                                padding: const EdgeInsets.only(bottom: 14),
+                                child: Container(
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: AppColors.subtitleFontColor,
+                                      width: 0.5,
+                                    ),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          const Icon(
+                                            Icons.circle,
+                                            size: 12,
+                                            color: AppColors
+                                                .onboardingIndicatorActive,
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Text(
+                                            item.title,
+                                            style: getTextStyle(
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 12),
+                                      Text(
+                                        item.subTitle,
+                                        style: getTextStyle(
+                                          fontSize: 12,
+                                          color: const Color(0xFF6B6B6B),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 12),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            item.date,
+                                            style: getTextStyle(
+                                              fontSize: 12,
+                                              color: const Color(0xFF6B6B6B),
+                                            ),
+                                          ),
+                                          Text(
+                                            item.time,
+                                            style: getTextStyle(
+                                              fontSize: 12,
+                                              color: const Color(0xFF6B6B6B),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               );
                             },
