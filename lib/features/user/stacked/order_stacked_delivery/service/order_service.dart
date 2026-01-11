@@ -12,8 +12,10 @@ class OrderService {
     try {
       final token = await SharedPreferencesHelper.getAccessToken();
 
+      debugPrint('OrderService.createOrder REQUEST -> ${ApiEndPoint.orderCreate} body: $body');
+
       final response = await http.post(
-        Uri.parse('${ApiEndPoint.baseUrl}/order/indivitual'),
+        Uri.parse(ApiEndPoint.orderCreate),
         headers: {
           'Content-Type': 'application/json',
           if (token != null) 'Authorization': 'Bearer $token',
@@ -21,7 +23,7 @@ class OrderService {
         body: jsonEncode(body),
       );
 
-      debugPrint('CREATE ORDER RESPONSE: ${response.statusCode} ${response.body}');
+      debugPrint('OrderService.createOrder RESPONSE -> ${response.statusCode} ${response.body}');
 
       return {
         'statusCode': response.statusCode,

@@ -27,29 +27,30 @@ class StackedOrderReviewButtonStatic extends StatelessWidget {
         children: [
           const SizedBox(width: 8),
 
-          // Expanded(
-          //   child: Obx(() => Column(
-          //     crossAxisAlignment: CrossAxisAlignment.start,
-          //     children: [
-          //       Text(
-          //         'Total (incl. GST):',
-          //         style: getTextStyle(
-          //           fontSize: 16,
-          //           fontWeight: FontWeight.w500,
-          //           color: CupertinoColors.secondaryLabel,
-          //         ),
-          //       ),
-          //       Text(
-          //         'S\$${vehicleController.calculateTotal().toStringAsFixed(2)}',
-          //         style: getTextStyle(
-          //           fontSize: 20,
-          //           fontWeight: FontWeight.bold,
-          //           color: Colors.black,
-          //         ),
-          //       ),
-          //     ],
-          //   )),
-          // ),
+          // Total Amount Display
+          Expanded(
+            child: Obx(() => Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Total (incl. GST):',
+                  style: getTextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: CupertinoColors.secondaryLabel,
+                  ),
+                ),
+                Text(
+                  'S\$${vehicleController.calculateTotal().toStringAsFixed(2)}',
+                  style: getTextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+              ],
+            )),
+          ),
 
           Obx(() {
             final isReady = vehicleController.selectedVehicle.value != null;

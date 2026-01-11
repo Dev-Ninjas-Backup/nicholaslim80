@@ -149,7 +149,6 @@ class HomeScreen extends StatelessWidget {
                       selected: ctrl.deliveryType.value == 'express',
                       onTap: () {
                         ctrl.selectDeliveryType('express');
-                        Get.toNamed(AppRoutes.expressDelivery1);
                       },
                     ),
                   ),
@@ -166,7 +165,6 @@ class HomeScreen extends StatelessWidget {
                       selected: ctrl.deliveryType.value == 'standard',
                       onTap: () {
                         ctrl.selectDeliveryType('standard');
-                        Get.toNamed(AppRoutes.expressDelivery1);
                       },
                     ),
                   ),
@@ -176,14 +174,17 @@ class HomeScreen extends StatelessWidget {
 
             SizedBox(height: 14),
 
-            serviceCardStacked(
-              title: 'Stacked',
-              subtitle:
-                  'Courier takes all bundle packages and delivers together',
-              iconPath: IconPath.stacked,
-              onTap: () {
-                Get.toNamed(AppRoutes.stackedScreen);
-              },
+            Obx(
+              () => serviceCardStacked(
+                title: 'Stacked',
+                subtitle:
+                    'Courier takes all bundle packages and delivers together',
+                iconPath: IconPath.stacked,
+                selected: ctrl.deliveryType.value == 'stacked',
+                onTap: () {
+                  ctrl.selectDeliveryType('stacked');
+                },
+              ),
             ),
 
             SizedBox(height: 22),
@@ -199,12 +200,12 @@ class HomeScreen extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                TextButton(onPressed: () {
-                  // Pass placeholder initial distance = 2.0 km. Replace with routing-based distance later.
-                  Get.to(() => StackedVehicleSelectionPage(), arguments: {'initialDistanceKm': 2.0});
-                }, 
-                child: Text('See all')
-                ),
+                // TextButton(onPressed: () {
+                //   // Pass placeholder initial distance = 2.0 km. Replace with routing-based distance later.
+                //   Get.to(() => StackedVehicleSelectionPage(), arguments: {'initialDistanceKm': 2.0});
+                // }, 
+                // child: Text('See all')
+                // ),
               ],
             ),
 
@@ -328,6 +329,7 @@ class HomeScreen extends StatelessWidget {
     required String subtitle,
     IconData? icon,
     String? iconPath,
+    required bool selected,
     required VoidCallback onTap,
     double iconSize = 24,
   }) {
@@ -337,8 +339,14 @@ class HomeScreen extends StatelessWidget {
         padding: EdgeInsets.all(12),
         margin: EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
-          color: AppColors.onboardingIndicatorActive,
+          color: selected
+              // ignore: deprecated_member_use
+              ? AppColors.primaryButtonColor.withOpacity(0.15)
+              : AppColors.onboardingIndicatorActive,
           borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: selected ? AppColors.primaryButtonColor : AppColors.onboardingIndicatorActive,
+          ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

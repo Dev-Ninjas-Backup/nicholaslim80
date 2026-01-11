@@ -5,7 +5,7 @@ import 'package:ZipBee/features/user/stacked/widget/pic_date_time.dart';
 import 'package:ZipBee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
+import 'package:ZipBee/features/user/home/controller/home_controller.dart';
 
 import '../stacked_controller/stacked_controller.dart';
 import '../vehicle_type/controller/controller.dart';
@@ -35,26 +35,111 @@ class StackedScreen extends StatelessWidget {
           onPressed: () => Get.back(),
         ),
         centerTitle: true,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Stacked',
-              style: getTextStyle(
-                fontSize: 20,
-                color: Colors.black87,
-                fontWeight: FontWeight.w700,
+        title: Builder(builder: (context) {
+          final args = Get.arguments as Map<String, dynamic>?;
+          final orderArg = args != null ? args['order'] as Map<String, dynamic>? : null;
+
+          // If navigation included a prefill vehicle or deliveryType, apply them
+          if (args != null && args.containsKey('prefillVehicle')) {
+            try {
+              final prefill = args['prefillVehicle'];
+              if (prefill != null) {
+                // set into vehicle controller directly
+                try {
+                  vehicleController.selectedVehicle.value = prefill as dynamic;
+                  debugPrint('Prefilled vehicle set on StackedScreen');
+                } catch (_) {
+                  debugPrint('Prefill vehicle could not be applied');
+                }
+              }
+            } catch (_) {}
+
+            if (args['deliveryType'] != null) {
+              try {
+                final homeCtrl = Get.find<HomeController>();
+                homeCtrl.selectDeliveryType((args['deliveryType'] as String).toLowerCase());
+                debugPrint('Prefilled delivery type set to ${args['deliveryType']}');
+              } catch (_) {}
+            }
+          }
+
+          // Sync order info into controller if available
+          if (orderArg != null) {
+            try {
+              final oc = Get.find<StackedOrderController>();
+              oc.lastOrderId = orderArg['id'] as int?;
+              oc.totalAmount = double.tryParse(orderArg['total_cost']?.toString() ?? '') ?? oc.totalAmount;
+            } catch (_) {}
+
+            // Apply route_type and collect_time to controllers
+            try {
+              final loc = Get.find<StackedLocationController>();
+              if (orderArg['route_type'] != null) {
+                loc.isRoundTrip.value = (orderArg['route_type'] == 'ROUND');
+              }
+              if (orderArg['collect_time'] != null) {
+                final ct = orderArg['collect_time'];
+                if (ct == 'ASAP') {
+                  loc.isNowSelected.value = true;
+                } else if (ct == 'SCHEDULED') {
+                  loc.isNowSelected.value = false;
+                  // set scheduled time if present
+                  if (orderArg['scheduled_time'] != null) {
+                    try {
+                      final sched = Get.find<StackedScheduleController>();
+                      sched.setNow(false);
+                      final parsed = DateTime.parse(orderArg['scheduled_time']);
+                      sched.setDateTime(parsed.toLocal());
+                    } catch (_) {}
+                  }
+                }
+              }
+            } catch (_) {}
+
+            // Set selected vehicle by id if provided
+            try {
+              final vctrl = Get.find<StackedVehicleController>();
+              final vidRaw = orderArg['vehicle_type_id'];
+              final vid = vidRaw is int ? vidRaw : int.tryParse(vidRaw?.toString() ?? '');
+              if (vid != null) {
+                final all = <dynamic>[]..addAll(vctrl.t1)..addAll(vctrl.t2)..addAll(vctrl.t3)..addAll(vctrl.t4);
+                dynamic found;
+                try {
+                  found = all.firstWhere((v) => v.id == vid);
+                } catch (_) {
+                  found = null;
+                }
+                if (found != null) vctrl.selectedVehicle.value = found as dynamic;
+              }
+            } catch (_) {}
+          }
+
+          // Title comes from delivery_type if provided (as requested)
+          final titleText = orderArg != null && orderArg['delivery_type'] != null
+              ? '${(orderArg['delivery_type'] as String).toLowerCase().capitalize}'
+              : 'Stacked';
+
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                titleText,
+                style: getTextStyle(
+                  fontSize: 20,
+                  color: Colors.black87,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
-            ),
-            SizedBox(width: 4.0),
-            IconButton(
-              icon: Icon(Icons.info_outline, color: Colors.black87, size: 20),
-              onPressed: () {
-                Get.toNamed(AppRoutes.getrstackedFAQScreen());
-              },
-            ),
-          ],
-        ),
+              SizedBox(width: 4.0),
+              IconButton(
+                icon: Icon(Icons.info_outline, color: Colors.black87, size: 20),
+                onPressed: () {
+                  Get.toNamed(AppRoutes.getrstackedFAQScreen());
+                },
+              ),
+            ],
+          );
+        }),
       ),
       body: SingleChildScrollView(
         child: Padding(

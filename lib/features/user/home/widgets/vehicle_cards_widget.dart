@@ -7,6 +7,11 @@ import 'package:ZipBee/features/user/stacked/vehicle_type/model/model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/order_service.dart';
+import 'package:ZipBee/features/user/stacked/order_stacked_delivery/controller/controller.dart';
+import 'package:ZipBee/features/user/stacked/stacked_controller/stacked_controller.dart';
+import 'package:ZipBee/routes/app_routes.dart';
 
 
 class VehicleCards extends StatelessWidget {
@@ -303,9 +308,182 @@ class VehicleCards extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                               ),
-                              onPressed: () {
-                                svc.selectVehicle(vehicle);
-                              },
+                            onPressed: () async {
+                              debugPrint('SelectVehicle pressed -> vehicle.id=${vehicle.id} deliveryType=${ctrl.deliveryType.value}');
+                              // locally mark vehicle as selected
+                              svc.selectVehicle(vehicle);
+
+                              // Build minimal order payload
+                              final deliveryType = ctrl.deliveryType.value.toUpperCase();
+
+                              // Gather destinations if we have saved sender/receiver
+                              final List<Map<String, dynamic>> destinations = [];
+                              try {
+                                final locCtrl = Get.find<StackedLocationController>();
+                                final sender = locCtrl.senderData.value;
+                                final receiver = locCtrl.receiverData.value;
+
+                                if (sender != null) {
+                                  destinations.add({
+                                    'address': sender.address,
+                                    'floor_unit': sender.floorUnit,
+                                    'contact_name': sender.contactName,
+                                    'contact_number': sender.contactNumber,
+                                    'note_to_driver': sender.noteToDriver,
+                                    'is_saved': sender.isSaved,
+                                    'type': 'SENDER',
+                                  });
+                                }
+
+                                if (receiver != null) {
+                                  destinations.add({
+                                    'address': receiver.address,
+                                    'floor_unit': receiver.floorUnit,
+                                    'contact_name': receiver.contactName,
+                                    'contact_number': receiver.contactNumber,
+                                    'note_to_driver': receiver.noteToDriver,
+                                    'is_saved': receiver.isSaved,
+                                    'type': 'RECEIVER',
+                                  });
+                                }
+                              } catch (e) {
+                                debugPrint('No location controller available: $e');
+                              }
+
+                              // If there are no destinations, proceed without them (API accepts orders without destinations)
+                              if (destinations.isEmpty) {
+                                debugPrint('No saved sender/receiver; proceeding to create order without destinations');
+                              }
+
+                              final payload = {
+                                'route_type': 'ONE_WAY',
+                                'isFixed': false,
+                                'delivery_type': deliveryType,
+                                'vehicle_type_id': vehicle.id,
+                                'collect_time': 'ASAP',
+                              };
+
+                              // only include destinations if available
+                              if (destinations.isNotEmpty) {
+                                payload['destinations'] = destinations;
+                              }
+
+                              // Debug print request body
+                              debugPrint('CreateOrder Request payload: $payload');
+
+                              try {
+                                EasyLoading.show(status: 'Placing order...');
+                              } catch (_) {}
+
+                              // call createOrder
+                              final res = await OrderService.createOrder(payload);
+
+                              // Debug print raw response
+                              debugPrint('CreateOrder Response: $res');
+
+                              try {
+                                EasyLoading.dismiss();
+                              } catch (_) {}
+
+                              final status = res['statusCode'] as int? ?? 500;
+                              final body = res['body'] as Map<String, dynamic>? ?? {};
+
+                              debugPrint('CreateOrder Response body (full): $body');
+
+                              // If server returned success=false, treat as failure 
+                              if (body['success'] != true) {
+                                final serverMsg = body['error'] ?? body['message'] ?? 'Order failed';
+                                debugPrint('CreateOrder server indicated failure: $serverMsg');
+                                try {
+                                  EasyLoading.showError(serverMsg.toString());
+                                } catch (_) {}
+                                return;
+                              }
+
+                              if (status == 201) {
+                                final data = body['data'];
+
+                                debugPrint('CreateOrder Response body.data: $data');
+
+                                Map<String, dynamic>? orderMap;
+                                if (data is Map<String, dynamic>) {
+                                  if (data.containsKey('order') && data['order'] is Map<String, dynamic>) {
+                                    orderMap = Map<String, dynamic>.from(data['order'] as Map);
+                                  } else if (data.containsKey('id') || data.containsKey('order_status') || data.containsKey('total_cost')) {
+                                    // sometimes API returns the order directly inside `data` instead of `data.order`
+                                    orderMap = Map<String, dynamic>.from(data);
+                                  }
+                                }
+
+                                if (orderMap != null) {
+                                  // show server message
+                                  try { EasyLoading.showSuccess(body['message']?.toString() ?? 'Order created'); } catch (_) {}
+
+                                  // Update StackedOrderController
+                                  try {
+                                    final orderCtrl = Get.find<StackedOrderController>();
+                                    orderCtrl.lastOrderId = orderMap['id'] as int?;
+                                    orderCtrl.totalAmount = double.tryParse(orderMap['total_cost']?.toString() ?? '') ?? orderCtrl.totalAmount;
+                                  } catch (_) {
+                                    // ensure it's available
+                                    final oc = Get.put(StackedOrderController());
+                                    try {
+                                      oc.lastOrderId = orderMap['id'] as int?;
+                                      oc.totalAmount = double.tryParse(orderMap['total_cost']?.toString() ?? '') ?? oc.totalAmount;
+                                    } catch (_) {}
+                                  }
+
+                                  // Before navigating, sync StackedScreen controllers using order fields
+                                  try {
+                                    final locCtrl = Get.find<StackedLocationController>();
+                                    // route_type
+                                    if (orderMap['route_type'] != null) {
+                                      locCtrl.isRoundTrip.value = (orderMap['route_type'] == 'ROUND');
+                                    }
+                                    // collect_time
+                                    if (orderMap['collect_time'] != null) {
+                                      locCtrl.isNowSelected.value = (orderMap['collect_time'] == 'ASAP');
+                                    }
+                                  } catch (_) {}
+
+                                  try {
+                                    final vehCtrl = Get.find<StackedVehicleController>();
+                                    final vid = orderMap['vehicle_type_id'] is int ? orderMap['vehicle_type_id'] as int : int.tryParse(orderMap['vehicle_type_id']?.toString() ?? '');
+                                    if (vid != null) {
+                                      // find vehicle in loaded lists
+                                      final all = <StackVehicle>[]..addAll(vehCtrl.t1)..addAll(vehCtrl.t2)..addAll(vehCtrl.t3)..addAll(vehCtrl.t4);
+                                      StackVehicle? found;
+                                      try {
+                                        found = all.firstWhere((v) => v.id == vid);
+                                      } catch (_) {
+                                        found = null;
+                                      }
+                                      if (found != null) vehCtrl.selectedVehicle.value = found;
+                                    }
+                                  } catch (_) {}
+
+                                  // Navigate to stacked screen with order data
+                                  Get.toNamed(AppRoutes.getstackedScreen(), arguments: {'order': orderMap});
+                                } else {
+                                  debugPrint('CreateOrder: order details missing in response body');
+                                  try {
+                                    EasyLoading.showSuccess('Order created but no details found');
+                                  } catch (_) {}
+                                }
+                              } else {
+                                final msgRaw = body['message'] ?? 'Failed to create order';
+                                final String msg;
+                                if (msgRaw is List) {
+                                  msg = msgRaw.join('\n');
+                                } else {
+                                  msg = msgRaw.toString();
+                                }
+                                debugPrint('CreateOrder failed: status=$status msg=$msg res=${res}');
+                                try {
+                                  EasyLoading.showError(msg);
+                                } catch (_) {}
+                              }
+                            },
                               child: Text(
                                 'Select Vehicle',
                                 style: getTextStyle(fontSize: 12),
