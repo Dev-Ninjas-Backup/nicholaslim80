@@ -8,8 +8,6 @@ import 'package:ZipBee/features/user/finding_raider/widget/location_row_widget.d
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-
-
 class FindingRiderPage extends StatelessWidget {
   final RiderController raidercontroller = Get.put(RiderController());
 
@@ -250,7 +248,7 @@ class FindingRiderPage extends StatelessWidget {
                                 ),
                                 SizedBox(width: 3),
                                 Image.asset(
-                                  IconPath.cencell,
+                                  IconPath.cancel,
                                   height: 14,
                                   width: 14,
                                 ),

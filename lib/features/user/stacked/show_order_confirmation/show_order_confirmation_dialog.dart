@@ -9,7 +9,6 @@ import 'package:ZipBee/features/user/express_delivery_1/order_express_delivery/w
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-
 /// Show order confirmation dialog (reusable)
 void showOrderConfirmationDialog(ExpressDeliveryMain controller) {
   final String formattedTotal =
@@ -119,7 +118,7 @@ void showOrderConfirmationDialog(ExpressDeliveryMain controller) {
                     ),
                   ),
                   Obx(
-                        () => CustomToggleSwitch(
+                    () => CustomToggleSwitch(
                       value: controller.redeemCoins.value,
                       onChanged: controller.toggleRedeemCoins,
                     ),
@@ -140,7 +139,7 @@ void showOrderConfirmationDialog(ExpressDeliveryMain controller) {
                     ),
                   ),
                   Obx(
-                        () => CustomToggleSwitch(
+                    () => CustomToggleSwitch(
                       value: controller.favoriteRiders.value,
                       onChanged: controller.toggleFavoriteRiders,
                     ),
@@ -225,7 +224,7 @@ void showOrderConfirmationDialog(ExpressDeliveryMain controller) {
                           ),
                         ),
                         SizedBox(width: 3),
-                        Image.asset(IconPath.cencell, height: 14, width: 14),
+                        Image.asset(IconPath.cancel, height: 14, width: 14),
                       ],
                     ),
                   ),

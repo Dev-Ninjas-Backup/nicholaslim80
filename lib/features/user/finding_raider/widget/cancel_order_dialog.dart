@@ -4,7 +4,6 @@ import 'package:ZipBee/core/utils/constants/icon_path.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-
 Future<void> showCancelOrderDialog(BuildContext context) {
   return showDialog(
     context: context,
@@ -156,7 +155,7 @@ class CancelOrderDialogBody extends StatelessWidget {
                       ),
                     ),
                     SizedBox(width: 3),
-                    Image.asset(IconPath.cencell, height: 14, width: 14),
+                    Image.asset(IconPath.cancel, height: 14, width: 14),
                   ],
                 ),
               ),
