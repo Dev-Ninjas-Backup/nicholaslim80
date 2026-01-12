@@ -21,12 +21,7 @@ class ApiEndPoint {
   static const String vehicleTypes = '$baseUrl/admin/vehicle-types';
   static const String serviceZone = '$baseUrl/service-zone';
   static const String userProfile = '$baseUrl/users/{id}';
-
-
-    static const String toggleFavorite = '$baseUrl/my-raider';
-      //static const String vehicleTypes = '$baseUrl/admin/vehicle-types';
-
-
+  static const String toggleFavorite = '$baseUrl/my-raider';
   static const String getDestination = '$baseUrl/destination';
   static const String homePageAd = '$baseUrl/advertise/role-based';
   static const String adImpression = '$baseUrl/advertise/{id}/impression';
@@ -34,6 +29,6 @@ class ApiEndPoint {
   static const String walletHistory =
       '$baseUrl/wallet/user/walletHistory/{userId}';
   static const String createOrder = '$baseUrl/order/indivitual';
-  static const String orderEstimate = '$baseUrl/coin-management/redeem-coin';
+  static const String orderEstimate = '$baseUrl/order/{id}';
 
 }

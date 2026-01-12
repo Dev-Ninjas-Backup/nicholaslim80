@@ -171,12 +171,13 @@ class ExpressDeliveryMain extends GetxController {
       return;
     }
 
-    isLoading.value = true;
+    isLoading.value = true; // loader ON
 
     try {
       final token = await SharedPreferencesHelper.getAccessToken();
       if (token == null || token.isEmpty) {
         _logger.e("Access token missing or expired");
+        isLoading.value = false;
         Get.snackbar("Session Expired", "Please login again");
         return;
       }
@@ -210,12 +211,12 @@ class ExpressDeliveryMain extends GetxController {
       if (response.statusCode == 200 || response.statusCode == 201) {
         _logger.i("Order Created Successfully");
 
-        // ✅ Null-safe: Pass order data to dialog
         final orderData = data['data']?['order'];
-        if (orderData != null) {
-          showOrderConfirmationDialog(orderData);
+        if (orderData != null && orderData is Map<String, dynamic>) {
+          // Pass the order id to the confirmation dialog so it can display the order number
+          OrderConfirmationSheet.show(orderData['id']);
         } else {
-          _logger.w("Order data missing in response");
+          _logger.w("Order data missing or invalid in response");
           Get.snackbar("Success", "Order created but no details available");
         }
       } else {
@@ -230,7 +231,7 @@ class ExpressDeliveryMain extends GetxController {
       _logger.f("Create Order Exception", error: e, stackTrace: s);
       Get.snackbar("Error", "Something went wrong");
     } finally {
-      isLoading.value = false;
+      isLoading.value = false; // loader OFF
     }
   }
 }
