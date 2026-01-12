@@ -130,7 +130,7 @@ void showStackedOrderConfirmationDialog(StackedOrderController controller) {
                     ),
                   ),
                   Obx(
-                        () => StackedCustomToggleSwitch(
+                    () => StackedCustomToggleSwitch(
                       value: controller.redeemCoins.value,
                       onChanged: controller.toggleRedeemCoins,
                     ),
@@ -151,7 +151,7 @@ void showStackedOrderConfirmationDialog(StackedOrderController controller) {
                     ),
                   ),
                   Obx(
-                        () => StackedCustomToggleSwitch(
+                    () => StackedCustomToggleSwitch(
                       value: controller.favoriteRiders.value,
                       onChanged: controller.toggleFavoriteRiders,
                     ),
@@ -161,7 +161,10 @@ void showStackedOrderConfirmationDialog(StackedOrderController controller) {
               SizedBox(height: 30),
 
               // Subtotal & Total
-              buildDetailRow("Subtotal:", formattedTotal), // Assuming subtotal is same as total for now
+              buildDetailRow(
+                "Subtotal:",
+                formattedTotal,
+              ), // Assuming subtotal is same as total for now
               SizedBox(height: 10),
               buildDetailRow("Coin/s redeemed:", "\$00"),
               SizedBox(height: 24),
@@ -216,18 +219,29 @@ void showStackedOrderConfirmationDialog(StackedOrderController controller) {
                     children: [
                       Text(
                         'Cash Collect from:',
-                        style: getTextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                        style: getTextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
-                      Obx(() => DropdownButton<String>(
-                            value: codCollectFrom.value,
-                            items: [
-                              DropdownMenuItem(value: 'SENDER', child: Text('Sender')),
-                              DropdownMenuItem(value: 'RECEIVER', child: Text('Receiver')),
-                            ],
-                            onChanged: (v) {
-                              if (v != null) codCollectFrom.value = v;
-                            },
-                          )),
+                      Obx(
+                        () => DropdownButton<String>(
+                          value: codCollectFrom.value,
+                          items: [
+                            DropdownMenuItem(
+                              value: 'SENDER',
+                              child: Text('Sender'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'RECEIVER',
+                              child: Text('Receiver'),
+                            ),
+                          ],
+                          onChanged: (v) {
+                            if (v != null) codCollectFrom.value = v;
+                          },
+                        ),
+                      ),
                     ],
                   );
                 }
@@ -271,14 +285,15 @@ void showStackedOrderConfirmationDialog(StackedOrderController controller) {
                           ),
                         ),
                         SizedBox(width: 3),
-                        Image.asset(IconPath.cencell, height: 14, width: 14),
+                        Image.asset(IconPath.cancel, height: 14, width: 14),
                       ],
                     ),
                   ),
                   FilledButton(
                     onPressed: () async {
                       // Determine payment values
-                      String selected = paymentCtrl.selectedTitle.value.toLowerCase();
+                      String selected = paymentCtrl.selectedTitle.value
+                          .toLowerCase();
                       String paymentMethodApi;
                       String? paymentMethodId;
                       String? codCollect;
@@ -301,9 +316,13 @@ void showStackedOrderConfirmationDialog(StackedOrderController controller) {
                       );
 
                       if (ok) {
-                        debugPrint('Final placed total: ${controller.totalAmount}');
+                        debugPrint(
+                          'Final placed total: ${controller.totalAmount}',
+                        );
                         Get.back(); // Close dialog
-                        EasyLoading.showSuccess('Order placed: S\$${controller.totalAmount.toStringAsFixed(2)}');
+                        EasyLoading.showSuccess(
+                          'Order placed: S\$${controller.totalAmount.toStringAsFixed(2)}',
+                        );
                         StackedOrderConfirmationDialog.show(); // Show "Congratulations"
                         await Future.delayed(Duration(seconds: 3));
                         Get.back(); // Close "Congratulations"
