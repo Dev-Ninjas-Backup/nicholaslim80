@@ -32,6 +32,5 @@ class ApiEndPoint {
   // Canonical create order endpoint (public)
   static const String orderCreate = '$baseUrl/order';
   static const String orderEstimate = '$baseUrl/coin-management/redeem-coin';
-  static const String orderEstimate = '$baseUrl/order/{id}';
 
 }
