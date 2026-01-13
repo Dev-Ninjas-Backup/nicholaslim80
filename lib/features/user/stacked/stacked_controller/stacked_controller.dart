@@ -39,9 +39,13 @@ class StackedLocationController extends GetxController {
   // editing state used by widgets that allow inline title edit
   var isEditing = false.obs;
 
-  // Sender and Receiver address data
+  // Sender and Receiver address data (primary)
   var senderData = Rxn<AddressData>();
   var receiverData = Rxn<AddressData>();
+
+  // Allow multiple collected / recipient stops for stacked flow
+  var collectedStops = <AddressData>[].obs;
+  var recipientStops = <AddressData>[].obs;
 
   // vehicles
   var vehicleList = <StackedVehicleModel>[].obs;
@@ -68,7 +72,7 @@ class StackedLocationController extends GetxController {
   void selectNow() => isNowSelected.value = true;
   void selectSchedule() => isNowSelected.value = false;
   void toggleTripType(bool isRound) => isRoundTrip.value = isRound;
-  
+
   void selectVehicle(StackedVehicleModel vehicle) {
     selectedVehicle.value = vehicle;
   }
@@ -76,11 +80,33 @@ class StackedLocationController extends GetxController {
   /// Update sender data when saved from schedule sender screen
   void updateSenderData(AddressData data) {
     senderData.value = data;
+    // keep first collected stop in sync with primary sender
+    if (collectedStops.isEmpty) {
+      collectedStops.add(data);
+    } else {
+      collectedStops[0] = data;
+    }
   }
 
   /// Update receiver data when saved from schedule recipient screen
   void updateReceiverData(AddressData data) {
     receiverData.value = data;
+    // keep first recipient stop in sync with primary receiver
+    if (recipientStops.isEmpty) {
+      recipientStops.add(data);
+    } else {
+      recipientStops[0] = data;
+    }
+  }
+
+  /// Add an additional collected stop
+  void addCollectedStop(AddressData data) {
+    collectedStops.add(data);
+  }
+
+  /// Add an additional recipient stop
+  void addRecipientStop(AddressData data) {
+    recipientStops.add(data);
   }
 
   /// Get sender display text (name + address)

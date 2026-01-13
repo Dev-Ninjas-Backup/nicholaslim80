@@ -68,20 +68,31 @@ class StackedSchedulRecepmenteScreen extends StatelessWidget {
 
                       // Extract and store data in StackedLocationController
                       final locationController = Get.find<StackedLocationController>();
-                      locationController.updateReceiverData(
-                        AddressData(
-                          id: (data['id'] as int?) ?? 0,
-                          address: data['address'] ?? controller.addressController.text,
-                          addressFromApr: data['addressFromApr'] ?? controller.addressController.text,
-                          floorUnit: data['floor_unit'] ?? controller.floorController.text,
-                          contactName: data['contact_name'] ?? controller.nameController.text,
-                          contactNumber: data['contact_number'] ?? controller.numberController.text,
-                          noteToDriver: data['note_to_driver'] ?? controller.noteController.text,
-                          isSaved: (data['is_saved'] as bool?) ?? controller.saveAddress.value,
-                          type: data['type'] ?? 'RECEIVER',
-                        ),
+
+                      final savedAddress = AddressData(
+                        id: (data['id'] as int?) ?? 0,
+                        address: data['address'] ?? controller.addressController.text,
+                        addressFromApr: data['addressFromApr'] ?? controller.addressController.text,
+                        floorUnit: data['floor_unit'] ?? controller.floorController.text,
+                        contactName: data['contact_name'] ?? controller.nameController.text,
+                        contactNumber: data['contact_number'] ?? controller.numberController.text,
+                        noteToDriver: data['note_to_driver'] ?? controller.noteController.text,
+                        isSaved: (data['is_saved'] as bool?) ?? controller.saveAddress.value,
+                        type: data['type'] ?? 'RECEIVER',
                       );
-                      Get.to(() => StackedScreen());
+
+                      final args = Get.arguments as Map<String, dynamic>?;
+
+                      if (args != null && args['addAsStop'] == true) {
+                        // Add as additional recipient stop
+                        locationController.addRecipientStop(savedAddress);
+                        // Return to stacked screen
+                        Get.to(() => StackedScreen());
+                      } else {
+                        // Primary receiver update
+                        locationController.updateReceiverData(savedAddress);
+                        Get.to(() => StackedScreen());
+                      }
                     }
                   },
                 ),

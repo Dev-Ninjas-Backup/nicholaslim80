@@ -66,9 +66,10 @@ class HomeController extends GetxController {
 
   /// AppBar bottom text
   String get parcelStatusText {
-    return deliveryType.value == 'express'
-        ? 'Express Delivery'
-        : 'Standard Delivery';
+    if (deliveryType.value == 'express') return 'Express Delivery';
+    if (deliveryType.value == 'standard') return 'Standard Delivery';
+    if (deliveryType.value == 'stacked') return 'Stacked Delivery';
+    return 'Standard Delivery';
   }
 
   /// call from HomeScreen

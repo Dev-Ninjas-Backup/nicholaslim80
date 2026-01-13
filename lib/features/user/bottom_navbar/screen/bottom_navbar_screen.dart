@@ -29,11 +29,13 @@ class BottomNavbarScreen extends StatelessWidget {
       () => AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.dark,
         child: Scaffold(
+          backgroundColor: AppColors.backgroungColor,
           body: IndexedStack(
             index: controller.currentIndex.value,
             children: _screens,
           ),
           bottomNavigationBar: BottomNavigationBar(
+            backgroundColor: AppColors.backgroungColor,
             currentIndex: controller.currentIndex.value,
             onTap: controller.changeTab,
             type: BottomNavigationBarType.fixed,
