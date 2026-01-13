@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/chat_controller.dart';
 
-
 class ChatScreen extends StatelessWidget {
   final UserMessageController controller = Get.put(UserMessageController());
 
@@ -21,16 +20,28 @@ class ChatScreen extends StatelessWidget {
         ),
         title: Column(
           children: [
-            Text("John Conley", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
-            Text("Active 2 min ago", style: TextStyle(color: Colors.grey, fontSize: 12)),
+            Text(
+              "John Conley",
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Text(
+              "Active 2 min ago",
+              style: TextStyle(color: Colors.grey, fontSize: 12),
+            ),
           ],
         ),
         centerTitle: true,
         actions: [
           IconButton(
-            icon: Icon(Icons.phone_forwarded_outlined, color: Colors.amber[700]),
+            icon: Icon(
+              Icons.phone_forwarded_outlined,
+              color: Colors.amber[700],
+            ),
             onPressed: () {},
-          )
+          ),
         ],
       ),
       body: Column(
@@ -38,16 +49,21 @@ class ChatScreen extends StatelessWidget {
           OrderInfoCard(),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 20),
-            child: Text("24 Aug, 10.10 AM", style: TextStyle(color: Colors.grey[600])),
+            child: Text(
+              "24 Aug, 10.10 AM",
+              style: TextStyle(color: Colors.grey[600]),
+            ),
           ),
           Expanded(
-            child: Obx(() => ListView.builder(
-              padding: EdgeInsets.symmetric(horizontal: 15),
-              itemCount: controller.messages.length,
-              itemBuilder: (context, index) {
-                return ChatBubble(message: controller.messages[index]);
-              },
-            )),
+            child: Obx(
+              () => ListView.builder(
+                padding: EdgeInsets.symmetric(horizontal: 15),
+                itemCount: controller.messages.length,
+                itemBuilder: (context, index) {
+                  return ChatBubble(message: controller.messages[index]);
+                },
+              ),
+            ),
           ),
           _buildInputArea(),
         ],
@@ -62,7 +78,10 @@ class ChatScreen extends StatelessWidget {
       child: SafeArea(
         child: Row(
           children: [
-            IconButton(icon: Icon(Icons.emoji_emotions_outlined), onPressed: () {}),
+            IconButton(
+              icon: Icon(Icons.emoji_emotions_outlined),
+              onPressed: () {},
+            ),
             Expanded(
               child: TextField(
                 decoration: InputDecoration(
@@ -71,7 +90,7 @@ class ChatScreen extends StatelessWidget {
                 ),
               ),
             ),
-            IconButton(icon: Icon(Icons.mic_none), onPressed: () {}),
+            IconButton(icon: Icon(Icons.send), onPressed: () {}),
           ],
         ),
       ),
