@@ -7,6 +7,7 @@ import 'package:ZipBee/features/user/stacked/stacked_controller/stacked_controll
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/controller/controller.dart';
+import '../stacked_controller/update_details_controller.dart';
 
 class StackedButtonWidget extends StatelessWidget {
   const StackedButtonWidget({super.key, required this.controller});
@@ -26,7 +27,22 @@ class StackedButtonWidget extends StatelessWidget {
               children: [
                 Expanded(
                   child: GestureDetector(
-                    onTap: () => controller.toggleTripType(false),
+                    onTap: () async {
+                      final previous = controller.isRoundTrip.value;
+                      controller.toggleTripType(false); // optimistic
+
+                      try {
+                        final upd = Get.put(UpdateDetailsController());
+                        final oc = Get.find<StackedOrderController>();
+                        if (oc.lastOrderId != null) {
+                          final ok = await upd.patchRouteType(oc.lastOrderId!, 'ONE_WAY');
+                          if (!ok) controller.toggleTripType(previous);
+                        }
+                      } catch (e) {
+                        controller.toggleTripType(previous);
+                        debugPrint('patchRouteType ONE_WAY error: $e');
+                      }
+                    },
                     child: Container(
                       decoration: BoxDecoration(
                         color: !controller.isRoundTrip.value
@@ -49,7 +65,22 @@ class StackedButtonWidget extends StatelessWidget {
                 ),
                 Expanded(
                   child: GestureDetector(
-                    onTap: () => controller.toggleTripType(true),
+                    onTap: () async {
+                      final previous = controller.isRoundTrip.value;
+                      controller.toggleTripType(true); // optimistic
+
+                      try {
+                        final upd = Get.put(UpdateDetailsController());
+                        final oc = Get.find<StackedOrderController>();
+                        if (oc.lastOrderId != null) {
+                          final ok = await upd.patchRouteType(oc.lastOrderId!, 'ROUND');
+                          if (!ok) controller.toggleTripType(previous);
+                        }
+                      } catch (e) {
+                        controller.toggleTripType(previous);
+                        debugPrint('patchRouteType ROUND error: $e');
+                      }
+                    },
                     child: Container(
                       decoration: BoxDecoration(
                         color: controller.isRoundTrip.value
@@ -93,20 +124,26 @@ class StackedButtonWidget extends StatelessWidget {
                 Row(
                   spacing: 8,
                   children: [
-                    Image.asset(
-                      IconPath.exparess,
-                      width: 24,
-                      height: 24,
-                    ),
-
                     /// -------- FIXED ROUTE BUTTON --------
                     Obx(() {
                       final orderController = Get.put(StackedOrderController());
                       final isSelected = orderController.isFixed.value;
 
                       return GestureDetector(
-                        onTap: () {
-                          orderController.isFixed.value = !isSelected;
+                        onTap: () async {
+                          final newVal = !isSelected;
+                          // Optimistically toggle UI
+                          orderController.isFixed.value = newVal;
+
+                          try {
+                            final upd = Get.put(UpdateDetailsController());
+                            if (orderController.lastOrderId != null) {
+                              await upd.patchIsFixed(orderController.lastOrderId!, newVal);
+                            }
+                          } catch (_) {
+                            // revert on error
+                            orderController.isFixed.value = isSelected;
+                          }
                         },
                         child: Container(
                           padding: const EdgeInsets.symmetric(
@@ -114,19 +151,32 @@ class StackedButtonWidget extends StatelessWidget {
                             vertical: 6,
                           ),
                           decoration: BoxDecoration(
-                            color: isSelected ? Colors.amber : Colors.grey.shade200,
+                            color: isSelected
+                                ? Colors.amber
+                                : Colors.grey.shade200,
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
                               color: isSelected ? Colors.amber : Colors.grey,
                             ),
                           ),
-                          child: Text(
-                            "Fixed route",
-                            style: getTextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: isSelected ? Colors.white : Colors.black,
-                            ),
+                          child: Row(
+                            children: [
+                              Image.asset(
+                                IconPath.exparess,
+                                width: 24,
+                                height: 24,
+                              ),
+                              Text(
+                                "Fixed route",
+                                style: getTextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: isSelected
+                                      ? Colors.white
+                                      : Colors.black,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       );
@@ -147,7 +197,8 @@ class StackedButtonWidget extends StatelessWidget {
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: count,
                     itemBuilder: (context, index) {
-                      final hasData = controller.collectedStops.isNotEmpty &&
+                      final hasData =
+                          controller.collectedStops.isNotEmpty &&
                           index < controller.collectedStops.length;
 
                       final name = hasData
@@ -210,7 +261,7 @@ class StackedButtonWidget extends StatelessWidget {
                               ),
                             ],
                           ),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 8),
                         ],
                       );
                     },
@@ -228,7 +279,8 @@ class StackedButtonWidget extends StatelessWidget {
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: count,
                     itemBuilder: (context, index) {
-                      final hasData = controller.recipientStops.isNotEmpty &&
+                      final hasData =
+                          controller.recipientStops.isNotEmpty &&
                           index < controller.recipientStops.length;
 
                       final name = hasData
@@ -291,7 +343,7 @@ class StackedButtonWidget extends StatelessWidget {
                               ),
                             ],
                           ),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 8),
                         ],
                       );
                     },

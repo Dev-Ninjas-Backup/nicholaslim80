@@ -85,4 +85,33 @@ class OrderService {
       return {'statusCode': 500, 'body': {}};
     }
   }
+
+  /// Update order details via PATCH /order/{id}/update-details
+  static Future<Map<String, dynamic>> updateOrderDetails(int id, Map<String, dynamic> body) async {
+    try {
+      final token = await SharedPreferencesHelper.getAccessToken();
+
+      final url = ApiEndPoint.orderUpdateDetails.replaceFirst('{id}', id.toString());
+      debugPrint('OrderService.updateOrderDetails REQUEST -> $url body: $body');
+
+      final response = await http.patch(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+          if (token != null) 'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode(body),
+      );
+
+      debugPrint('OrderService.updateOrderDetails RESPONSE -> ${response.statusCode} ${response.body}');
+
+      return {
+        'statusCode': response.statusCode,
+        'body': jsonDecode(response.body),
+      };
+    } catch (e) {
+      debugPrint('OrderService.updateOrderDetails error: $e');
+      return {'statusCode': 500, 'body': {}};
+    }
+  }
 }
