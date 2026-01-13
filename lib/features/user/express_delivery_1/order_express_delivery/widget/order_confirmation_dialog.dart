@@ -5,9 +5,14 @@ import 'package:get/get.dart';
 
 class OrderConfirmationDialog {
   static final ExpressDeliveryMain controller = Get.put(ExpressDeliveryMain());
- 
 
-  static void show() {
+  static void show([dynamic orderIdentifier]) {
+    // If an order identifier (id or number) is provided, update controller's orderNumber
+    if (orderIdentifier != null) {
+      try {
+        controller.orderNumber.value = '#${orderIdentifier.toString()}';
+      } catch (_) {}
+    }
     Get.dialog(
       Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),

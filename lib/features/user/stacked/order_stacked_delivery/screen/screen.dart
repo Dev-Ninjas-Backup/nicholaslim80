@@ -3,8 +3,6 @@ import 'package:ZipBee/core/utils/constants/icon_path.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-
-
 import '../widget/custom_toggle_switch_widget.dart';
 import '../widget/order_confirmation_dialog.dart';
 import '../widget/order_success_widget.dart';
@@ -86,7 +84,7 @@ class StackedOrderControllerScreen extends GetxController {
                               builder: (context) {
                                 final width =
                                     MediaQuery.of(context).size.width *
-                                        0.8; // device width er 50%
+                                    0.8; // device width er 50%
                                 return SizedBox(
                                   width: width,
                                   child: StackedPromoDialogContent(),
@@ -127,7 +125,7 @@ class StackedOrderControllerScreen extends GetxController {
                       ),
                     ),
                     Obx(
-                          () => StackedCustomToggleSwitch(
+                      () => StackedCustomToggleSwitch(
                         value: redeemCoins.value,
                         onChanged: (val) => redeemCoins.value = val,
                       ),
@@ -148,7 +146,7 @@ class StackedOrderControllerScreen extends GetxController {
                       ),
                     ),
                     Obx(
-                          () => StackedCustomToggleSwitch(
+                      () => StackedCustomToggleSwitch(
                         value: favoriteRiders.value,
                         onChanged: (val) => favoriteRiders.value = val,
                       ),
@@ -270,7 +268,7 @@ class StackedOrderControllerScreen extends GetxController {
                             ),
                           ),
                           SizedBox(width: 3),
-                          Image.asset(IconPath.cencell, height: 14, width: 14),
+                          Image.asset(IconPath.cancel, height: 14, width: 14),
                         ],
                       ),
                     ),

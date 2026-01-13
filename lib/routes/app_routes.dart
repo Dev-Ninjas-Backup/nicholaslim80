@@ -6,6 +6,7 @@ import 'package:ZipBee/features/user/auth/login/screen/login_signup_screen.dart'
 import 'package:ZipBee/features/user/auth/reset_password/screen/reset_password_screen.dart';
 import 'package:ZipBee/features/user/auth/verification/screen/verification_screen.dart';
 import 'package:ZipBee/features/user/bottom_navbar/screen/bottom_navbar_screen.dart';
+import 'package:ZipBee/features/user/chat/screen/chat_screen.dart';
 import 'package:ZipBee/features/user/express_delivery_1/express_delivery_to_sendr_or_recepmeant/screen/express_sender_or_recepmeant.dart';
 import 'package:ZipBee/features/user/express_delivery_1/screen/express_delivery_1.dart';
 import 'package:ZipBee/features/user/finding_raider/screnn/connecting_rider_page.dart'
@@ -61,6 +62,8 @@ class AppRoutes {
   static String incentivesScreen = '/incentivesScreen';
   static String recordsScreen = '/recordsScreen';
   static String riderAccountScreen = '/riderAccountScreen';
+  static String chatScreen = '/chatScreen';
+
 
   //user notification
   static String userNotification = '/user/notification';
@@ -228,11 +231,8 @@ class AppRoutes {
 
     // google map screen (practice file)
     GetPage(name: googleMapScreen, page: () => GoogleMapScreen()),
-  
+    GetPage(name: chatScreen, page: () => ChatScreen()),
 
-    // Stacked Flow Screen
-
-    // FAQ Screen 
     GetPage(
       name: stackedFAQScreen,
       page: () => StackedFAQScreen(),
