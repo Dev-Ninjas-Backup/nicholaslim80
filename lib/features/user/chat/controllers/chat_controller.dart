@@ -5,12 +5,18 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class UserMessageController extends GetxController {
-  var messages = <MessageModel>[].obs;
+  final messages = <MessageModel>[].obs;
+
+  final textController = TextEditingController();
+  final scrollController = ScrollController();
 
   @override
   void onInit() {
     super.onInit();
     initSocket();
+
+    /// auto scroll when message list updates
+    ever(messages, (_) => _scrollToBottom());
   }
 
   /// Initialize socket connection
@@ -20,20 +26,16 @@ class UserMessageController extends GetxController {
     final token = await SharedPreferencesHelper.getAccessToken();
     final userId = (await SharedPreferencesHelper.getUserId())?.toString();
 
-    if (token == null) {
-      debugPrint("Token or UserId is null, cannot connect to socket.");
+    if (token == null || userId == null) {
+      debugPrint("Token or UserId missing");
       return;
     }
 
-    // Load token into service first
     await UserSocketService().loadToken();
-
-    // Connect socket
     UserSocketService().connect(userId: userId);
 
-    // Listen for incoming messages
     UserSocketService().on('receive_message', (data) {
-      debugPrint("📩 Received on User: $data");
+      debugPrint("📩 Received: $data");
 
       messages.add(
         MessageModel.fromSocket(
@@ -45,20 +47,39 @@ class UserMessageController extends GetxController {
   }
 
   /// Send message
-  void sendMessage({required String receiverId, required String content}) {
-    if (content.trim().isEmpty) return;
+  void sendMessage(String receiverId) {
+    final text = textController.text.trim();
+    if (text.isEmpty) return;
 
     final payload = {
-      "receiverId": 28, // ✅ fixed: use parameter
-      "content": content,
+      "receiverId": receiverId,
+      "content": text,
       "messageType": "TEXT",
     };
 
-    // Send via generic emit
     UserSocketService().emit('send_message', payload);
 
-    // Add locally
-    messages.add(MessageModel(text: content, isMe: true, time: _now()));
+    messages.add(
+      MessageModel(
+        text: text,
+        isMe: true,
+        time: _now(),
+      ),
+    );
+
+    textController.clear();
+  }
+
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (scrollController.hasClients) {
+        scrollController.animateTo(
+          scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
   }
 
   String _now() {
@@ -68,6 +89,8 @@ class UserMessageController extends GetxController {
 
   @override
   void onClose() {
+    textController.dispose();
+    scrollController.dispose();
     UserSocketService().dispose();
     super.onClose();
   }
