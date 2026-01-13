@@ -1,5 +1,4 @@
 import 'package:ZipBee/core/common/styles/global_text_style.dart';
-import 'package:ZipBee/core/common/widgets/custom_button.dart';
 import 'package:ZipBee/core/utils/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

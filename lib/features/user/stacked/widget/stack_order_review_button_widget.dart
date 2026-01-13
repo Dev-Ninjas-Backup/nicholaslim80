@@ -29,7 +29,7 @@ class StackedOrderReviewButtonStatic extends StatelessWidget {
 
           // Total Amount Display
           Expanded(
-            child: Obx(() => Column(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
@@ -40,16 +40,23 @@ class StackedOrderReviewButtonStatic extends StatelessWidget {
                     color: CupertinoColors.secondaryLabel,
                   ),
                 ),
-                Text(
-                  '\$${vehicleController.calculateTotal().toStringAsFixed(2)}',
-                  style: getTextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
+                Obx(() {
+                  final oc = Get.find<StackedOrderController>();
+                  final amountToShow = oc.totalFee.value > 0
+                      ? oc.totalFee.value
+                      : (oc.totalAmount.value > 0 ? oc.totalAmount.value : vehicleController.calculateTotal());
+
+                  return Text(
+                    '\$${amountToShow.toStringAsFixed(2)}',
+                    style: getTextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  );
+                }),
               ],
-            )),
+            ),
           ),
 
           Obx(() {

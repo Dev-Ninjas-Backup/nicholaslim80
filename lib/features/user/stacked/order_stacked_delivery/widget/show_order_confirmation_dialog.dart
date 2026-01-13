@@ -13,8 +13,6 @@ import 'package:ZipBee/features/user/stacked/stacked_screen/stacked_screen.dart'
 
 /// Show order confirmation dialog (reusable)
 void showStackedOrderConfirmationDialog(StackedOrderController controller) {
-  final String formattedTotal =
-      "\$${controller.totalAmount.toStringAsFixed(2)}";
 
   // Ensure payment controller exists
   StackedPaymentController paymentCtrl;
@@ -161,7 +159,10 @@ void showStackedOrderConfirmationDialog(StackedOrderController controller) {
               SizedBox(height: 30),
 
               // Subtotal & Total
-              buildDetailRow("Subtotal:", formattedTotal), // Assuming subtotal is same as total for now
+              Obx(() => buildDetailRow(
+                    "Subtotal:",
+                    "\$${controller.totalFee.value > 0 ? controller.totalFee.value.toStringAsFixed(2) : controller.totalAmount.value.toStringAsFixed(2)}",
+                  )),
               SizedBox(height: 10),
               buildDetailRow("Coin/s redeemed:", "\$00"),
               SizedBox(height: 24),
@@ -169,7 +170,11 @@ void showStackedOrderConfirmationDialog(StackedOrderController controller) {
               SizedBox(height: 24),
               buildDetailRow("Saved:", "\$00", isTotal: false),
               SizedBox(height: 10),
-              buildDetailRow("Total Amount:", formattedTotal, isTotal: true),
+              Obx(() => buildDetailRow(
+                    "Total Amount:",
+                    "\$${controller.totalFee.value > 0 ? controller.totalFee.value.toStringAsFixed(2) : controller.totalAmount.value.toStringAsFixed(2)}",
+                    isTotal: true,
+                  )),
               SizedBox(height: 30),
 
               // Payment Method
@@ -301,9 +306,9 @@ void showStackedOrderConfirmationDialog(StackedOrderController controller) {
                       );
 
                       if (ok) {
-                        debugPrint('Final placed total: ${controller.totalAmount}');
+                        debugPrint('Final placed total: ${controller.totalAmount.value}');
                         Get.back(); // Close dialog
-                        EasyLoading.showSuccess('Order placed: S\$${controller.totalAmount.toStringAsFixed(2)}');
+                        EasyLoading.showSuccess('Order placed: S\$${controller.totalAmount.value.toStringAsFixed(2)}');
                         StackedOrderConfirmationDialog.show(); // Show "Congratulations"
                         await Future.delayed(Duration(seconds: 3));
                         Get.back(); // Close "Congratulations"

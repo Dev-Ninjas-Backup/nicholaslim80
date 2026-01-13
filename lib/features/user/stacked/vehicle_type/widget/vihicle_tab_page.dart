@@ -5,6 +5,8 @@ import 'package:get/get.dart';
 
 
 import '../controller/controller.dart';
+import 'package:ZipBee/features/user/stacked/stacked_controller/update_details_controller.dart';
+import 'package:ZipBee/features/user/stacked/order_stacked_delivery/controller/controller.dart';
 // additional services UI commented out
 import 'bottom_summery.dart';
 
@@ -49,7 +51,25 @@ class StackedVehicleTabPage extends StatelessWidget {
                               vehicle: vehicle,
                               // ensure object identity so same-title/type entries are independently selectable
                               isSelected: selectedVehicle == vehicle,
-                              onTap: () => controller.selectVehicle(vehicle),
+                              onTap: () async {
+                                // Select locally
+                                controller.selectVehicle(vehicle);
+
+                                // If we have an existing order, update vehicle_type on server
+                                try {
+                                  final oc = Get.find<StackedOrderController>();
+                                  if (oc.lastOrderId != null) {
+                                    final upd = Get.put(UpdateDetailsController());
+                                    final orderId = oc.lastOrderId!;
+                                    final ok = await upd.patchVehicleType(orderId, vehicle.id!);
+                                    if (!ok) {
+                                      debugPrint('Failed to update vehicle type on server');
+                                    }
+                                  }
+                                } catch (e) {
+                                  debugPrint('Error patching vehicle_type: $e');
+                                }
+                              },
                             ),
                           ),
                         )

@@ -14,7 +14,8 @@ class StackedOrderController extends GetxController {
   var countdown = 10.obs;
   
   // New properties for Order Confirmation Details
-  var totalAmount = 0.0; // Will be set before showing dialog (server value)
+  var totalAmount = 0.0.obs; // Will be set before showing dialog (server value)
+  var totalFee = 0.0.obs; // server-side fee (preferred display when available)
   var redeemCoins = false.obs;
   var favoriteRiders = false.obs;
 
@@ -137,6 +138,21 @@ class StackedOrderController extends GetxController {
 
       debugPrint('Server total_cost: $serverTotal');
 
+      // Parse server total_fee if present
+      double serverFee = 0.0;
+      try {
+        final orderMap = data['order'] as Map<String, dynamic>?;
+        if (orderMap != null && orderMap['total_fee'] != null) {
+          serverFee = double.tryParse(orderMap['total_fee'].toString()) ?? 0.0;
+        } else if (data['total_fee'] != null) {
+          serverFee = double.tryParse(data['total_fee'].toString()) ?? 0.0;
+        }
+      } catch (e) {
+        debugPrint('Error parsing server fee: $e');
+      }
+
+      debugPrint('Server total_fee: $serverFee');
+
       // If order id is present, fetch order details and store lastOrderId
       int? orderId;
       try {
@@ -153,8 +169,9 @@ class StackedOrderController extends GetxController {
         debugPrint('Get order full response: $getRes');
       }
 
-      // Update controller total to server value and return success
-      totalAmount = serverTotal;
+      // Update controller totals to server values and return success
+      totalAmount.value = serverTotal;
+      totalFee.value = serverFee;
       return true;
     } else {
       final msg = (res['body'] as Map<String, dynamic>?)?['message'] ?? 'Failed to create order';
@@ -191,9 +208,14 @@ class StackedOrderController extends GetxController {
     if (status == 201) {
       try {
         final data = (res['body'] as Map<String, dynamic>)['data'] as Map<String, dynamic>? ?? {};
-        final serverTotal = double.tryParse((data['total_cost'] ?? '').toString()) ?? totalAmount;
-        debugPrint('Placed order total_cost: $serverTotal');
-        totalAmount = serverTotal;
+        final serverTotal = double.tryParse((data['total_cost'] ?? '').toString()) ?? totalAmount.value;
+        double serverFee = 0.0;
+        try {
+          serverFee = double.tryParse((data['total_fee'] ?? '').toString()) ?? serverFee;
+        } catch (_) {}
+        debugPrint('Placed order total_cost: $serverTotal total_fee: $serverFee');
+        totalAmount.value = serverTotal;
+        totalFee.value = serverFee;
         EasyLoading.showSuccess('Order placed: S\$${serverTotal.toStringAsFixed(2)}');
       } catch (e) {
         debugPrint('Error parsing placed order total: $e');
@@ -237,7 +259,8 @@ class StackedOrderController extends GetxController {
 
     // reset controller state
     lastOrderId = null;
-    totalAmount = 0.0;
+    totalAmount.value = 0.0;
+    totalFee.value = 0.0;
   }
 }
 

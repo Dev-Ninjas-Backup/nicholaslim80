@@ -6,7 +6,6 @@ import 'package:ZipBee/features/user/stacked/vehicle_type/controller/controller.
 import 'package:ZipBee/features/user/stacked/vehicle_type/model/model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/order_service.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/controller/controller.dart';
@@ -423,13 +422,13 @@ class VehicleCards extends StatelessWidget {
                                   try {
                                     final orderCtrl = Get.find<StackedOrderController>();
                                     orderCtrl.lastOrderId = orderMap['id'] as int?;
-                                    orderCtrl.totalAmount = double.tryParse(orderMap['total_cost']?.toString() ?? '') ?? orderCtrl.totalAmount;
+                                    orderCtrl.totalAmount.value = double.tryParse(orderMap['total_cost']?.toString() ?? '') ?? orderCtrl.totalAmount.value;
                                   } catch (_) {
                                     // ensure it's available
                                     final oc = Get.put(StackedOrderController());
                                     try {
                                       oc.lastOrderId = orderMap['id'] as int?;
-                                      oc.totalAmount = double.tryParse(orderMap['total_cost']?.toString() ?? '') ?? oc.totalAmount;
+                                      oc.totalAmount.value = double.tryParse(orderMap['total_cost']?.toString() ?? '') ?? oc.totalAmount.value;
                                     } catch (_) {}
                                   }
 
