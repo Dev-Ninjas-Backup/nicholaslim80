@@ -1,15 +1,12 @@
 import 'package:ZipBee/core/common/styles/global_text_style.dart';
 import 'package:ZipBee/core/utils/constants/app_colors.dart';
 import 'package:ZipBee/core/utils/constants/icon_path.dart';
-// import 'package:ZipBee/features/user/stacked/widget/stacked_one_way_round_widget.dart';
 import 'package:ZipBee/features/user/stacked/stacked_collect_from/screen/collect_from.dart';
 import 'package:ZipBee/features/user/stacked/stacked_collect_from/controller/controller.dart';
+import 'package:ZipBee/features/user/stacked/stacked_controller/stacked_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/controller/controller.dart';
-
-
-import '../stacked_controller/stacked_controller.dart';
 
 class StackedButtonWidget extends StatelessWidget {
   const StackedButtonWidget({super.key, required this.controller});
@@ -19,10 +16,11 @@ class StackedButtonWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final isRound = controller.isRoundTrip.value;
+      // Use controller.isRoundTrip.value directly where needed; avoid copying to a local variable to keep behavior dynamic
 
       return Column(
         children: [
+          /// =================== TOP TOGGLE (ONE WAY + ROUND) ===================
           Card(
             child: Row(
               children: [
@@ -31,12 +29,12 @@ class StackedButtonWidget extends StatelessWidget {
                     onTap: () => controller.toggleTripType(false),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: !isRound
+                        color: !controller.isRoundTrip.value
                             ? AppColors.primaryButtonColor
                             : Colors.transparent,
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      padding: EdgeInsets.symmetric(vertical: 12),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
                       alignment: Alignment.center,
                       child: Text(
                         "One way",
@@ -54,12 +52,12 @@ class StackedButtonWidget extends StatelessWidget {
                     onTap: () => controller.toggleTripType(true),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: isRound
+                        color: controller.isRoundTrip.value
                             ? AppColors.primaryButtonColor
                             : Colors.transparent,
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      padding: EdgeInsets.symmetric(vertical: 12),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
                       alignment: Alignment.center,
                       child: Text(
                         "Round",
@@ -76,270 +74,231 @@ class StackedButtonWidget extends StatelessWidget {
             ),
           ),
 
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
 
+          /// =================== MAIN CONTAINER ===================
           Container(
             width: double.infinity,
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: Colors.grey[100],
               borderRadius: BorderRadius.circular(10),
             ),
-            child: isRound
-                ? Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        spacing: 8,
-                        children: [
-                          Center(
-                            child: Image.asset(
-                              IconPath.exparess,
-                              width: 24,
-                              height: 24,
+
+            /// =================== ROUND TRIP UI ===================
+            // Use round-trip structure for both one-way and round visually
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  spacing: 8,
+                  children: [
+                    Image.asset(
+                      IconPath.exparess,
+                      width: 24,
+                      height: 24,
+                    ),
+
+                    /// -------- FIXED ROUTE BUTTON --------
+                    Obx(() {
+                      final orderController = Get.put(StackedOrderController());
+                      final isSelected = orderController.isFixed.value;
+
+                      return GestureDetector(
+                        onTap: () {
+                          orderController.isFixed.value = !isSelected;
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isSelected ? Colors.amber : Colors.grey.shade200,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: isSelected ? Colors.amber : Colors.grey,
                             ),
                           ),
-                          Text(
-                            'Fixed route',
+                          child: Text(
+                            "Fixed route",
                             style: getTextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
+                              color: isSelected ? Colors.white : Colors.black,
                             ),
                           ),
-                          SizedBox(width: 8),
-                          // Toggle for Fixed route
-                          Obx(() {
-                            final orderController = Get.put(StackedOrderController());
-                            return Row(
-                              children: [
-                                Text(
-                                  orderController.isFixed.value ? 'On' : 'Off',
-                                  style: getTextStyle(fontSize: 12, color: Colors.grey),
-                                ),
-                                SizedBox(width: 6),
-                                Switch(
-                                  value: orderController.isFixed.value,
-                                  onChanged: (v) => orderController.isFixed.value = v,
-                                  activeColor: Colors.amber,
-                                ),
-                              ],
-                            );
-                          }),
-                        ],
-                      ),
-                      Column(
-                        children: [
-                          // Sender section with edit button
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Obx(() => Text(
-                                      'Collected from (Sender: ${controller.senderDisplayName})',
-                                      style: getTextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    )),
-                                    Obx(() => Text(
-                                      controller.senderDisplayAddress,
-                                      style: getTextStyle(
-                                        fontSize: 12,
-                                        color: Colors.grey,
-                                      ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    )),
-                                  ],
-                                ),
-                              ),
-                              IconButton(
-                                icon: Icon(Icons.edit, size: 18),
-                                onPressed: () {
-                                  Get.to(() => StackedCollectFormScreen(
-                                    controller: Get.put(StackedCollectFormController()),
-                                    addressType: 'SENDER',
-                                  ));
-                                },
-                              ),
-                            ],
-                          ),
+                        ),
+                      );
+                    }),
+                  ],
+                ),
 
-                          SizedBox(height: 12),
+                const SizedBox(height: 16),
 
-                          // Receiver section with edit button
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Obx(() => Text(
-                                      'Delivered to (Recipient: ${controller.receiverDisplayName})',
-                                      style: getTextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    )),
-                                    Obx(() => Text(
-                                      controller.receiverDisplayAddress,
-                                      style: getTextStyle(
-                                        fontSize: 12,
-                                        color: Colors.grey,
-                                      ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    )),
-                                  ],
-                                ),
-                              ),
-                              IconButton(
-                                icon: Icon(Icons.edit, size: 18),
-                                onPressed: () {
-                                  Get.to(() => StackedCollectFormScreen(
-                                    controller: Get.put(StackedCollectFormController()),
-                                    addressType: 'RECEIVER',
-                                  ));
-                                },
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ],
-                  )
-                : Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        spacing: 8,
+                /// =================== SENDER LIST (works for both round and one-way) ===================
+                Obx(() {
+                  final count = controller.collectedStops.isNotEmpty
+                      ? controller.collectedStops.length
+                      : 1;
+
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: count,
+                    itemBuilder: (context, index) {
+                      final hasData = controller.collectedStops.isNotEmpty &&
+                          index < controller.collectedStops.length;
+
+                      final name = hasData
+                          ? controller.collectedStops[index].contactName
+                          : controller.senderDisplayName;
+
+                      final addr = hasData
+                          ? controller.collectedStops[index].addressFromApr
+                          : controller.senderDisplayAddress;
+
+                      return Column(
                         children: [
-                          Center(
-                            child: Image.asset(
-                              IconPath.exparess,
-                              width: 24,
-                              height: 24,
-                            ),
-                          ),
-                          Text(
-                            'Fixed route',
-                            style: getTextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          SizedBox(width: 8),
-                          // Toggle for Fixed route
-                          Obx(() {
-                            final orderController = Get.put(StackedOrderController());
-                            return Row(
-                              children: [
-                                Text(
-                                  orderController.isFixed.value ? 'On' : 'Off',
-                                  style: getTextStyle(fontSize: 12, color: Colors.grey),
+                          Row(
+                            children: [
+                              /// NEW ICON ADDED LIKE ONEWAY
+                              Image.asset(
+                                IconPath.collectIcon,
+                                width: 24,
+                                height: 24,
+                              ),
+                              const SizedBox(width: 8),
+
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Collected from (Sender: $name)',
+                                      style: getTextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    Text(
+                                      addr,
+                                      style: getTextStyle(
+                                        fontSize: 12,
+                                        color: Colors.grey,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
                                 ),
-                                SizedBox(width: 6),
-                                Switch(
-                                  value: orderController.isFixed.value,
-                                  onChanged: (v) => orderController.isFixed.value = v,
-                                  activeColor: Colors.amber,
-                                ),
-                              ],
-                            );
-                          }),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.edit, size: 18),
+                                onPressed: () {
+                                  Get.to(
+                                    () => StackedCollectFormScreen(
+                                      controller: Get.put(
+                                        StackedCollectFormController(),
+                                      ),
+                                      addressType: 'SENDER',
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
                         ],
-                      ),
-                      Column(
+                      );
+                    },
+                  );
+                }),
+
+                /// =================== RECEIVER LIST (works for both round and one-way) ===================
+                Obx(() {
+                  final count = controller.recipientStops.isNotEmpty
+                      ? controller.recipientStops.length
+                      : 1;
+
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: count,
+                    itemBuilder: (context, index) {
+                      final hasData = controller.recipientStops.isNotEmpty &&
+                          index < controller.recipientStops.length;
+
+                      final name = hasData
+                          ? controller.recipientStops[index].contactName
+                          : controller.receiverDisplayName;
+
+                      final addr = hasData
+                          ? controller.recipientStops[index].addressFromApr
+                          : controller.receiverDisplayAddress;
+
+                      return Column(
                         children: [
-                          // Sender section with edit button
                           Row(
                             children: [
+                              /// NEW ICON ADDED LIKE ONEWAY
+                              Image.asset(
+                                IconPath.deliveredIcon,
+                                width: 24,
+                                height: 24,
+                              ),
+                              const SizedBox(width: 8),
+
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Obx(() => Text(
-                                      'Collected from (Sender: ${controller.senderDisplayName})',
+                                    Text(
+                                      'Delivered to (Recipient: $name)',
                                       style: getTextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w600,
                                       ),
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
-                                    )),
-                                    Obx(() => Text(
-                                      controller.senderDisplayAddress,
+                                    ),
+                                    Text(
+                                      addr,
                                       style: getTextStyle(
                                         fontSize: 12,
                                         color: Colors.grey,
                                       ),
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
-                                    )),
+                                    ),
                                   ],
                                 ),
                               ),
                               IconButton(
-                                icon: Icon(Icons.edit, size: 18),
+                                icon: const Icon(Icons.edit, size: 18),
                                 onPressed: () {
-                                  Get.to(() => StackedCollectFormScreen(
-                                    controller: Get.put(StackedCollectFormController()),
-                                    addressType: 'SENDER',
-                                  ));
+                                  Get.to(
+                                    () => StackedCollectFormScreen(
+                                      controller: Get.put(
+                                        StackedCollectFormController(),
+                                      ),
+                                      addressType: 'RECEIVER',
+                                    ),
+                                  );
                                 },
                               ),
                             ],
                           ),
-                          SizedBox(height: 12),
-                          // Receiver section with edit button
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Obx(() => Text(
-                                      'Delivered to (Recipient: ${controller.receiverDisplayName})',
-                                      style: getTextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    )),
-                                    Obx(() => Text(
-                                      controller.receiverDisplayAddress,
-                                      style: getTextStyle(
-                                        fontSize: 12,
-                                        color: Colors.grey,
-                                      ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    )),
-                                  ],
-                                ),
-                              ),
-                              IconButton(
-                                icon: Icon(Icons.edit, size: 18),
-                                onPressed: () {
-                                  Get.to(() => StackedCollectFormScreen(
-                                    controller: Get.put(StackedCollectFormController()),
-                                    addressType: 'RECEIVER',
-                                  ));
-                                },
-                              ),
-                            ],
-                          ),
+                          const SizedBox(height: 12),
                         ],
-                      ),
-                    ],
-                  ),
+                      );
+                    },
+                  );
+                }),
+              ],
+            ),
           ),
         ],
       );

@@ -134,13 +134,22 @@ class StackedScreen extends StatelessWidget {
               IconButton(
                 icon: Icon(Icons.info_outline, color: Colors.black87, size: 20),
                 onPressed: () {
-                  Get.toNamed(AppRoutes.getrstackedFAQScreen());
+                  final t = titleText.toLowerCase();
+                  if (t == 'express') {
+                    Get.toNamed(AppRoutes.getexpressFaq());
+                  } else if (t == 'standard') {
+                    Get.toNamed(AppRoutes.getstandardFAQ());
+                  } else {
+                    Get.toNamed(AppRoutes.getrstackedFAQScreen());
+                  }
                 },
               ),
             ],
           );
         }),
       ),
+
+
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.all(16.0),

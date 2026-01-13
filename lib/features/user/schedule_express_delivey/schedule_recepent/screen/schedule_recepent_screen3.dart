@@ -45,7 +45,7 @@ class SchedulRecepmenteScreen3 extends StatelessWidget {
                 ),
 
                 child: ScheduleRecipientWidget(
-                  title: 'Recepent 3',
+                  title: 'Recipient 3',
                   onPressed: () {
                     Get.to(ScheduleRoundDelivery());
                   },

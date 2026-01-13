@@ -21,6 +21,7 @@ import 'package:ZipBee/features/user/refer_and_earn/screen/refer_and_earn_screen
 import 'package:ZipBee/features/user/saved_places/screen/saved_place_screenn.dart';
 import 'package:ZipBee/features/user/stacked/FAQ/express_faq.dart';
 import 'package:ZipBee/features/user/stacked/FAQ/stacked_faq.dart';
+import 'package:ZipBee/features/user/stacked/FAQ/standard_faq.dart';
 import 'package:ZipBee/features/user/stacked/schedule_stacked_%20delivey/Schedule_recepent/screen/schedule_recepent_screen1.dart';
 import 'package:ZipBee/features/user/user_support/screen/support_screen.dart';
 import 'package:ZipBee/features/user/wallet/add_funds/screen/user_add_funds.dart';
@@ -77,8 +78,8 @@ class AppRoutes {
   // google map screen (practice file)
   static String googleMapScreen = "/googleMapScreen";
 
-  static String stackedSchedulRecepmenteScreen =
-      "/stackedSchedulRecepmenteScreen";
+  static String stackedSchedulRecepmenteScreen = "/stackedSchedulRecepmenteScreen";
+  static String standardFAQ = "/standardFAQ";
 
   // static String scheduledelivery = "/scheduledelivery";
 
@@ -123,6 +124,7 @@ class AppRoutes {
   static String getexpressSenderOrRecepment() => expressSenderOrRecepment;
   static String getconnectingRider() => connectingRider;
   static String getfindingRider() => findingRider;
+  static String getstandardFAQ() => standardFAQ;
   // static String scheduledelivery() => scheduledelivery;
 
   static List<GetPage> routes = [
@@ -180,11 +182,6 @@ class AppRoutes {
       transition: Transition.fadeIn,
     ),
     GetPage(
-      name: stackedFAQScreen,
-      page: () => StackedFAQScreen(),
-      transition: Transition.fadeIn,
-    ),
-    GetPage(
       name: stackedScreen,
       page: () => StackedScreen(),
       transition: Transition.fadeIn,
@@ -202,11 +199,6 @@ class AppRoutes {
     GetPage(
       name: expressDelivery1,
       page: () => ExpressDelivery1(),
-      transition: Transition.fadeIn,
-    ),
-    GetPage(
-      name: expressFaq,
-      page: () => ExpressFaq(),
       transition: Transition.fadeIn,
     ),
 
@@ -236,12 +228,34 @@ class AppRoutes {
 
     // google map screen (practice file)
     GetPage(name: googleMapScreen, page: () => GoogleMapScreen()),
+  
+
+    // Stacked Flow Screen
+
+    // FAQ Screen 
+    GetPage(
+      name: stackedFAQScreen,
+      page: () => StackedFAQScreen(),
+      transition: Transition.fadeIn,
+    ),
+    GetPage(
+      name: expressFaq,
+      page: () => ExpressFaq(),
+      transition: Transition.fadeIn,
+    ),
+    GetPage(
+      name: standardFAQ,
+      page: () => StandardFaqScreen(),
+      transition: Transition.fadeIn,
+    ),
+
+    // Schedule Recipient Screen
     GetPage(
       name: stackedSchedulRecepmenteScreen,
       page: () => StackedSchedulRecepmenteScreen(),
     ),
-
-    // Stacked Flow Screen
     
+    // Schedule Sender Screen 
+
   ];
 }

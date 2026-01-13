@@ -228,7 +228,7 @@ class RaiderDetails extends StatelessWidget {
                               LocationRowWidget(
                                 iconPath: IconPath.collectIcon,
                                 title: 'Collected from (Sender: Athena Lin)',
-                                address: 'Deliver to (Recipent: Joseph Low)',
+                                address: 'Deliver to (Recipient: Joseph Low)',
                               ),
                               Icon(
                                 Icons.fiber_manual_record,
@@ -242,7 +242,7 @@ class RaiderDetails extends StatelessWidget {
                               ),
                               LocationRowWidget(
                                 iconPath: IconPath.deliveredIcon,
-                                title: 'Deliver to (Recipent: Joseph Low)',
+                                title: 'Deliver to (Recipient: Joseph Low)',
                                 address: 'Blk 222 Sengkang Ave 2, S530222',
                               ),
                             ],

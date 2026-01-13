@@ -41,7 +41,7 @@ class StackedOrderReviewButtonStatic extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  'S\$${vehicleController.calculateTotal().toStringAsFixed(2)}',
+                  '\$${vehicleController.calculateTotal().toStringAsFixed(2)}',
                   style: getTextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,

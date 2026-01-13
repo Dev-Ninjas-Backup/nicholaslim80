@@ -5,6 +5,7 @@ import 'package:ZipBee/features/user/collect_form_on_express_delivery/Sender_Par
 import 'package:ZipBee/features/user/stacked/schedule_stacked_ delivey/Schedule_sender_recepent/controller/sender_schedule_controller.dart';
 import 'package:ZipBee/features/user/stacked/stacked_screen/stacked_screen.dart';
 import 'package:ZipBee/features/user/stacked/stacked_collect_from/model/model.dart';
+import 'package:ZipBee/features/user/stacked/schedule_stacked_ delivey/Schedule_recepent/screen/schedule_recepent_screen1.dart';
 import 'package:ZipBee/features/user/stacked/stacked_controller/stacked_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
@@ -150,21 +151,28 @@ class StackedSenderScheduleScreen extends StatelessWidget {
 
                                     // Extract and store data in StackedLocationController
                                     final locationController = Get.find<StackedLocationController>();
-                                    locationController.updateSenderData(
-                                      AddressData(
-                                        id: (data['id'] as int?) ?? 0,
-                                        address: data['address'] ?? controller.addressController.text,
-                                        addressFromApr: data['addressFromApr'] ?? controller.addressController.text,
-                                        floorUnit: data['floor_unit'] ?? controller.floorController.text,
-                                        contactName: data['contact_name'] ?? controller.nameController.text,
-                                        contactNumber: data['contact_number'] ?? controller.numberController.text,
-                                        noteToDriver: data['note_to_driver'] ?? controller.noteController.text,
-                                        isSaved: (data['is_saved'] as bool?) ?? controller.saveAddress.value,
-                                        type: data['type'] ?? 'SENDER',
-                                      ),
+                                    final savedAddress = AddressData(
+                                      id: (data['id'] as int?) ?? 0,
+                                      address: data['address'] ?? controller.addressController.text,
+                                      addressFromApr: data['addressFromApr'] ?? controller.addressController.text,
+                                      floorUnit: data['floor_unit'] ?? controller.floorController.text,
+                                      contactName: data['contact_name'] ?? controller.nameController.text,
+                                      contactNumber: data['contact_number'] ?? controller.numberController.text,
+                                      noteToDriver: data['note_to_driver'] ?? controller.noteController.text,
+                                      isSaved: (data['is_saved'] as bool?) ?? controller.saveAddress.value,
+                                      type: data['type'] ?? 'SENDER',
                                     );
 
-                                    Get.to(() => StackedScreen());
+                                    locationController.updateSenderData(savedAddress);
+
+                                    // If Add Stop flow requested, navigate to recipient screen to add a recipient stop
+                                    final args = Get.arguments as Map<String, dynamic>?;
+                                    if (args != null && args['navigateNextToRecipient'] == true) {
+                                      Get.to(() => StackedSchedulRecepmenteScreen(), arguments: {'addAsStop': true});
+                                    } else {
+                                      // Regular flow: back to stacked screen
+                                      Get.to(() => StackedScreen());
+                                    }
                                   }
                                 }
                               : null,

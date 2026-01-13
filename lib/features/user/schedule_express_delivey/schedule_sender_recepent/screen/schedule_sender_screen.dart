@@ -124,7 +124,7 @@ class SenderScheduleScreen extends StatelessWidget {
                               ? () {
                                   Get.to(
                                     SchedulRecepmenteScreen(
-                                      title: 'Recepent 1',
+                                      title: 'Recipient 1',
                                     ),
                                   );
                                 }

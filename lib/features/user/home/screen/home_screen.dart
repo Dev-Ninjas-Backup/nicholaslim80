@@ -5,7 +5,6 @@ import 'package:ZipBee/features/user/home/controller/home_controller.dart';
 import 'package:ZipBee/features/user/home/widgets/drawer.dart';
 import 'package:ZipBee/features/user/home/widgets/small_horizontal_slider_widget.dart';
 import 'package:ZipBee/features/user/home/widgets/vehicle_cards_widget.dart';
-import 'package:ZipBee/features/user/stacked/vehicle_type/screen/screen.dart';
 import 'package:ZipBee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

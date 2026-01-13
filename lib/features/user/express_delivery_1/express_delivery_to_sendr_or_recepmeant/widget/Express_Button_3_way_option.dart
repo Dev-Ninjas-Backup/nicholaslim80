@@ -196,7 +196,7 @@ class ExpressButtonWidget3Address extends StatelessWidget {
 
                       OneWayRoundWidget(
                         controller: ExpressDeliveryMain(),
-                        title: 'Deliver to (Recipent: Joseph Low)',
+                        title: 'Deliver to (Recipient: Joseph Low)',
                         subtitle: 'Blk 222 Sengkang Ave 2, S530222',
                         icon: Image.asset(
                           IconPath.deliveredIcon,

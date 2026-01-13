@@ -1,9 +1,11 @@
 import 'package:ZipBee/core/common/styles/global_text_style.dart';
 import 'package:ZipBee/features/user/stacked/widget/stacked_button.dart';
-import 'package:ZipBee/routes/app_routes.dart';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../stacked_controller/stacked_controller.dart';
+import 'package:ZipBee/features/user/stacked/schedule_stacked_ delivey/Schedule_sender_recepent/screen/schedule_sender_screen.dart';
+import 'package:ZipBee/features/user/stacked/schedule_stacked_ delivey/Schedule_recepent/screen/schedule_recepent_screen1.dart';
 
 class StackedSelectLocationWidget extends StatelessWidget {
   const StackedSelectLocationWidget({super.key, required this.controller});
@@ -52,8 +54,22 @@ class StackedCustomAddButton extends StatelessWidget {
           ),
         ),
         onPressed: () {
-          // Get.to(StackedSenderScheduleScreen()); 
-          Get.toNamed(AppRoutes.stackedSchedulRecepmenteScreen);
+          final loc = Get.find<StackedLocationController>();
+
+          // If sender not selected, first collect sender then navigate to recipient add flow
+          if (loc.senderData.value == null) {
+            Get.to(() => StackedSenderScheduleScreen(), arguments: {'navigateNextToRecipient': true});
+            return;
+          }
+
+          // If receiver not selected, go to recipient screen (add as primary)
+          if (loc.receiverData.value == null) {
+            Get.to(() => StackedSchedulRecepmenteScreen(), arguments: {'addAsStop': false});
+            return;
+          }
+
+          // Both selected: go to recipient screen to add additional stop
+          Get.to(() => StackedSchedulRecepmenteScreen(), arguments: {'addAsStop': true});
         },
       ),
     );
