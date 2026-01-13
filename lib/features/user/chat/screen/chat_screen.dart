@@ -1,8 +1,8 @@
+import 'package:ZipBee/features/user/chat/controllers/chat_controller.dart';
 import 'package:ZipBee/features/user/chat/widget/chat_bubble.dart';
 import 'package:ZipBee/features/user/chat/widget/order_info_card.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../controllers/chat_controller.dart';
 
 class ChatScreen extends StatefulWidget {
   final String receiverId; // dynamic receiverId
@@ -53,7 +53,7 @@ class _ChatScreenState extends State<ChatScreen> {
         title: Column(
           children: const [
             Text(
-              "John Conley", // optionally dynamic
+              "John Conley",
               style: TextStyle(
                 color: Colors.black,
                 fontWeight: FontWeight.bold,
@@ -78,7 +78,7 @@ class _ChatScreenState extends State<ChatScreen> {
       ),
       body: Column(
         children: [
-           OrderInfoCard(),
+          OrderInfoCard(),
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 20),
             child: Text(
@@ -142,7 +142,7 @@ class _ChatScreenState extends State<ChatScreen> {
     controller.sendMessage(receiverId: widget.receiverId, content: text);
 
     _textController.clear();
-    _scrollToBottom(); // send message এ auto scroll
+    _scrollToBottom(); // auto scroll after sending
   }
 
   @override
