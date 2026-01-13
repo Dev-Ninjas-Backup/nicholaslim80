@@ -7,7 +7,7 @@ class UserSocketService {
   /// CONNECT SOCKET
   static void connect({
     required String token,
-    //required String? userId,
+    required String? userId,
   }) {
     debugPrint("🔌 Connecting to user socket...");
     debugPrint("Token: $token ");
@@ -33,7 +33,7 @@ class UserSocketService {
     _socket!.onConnect((_) {
       debugPrint('✅ User socket connected');
       _socket!.emit('register', {
-        // 'userId': userId,
+        'userId': userId,
         'role': 'user',
       });
     });
@@ -71,7 +71,7 @@ class UserSocketService {
     String messageType = "TEXT",
   }) {
     final payload = {
-      "receiverId": receiverId,
+      "receiverId": 32,
       "content": content,
       "messageType": messageType,
     };
@@ -83,6 +83,7 @@ class UserSocketService {
 
   /// RAIDER → USER (RECEIVE MESSAGE)
   static void onReceiveMessage(Function(Map<String, dynamic>) callback) {
+    debugPrint('listening to receive_message events');
     _socket?.on('receive_message', (data) {
       print("📩 Received: $data");
       callback(Map<String, dynamic>.from(data));

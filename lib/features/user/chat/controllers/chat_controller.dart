@@ -7,6 +7,8 @@ import 'package:get/get.dart';
 class UserMessageController extends GetxController {
   var messages = <MessageModel>[].obs;
 
+
+
   @override
   void onInit() {
     super.onInit();
@@ -16,17 +18,20 @@ class UserMessageController extends GetxController {
   Future<void> initSocket() async {
     debugPrint("Initializing socket connection...");
     final token = await SharedPreferencesHelper.getAccessToken();
-    //final userId = await SharedPreferencesHelper.getUserId().toString();
+    final userId = await SharedPreferencesHelper.getUserId().toString();
     if (token == null){
       debugPrint("Token or UserId is null, cannot connect to socket.");
       return;
     };
 
-    UserSocketService.connect(token: token,);
+    UserSocketService.connect(token: token, userId: userId.toString());
 
-    UserSocketService.onReceiveMessage((data) {
-      messages.add(MessageModel.fromSocket(data: data, isMe: false));
-    });
+//    UserSocketService.onReceiveMessage((data) {
+//     debugPrint('Received message');
+//   print("📩 Received on User: $data"); // must show Rider message
+//   messages.add(MessageModel.fromSocket(data: data, isMe: false));
+// });
+
   }
 
   void sendMessage({required String receiverId, required String content}) {
