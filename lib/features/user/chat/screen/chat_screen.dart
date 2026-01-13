@@ -4,40 +4,12 @@ import 'package:ZipBee/features/user/chat/widget/order_info_card.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class ChatScreen extends StatefulWidget {
-  final String receiverId; // dynamic receiverId
+class ChatScreen extends StatelessWidget {
+  final String receiverId;
   ChatScreen({required this.receiverId, Key? key}) : super(key: key);
 
-  @override
-  State<ChatScreen> createState() => _ChatScreenState();
-}
-
-class _ChatScreenState extends State<ChatScreen> {
-  final UserMessageController controller = Get.put(UserMessageController());
-  final TextEditingController _textController = TextEditingController();
-  final ScrollController _scrollController = ScrollController();
-
-  @override
-  void initState() {
-    super.initState();
-
-    // ⚡ Listen for incoming messages and scroll
-    controller.messages.listen((_) {
-      _scrollToBottom();
-    });
-  }
-
-  void _scrollToBottom() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
-      }
-    });
-  }
+  final UserMessageController controller =
+      Get.put(UserMessageController());
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +40,7 @@ class _ChatScreenState extends State<ChatScreen> {
         centerTitle: true,
         actions: [
           IconButton(
-            icon: Icon(
+            icon: const Icon(
               Icons.phone_forwarded_outlined,
               color: Colors.amber,
             ),
@@ -86,18 +58,24 @@ class _ChatScreenState extends State<ChatScreen> {
               style: TextStyle(color: Colors.grey),
             ),
           ),
+
+          /// Messages
           Expanded(
             child: Obx(() {
               return ListView.builder(
-                controller: _scrollController,
+                controller: controller.scrollController,
                 padding: const EdgeInsets.symmetric(horizontal: 15),
                 itemCount: controller.messages.length,
                 itemBuilder: (context, index) {
-                  return ChatBubble(message: controller.messages[index]);
+                  return ChatBubble(
+                    message: controller.messages[index],
+                  );
                 },
               );
             }),
           ),
+
+          /// Input area
           _buildInputArea(),
         ],
       ),
@@ -117,38 +95,24 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
             Expanded(
               child: TextField(
-                controller: _textController,
+                controller: controller.textController,
                 decoration: const InputDecoration(
                   hintText: "Type a message...",
                   border: InputBorder.none,
                 ),
                 textInputAction: TextInputAction.send,
-                onSubmitted: (value) {
-                  _sendMessage();
-                },
+                onSubmitted: (_) =>
+                    controller.sendMessage(receiverId),
               ),
             ),
-            IconButton(icon: const Icon(Icons.send), onPressed: _sendMessage),
+            IconButton(
+              icon: const Icon(Icons.send),
+              onPressed: () =>
+                  controller.sendMessage(receiverId),
+            ),
           ],
         ),
       ),
     );
-  }
-
-  void _sendMessage() {
-    final text = _textController.text.trim();
-    if (text.isEmpty) return;
-
-    controller.sendMessage(receiverId: widget.receiverId, content: text);
-
-    _textController.clear();
-    _scrollToBottom(); // auto scroll after sending
-  }
-
-  @override
-  void dispose() {
-    _textController.dispose();
-    _scrollController.dispose();
-    super.dispose();
   }
 }

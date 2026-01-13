@@ -24,7 +24,6 @@ class Nicholaslim extends StatelessWidget {
           // initialRoute: AppRoutes.googleMapScreen, // for testing google map
 
           // initialRoute: AppRoutes.googleMapScreen, // for testing google map 
-n
           getPages: AppRoutes.routes,
 
           initialBinding: ControllerBinder(),
