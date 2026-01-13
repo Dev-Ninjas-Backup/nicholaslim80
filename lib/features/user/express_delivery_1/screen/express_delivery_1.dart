@@ -9,6 +9,7 @@ import 'package:ZipBee/features/user/express_delivery_1/widget/order_reviw_butto
 import 'package:ZipBee/features/user/express_delivery_1/widget/pick_date_time_dialog.dart';
 import 'package:ZipBee/features/user/express_delivery_1/widget/select_location_widget.dart';
 import 'package:ZipBee/features/user/express_delivery_1/widget/vehicle_type_widget.dart';
+import 'package:ZipBee/features/user/home/controller/home_controller.dart';
 import 'package:ZipBee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -18,10 +19,10 @@ class ExpressDelivery1 extends StatelessWidget {
 
   final VehicleController vehicleController = Get.put(VehicleController());
 
- final OrderControllerExpress orderControllerExpress =
-      Get.put(OrderControllerExpress());
-
- 
+  final OrderControllerExpress orderControllerExpress = Get.put(
+    OrderControllerExpress(),
+  );
+  final HomeController homeCtrl = Get.find<HomeController>();
 
   ExpressDelivery1({super.key});
 
