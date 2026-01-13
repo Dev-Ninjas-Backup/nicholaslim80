@@ -13,32 +13,52 @@ class UserMessageController extends GetxController {
     initSocket();
   }
 
+  /// Initialize socket connection
   Future<void> initSocket() async {
     debugPrint("Initializing socket connection...");
+
     final token = await SharedPreferencesHelper.getAccessToken();
-    //final userId = await SharedPreferencesHelper.getUserId().toString();
-    if (token == null){
+    final userId = (await SharedPreferencesHelper.getUserId())?.toString();
+
+    if (token == null) {
       debugPrint("Token or UserId is null, cannot connect to socket.");
       return;
-    };
+    }
 
-    UserSocketService.connect(token: token,);
+    // Load token into service first
+    await UserSocketService().loadToken();
 
-    UserSocketService.onReceiveMessage((data) {
-      messages.add(MessageModel.fromSocket(data: data, isMe: false));
+    // Connect socket
+    UserSocketService().connect(userId: userId);
+
+    // Listen for incoming messages
+    UserSocketService().on('receive_message', (data) {
+      debugPrint("📩 Received on User: $data");
+
+      messages.add(
+        MessageModel.fromSocket(
+          data: Map<String, dynamic>.from(data),
+          isMe: false,
+        ),
+      );
     });
   }
 
+  /// Send message
   void sendMessage({required String receiverId, required String content}) {
     if (content.trim().isEmpty) return;
 
-    UserSocketService.sendMessage(receiverId: receiverId, content: content);
+    final payload = {
+      "receiverId": 28, // ✅ fixed: use parameter
+      "content": content,
+      "messageType": "TEXT",
+    };
 
-    messages.add(MessageModel(
-      text: content,
-      isMe: true,
-      time: _now(),
-    ));
+    // Send via generic emit
+    UserSocketService().emit('send_message', payload);
+
+    // Add locally
+    messages.add(MessageModel(text: content, isMe: true, time: _now()));
   }
 
   String _now() {
@@ -48,7 +68,7 @@ class UserMessageController extends GetxController {
 
   @override
   void onClose() {
-    UserSocketService.disconnect();
+    UserSocketService().dispose();
     super.onClose();
   }
 }

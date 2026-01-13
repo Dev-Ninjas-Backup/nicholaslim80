@@ -231,7 +231,7 @@ class AppRoutes {
 
     // google map screen (practice file)
     GetPage(name: googleMapScreen, page: () => GoogleMapScreen()),
-    GetPage(name: chatScreen, page: () => ChatScreen()),
+    GetPage(name: chatScreen, page: () => ChatScreen(receiverId: '',)),
 
     GetPage(
       name: stackedFAQScreen,
