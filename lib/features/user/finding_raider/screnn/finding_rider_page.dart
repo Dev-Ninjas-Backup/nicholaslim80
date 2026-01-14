@@ -92,13 +92,14 @@ class FindingRiderPage extends StatelessWidget {
                           ),
                         ),
 
-                        const SizedBox(height: 20),
+                        SizedBox(height: 20),
 
                         /// 📍 PICKUP & DROP (API DRIVEN)
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 10),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               Obx(
                                 () => LocationRowWidget(
@@ -113,17 +114,16 @@ class FindingRiderPage extends StatelessWidget {
                                 ),
                               ),
                               Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Icon(
+                                  Icon(
                                     Icons.fiber_manual_record,
-                                    size: 10,
+                                    size: 8,
                                     color: Colors.grey,
                                   ),
-                                  const Icon(
+                                  SizedBox(height: 6),
+                                  Icon(
                                     Icons.fiber_manual_record,
-                                    size: 10,
+                                    size: 8,
                                     color: Colors.grey,
                                   ),
                                 ],

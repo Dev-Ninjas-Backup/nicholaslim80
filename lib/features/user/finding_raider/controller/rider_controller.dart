@@ -6,7 +6,7 @@ import 'package:ZipBee/features/user/finding_raider/services/place_order_service
 
 class RiderController extends GetxController {
   // ================= ORDER =================
-  RxInt orderId = 132.obs;
+   RxInt orderId = 0.obs;
 
   // ================= BASIC INFO =================
   RxInt selectedFare = 0.obs;
@@ -56,7 +56,7 @@ class RiderController extends GetxController {
   final paymentOptions = <PaymentOptionModel>[
     PaymentOptionModel(
       title: 'Stripe',
-      subtitle: 'Mastercard ****456',
+      subtitle: 'Temporarily unavailable',
       assetPath: IconPath.stripe,
     ),
     PaymentOptionModel(
@@ -71,9 +71,7 @@ class RiderController extends GetxController {
     ),
   ];
 
-  void selectMethod(int index) {
-    selectedMethod.value = index;
-  }
+  void selectMethod(int index) => selectedMethod.value = index;
 
   // ================= FARE =================
   final List<double> fareOptions = [1.2, 2.5, 4.5, 6.5];
@@ -102,11 +100,12 @@ class RiderController extends GetxController {
       );
 
       if (success) {
+        // ✅ TEMP until backend sends names
         setLocationFromApi(
-          pickupName: 'Athena Lin',
-          pickupAddress: 'Blk 111 Sengkang Ave 2',
-          dropName: 'Joseph Low',
-          dropAddress: 'Blk 222 Sengkang Ave 2, S530222',
+          pickupName: 'Pickup Location',
+          pickupAddress: 'Selected on map',
+          dropName: 'Drop Location',
+          dropAddress: 'Selected destination',
         );
 
         firstActive.value = false;
@@ -114,10 +113,7 @@ class RiderController extends GetxController {
 
         Get.to(() => ConnectingRiderPage());
       } else {
-        Get.snackbar(
-          'Order Failed',
-          'Unable to place order. Please try again.',
-        );
+        Get.snackbar('Order Failed', 'Please try again');
       }
     } catch (e) {
       Get.snackbar('Error', 'Something went wrong');
@@ -133,16 +129,16 @@ class RiderController extends GetxController {
     isCancelling.value = true;
 
     try {
-      await Future.delayed(const Duration(seconds: 2));
-
-      Get.back(); // close dialog
+      await Future.delayed(const Duration(seconds: 1));
+      Get.back();
       Get.snackbar('Order Cancelled', reason);
     } finally {
       isCancelling.value = false;
     }
   }
 
-  // ================= BACKEND PAYMENT LOGIC =================
+  // ================= PAYMENT LOGIC (BACKEND SAFE) =================
+  /// Stripe OFF → treated as COD
 
   String _paymentMethod() {
     switch (selectedMethod.value) {
@@ -151,14 +147,14 @@ class RiderController extends GetxController {
       case 2:
         return 'COD';
       default:
-        return 'COD'; 
+        return 'COD';
     }
   }
 
   String _paymentMethodId() {
     if (selectedMethod.value == 1) {
-      return 'wallet_balance'; 
+      return 'wallet_balance';
     }
-    return ''; 
+    return '';
   }
 }

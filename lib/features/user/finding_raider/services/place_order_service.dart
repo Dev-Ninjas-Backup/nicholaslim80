@@ -10,33 +10,24 @@ class PlaceOrderService {
   }) async {
     try {
       final token = await SharedPreferencesHelper.getAccessToken();
-
-      if (token == null || token.isEmpty) {
-        print('❌ Token not found');
-        return false;
-      }
+      if (token == null || token.isEmpty) return false;
 
       final uri =
           Uri.parse('https://api.zipbee.sg/api/v1/order/$orderId/place');
 
-      /// 🔹 Build request body safely
-      final Map<String, dynamic> body = {
+      final body = {
         "paymentMethod": paymentMethod,
+        if (paymentMethodId.isNotEmpty)
+          "paymentMethodId": paymentMethodId,
       };
-
-      /// 🔹 Only send paymentMethodId if backend really needs it
-      if (paymentMethodId.isNotEmpty) {
-        body["paymentMethodId"] = paymentMethodId;
-      }
 
       print('📡 PLACE ORDER BODY: $body');
 
       final response = await http.post(
         uri,
         headers: {
-          'Accept': '*/*',
-          'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
         },
         body: jsonEncode(body),
       );
@@ -44,21 +35,12 @@ class PlaceOrderService {
       print('🔹 STATUS: ${response.statusCode}');
       print('📝 RESPONSE: ${response.body}');
 
-      /// 🔹 Decode response safely
       final decoded = jsonDecode(response.body);
 
-      /// ✅ SUCCESS ONLY IF BACKEND SAYS success:true
-      if ((response.statusCode == 200 || response.statusCode == 201) &&
-          decoded['success'] == true) {
-        print('✅ Order placed successfully');
-        return true;
-      }
-
-      /// ❌ Backend-handled failure
-      print('❌ Order failed: ${decoded['message']}');
-      return false;
+      /// ✅ REAL SUCCESS CHECK
+      return decoded['success'] == true;
     } catch (e) {
-      print('❌ Exception while placing order: $e');
+      print('❌ PLACE ORDER ERROR: $e');
       return false;
     }
   }

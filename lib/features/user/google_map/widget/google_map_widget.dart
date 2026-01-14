@@ -17,10 +17,7 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
   final Location _location = Location();
   final Completer<GoogleMapController> _mapController = Completer();
 
-  final RiderController riderController =
-      Get.isRegistered<RiderController>()
-          ? Get.find<RiderController>()
-          : Get.put(RiderController());
+  final RiderController riderController = Get.find<RiderController>();
 
   LatLng? _currentPosition;
   LatLng? _initialFocus;
@@ -36,9 +33,12 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
 
   Future<void> _init() async {
     final zoneCenter = await ServiceZoneService.getFirstZoneCenter();
+    if (!mounted) return;
+
     if (zoneCenter != null) {
       setState(() => _initialFocus = zoneCenter);
     }
+
     await _listenLocation();
   }
 
@@ -46,65 +46,65 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
   Widget build(BuildContext context) {
     final showMap = _initialFocus != null || _currentPosition != null;
 
-    return Scaffold(
-      body: !showMap
-          ? const Center(child: CircularProgressIndicator())
-          : GoogleMap(
-              initialCameraPosition: CameraPosition(
-                target:
-                    _initialFocus ?? const LatLng(23.8022478, 90.3799354),
-                zoom: 11,
-              ),
-              onMapCreated: (c) async {
-                if (!_mapController.isCompleted) {
-                  _mapController.complete(c);
-                }
-                final target = _initialFocus ?? _currentPosition;
-                if (target != null) {
-                  await _moveCamera(target);
-                }
-              },
-              markers: {
-                if (_currentPosition != null)
-                  Marker(
-                    markerId: const MarkerId('current'),
-                    position: _currentPosition!,
-                    icon: BitmapDescriptor.defaultMarkerWithHue(
-                        BitmapDescriptor.hueAzure),
-                  ),
-                if (_selectedMarker != null) _selectedMarker!,
-              },
-              myLocationEnabled: true,
-              myLocationButtonEnabled: true,
-
-              /// 📍 TAP → lat / lng SET
-              onTap: (latLng) {
-                setState(() {
-                  _selectedMarker = Marker(
-                    markerId: const MarkerId('selected'),
-                    position: latLng,
-                  );
-                });
-
-                riderController.setPickupLocation(
-                  latLng.latitude,
-                  latLng.longitude,
-                );
-
-                debugPrint(
-                  'Pickup set: ${latLng.latitude}, ${latLng.longitude}',
-                );
-              },
+    return !showMap
+        ? const Center(child: CircularProgressIndicator())
+        : GoogleMap(
+            initialCameraPosition: CameraPosition(
+              target:
+                  _initialFocus ??
+                  _currentPosition ??
+                  const LatLng(23.8022478, 90.3799354),
+              zoom: 11,
             ),
-    );
+            onMapCreated: (controller) async {
+              if (!_mapController.isCompleted) {
+                _mapController.complete(controller);
+              }
+
+              final target = _initialFocus ?? _currentPosition;
+              if (target != null) {
+                await _moveCamera(target);
+              }
+            },
+            markers: {
+              if (_currentPosition != null)
+                Marker(
+                  markerId: const MarkerId('current'),
+                  position: _currentPosition!,
+                  icon: BitmapDescriptor.defaultMarkerWithHue(
+                    BitmapDescriptor.hueAzure,
+                  ),
+                ),
+              if (_selectedMarker != null) _selectedMarker!,
+            },
+            myLocationEnabled: true,
+            myLocationButtonEnabled: true,
+
+            /// 📍 TAP → pickup lat/lng
+            onTap: (latLng) {
+              setState(() {
+                _selectedMarker = Marker(
+                  markerId: const MarkerId('selected'),
+                  position: latLng,
+                );
+              });
+
+              riderController.setPickupLocation(
+                latLng.latitude,
+                latLng.longitude,
+              );
+
+              debugPrint(
+                '📍 Pickup set: ${latLng.latitude}, ${latLng.longitude}',
+              );
+            },
+          );
   }
 
   Future<void> _moveCamera(LatLng pos) async {
     final c = await _mapController.future;
     await c.animateCamera(
-      CameraUpdate.newCameraPosition(
-        CameraPosition(target: pos, zoom: 14),
-      ),
+      CameraUpdate.newCameraPosition(CameraPosition(target: pos, zoom: 14)),
     );
   }
 
@@ -114,16 +114,16 @@ class _GoogleMapWidgetState extends State<GoogleMapWidget> {
     }
 
     if (await _location.hasPermission() == PermissionStatus.denied) {
-      if (await _location.requestPermission() !=
-          PermissionStatus.granted) return;
+      if (await _location.requestPermission() != PermissionStatus.granted)
+        return;
     }
 
     _locSub = _location.onLocationChanged.listen((loc) {
       if (!mounted) return;
+
       if (loc.latitude != null && loc.longitude != null) {
         setState(() {
-          _currentPosition =
-              LatLng(loc.latitude!, loc.longitude!);
+          _currentPosition = LatLng(loc.latitude!, loc.longitude!);
         });
       }
     });
