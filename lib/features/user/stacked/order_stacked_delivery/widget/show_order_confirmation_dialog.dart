@@ -6,17 +6,14 @@ import 'package:ZipBee/features/user/stacked/order_stacked_delivery/widget/order
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/widget/order_success_widget.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/widget/payment_method_widget.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/widget/promo_dialog_widget.dart';
+import 'package:ZipBee/features/user/stacked/stacked_screen/stacked_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
-import 'package:ZipBee/features/user/stacked/stacked_screen/stacked_screen.dart';
 
-/// Show order confirmation dialog (reusable)
+/// Show order confirmation dialog
 void showStackedOrderConfirmationDialog(StackedOrderController controller) {
-  final String formattedTotal =
-      "\$${controller.totalAmount.toStringAsFixed(2)}";
-
-  // Ensure payment controller exists
+  /// Ensure payment controller exists
   StackedPaymentController paymentCtrl;
   try {
     paymentCtrl = Get.find<StackedPaymentController>();
@@ -30,26 +27,26 @@ void showStackedOrderConfirmationDialog(StackedOrderController controller) {
     AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       contentPadding: EdgeInsets.zero,
-      insetPadding: EdgeInsets.symmetric(horizontal: 8),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 8),
       content: SingleChildScrollView(
         child: Container(
           width: Get.width * 0.95,
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              const Text(
                 "Your Order",
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
               ),
-              SizedBox(height: 22),
+              const SizedBox(height: 22),
 
-              // Promo Code Row
+              /// Promo Code
               Row(
                 children: [
                   Image.asset(IconPath.promo, height: 24, width: 24),
-                  SizedBox(width: 8),
+                  const SizedBox(width: 8),
                   Text(
                     'Promo Code',
                     style: getTextStyle(
@@ -57,15 +54,20 @@ void showStackedOrderConfirmationDialog(StackedOrderController controller) {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  Spacer(),
+                  const Spacer(),
                   GestureDetector(
                     onTap: () {
                       Get.dialog(
                         AlertDialog(
-                          insetPadding: EdgeInsets.symmetric(horizontal: 16),
+                          insetPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                          ),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
-                            side: BorderSide(color: Colors.amber, width: 2),
+                            side: const BorderSide(
+                              color: Colors.amber,
+                              width: 2,
+                            ),
                           ),
                           title: Row(
                             children: [
@@ -76,10 +78,10 @@ void showStackedOrderConfirmationDialog(StackedOrderController controller) {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              Spacer(),
+                              const Spacer(),
                               InkWell(
-                                onTap: () => Get.back(),
-                                child: Icon(
+                                onTap: Get.back,
+                                child: const Icon(
                                   Icons.cancel_outlined,
                                   color: Colors.grey,
                                 ),
@@ -102,7 +104,7 @@ void showStackedOrderConfirmationDialog(StackedOrderController controller) {
                     child: Container(
                       width: 130,
                       height: 27,
-                      padding: EdgeInsets.symmetric(horizontal: 8),
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
                       alignment: Alignment.centerLeft,
                       decoration: BoxDecoration(
                         border: Border.all(color: Colors.grey),
@@ -116,9 +118,10 @@ void showStackedOrderConfirmationDialog(StackedOrderController controller) {
                   ),
                 ],
               ),
-              SizedBox(height: 14),
 
-              // Redeem Coins
+              const SizedBox(height: 14),
+
+              /// Redeem Coins
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -137,9 +140,10 @@ void showStackedOrderConfirmationDialog(StackedOrderController controller) {
                   ),
                 ],
               ),
-              SizedBox(height: 14),
 
-              // Favourite Riders
+              const SizedBox(height: 14),
+
+              /// Favourite Riders
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -158,24 +162,40 @@ void showStackedOrderConfirmationDialog(StackedOrderController controller) {
                   ),
                 ],
               ),
-              SizedBox(height: 30),
 
-              // Subtotal & Total
-              buildDetailRow(
-                "Subtotal:",
-                formattedTotal,
-              ), // Assuming subtotal is same as total for now
-              SizedBox(height: 10),
-              buildDetailRow("Coin/s redeemed:", "\$00"),
-              SizedBox(height: 24),
-              Divider(),
-              SizedBox(height: 24),
-              buildDetailRow("Saved:", "\$00", isTotal: false),
-              SizedBox(height: 10),
-              buildDetailRow("Total Amount:", formattedTotal, isTotal: true),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
 
-              // Payment Method
+              /// Subtotal
+              Obx(
+                () => buildDetailRow(
+                  "Subtotal:",
+                  "\$${controller.totalFee.value > 0 ? controller.totalFee.value.toStringAsFixed(2) : controller.totalAmount.value.toStringAsFixed(2)}",
+                ),
+              ),
+
+              const SizedBox(height: 10),
+              buildDetailRow("Coin/s redeemed:", "\$0.00"),
+
+              const SizedBox(height: 24),
+              const Divider(),
+              const SizedBox(height: 24),
+
+              buildDetailRow("Saved:", "\$0.00"),
+
+              const SizedBox(height: 10),
+
+              /// Total Amount
+              Obx(
+                () => buildDetailRow(
+                  "Total Amount:",
+                  "\$${controller.totalFee.value > 0 ? controller.totalFee.value.toStringAsFixed(2) : controller.totalAmount.value.toStringAsFixed(2)}",
+                  isTotal: true,
+                ),
+              ),
+
+              const SizedBox(height: 30),
+
+              /// Payment Method
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -201,19 +221,21 @@ void showStackedOrderConfirmationDialog(StackedOrderController controller) {
                       ),
                       StackedPaymentOption(
                         title: "Cash",
-                        subtitle: "To be paid by sender or receipent",
+                        subtitle: "To be paid by sender or recipient",
                         imageAsset: IconPath.cash,
                       ),
                     ],
                   ),
                 ],
               ),
-              SizedBox(height: 12),
 
-              // If Cash selected show collect-from selector
+              const SizedBox(height: 12),
+
+              /// Cash collect from
               Obx(() {
-                final selected = paymentCtrl.selectedTitle.value.toLowerCase();
-                if (selected.contains('cash')) {
+                if (paymentCtrl.selectedTitle.value.toLowerCase().contains(
+                  'cash',
+                )) {
                   return Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -224,54 +246,49 @@ void showStackedOrderConfirmationDialog(StackedOrderController controller) {
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                      Obx(
-                        () => DropdownButton<String>(
-                          value: codCollectFrom.value,
-                          items: [
-                            DropdownMenuItem(
-                              value: 'SENDER',
-                              child: Text('Sender'),
-                            ),
-                            DropdownMenuItem(
-                              value: 'RECEIVER',
-                              child: Text('Receiver'),
-                            ),
-                          ],
-                          onChanged: (v) {
-                            if (v != null) codCollectFrom.value = v;
-                          },
-                        ),
+                      DropdownButton<String>(
+                        value: codCollectFrom.value,
+                        items: const [
+                          DropdownMenuItem(
+                            value: 'SENDER',
+                            child: Text('Sender'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'RECEIVER',
+                            child: Text('Receiver'),
+                          ),
+                        ],
+                        onChanged: (v) {
+                          if (v != null) codCollectFrom.value = v;
+                        },
                       ),
                     ],
                   );
                 }
-
-                return SizedBox.shrink();
+                return const SizedBox.shrink();
               }),
 
-              SizedBox(height: 32),
+              const SizedBox(height: 32),
 
-              // Buttons
+              /// Buttons
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   FilledButton(
                     onPressed: () {
-                      // Close dialog and reset to a fresh Stacked screen
                       Get.back();
                       controller.cancelAndReset();
                       Get.off(() => StackedScreen());
                     },
                     style: FilledButton.styleFrom(
                       backgroundColor: Colors.white,
-                      foregroundColor: Colors.white,
-                      padding: EdgeInsets.symmetric(
+                      padding: const EdgeInsets.symmetric(
                         horizontal: 16,
                         vertical: 8,
                       ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(6),
-                        side: BorderSide(color: Colors.red, width: 1.5),
+                        side: const BorderSide(color: Colors.red, width: 1.5),
                       ),
                     ),
                     child: Row(
@@ -284,16 +301,18 @@ void showStackedOrderConfirmationDialog(StackedOrderController controller) {
                             color: Colors.red,
                           ),
                         ),
-                        SizedBox(width: 3),
+                        const SizedBox(width: 4),
                         Image.asset(IconPath.cancel, height: 14, width: 14),
                       ],
                     ),
                   ),
+
+                  /// Place Order
                   FilledButton(
                     onPressed: () async {
-                      // Determine payment values
-                      String selected = paymentCtrl.selectedTitle.value
+                      final selected = paymentCtrl.selectedTitle.value
                           .toLowerCase();
+
                       String paymentMethodApi;
                       String? paymentMethodId;
                       String? codCollect;
@@ -304,9 +323,8 @@ void showStackedOrderConfirmationDialog(StackedOrderController controller) {
                       } else if (selected.contains('wallet')) {
                         paymentMethodApi = 'WALLET';
                       } else {
-                        // default map stripe/other to ONLINE_PAY
                         paymentMethodApi = 'ONLINE_PAY';
-                        paymentMethodId = null; // integrate stripe later
+                        paymentMethodId = null;
                       }
 
                       final ok = await controller.confirmPlaceOrder(
@@ -317,24 +335,25 @@ void showStackedOrderConfirmationDialog(StackedOrderController controller) {
 
                       if (ok) {
                         debugPrint(
-                          'Final placed total: ${controller.totalAmount}',
+                          'Final placed total: ${controller.totalAmount.value}',
                         );
-                        Get.back(); // Close dialog
+                        Get.back();
+
                         EasyLoading.showSuccess(
-                          'Order placed: S\$${controller.totalAmount.toStringAsFixed(2)}',
+                          'Order placed: \$${controller.totalAmount.value.toStringAsFixed(2)}',
                         );
-                        StackedOrderConfirmationDialog.show(); // Show "Congratulations"
-                        await Future.delayed(Duration(seconds: 3));
-                        Get.back(); // Close "Congratulations"
-                        StackedOrderSuccessDialog.show(); // Show "Confirmed"
+
+                        StackedOrderConfirmationDialog.show();
+                        await Future.delayed(const Duration(seconds: 3));
+                        Get.back();
+                        StackedOrderSuccessDialog.show();
                       } else {
                         EasyLoading.showError('Failed to place order');
                       }
                     },
                     style: FilledButton.styleFrom(
                       backgroundColor: Colors.amber,
-                      foregroundColor: Colors.white,
-                      padding: EdgeInsets.symmetric(
+                      padding: const EdgeInsets.symmetric(
                         horizontal: 16,
                         vertical: 8,
                       ),
@@ -360,7 +379,7 @@ void showStackedOrderConfirmationDialog(StackedOrderController controller) {
   );
 }
 
-/// Helper function now top-level so it can be accessed from anywhere
+/// Helper
 Widget buildDetailRow(String title, String value, {bool isTotal = false}) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,

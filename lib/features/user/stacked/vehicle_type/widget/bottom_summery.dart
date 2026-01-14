@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 
 
 import '../controller/controller.dart';
+import 'package:ZipBee/features/user/stacked/order_stacked_delivery/controller/controller.dart';
 
 class StackedBottomSummary extends StatelessWidget {
   final StackedVehicleController vehicleController;
@@ -47,14 +48,33 @@ class StackedBottomSummary extends StatelessWidget {
                     ),
                   ),
                   Obx(
-                        () => Text(
-                      '\$${vehicleController.calculateTotal().toStringAsFixed(2)}',
-                      style: getTextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
+                        () {
+                      // Prefer server total_fee, then server totalAmount, otherwise local calculation
+                      try {
+                        final oc = Get.find<StackedOrderController>();
+                        final amountToShow = oc.totalFee.value > 0
+                            ? oc.totalFee.value
+                            : (oc.totalAmount.value > 0 ? oc.totalAmount.value : vehicleController.calculateTotal());
+
+                        return Text(
+                          '\$${amountToShow.toStringAsFixed(2)}',
+                          style: getTextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        );
+                      } catch (_) {
+                        return Text(
+                          '\$${vehicleController.calculateTotal().toStringAsFixed(2)}',
+                          style: getTextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        );
+                      }
+                    },
                   ),
                 ],
               ),
@@ -63,10 +83,18 @@ class StackedBottomSummary extends StatelessWidget {
                   () => FilledButton(
                 onPressed: vehicleController.selectedVehicle.value != null
                     ? () {
-                  double total = vehicleController.calculateTotal();
+                  // Pass server totals if available
+                  double amountToPass = vehicleController.calculateTotal();
+                  try {
+                    final oc = Get.find<StackedOrderController>();
+                    amountToPass = oc.totalFee.value > 0
+                        ? oc.totalFee.value
+                        : (oc.totalAmount.value > 0 ? oc.totalAmount.value : amountToPass);
+                  } catch (_) {}
+
                   Get.toNamed(
                     AppRoutes.getstackedScreen(),
-                    arguments: {'totalAmount': total},
+                    arguments: {'totalAmount': amountToPass},
                   );
                 }
                     : null,
