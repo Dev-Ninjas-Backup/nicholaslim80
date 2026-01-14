@@ -25,7 +25,7 @@ class OrderScreen extends StatelessWidget {
             Text("Orders", style: getTextStyle(fontWeight: FontWeight.w700)),
             const SizedBox(height: 12),
 
-            /// Tabs
+            // Tabs
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Obx(
@@ -74,7 +74,7 @@ class OrderScreen extends StatelessWidget {
 
             const SizedBox(height: 16),
 
-            /// Order List
+            // Order List
             Expanded(
               child: Obx(() {
                 if (controller.isLoading.value &&
@@ -110,11 +110,6 @@ class OrderScreen extends StatelessWidget {
                             Get.to(
                               () => CompletedOrderDetailsScreen(order: item),
                             );
-                          } else if (controller.selectOrderListIndex.value ==
-                              2) {
-                            Get.to(
-                              () => (order: item),
-                            ); // Keep your original code
                           }
                         },
                         child: Container(
@@ -129,25 +124,18 @@ class OrderScreen extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              /// Top row: Order ID + Pick-up Date & Timer
                               Text(
                                 "#${item.orderId} Pick-up Date & Timer ${item.date}",
                                 style: getTextStyle(
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
-
                               const SizedBox(height: 8),
-
-                              /// Collect from (senderName)
                               Text(
                                 "Collect from (${item.senderName})",
                                 style: getTextStyle(),
                               ),
-
                               const SizedBox(height: 4),
-
-                              /// Deliver to X destinations
                               Builder(
                                 builder: (_) {
                                   final drops = <String>[];
@@ -181,10 +169,7 @@ class OrderScreen extends StatelessWidget {
                                   );
                                 },
                               ),
-
                               const SizedBox(height: 12),
-
-                              /// Vehicle + Total
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,

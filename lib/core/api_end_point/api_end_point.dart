@@ -7,6 +7,7 @@ class ApiEndPoint {
   static const String forgetPass = '$baseUrl/auth/forgot-password';
   static const String notificationID = '$baseUrl/notifications/{id}';
   static const String notification = '$baseUrl/notifications';
+  static const String notificationFCM = '$baseUrl/notifications/fcm-token';
   static const String logOut = '$baseUrl/auth/logout';
   static const String resetPass = '$baseUrl/auth/forgot/reset-password';
   static const String order = '$baseUrl/order/mine';
@@ -33,5 +34,5 @@ class ApiEndPoint {
   static const String orderCreate = '$baseUrl/order';
   static const String orderUpdateDetails = '$baseUrl/order/{id}/update-details';
   static const String orderEstimate = '$baseUrl/coin-management/redeem-coin';
-
+  static const String rating = '$baseUrl/ratings';
 }

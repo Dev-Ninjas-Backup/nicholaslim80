@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "1022625670758",
-    "project_id": "nicholaslim",
-    "storage_bucket": "nicholaslim.firebasestorage.app"
+    "project_number": "197402962972",
+    "project_id": "nicholaslim-bc40a",
+    "storage_bucket": "nicholaslim-bc40a.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1022625670758:android:bf53fdd6f6d995e591afa7",
+        "mobilesdk_app_id": "1:197402962972:android:a1feee2cfe5b4f311443d9",
         "android_client_info": {
           "package_name": "com.example.nicholaslim80"
         }
@@ -15,7 +15,26 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCAMtMsu0BYgNaEpBfUE_bzk-Y6yeClbIM"
+          "current_key": "AIzaSyBZYgAjcrEUZqMd-f2_0ySmGcBLuFq7UiA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:197402962972:android:7be9cba3ff61cfc21443d9",
+        "android_client_info": {
+          "package_name": "com.example.nicholaslim80rider"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBZYgAjcrEUZqMd-f2_0ySmGcBLuFq7UiA"
         }
       ],
       "services": {
