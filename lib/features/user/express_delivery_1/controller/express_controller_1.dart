@@ -3,6 +3,7 @@ import 'package:ZipBee/core/shared_prefference_service/shared_pref.dart';
 import 'package:ZipBee/core/utils/constants/icon_path.dart';
 import 'package:ZipBee/features/user/express_delivery_1/order_express_delivery/screen/order_alertdialog_screen.dart';
 import 'package:ZipBee/features/user/express_delivery_1/service/order_api_service.dart';
+import 'package:ZipBee/features/user/finding_raider/controller/rider_controller.dart';
 import 'package:ZipBee/features/user/home/controller/home_controller.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -17,6 +18,8 @@ class VehicleModel {
 }
 
 class ExpressDeliveryMain extends GetxController {
+  final RiderController riderController = Get.find<RiderController>();
+
   // ─────────────────────────
   // Map Vehicle to ID
   // ─────────────────────────
@@ -174,23 +177,20 @@ class ExpressDeliveryMain extends GetxController {
       return;
     }
 
-    isLoading.value = true; // loader ON
+    if (isLoading.value) return;
+    isLoading.value = true;
 
     try {
       final token = await SharedPreferencesHelper.getAccessToken();
       if (token == null || token.isEmpty) {
         _logger.e("Access token missing or expired");
-        isLoading.value = false;
         Get.snackbar("Session Expired", "Please login again");
         return;
       }
 
       final body = {
         "route_type": isRoundTrip.value ? "ROUND" : "ONE_WAY",
-
-        /// EXPRESS | STANDARD
         "delivery_type": homeCtrl.deliveryType.value.toUpperCase(),
-
         "collect_time": isNowSelected.value ? "ASAP" : "SCHEDULED",
         "vehicle_type_id": _mapVehicleToId(selectedVehicle.value),
         "destinations": [
@@ -201,7 +201,7 @@ class ExpressDeliveryMain extends GetxController {
           "scheduled_time": scheduledDateTime.value!.toIso8601String(),
       };
 
-      _logger.i("Create Order → Request Body");
+      _logger.i("📡 CREATE ORDER BODY");
       _logger.d(body);
 
       final response = await OrderService.createOrderApi(
@@ -209,35 +209,43 @@ class ExpressDeliveryMain extends GetxController {
         token: token,
       );
 
-      _logger.i("Status Code → ${response.statusCode}");
-      _logger.d("Response → ${response.body}");
+      _logger.i("🔹 STATUS → ${response.statusCode}");
+      _logger.d("📝 RESPONSE → ${response.body}");
 
-      final data = jsonDecode(response.body);
+      final decoded = jsonDecode(response.body);
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        _logger.i("Order Created Successfully");
-
-        final orderData = data['data']?['order'];
-        if (orderData != null && orderData is Map<String, dynamic>) {
-          // Pass the order id to the confirmation dialog so it can display the order number
-          OrderConfirmationSheet.show(orderData['id']);
-        } else {
-          _logger.w("Order data missing or invalid in response");
-          Get.snackbar("Success", "Order created but no details available");
-        }
-      } else {
-        final errorMessage = data['message'] is List
-            ? (data['message'] as List).join('\n')
-            : data['message']?.toString() ?? "Order Failed";
-
-        _logger.e("Order Failed", error: data);
-        Get.snackbar("Error", errorMessage);
+      ///  Backend says failed
+      if (decoded['success'] != true) {
+        final msg = decoded['message']?.toString() ?? "Order failed";
+        _logger.e("Create order failed → $msg");
+        Get.snackbar("Error", msg);
+        return;
       }
+
+      /// SUCCESS → extract order safely
+      final Map<String, dynamic>? order =
+          decoded['data']?['order'] ?? decoded['data'];
+
+      if (order == null || order['id'] == null) {
+        _logger.e("Order ID missing in response");
+        Get.snackbar("Error", "Order created but ID missing");
+        return;
+      }
+
+      final int newOrderId = order['id'];
+
+      /// ✅ THIS IS NOW SAFE
+      riderController.orderId.value = newOrderId;
+
+      print("✅ ORDER ID SET → ${riderController.orderId.value}");
+
+      /// optional confirmation dialog
+      OrderConfirmationSheet.show(newOrderId);
     } catch (e, s) {
       _logger.f("Create Order Exception", error: e, stackTrace: s);
       Get.snackbar("Error", "Something went wrong");
     } finally {
-      isLoading.value = false; // loader OFF
+      isLoading.value = false;
     }
   }
 }
