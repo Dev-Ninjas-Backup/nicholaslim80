@@ -33,5 +33,8 @@ class ApiEndPoint {
   static const String orderCreate = '$baseUrl/order';
   static const String orderUpdateDetails = '$baseUrl/order/{id}/update-details';
   static const String orderEstimate = '$baseUrl/coin-management/redeem-coin';
-
+  
+  // Destination endpoints
+  static const String createDestination = '$baseUrl/destination';
+  static const String addDestinationToOrder = '$baseUrl/order/{orderId}/destinations/add';
 }

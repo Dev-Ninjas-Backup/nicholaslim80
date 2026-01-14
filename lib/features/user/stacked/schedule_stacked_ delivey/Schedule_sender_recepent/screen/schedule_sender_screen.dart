@@ -7,7 +7,9 @@ import 'package:ZipBee/features/user/stacked/stacked_screen/stacked_screen.dart'
 import 'package:ZipBee/features/user/stacked/stacked_collect_from/model/model.dart';
 import 'package:ZipBee/features/user/stacked/schedule_stacked_ delivey/Schedule_recepent/screen/schedule_recepent_screen1.dart';
 import 'package:ZipBee/features/user/stacked/stacked_controller/stacked_controller.dart';
+import 'package:ZipBee/features/user/stacked/order_stacked_delivery/controller/controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
@@ -77,6 +79,11 @@ class StackedSenderScheduleScreen extends StatelessWidget {
                     ),
                     SizedBox(height: 10),
                     CustomTextField(
+                      controller: controller.postalCodeController,
+                      label: "Postal Code*",
+                    ),
+                    SizedBox(height: 10),
+                    CustomTextField(
                       controller: controller.addressController,
                       label: "Address*",
                     ),
@@ -134,27 +141,29 @@ class StackedSenderScheduleScreen extends StatelessWidget {
                         child: ElevatedButton(
                           onPressed: controller.isFormValid.value
                               ? () async {
-                                  final res = await controller.saveDestination(type: 'SENDER');
-                                  if (res != null) {
-                                    final data = (res['data'] as Map<String, dynamic>?) ?? res;
+                                  final orderController = Get.find<StackedOrderController>();
+                                  final orderId = orderController.lastOrderId;
+                                  
+                                  if (orderId == null) {
+                                    EasyLoading.showError('Order ID not found. Please try again.');
+                                    return;
+                                  }
 
-                                    // Debug print the exact payload that will be shown on StackedScreen ✅
-                                    debugPrint('Saved Destination (sender):');
-                                    debugPrint('address: ${data['address']}');
-                                    debugPrint('addressFromApr: ${data['addressFromApr'] ?? data['address']}');
-                                    debugPrint('floor_unit: ${data['floor_unit']}');
-                                    debugPrint('contact_name: ${data['contact_name']}');
-                                    debugPrint('contact_number: ${data['contact_number']}');
-                                    debugPrint('note_to_driver: ${data['note_to_driver']}');
-                                    debugPrint('is_saved: ${data['is_saved']}');
-                                    debugPrint('type: ${data['type']}');
+                                  final res = await controller.saveDestination(type: 'SENDER', orderId: orderId);
+                                  if (res != null) {
+                                    final data = res;
+
+                                    // Update total cost in order controller
+                                    if (controller.totalCost.value > 0) {
+                                      orderController.totalAmount.value = controller.totalCost.value;
+                                    }
 
                                     // Extract and store data in StackedLocationController
                                     final locationController = Get.find<StackedLocationController>();
                                     final savedAddress = AddressData(
                                       id: (data['id'] as int?) ?? 0,
                                       address: data['address'] ?? controller.addressController.text,
-                                      addressFromApr: data['addressFromApr'] ?? controller.addressController.text,
+                                      addressFromApr: data['address'] ?? controller.addressController.text,
                                       floorUnit: data['floor_unit'] ?? controller.floorController.text,
                                       contactName: data['contact_name'] ?? controller.nameController.text,
                                       contactNumber: data['contact_number'] ?? controller.numberController.text,

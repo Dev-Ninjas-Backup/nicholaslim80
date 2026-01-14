@@ -11,7 +11,7 @@ class DestinationService {
       final token = await SharedPreferencesHelper.getAccessToken();
 
       final response = await http.post(
-        Uri.parse(ApiEndPoint.baseUrl + '/destination'),
+        Uri.parse(ApiEndPoint.createDestination),
         headers: {
           'Content-Type': 'application/json',
           if (token != null) 'Authorization': 'Bearer $token',
@@ -19,15 +19,53 @@ class DestinationService {
         body: jsonEncode(body),
       );
 
-      debugPrint('CREATE DEST RESPONSE: ${response.statusCode} ${response.body}');
+      debugPrint('✅ CREATE DESTINATION RESPONSE: ${response.statusCode}\n${response.body}');
 
+      final decoded = jsonDecode(response.body);
       return {
         'statusCode': response.statusCode,
-        'body': jsonDecode(response.body),
+        'success': decoded['success'] ?? false,
+        'body': decoded,
       };
     } catch (e) {
-      debugPrint('DestinationService error: $e');
-      return {'statusCode': 500, 'body': {}};
+      debugPrint('❌ DestinationService.createDestination error: $e');
+      return {'statusCode': 500, 'success': false, 'body': {}};
+    }
+  }
+
+  /// Link a destination to an order
+  static Future<Map<String, dynamic>> addDestinationToOrder({
+    required int orderId,
+    required int destinationId,
+    required String stopType,
+  }) async {
+    try {
+      final token = await SharedPreferencesHelper.getAccessToken();
+
+      final url = Uri.parse(
+        '${ApiEndPoint.addDestinationToOrder.replaceAll('{orderId}', orderId.toString())}'
+        '?destination_id=$destinationId&stop_type=$stopType'
+      );
+
+      final response = await http.patch(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          if (token != null) 'Authorization': 'Bearer $token',
+        },
+      );
+
+      debugPrint('✅ ADD DESTINATION TO ORDER RESPONSE: ${response.statusCode}\n${response.body}');
+
+      final decoded = jsonDecode(response.body);
+      return {
+        'statusCode': response.statusCode,
+        'success': decoded['success'] ?? false,
+        'body': decoded,
+      };
+    } catch (e) {
+      debugPrint('❌ DestinationService.addDestinationToOrder error: $e');
+      return {'statusCode': 500, 'success': false, 'body': {}};
     }
   }
 }

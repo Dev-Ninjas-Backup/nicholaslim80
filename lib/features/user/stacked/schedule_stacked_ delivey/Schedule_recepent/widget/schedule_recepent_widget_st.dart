@@ -10,20 +10,22 @@ class ScheduleRecipientWidgetST extends StatelessWidget {
   final String title;
   final VoidCallback onPressed;
   final StackedAddressModel? address;
+  final bool isAdditionalStop;
 
   const ScheduleRecipientWidgetST({
     super.key,
     required this.title,
     required this.onPressed,
     this.address,
+    this.isAdditionalStop = false,
   });
 
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(SenderController());
 
-    // Prefill if address provided and fields empty
-    if (address != null) {
+    // Prefill if address provided and fields empty, BUT not if this is an additional stop
+    if (address != null && !isAdditionalStop) {
       if (controller.addressController.text.isEmpty) {
         controller.addressController.text = address!.addressFromApr.isNotEmpty ? address!.addressFromApr : address!.address;
       }
@@ -31,6 +33,16 @@ class ScheduleRecipientWidgetST extends StatelessWidget {
       if (controller.nameController.text.isEmpty) controller.nameController.text = address!.contactName;
       if (controller.numberController.text.isEmpty) controller.numberController.text = address!.contactNumber;
       controller.saveAddress.value = address!.isSaved;
+    }
+    // For additional stops, always clear the fields
+    else if (isAdditionalStop) {
+      controller.addressController.clear();
+      controller.postalCodeController.clear();
+      controller.floorController.clear();
+      controller.nameController.clear();
+      controller.numberController.clear();
+      controller.noteController.clear();
+      controller.saveAddress.value = false;
     }
 
     return Column(
@@ -43,6 +55,12 @@ class ScheduleRecipientWidgetST extends StatelessWidget {
         SizedBox(height: 10),
 
         CustomTextField(
+          controller: controller.postalCodeController,
+          label: "Postal Code*",
+        ),
+        SizedBox(height: 10),
+
+        CustomTextField(
           controller: controller.addressController,
           label: "Address*",
         ),
@@ -50,7 +68,7 @@ class ScheduleRecipientWidgetST extends StatelessWidget {
 
         CustomTextField(
           controller: controller.floorController,
-          label: "Details Address (Floor, Building, Street)*",
+          label: "Floor or unit no.*",
           maxLines: 1,
           maxLength: 120,
         ),
@@ -67,6 +85,14 @@ class ScheduleRecipientWidgetST extends StatelessWidget {
           controller: controller.numberController,
           label: "Contact number*",
           keyboardType: TextInputType.phone,
+        ),
+        SizedBox(height: 10),
+
+        CustomTextField(
+          controller: controller.noteController,
+          label: "Note to driver",
+          maxLines: 2,
+          maxLength: 120,
         ),
         SizedBox(height: 10),
 
