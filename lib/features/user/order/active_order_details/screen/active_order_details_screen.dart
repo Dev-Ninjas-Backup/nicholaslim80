@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -23,6 +24,8 @@ class ActiveOrderDetailsScreen extends StatefulWidget {
 
 class _ActiveOrderDetailsScreenState extends State<ActiveOrderDetailsScreen> {
   late final OrderController controller;
+  GoogleMapController? _mapController;
+  final Set<Marker> _markers = {};
 
   @override
   void initState() {
@@ -35,6 +38,54 @@ class _ActiveOrderDetailsScreenState extends State<ActiveOrderDetailsScreen> {
     if (widget.order.riderId != null) {
       controller.fetchRiderInfoById(widget.order.riderId!);
     }
+    _addMarkers();
+  }
+
+  void _addMarkers() {
+    if (widget.order.pickupLat != null && widget.order.pickupLong != null) {
+      _markers.add(
+        Marker(
+          markerId: const MarkerId('pickup'),
+          position: LatLng(widget.order.pickupLat!, widget.order.pickupLong!),
+          infoWindow: const InfoWindow(title: 'Pickup Location'),
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+        ),
+      );
+    }
+    if (widget.order.dropOffLat != null && widget.order.dropOffLong != null) {
+      _markers.add(
+        Marker(
+          markerId: const MarkerId('dropoff'),
+          position: LatLng(widget.order.dropOffLat!, widget.order.dropOffLong!),
+          infoWindow: const InfoWindow(title: 'Drop-off Location'),
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+        ),
+      );
+    }
+  }
+
+  void _onMapCreated(GoogleMapController controller) {
+    _mapController = controller;
+    _fitBounds();
+  }
+
+  void _fitBounds() {
+    if (widget.order.pickupLat == null || widget.order.dropOffLat == null)
+      return;
+
+    LatLngBounds bounds;
+    LatLng pickup = LatLng(widget.order.pickupLat!, widget.order.pickupLong!);
+    LatLng dropoff = LatLng(
+      widget.order.dropOffLat!,
+      widget.order.dropOffLong!,
+    );
+
+    if (pickup.latitude > dropoff.latitude) {
+      bounds = LatLngBounds(southwest: dropoff, northeast: pickup);
+    } else {
+      bounds = LatLngBounds(southwest: pickup, northeast: dropoff);
+    }
+    _mapController?.animateCamera(CameraUpdate.newLatLngBounds(bounds, 50));
   }
 
   String formatDateTime(String dateTime) {
@@ -92,13 +143,24 @@ class _ActiveOrderDetailsScreenState extends State<ActiveOrderDetailsScreen> {
                 ),
               ),
 
-              // Map Placeholder
-              Container(
-                height: 200,
+              // Google Map
+              SizedBox(
+                height: 250,
                 width: double.infinity,
-                color: Colors.grey.shade300,
-                alignment: Alignment.center,
-                child: Text("Needs Google Map API", style: getTextStyle()),
+                child: GoogleMap(
+                  onMapCreated: _onMapCreated,
+                  initialCameraPosition: CameraPosition(
+                    target: LatLng(
+                      widget.order.pickupLat ?? 1.3521,
+                      widget.order.pickupLong ?? 103.8198,
+                    ),
+                    zoom: 12,
+                  ),
+                  markers: _markers,
+                  myLocationEnabled: true,
+                  zoomControlsEnabled: false,
+                  mapToolbarEnabled: false,
+                ),
               ),
 
               // Details
