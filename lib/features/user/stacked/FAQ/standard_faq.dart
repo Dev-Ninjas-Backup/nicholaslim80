@@ -100,7 +100,6 @@ class _StandardFaqTile extends StatelessWidget {
   final String description;
 
   const _StandardFaqTile({
-    super.key,
     required this.title,
     required this.description,
   });

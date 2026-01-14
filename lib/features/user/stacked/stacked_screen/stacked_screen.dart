@@ -13,6 +13,7 @@ import '../vehicle_type/screen/screen.dart';
 import '../widget/collect_time_widget.dart';
 import '../widget/select_location_widget.dart';
 import '../widget/stack_order_review_button_widget.dart';
+import '../stacked_controller/update_details_controller.dart';
 import '../widget/vehicle_type_widget.dart';
 
 class StackedScreen extends StatelessWidget {
@@ -68,7 +69,7 @@ class StackedScreen extends StatelessWidget {
             try {
               final oc = Get.find<StackedOrderController>();
               oc.lastOrderId = orderArg['id'] as int?;
-              oc.totalAmount = double.tryParse(orderArg['total_cost']?.toString() ?? '') ?? oc.totalAmount;
+              oc.totalAmount.value = double.tryParse(orderArg['total_cost']?.toString() ?? '') ?? oc.totalAmount.value;
             } catch (_) {}
 
             // Apply route_type and collect_time to controllers
@@ -184,22 +185,63 @@ class StackedScreen extends StatelessWidget {
                       StackedCollectTimeOption(
                         title: "Now",
                         selected: controller.isNowSelected.value,
-                        onTap: controller.selectNow,
+                        onTap: () async {
+                          controller.selectNow();
+
+                          // Ensure schedule controller set to Now as well
+                          try {
+                            final sched = Get.find<StackedScheduleController>();
+                            sched.setNow(true);
+                          } catch (_) {}
+
+                          try {
+                            final upd = Get.put(UpdateDetailsController());
+                            final oc = Get.find<StackedOrderController>();
+                            if (oc.lastOrderId != null) {
+                              final ok = await upd.patchCollectTime(oc.lastOrderId!, 'ASAP');
+                              if (ok) debugPrint('Collect time switched to ASAP for order ${oc.lastOrderId}');
+                            }
+                          } catch (e) {
+                            debugPrint('patchCollectTime ASAP error: $e');
+                          }
+                        },
                       ),
                       SizedBox(width: 16),
                       StackedCollectTimeOption(
                         title: "Schedule",
                         subtitle: "Pick Date and Time",
                         selected: !controller.isNowSelected.value,
-                        onTap: () {
+                        onTap: () async {
                           FocusScope.of(context).unfocus();
                           controller.selectSchedule();
 
-                          // Open the date-time dialog
-                          showDialog(
+                          // Open the date-time dialog and await selected datetime
+                          final selected = await showDialog<DateTime?>(
                             context: context,
                             builder: (_) => StackedPickDateTimeDialog(),
                           );
+
+                          if (selected != null) {
+                            // Save selected time into schedule controller
+                            try {
+                              final sched = Get.find<StackedScheduleController>();
+                              sched.setDateTime(selected.toLocal());
+                              sched.setNow(false);
+                            } catch (_) {}
+
+                            // call API to update collect time to scheduled
+                            try {
+                              final upd = Get.put(UpdateDetailsController());
+                              final oc = Get.find<StackedOrderController>();
+                              if (oc.lastOrderId != null) {
+                                await upd.patchCollectTime(
+                                  oc.lastOrderId!,
+                                  'SCHEDULED',
+                                  scheduledTime: selected.toUtc().toIso8601String(),
+                                );
+                              }
+                            } catch (_) {}
+                          }
                         },
                       ),
                     ],
