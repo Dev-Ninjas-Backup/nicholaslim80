@@ -19,13 +19,11 @@ class Nicholaslim extends StatelessWidget {
         return GetMaterialApp(
           title: "ZipBee",
           debugShowCheckedModeBanner: false,
-
-          builder: (context, widget) {
-            widget = EasyLoading.init()(context, widget);
-            return widget;
-          },
-
+          builder: EasyLoading.init(),
           initialRoute: AppRoutes.getSplashScreen(),
+          // initialRoute: AppRoutes.googleMapScreen, // for testing google map
+
+          // initialRoute: AppRoutes.googleMapScreen, // for testing google map
           getPages: AppRoutes.routes,
 
           initialBinding: ControllerBinder(),

@@ -10,6 +10,15 @@ class OrderModel {
   final double total;
   final bool showReceipt;
 
+  // Rider info
+  final String assignRiderName;
+  final String assignRiderPhone;
+  final String assignRiderImage;
+  final double assignRiderRating;
+  final int assignRiderReviews;
+  final int? riderId;
+  final String scheduledTime;
+
   OrderModel({
     required this.orderId,
     required this.status,
@@ -21,40 +30,66 @@ class OrderModel {
     required this.vehicleType,
     required this.total,
     required this.showReceipt,
+    this.assignRiderName = "Rider",
+    this.assignRiderPhone = "",
+    this.assignRiderImage = "",
+    this.assignRiderRating = 0.0,
+    this.assignRiderReviews = 0,
+    this.riderId,
+    required this.scheduledTime,
   });
 
   factory OrderModel.fromJson(Map<String, dynamic> json) {
     return OrderModel(
       orderId: json['id']?.toString() ?? '',
-      status: json['status'] ?? '',
-      date: json['collect_time'] == "ASAP"
+      status: json['order_status'] ?? json['status'] ?? '',
+      date: json['collect_time']?.toString() == "ASAP"
           ? "Pick-up ASAP"
           : "Scheduled Delivery",
-      pickupAddress: json['pickup_address'] ?? "Collect from",
-      senderName: json['sender_name'] ?? "Collect from",
-      dropOffAddress: json['drop_off_address'] ?? "Deliver to",
-      deliveryLocation: json['delivery_location'] ?? "",
+      pickupAddress: json['pickup_address']?.toString() ?? "Collect from",
+      senderName: json['sender_name']?.toString() ?? "Collect from",
+      dropOffAddress: json['drop_off_address']?.toString() ?? "Deliver to",
+      deliveryLocation: json['delivery_location']?.toString() ?? "",
       vehicleType: _vehicleName(json['vehicle_type_id']),
       total: double.tryParse(json['total_cost']?.toString() ?? '0') ?? 0,
-      showReceipt: json['status'] == "COMPLETED",
+      showReceipt:
+          (json['order_status'] ?? json['status'])?.toString() == "COMPLETED",
+      riderId: json['assign_rider_id'],
+      scheduledTime:
+          json['scheduled_time']?.toString() ??
+          json['collect_time']?.toString() ??
+          "",
     );
   }
 
-  /// ✅ Add this method to convert OrderModel to JSON
-  Map<String, dynamic> toJson() => {
-    'id': orderId,
-    'status': status,
-    'collect_time': date,
-    'pickup_address': pickupAddress,
-    'sender_name': senderName,
-    'drop_off_address': dropOffAddress,
-    'delivery_location': deliveryLocation,
-    'vehicle_type': vehicleType,
-    'total_cost': total,
-    'showReceipt': showReceipt,
-  };
+  OrderModel copyWith({
+    String? assignRiderName,
+    String? assignRiderPhone,
+    String? assignRiderImage,
+    double? assignRiderRating,
+    int? assignRiderReviews,
+  }) {
+    return OrderModel(
+      orderId: orderId,
+      status: status,
+      date: date,
+      pickupAddress: pickupAddress,
+      senderName: senderName,
+      dropOffAddress: dropOffAddress,
+      deliveryLocation: deliveryLocation,
+      vehicleType: vehicleType,
+      total: total,
+      showReceipt: showReceipt,
+      assignRiderName: assignRiderName ?? this.assignRiderName,
+      assignRiderPhone: assignRiderPhone ?? this.assignRiderPhone,
+      assignRiderImage: assignRiderImage ?? this.assignRiderImage,
+      assignRiderRating: assignRiderRating ?? this.assignRiderRating,
+      assignRiderReviews: assignRiderReviews ?? this.assignRiderReviews,
+      riderId: riderId,
+      scheduledTime: scheduledTime,
+    );
+  }
 
-  // ✅ vehicle name mapping
   static String _vehicleName(dynamic id) {
     switch (id) {
       case 1:

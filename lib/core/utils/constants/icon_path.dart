@@ -59,7 +59,7 @@ class IconPath {
   static String promo = "assets/icons/promo.png";
   static String cash = "assets/icons/cash.png";
   static String stripe = "assets/icons/stripe_icon.png";
-  static String cencell = "assets/icons/cencell.png";
+  static String cancel = "assets/icons/cencell.png";
   static String love = "assets/icons/love.png";
   // ignore: non_constant_identifier_names
   static String yellowDot = "assets/icons/yellow_dot.png";

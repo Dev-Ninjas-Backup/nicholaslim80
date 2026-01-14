@@ -3,10 +3,10 @@ import 'package:ZipBee/core/utils/constants/app_colors.dart';
 import 'package:ZipBee/core/utils/constants/icon_path.dart';
 import 'package:ZipBee/core/utils/constants/image_path.dart';
 import 'package:ZipBee/features/user/finding_raider/controller/rider_controller.dart';
-import 'package:ZipBee/features/user/finding_raider/screnn/review_view.dart';
 import 'package:ZipBee/features/user/finding_raider/widget/button.dart';
 import 'package:ZipBee/features/user/finding_raider/widget/custom_icon_text_button.dart';
 import 'package:ZipBee/features/user/finding_raider/widget/location_row_widget.dart';
+import 'package:ZipBee/features/user/google_map/widget/google_map_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -14,7 +14,9 @@ import 'package:share_plus/share_plus.dart';
 
 class RaiderDetails extends StatelessWidget {
   final RiderController controller = Get.find<RiderController>();
+
   RaiderDetails({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,259 +25,176 @@ class RaiderDetails extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: GestureDetector(
-          onTap: () {
-            Get.back();
-          },
+          onTap: Get.back,
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Image.asset(IconPath.colorFullArrow, width: 24, height: 24),
+            padding: const EdgeInsets.all(8),
+            child: Image.asset(IconPath.colorFullArrow, width: 24),
           ),
         ),
       ),
       body: Stack(
         children: [
-          SizedBox.expand(child: Image.asset(ImagePath.map, fit: BoxFit.cover)),
+          const SizedBox.expand(child: GoogleMapWidget()),
+
           DraggableScrollableSheet(
             initialChildSize: 0.5,
             minChildSize: 0.4,
             maxChildSize: 0.7,
-            builder: (context, scrollController) {
+            builder: (_, scrollController) {
               return Container(
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black26,
-                      blurRadius: 10,
-                      spreadRadius: 2,
-                    ),
-                  ],
                 ),
                 child: SingleChildScrollView(
                   controller: scrollController,
                   child: Padding(
-                    padding: EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Center(
-                          child: Container(
-                            width: 40,
-                            height: 4,
-                            decoration: BoxDecoration(
-                              color: Colors.grey[300],
-                              borderRadius: BorderRadius.circular(2),
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 24),
-                        Row(
-                          spacing: 11,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            CircleAvatar(
-                              radius: 36,
-                              backgroundImage: AssetImage(
-                                ImagePath.profileImage,
-                              ),
-                            ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Name: ${controller.riderName.value}',
-                                  style: getTextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                Text(
-                                  'Vehicle type: ${controller.vehicleType.value}',
-                                  style: getTextStyle(fontSize: 13),
-                                ),
-                                Text(
-                                  'Order ${controller.orderNumber.value}',
-                                  style: getTextStyle(fontSize: 13),
-                                ),
-                                Text(
-                                  'Arriving in ${controller.arrivalTime.value}',
-                                  style: getTextStyle(fontSize: 13),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 16),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            CustomIconTextButton(
-                              text: 'Message',
-                              iconPath: IconPath.message,
-                              borderColor: Colors.black,
-                              textColor: Colors.black,
-                              backgroundColor: Colors.white,
-                              onPressed: () {},
-                              iconPosition: IconPosition.before,
-                            ),
-                            CustomIconTextButton(
-                              text: 'Call',
-                              iconPath: IconPath.call,
-                              borderColor: Colors.black,
-                              textColor: Colors.black,
-                              backgroundColor: Colors.white,
-                              onPressed: () {},
-                              iconPosition: IconPosition.before,
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 16),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: CustomIconTextButton(
-                            text: '244 Reviews',
-                            //iconPath: IconPath.message,
-                            borderColor: Colors.black,
-                            textColor: Colors.black,
-                            backgroundColor: AppColors.primaryButtonColor,
-                            onPressed: () {
-                              Get.to(() => ReviewView());
-                            },
-                            //iconPosition: IconPosition.before,
-                          ),
-                        ),
+                    padding: const EdgeInsets.all(16),
+                    child: Obx(
+                      () => Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _dragHandle(),
+                          const SizedBox(height: 24),
 
-                        // Align(
-                        //   alignment: Alignment.centerRight,
-                        //   child: ElevatedButton(
-                        //     onPressed: () {
-                        //       Get.to(() => ReviewView());
-                        //     },
-                        //     style: ElevatedButton.styleFrom(
-                        //       backgroundColor: AppColors.primaryButtonColor,
-                        //       shape: RoundedRectangleBorder(
-                        //         borderRadius: BorderRadius.circular(12),
-                        //       ),
-                        //     ),
-                        //     child: Text(
-                        //       '(243 Reviews)',
-                        //       style: TextStyle(
-                        //         fontSize: 12,
-                        //         fontWeight: FontWeight.w500,
-                        //         color: AppColors.primaryFontColor,
-                        //         decoration: TextDecoration.underline,
-                        //       ),
-                        //     ),
-                        //   ),
-                        // ),
-                        SizedBox(height: 20),
-                        Divider(),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Total',
-                                  style: getTextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                Text(
-                                  '/\$24.00',
-                                  style: getTextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Image.asset(IconPath.visa),
-                                SizedBox(width: 8),
-                                Text(
-                                  "***456",
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w500,
-                                    decoration: TextDecoration.underline,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                        Divider(),
-                        SizedBox(height: 10),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text('Date & Time'),
-                            Text(controller.dateTime.value),
-                          ],
-                        ),
-                        SizedBox(height: 24),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 10),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          /// RIDER INFO
+                          Row(
                             children: [
-                              LocationRowWidget(
-                                iconPath: IconPath.collectIcon,
-                                title: 'Collected from (Sender: Athena Lin)',
-                                address: 'Deliver to (Recipient: Joseph Low)',
+                               CircleAvatar(
+                                radius: 36,
+                                backgroundImage:
+                                    AssetImage(ImagePath.profileImage),
                               ),
-                              Icon(
-                                Icons.fiber_manual_record,
-                                size: 10,
-                                color: Colors.grey,
-                              ),
-                              Icon(
-                                Icons.fiber_manual_record,
-                                size: 10,
-                                color: Colors.grey,
-                              ),
-                              LocationRowWidget(
-                                iconPath: IconPath.deliveredIcon,
-                                title: 'Deliver to (Recipient: Joseph Low)',
-                                address: 'Blk 222 Sengkang Ave 2, S530222',
+                              const SizedBox(width: 11),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Name: ${controller.riderName.value}',
+                                    style: getTextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Text(
+                                    'Vehicle type: ${controller.vehicleType.value}',
+                                    style: getTextStyle(fontSize: 13),
+                                  ),
+                                  Text(
+                                    'Order ${controller.orderId.value}',
+                                    style: getTextStyle(fontSize: 13),
+                                  ),
+                                  Text(
+                                    'Arriving in ${controller.arrivalTime.value}',
+                                    style: getTextStyle(fontSize: 13),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
-                        ),
-                        SizedBox(height: 20),
-                        // CustomButton(
-                        //   label: "Share Ride Information",
-                        //   onPressed: () {
-                        //     final String referralLink =
-                        //         "";
-                        //     final String message =
-                        //         "Hey! Join this amazing app and earn rewards. Use my referral link: $referralLink";
 
-                        //     Share.share(message, subject: "Invite to our app");
-                        //   },
-                        //   color: AppColors.primaryButtonColor,
-                        //   textColor: AppColors.primaryFontColor,
-                        // ),
-                        Button(
-                          textColor: Colors.black,
-                          backgroundColor: AppColors.onboardingIndicatorActive,
-                          buttonText: 'Share Ride Information',
-                          onPressed: () {
-                            // ignore: deprecated_member_use
-                            Share.share(
-                              'Inviting friends.',
-                              //subject: 'Optional Subject',
-                            );
-                          },
-                        ),
-                        SizedBox(height: 16),
-                      ],
+                          const SizedBox(height: 16),
+
+                          /// MESSAGE / CALL
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              CustomIconTextButton(
+                                text: 'Message',
+                                iconPath: IconPath.message,
+                                borderColor: Colors.black,
+                                textColor: Colors.black,
+                                backgroundColor: Colors.white,
+                                onPressed: () {},
+                              ),
+                              CustomIconTextButton(
+                                text: 'Call',
+                                iconPath: IconPath.call,
+                                borderColor: Colors.black,
+                                textColor: Colors.black,
+                                backgroundColor: Colors.white,
+                                onPressed: () {},
+                              ),
+                            ],
+                          ),
+
+                          const SizedBox(height: 20),
+                          const Divider(),
+
+                          /// TOTAL
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Total',
+                                      style: getTextStyle(fontSize: 12)),
+                                  Text('/\$24.00',
+                                      style: getTextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600)),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Image.asset(IconPath.visa),
+                                  const SizedBox(width: 8),
+                                  const Text("***456",
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          decoration:
+                                              TextDecoration.underline)),
+                                ],
+                              ),
+                            ],
+                          ),
+
+                          const Divider(),
+                          const SizedBox(height: 10),
+
+                          /// DATE
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text('Date & Time'),
+                              Text(controller.dateTime.value),
+                            ],
+                          ),
+
+                          const SizedBox(height: 24),
+
+                          /// ✅ LOCATION (API DRIVEN)
+                          LocationRowWidget(
+                            iconPath: IconPath.collectIcon,
+                            title:
+                                'Collected from (${controller.pickupName.value})',
+                            address: controller.pickupAddress.value,
+                          ),
+                          const Icon(Icons.fiber_manual_record,
+                              size: 10, color: Colors.grey),
+                          const Icon(Icons.fiber_manual_record,
+                              size: 10, color: Colors.grey),
+                          LocationRowWidget(
+                            iconPath: IconPath.deliveredIcon,
+                            title:
+                                'Deliver to (${controller.dropName.value})',
+                            address: controller.dropAddress.value,
+                          ),
+
+                          const SizedBox(height: 20),
+
+                          Button(
+                            buttonText: 'Share Ride Information',
+                            backgroundColor:
+                                AppColors.onboardingIndicatorActive,
+                            textColor: Colors.black,
+                            onPressed: () {
+                              Share.share('Inviting friends.');
+                            },
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -286,4 +205,15 @@ class RaiderDetails extends StatelessWidget {
       ),
     );
   }
+
+  Widget _dragHandle() => Center(
+        child: Container(
+          width: 40,
+          height: 4,
+          decoration: BoxDecoration(
+            color: Colors.grey[300],
+            borderRadius: BorderRadius.circular(2),
+          ),
+        ),
+      );
 }

@@ -1,122 +1,195 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../../../core/common/styles/global_text_style.dart';
 import '../../../../../../core/utils/constants/app_colors.dart';
 import '../../../../../../core/utils/constants/icon_path.dart';
 import '../../../../../../core/utils/constants/image_path.dart';
 import '../../../../../core/common/widgets/custom_button.dart';
+import '../../controller/order_controller.dart';
 import '../../model/order_model.dart';
 
-class ActiveOrderDetailsScreen extends StatelessWidget {
+class ActiveOrderDetailsScreen extends StatefulWidget {
   final OrderModel order;
 
   const ActiveOrderDetailsScreen({super.key, required this.order});
+
+  @override
+  State<ActiveOrderDetailsScreen> createState() =>
+      _ActiveOrderDetailsScreenState();
+}
+
+class _ActiveOrderDetailsScreenState extends State<ActiveOrderDetailsScreen> {
+  late final OrderController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = Get.isRegistered<OrderController>()
+        ? Get.find<OrderController>()
+        : Get.put(OrderController());
+
+    // Fetch rider info if riderId is available
+    if (widget.order.riderId != null) {
+      controller.fetchRiderInfoById(widget.order.riderId!);
+    }
+  }
+
+  String formatDateTime(String dateTime) {
+    try {
+      if (dateTime.isEmpty) return "N/A";
+      final dt = DateTime.parse(dateTime);
+      return DateFormat('dd MMM yyyy, hh:mm a').format(dt);
+    } catch (e) {
+      return dateTime;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.backgroungColor,
       body: SafeArea(
-        child: Column(
-          children: [
-            // Top bar
-            Container(
-              width: double.infinity,
-              color: Color(0XFFFFCC00),
-              padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-              child: Row(
-                children: [
-                  GestureDetector(
-                    onTap: () => Get.back(),
-                    child: Icon(Icons.arrow_back_ios_new_rounded, size: 20),
-                  ),
-                  SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      "Order #${order.orderId} is pending for collection",
-                      style: getTextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
+        child: Obx(() {
+          // Find the "live" order in the controller to reflect fetched rider info
+          final liveOrder = controller.orderList.firstWhere(
+            (o) => o.orderId == widget.order.orderId,
+            orElse: () => widget.order,
+          );
+
+          return Column(
+            children: [
+              // Top Bar
+              Container(
+                width: double.infinity,
+                color: const Color(0xFFFFCC00),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 12,
+                  horizontal: 16,
+                ),
+                child: Row(
+                  children: [
+                    GestureDetector(
+                      onTap: () => Get.back(),
+                      child: const Icon(
+                        Icons.arrow_back_ios_new_rounded,
+                        size: 20,
                       ),
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        "Order #${liveOrder.orderId} is pending",
+                        style: getTextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
 
-            // Map Placeholder
-            Container(
-              height: 200,
-              width: double.infinity,
-              color: Colors.grey.shade300,
-              alignment: Alignment.center,
-              child: Text("Needs Google Map API", style: getTextStyle()),
-            ),
+              // Map Placeholder
+              Container(
+                height: 200,
+                width: double.infinity,
+                color: Colors.grey.shade300,
+                alignment: Alignment.center,
+                child: Text("Needs Google Map API", style: getTextStyle()),
+              ),
 
-            // Details
-            Expanded(
-              child: SingleChildScrollView(
-                child: Container(
-                  padding: EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: AppColors.backgroungColor,
-                    borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(22),
+              // Details
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: const BoxDecoration(
+                      color: AppColors.backgroungColor,
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(22),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 3,
+                          offset: Offset(0, -2),
+                        ),
+                      ],
                     ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 3,
-                        offset: Offset(0, -2),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      RiderDetails(order: order),
-                      SizedBox(height: 12),
-                      MessageCallButtons(),
-                      SizedBox(height: 8),
-                      Reviews(),
-                      SizedBox(height: 16),
-                      PriceAndPayment(order: order),
-                      SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Text(
-                            "Date & Time: ",
-                            style: getTextStyle(fontWeight: FontWeight.w600),
-                          ),
-                          Text(order.date, style: getTextStyle()),
-                        ],
-                      ),
-                      SizedBox(height: 20),
-                      StopItem(
-                        iconPath: IconPath.locationBlue,
-                        title: "Collected from (${order.senderName})",
-                        address: order.pickupAddress,
-                      ),
-                      StopItem(
-                        iconPath: IconPath.locationRed,
-                        title: "Deliver to",
-                        address: order.dropOffAddress,
-                      ),
-                      SizedBox(height: 20),
-                      CustomButton(
-                        label: 'Share Ride Information',
-                        onPressed: () {},
-                        color: AppColors.primaryButtonColor,
-                        textColor: AppColors.fontColor,
-                      ),
-                    ],
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Rider Details
+                        RiderDetails(order: liveOrder),
+
+                        const SizedBox(height: 12),
+
+                        // Message & Call
+                        MessageCallButtons(
+                          phoneNumber: liveOrder.assignRiderPhone,
+                        ),
+
+                        const SizedBox(height: 12),
+
+                        // Ratings
+                        RatingsSection(
+                          rating: liveOrder.assignRiderRating,
+                          totalReviews: liveOrder.assignRiderReviews,
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        // Price & Payment
+                        PriceAndPayment(order: liveOrder),
+
+                        const SizedBox(height: 16),
+
+                        // Pickup & Delivery Date/Time
+                        Row(
+                          children: [
+                            Text(
+                              "Pickup Date & Time: ",
+                              style: getTextStyle(fontWeight: FontWeight.w600),
+                            ),
+                            Text(
+                              formatDateTime(liveOrder.scheduledTime),
+                              style: getTextStyle(),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+
+                        // Stops
+                        StopItem(
+                          iconPath: IconPath.locationBlue,
+                          title: "Collected from (${liveOrder.senderName})",
+                          address: liveOrder.pickupAddress,
+                        ),
+                        StopItem(
+                          iconPath: IconPath.locationRed,
+                          title: "Deliver to",
+                          address: liveOrder.dropOffAddress,
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        CustomButton(
+                          label: 'Share Ride Information',
+                          onPressed: () {},
+                          color: AppColors.primaryButtonColor,
+                          textColor: AppColors.fontColor,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
-        ),
+            ],
+          );
+        }),
       ),
     );
   }
@@ -132,24 +205,29 @@ class RiderDetails extends StatelessWidget {
       children: [
         CircleAvatar(
           radius: 28,
-          backgroundImage: AssetImage(ImagePath.profileImage),
+          backgroundImage: order.assignRiderImage.isNotEmpty
+              ? NetworkImage(order.assignRiderImage) as ImageProvider
+              : AssetImage(ImagePath.profileImage),
         ),
-        SizedBox(width: 12),
+        const SizedBox(width: 12),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                order.senderName,
+                order.assignRiderName,
                 style: getTextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
               Text(
                 "Vehicle type: ${order.vehicleType}",
                 style: getTextStyle(fontSize: 13),
               ),
-              Text("Order ${order.orderId}", style: getTextStyle(fontSize: 13)),
               Text(
-                "Scheduled to your pick-up time",
+                "Order #${order.orderId}",
+                style: getTextStyle(fontSize: 13),
+              ),
+              Text(
+                "Scheduled Pickup: ${order.date}",
                 style: getTextStyle(fontSize: 13),
               ),
             ],
@@ -161,7 +239,26 @@ class RiderDetails extends StatelessWidget {
 }
 
 class MessageCallButtons extends StatelessWidget {
-  const MessageCallButtons({super.key});
+  final String? phoneNumber;
+  const MessageCallButtons({super.key, this.phoneNumber});
+
+  void _callRider() async {
+    if (phoneNumber != null && phoneNumber!.isNotEmpty) {
+      final url = Uri.parse("tel:$phoneNumber");
+      if (await canLaunchUrl(url)) {
+        await launchUrl(url);
+      }
+    }
+  }
+
+  void _messageRider() async {
+    if (phoneNumber != null && phoneNumber!.isNotEmpty) {
+      final url = Uri.parse("sms:$phoneNumber");
+      if (await canLaunchUrl(url)) {
+        await launchUrl(url);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -169,16 +266,16 @@ class MessageCallButtons extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         OutlinedButton.icon(
-          onPressed: () {},
-          icon: Image.asset(IconPath.message, height: 20, width: 20),
+          onPressed: _messageRider,
+          icon: const Icon(Icons.message, size: 20),
           label: Text(
             "Message",
             style: getTextStyle(fontWeight: FontWeight.w500),
           ),
         ),
         OutlinedButton.icon(
-          onPressed: () {},
-          icon: Image.asset(IconPath.call, height: 20, width: 20),
+          onPressed: _callRider,
+          icon: const Icon(Icons.call, size: 20),
           label: Text("Call", style: getTextStyle(fontWeight: FontWeight.w500)),
         ),
       ],
@@ -186,25 +283,33 @@ class MessageCallButtons extends StatelessWidget {
   }
 }
 
-class Reviews extends StatelessWidget {
-  const Reviews({super.key});
+class RatingsSection extends StatelessWidget {
+  final double rating;
+  final int totalReviews;
+
+  const RatingsSection({
+    super.key,
+    required this.rating,
+    required this.totalReviews,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(Icons.star, color: Colors.amber, size: 18),
-        Icon(Icons.star, color: Colors.amber, size: 18),
-        Icon(Icons.star, color: Colors.amber, size: 18),
-        Icon(Icons.star, color: Colors.amber, size: 18),
-        Icon(Icons.star, color: Colors.amber, size: 18),
-        SizedBox(width: 6),
-        Text("5/5", style: getTextStyle()),
-        Spacer(),
+        for (int i = 1; i <= 5; i++)
+          Icon(
+            i <= rating ? Icons.star : Icons.star_border,
+            color: Colors.amber,
+            size: 18,
+          ),
+        const SizedBox(width: 6),
+        Text("${rating.toStringAsFixed(1)}/5", style: getTextStyle()),
+        const Spacer(),
         TextButton(
           onPressed: () {},
           child: Text(
-            '(243 Reviews)',
+            '($totalReviews Reviews)',
             style: getTextStyle(color: Colors.lightBlue),
           ),
         ),
@@ -225,14 +330,14 @@ class PriceAndPayment extends StatelessWidget {
           children: [
             Text("Total", style: getTextStyle(fontWeight: FontWeight.w600)),
             Text(
-              "\$${order.total.toStringAsFixed(2)}",
+              "S\$${order.total.toStringAsFixed(2)}",
               style: getTextStyle(fontWeight: FontWeight.bold),
             ),
           ],
         ),
-        Spacer(),
+        const Spacer(),
         Image.asset(IconPath.visa, height: 22, width: 24),
-        SizedBox(width: 4),
+        const SizedBox(width: 4),
         Text("****456", style: getTextStyle(fontSize: 13)),
       ],
     );
@@ -254,14 +359,14 @@ class StopItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.only(bottom: 12),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           iconPath.isNotEmpty
               ? Image.asset(iconPath, height: 18, width: 18)
-              : Icon(Icons.location_on, size: 18),
-          SizedBox(width: 8),
+              : const Icon(Icons.location_on, size: 18),
+          const SizedBox(width: 8),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

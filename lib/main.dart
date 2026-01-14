@@ -1,11 +1,10 @@
 import 'package:ZipBee/app.dart';
-import 'package:ZipBee/features/user/auth/login/controller/login_signup_controller.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:get/get.dart';
 
-import 'firebase_msg.dart';
+import 'core/service/firebase/notification_permission.dart';
+import 'core/service/firebase/notification_receve.dart';
 import 'firebase_options.dart';
 
 void _configEasyLoading() {
@@ -15,7 +14,7 @@ void _configEasyLoading() {
     ..loadingStyle = EasyLoadingStyle.dark
     ..indicatorSize = 45.0
     ..radius = 10.0
-    ..maskColor = Colors.black.withOpacity(0.5)
+    ..maskColor = Colors.black.withValues(alpha: .5)
     ..userInteractions = false
     ..dismissOnTap = false;
 }
@@ -23,16 +22,30 @@ void _configEasyLoading() {
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  try {
+    if (Firebase.apps.isEmpty) {
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+    }
+  } catch (e) {
+    debugPrint("Firebase already initialized: $e");
+  }
 
-  Get.put<LoginSignupController>(
-    LoginSignupController(),
-    permanent: true,
-  );
+  // Initialize local notifications
+  await FirebaseNotificationReceive.initializeLocalNotifications();
 
-  await FirebaseMsg().initFCM();
+  // Request notification permission
+  await requestNotificationPermission();
+
+  // Setup background message handler
+  FirebaseNotificationReceive.setupBackgroundMessageHandler();
+
+  // Listen for foreground messages
+  FirebaseNotificationReceive.listenForegroundMessages();
+
+  // Listen for token refresh
+  listenTokenRefresh();
 
   _configEasyLoading();
 
