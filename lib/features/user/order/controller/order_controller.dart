@@ -95,10 +95,18 @@ class OrderController extends GetxController {
           );
           final drops = stops.where((s) => s['type'] == 'DROP').toList();
           e['pickup_address'] = pickup['address'] ?? "Collect from";
+          e['pickup_lat'] = pickup['latitude'];
+          e['pickup_long'] = pickup['longitude'];
           e['sender_name'] = senderName;
-          e['drop_off_address'] = drops.isNotEmpty
-              ? drops.first['address']
-              : "Deliver to";
+
+          if (drops.isNotEmpty) {
+            e['drop_off_address'] = drops.first['address'] ?? "Deliver to";
+            e['drop_off_lat'] = drops.first['latitude'];
+            e['drop_off_long'] = drops.first['longitude'];
+          } else {
+            e['drop_off_address'] = "Deliver to";
+          }
+
           e['delivery_location'] = drops.length > 1
               ? drops.last['address']
               : "";

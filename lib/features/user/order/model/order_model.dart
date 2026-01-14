@@ -19,6 +19,12 @@ class OrderModel {
   final int? riderId;
   final String scheduledTime;
 
+  // Coordinates
+  final double? pickupLat;
+  final double? pickupLong;
+  final double? dropOffLat;
+  final double? dropOffLong;
+
   OrderModel({
     required this.orderId,
     required this.status,
@@ -37,28 +43,37 @@ class OrderModel {
     this.assignRiderReviews = 0,
     this.riderId,
     required this.scheduledTime,
+    this.pickupLat,
+    this.pickupLong,
+    this.dropOffLat,
+    this.dropOffLong,
   });
 
   factory OrderModel.fromJson(Map<String, dynamic> json) {
     return OrderModel(
-      orderId: json['id']?.toString() ?? '',
-      status: json['order_status'] ?? json['status'] ?? '',
-      date: json['collect_time']?.toString() == "ASAP"
+      orderId: (json['id'] ?? '').toString(),
+      status: (json['order_status'] ?? json['status'] ?? '').toString(),
+      date: (json['collect_time'] ?? '').toString() == "ASAP"
           ? "Pick-up ASAP"
           : "Scheduled Delivery",
-      pickupAddress: json['pickup_address']?.toString() ?? "Collect from",
-      senderName: json['sender_name']?.toString() ?? "Collect from",
-      dropOffAddress: json['drop_off_address']?.toString() ?? "Deliver to",
-      deliveryLocation: json['delivery_location']?.toString() ?? "",
+      pickupAddress: (json['pickup_address'] ?? "Collect from").toString(),
+      senderName: (json['sender_name'] ?? "Collect from").toString(),
+      dropOffAddress: (json['drop_off_address'] ?? "Deliver to").toString(),
+      deliveryLocation: (json['delivery_location'] ?? "").toString(),
       vehicleType: _vehicleName(json['vehicle_type_id']),
-      total: double.tryParse(json['total_cost']?.toString() ?? '0') ?? 0,
+      total: double.tryParse((json['total_cost'] ?? '0').toString()) ?? 0,
       showReceipt:
-          (json['order_status'] ?? json['status'])?.toString() == "COMPLETED",
-      riderId: json['assign_rider_id'],
-      scheduledTime:
-          json['scheduled_time']?.toString() ??
-          json['collect_time']?.toString() ??
-          "",
+          (json['order_status'] ?? json['status'] ?? '').toString() ==
+          "COMPLETED",
+      riderId: json['assign_rider_id'] is int
+          ? json['assign_rider_id']
+          : int.tryParse((json['assign_rider_id'] ?? '').toString()),
+      scheduledTime: (json['scheduled_time'] ?? json['collect_time'] ?? "")
+          .toString(),
+      pickupLat: double.tryParse(json['pickup_lat']?.toString() ?? ''),
+      pickupLong: double.tryParse(json['pickup_long']?.toString() ?? ''),
+      dropOffLat: double.tryParse(json['drop_off_lat']?.toString() ?? ''),
+      dropOffLong: double.tryParse(json['drop_off_long']?.toString() ?? ''),
     );
   }
 
@@ -68,6 +83,10 @@ class OrderModel {
     String? assignRiderImage,
     double? assignRiderRating,
     int? assignRiderReviews,
+    double? pickupLat,
+    double? pickupLong,
+    double? dropOffLat,
+    double? dropOffLong,
   }) {
     return OrderModel(
       orderId: orderId,
@@ -87,6 +106,10 @@ class OrderModel {
       assignRiderReviews: assignRiderReviews ?? this.assignRiderReviews,
       riderId: riderId,
       scheduledTime: scheduledTime,
+      pickupLat: pickupLat ?? this.pickupLat,
+      pickupLong: pickupLong ?? this.pickupLong,
+      dropOffLat: dropOffLat ?? this.dropOffLat,
+      dropOffLong: dropOffLong ?? this.dropOffLong,
     );
   }
 
