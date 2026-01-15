@@ -126,7 +126,7 @@ void showStackedOrderConfirmationDialog(StackedOrderController controller) {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Redeem 10 Coins',
+                    'Redeem ${controller.userCoinBalance} Coins',
                     style: getTextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,

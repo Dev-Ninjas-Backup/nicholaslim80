@@ -1,9 +1,11 @@
 import 'package:ZipBee/core/common/styles/global_text_style.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/controller/controller.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/widget/show_order_confirmation_dialog.dart';
+import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/order_confirmation_service.dart';
 import 'package:ZipBee/features/user/stacked/vehicle_type/controller/controller.dart';
 import 'package:flutter/cupertino.dart' show CupertinoColors;
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 
 
@@ -65,19 +67,56 @@ class StackedOrderReviewButtonStatic extends StatelessWidget {
             return FilledButton(
               onPressed: isReady
                   ? () async {
-                      // call placeOrder which will POST and GET the order, set controller.totalAmount
-                      final ok = await orderController.placeOrder(
+                      // Place order
+                      await orderController.placeOrder(
                         locationController: Get.find(),
                         vehicleController: vehicleController,
                       );
 
-                      if (ok) {
-                        // Show the server-backed confirmation dialog with server total
-                        showStackedOrderConfirmationDialog(orderController);
-                      } else {
-                        // Show error
-                        debugPrint('Order placement failed');
+                      // Proceed to fetch order details regardless of POST status
+                      EasyLoading.show(status: 'Loading order details...');
+                      
+                      // 1️⃣ GET Order details
+                      final orderRes = await OrderConfirmationService.getOrder(orderController.lastOrderId ?? 0);
+                      final orderSuccess = orderRes['success'] as bool? ?? false;
+                      final orderStatus = orderRes['statusCode'] as int? ?? 500;
+
+                      if (!orderSuccess || (orderStatus != 200 && orderStatus != 201)) {
+                        EasyLoading.dismiss();
+                        EasyLoading.showError('Failed to load order details');
+                        return;
                       }
+
+                      final orderData = orderRes['body'] as Map<String, dynamic>? ?? {};
+                      final orderActualData = orderData['data'] as Map<String, dynamic>? ?? {};
+                      final totalCostRaw = orderActualData['total_cost'];
+                      final totalCost = totalCostRaw is String ? double.tryParse(totalCostRaw) ?? 0.0 : (totalCostRaw as num?)?.toDouble() ?? 0.0;
+                      debugPrint('💰 Order Total Cost: \$${totalCost}');
+
+                      // 2️⃣ GET User profile
+                      final userRes = await OrderConfirmationService.getUserProfile();
+                      final userSuccess = userRes['success'] as bool? ?? false;
+                      final userStatus = userRes['statusCode'] as int? ?? 500;
+
+                      if (!userSuccess || (userStatus != 200 && userStatus != 201)) {
+                        EasyLoading.dismiss();
+                        EasyLoading.showError('Failed to load user profile');
+                        return;
+                      }
+
+                      final userData = userRes['body'] as Map<String, dynamic>? ?? {};
+                      final userActualData = userData['data'] as Map<String, dynamic>? ?? {};
+                      final coinBalance = userActualData['current_coin_balance'] as num? ?? 0;
+                      debugPrint('🪙 Current Coin Balance: $coinBalance');
+
+                      // Update controller with fetched data
+                      orderController.totalAmount.value = totalCost.toDouble();
+                      orderController.userCoinBalance = coinBalance.toInt();
+
+                      EasyLoading.dismiss();
+
+                      // Show the server-backed confirmation dialog with server total and coin balance
+                      showStackedOrderConfirmationDialog(orderController);
                     }
                   : null,
               style: ButtonStyle(

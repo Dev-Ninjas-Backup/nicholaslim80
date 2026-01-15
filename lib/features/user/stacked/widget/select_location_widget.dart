@@ -56,20 +56,32 @@ class StackedCustomAddButton extends StatelessWidget {
         onPressed: () {
           final loc = Get.find<StackedLocationController>();
 
-          // If sender not selected, first collect sender then navigate to recipient add flow
-          if (loc.senderData.value == null) {
-            Get.to(() => StackedSenderScheduleScreen(), arguments: {'navigateNextToRecipient': true});
+          // Case 1: No sender and no recipient
+          // Go to sender screen → confirm → go to recipient screen → confirm → back to stacked
+          if (loc.senderData.value == null && loc.receiverData.value == null) {
+            Get.to(
+              () => StackedSenderScheduleScreen(),
+              arguments: {'navigateNextToRecipient': true},
+            );
             return;
           }
 
-          // If receiver not selected, go to recipient screen (add as primary)
-          if (loc.receiverData.value == null) {
-            Get.to(() => StackedSchedulRecepmenteScreen(), arguments: {'addAsStop': false});
+          // Case 2: Has sender, no recipient
+          // Go directly to recipient screen → confirm → back to stacked
+          if (loc.senderData.value != null && loc.receiverData.value == null) {
+            Get.to(
+              () => StackedSchedulRecepmenteScreen(),
+              arguments: {'addAsStop': false, 'isAdditionalStop': false},
+            );
             return;
           }
 
-          // Both selected: go to recipient screen to add additional stop
-          Get.to(() => StackedSchedulRecepmenteScreen(), arguments: {'addAsStop': true});
+          // Case 3: Has both sender and recipient
+          // Go to recipient screen with blank fields → confirm → add to recipient list
+          Get.to(
+            () => StackedSchedulRecepmenteScreen(),
+            arguments: {'addAsStop': true, 'isAdditionalStop': true},
+          );
         },
       ),
     );

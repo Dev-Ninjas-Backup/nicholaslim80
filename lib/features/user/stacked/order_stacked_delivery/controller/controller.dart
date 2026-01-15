@@ -18,6 +18,7 @@ class StackedOrderController extends GetxController {
   var totalFee = 0.0.obs; // server-side fee (preferred display when available)
   var redeemCoins = false.obs;
   var favoriteRiders = false.obs;
+  int userCoinBalance = 0; // User's current coin balance from API
 
   // Route options
   var isFixed = false.obs; // Fixed route toggle
@@ -105,9 +106,6 @@ class StackedOrderController extends GetxController {
       'vehicle_type_id': vehicle.id,
       'collect_time': collectTime, // sends either 'ASAP' or 'SCHEDULED'
       if (scheduledTime != null) 'scheduled_time': scheduledTime,
-      'has_additional_services': false,
-      'notify_favorite_raider': false,
-      'destinations': destinations,
     };
 
     debugPrint('Placing order payload: $payload');
