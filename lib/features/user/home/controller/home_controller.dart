@@ -85,6 +85,7 @@ class HomeController extends GetxController {
     try {
       final token = await SharedPreferencesHelper.getAccessToken();
       if (token == null || token.isEmpty) return;
+      debugPrint("Fetching profile $token");
 
       final response = await http.get(
         Uri.parse(ApiEndPoint.profile),

@@ -35,4 +35,6 @@ class ApiEndPoint {
   static const String orderUpdateDetails = '$baseUrl/order/{id}/update-details';
   static const String orderEstimate = '$baseUrl/coin-management/redeem-coin';
   static const String rating = '$baseUrl/ratings';
+  static const String faq = '$baseUrl/faq';
+  static const String faqRole = '$baseUrl/faq/faqs-by-role';
 }
