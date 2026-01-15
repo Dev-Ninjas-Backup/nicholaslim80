@@ -51,7 +51,6 @@ class PaymentOptionWidget extends StatelessWidget {
                   ],
                 ),
               ),
-              // Right circle indicator
               Container(
                 width: 22,
                 height: 22,

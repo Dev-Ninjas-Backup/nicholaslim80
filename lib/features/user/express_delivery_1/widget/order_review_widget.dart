@@ -12,7 +12,6 @@ class OrderReviewWidget extends StatelessWidget {
   final double total;
   final List<String> calculationHistory;
 
-  // New: reusable callback
   final VoidCallback? onReviewOrderPressed;
 
   OrderReviewWidget({
@@ -20,7 +19,7 @@ class OrderReviewWidget extends StatelessWidget {
     required this.vehicleController,
     required this.total,
     required this.calculationHistory,
-    this.onReviewOrderPressed, // optional: pass your own function
+    this.onReviewOrderPressed, 
   });
 
   @override
@@ -37,19 +36,18 @@ class OrderReviewWidget extends StatelessWidget {
       ),
       child: Row(
         children: [
-          _historyButton(context),
+          historyButton(context),
           SizedBox(width: 12),
           Expanded(child: _totalInfo()),
           SizedBox(width: 12),
-          // _reviewOrderButton(),
         ],
       ),
     );
   }
 
-  Widget _historyButton(BuildContext context) {
+  Widget historyButton(BuildContext context) {
     return IconButton(
-      icon: const Icon(Icons.arrow_drop_up, size: 32, color: Colors.black54),
+      icon:  Icon(Icons.arrow_drop_up, size: 32, color: Colors.black54),
       onPressed: () => _openHistoryPopup(context),
     );
   }
@@ -79,32 +77,6 @@ class OrderReviewWidget extends StatelessWidget {
       ],
     );
   }
-
-  // // Reusable review order button
-  // Widget _reviewOrderButton() {
-  //   return FilledButton(
-  //     onPressed: onReviewOrderPressed ?? _defaultReviewOrderAction,
-  //     style: FilledButton.styleFrom(
-  //       backgroundColor: Colors.amber,
-  //       foregroundColor: Colors.white,
-  //       padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-  //       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-  //     ),
-  //     child: Text(
-  //       'Review Order',
-  //       style: getTextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-  //     ),
-  //   );
-  // }
-
-  // Default action if no callback is passed
-  // void _defaultReviewOrderAction() {
-  //   final OrderController orderController = Get.find<OrderController>();
-  //   orderController.totalAmount.value = total;
-
-  //   // Call the reusable dialog function
-  //   showOrderConfirmationDialog(orderController);
-  // }
 
   void _openHistoryPopup(BuildContext context) {
     showModalBottomSheet(

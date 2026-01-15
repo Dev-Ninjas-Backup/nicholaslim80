@@ -10,8 +10,6 @@ import 'package:get/get.dart';
 
 class FindingRiderPage extends StatelessWidget {
   FindingRiderPage({super.key});
-
-  /// ✅ SAFE CONTROLLER ACCESS
   final RiderController controller = Get.isRegistered<RiderController>()
       ? Get.find<RiderController>()
       : Get.put(RiderController());
@@ -26,14 +24,14 @@ class FindingRiderPage extends StatelessWidget {
         leading: GestureDetector(
           onTap: Get.back,
           child: Padding(
-            padding: const EdgeInsets.all(8),
+            padding: EdgeInsets.all(8),
             child: Image.asset(IconPath.colorFullArrow, width: 24, height: 24),
           ),
         ),
       ),
       body: Stack(
         children: [
-          const SizedBox.expand(child: GoogleMapWidget()),
+           SizedBox.expand(child: GoogleMapWidget()),
 
           DraggableScrollableSheet(
             initialChildSize: 0.4,
@@ -41,7 +39,7 @@ class FindingRiderPage extends StatelessWidget {
             maxChildSize: 0.7,
             builder: (_, scrollController) {
               return Container(
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                   boxShadow: [
@@ -55,12 +53,12 @@ class FindingRiderPage extends StatelessWidget {
                 child: SingleChildScrollView(
                   controller: scrollController,
                   child: Padding(
-                    padding: const EdgeInsets.all(16),
+                    padding: EdgeInsets.all(16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _dragHandle(),
-                        const SizedBox(height: 16),
+                        dragHandle(),
+                         SizedBox(height: 16),
 
                         Center(
                           child: Text(
@@ -72,18 +70,15 @@ class FindingRiderPage extends StatelessWidget {
                           ),
                         ),
 
-                        const SizedBox(height: 20),
-
-                        /// STEP BAR
+                         SizedBox(height: 20),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            _stepBar(active: true),
-                            _stepBar(active: false),
+                            stepBar(active: true),
+                            stepBar(active: false),
                           ],
                         ),
-
-                        const SizedBox(height: 10),
+                         SizedBox(height: 10),
 
                         Center(
                           child: Text(
@@ -93,10 +88,8 @@ class FindingRiderPage extends StatelessWidget {
                         ),
 
                         SizedBox(height: 20),
-
-                        /// 📍 PICKUP & DROP (API DRIVEN)
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          padding: EdgeInsets.symmetric(horizontal: 10),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.start,
@@ -143,17 +136,14 @@ class FindingRiderPage extends StatelessWidget {
                           ),
                         ),
 
-                        const SizedBox(height: 20),
+                         SizedBox(height: 20),
 
-                        _buildFareOptions(),
+                        buildFareOptions(),
+                         SizedBox(height: 20),
 
-                        const SizedBox(height: 20),
+                        Center(child: addAmountButton()),
 
-                        Center(child: _addAmountButton()),
-
-                        const SizedBox(height: 20),
-
-                        /// 🚚 PLACE ORDER
+                         SizedBox(height: 20),
                         Button(
                           buttonText: 'Priority order',
                           backgroundColor: Colors.amber,
@@ -161,21 +151,19 @@ class FindingRiderPage extends StatelessWidget {
                           onPressed: controller.placeOrder,
                         ),
 
-                        const SizedBox(height: 24),
-
-                        /// ❌ CANCEL ORDER
+                         SizedBox(height: 24),
                         Center(
                           child: FilledButton(
                             onPressed: () => showCancelOrderDialog(context),
                             style: FilledButton.styleFrom(
                               backgroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(
+                              padding: EdgeInsets.symmetric(
                                 horizontal: 16,
                                 vertical: 8,
                               ),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(6),
-                                side: const BorderSide(
+                                side: BorderSide(
                                   color: Colors.red,
                                   width: 1.5,
                                 ),
@@ -192,7 +180,7 @@ class FindingRiderPage extends StatelessWidget {
                                     color: Colors.red,
                                   ),
                                 ),
-                                const SizedBox(width: 3),
+                                 SizedBox(width: 3),
                                 Image.asset(
                                   IconPath.cancel,
                                   height: 14,
@@ -214,9 +202,7 @@ class FindingRiderPage extends StatelessWidget {
     );
   }
 
-  // ================= UI HELPERS =================
-
-  Widget _dragHandle() {
+  Widget dragHandle() {
     return Center(
       child: Container(
         width: 40,
@@ -229,11 +215,11 @@ class FindingRiderPage extends StatelessWidget {
     );
   }
 
-  Widget _stepBar({required bool active}) {
+  Widget stepBar({required bool active}) {
     return Container(
       width: 69,
       height: 6,
-      margin: const EdgeInsets.symmetric(horizontal: 4),
+      margin: EdgeInsets.symmetric(horizontal: 4),
       decoration: BoxDecoration(
         color: active ? Colors.amber : Colors.grey,
         borderRadius: BorderRadius.circular(3),
@@ -241,9 +227,9 @@ class FindingRiderPage extends StatelessWidget {
     );
   }
 
-  Widget _addAmountButton() {
+  Widget addAmountButton() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+      padding: EdgeInsets.symmetric(horizontal: 6, vertical: 6),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(6),
         border: Border.all(color: Colors.grey, width: 1.5),
@@ -253,7 +239,7 @@ child: TextButton(
     
   },
   style: TextButton.styleFrom(
-    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+    padding:  EdgeInsets.symmetric(horizontal: 6, vertical: 2),
     minimumSize: Size.zero,
     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
   ),
@@ -268,8 +254,8 @@ child: TextButton(
           color: Colors.grey,
         ),
       ),
-      const SizedBox(width: 3),
-      const Icon(
+       SizedBox(width: 3),
+       Icon(
         Icons.add,
         size: 13,
         color: Colors.grey,
@@ -281,7 +267,7 @@ child: TextButton(
     );
   }
 
-  Widget _buildFareOptions() {
+  Widget buildFareOptions() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: List.generate(controller.fareOptions.length, (index) {
@@ -297,7 +283,7 @@ child: TextButton(
                   ? Colors.amber
                   : Colors.white,
               child: Padding(
-                padding: const EdgeInsets.symmetric(
+                padding: EdgeInsets.symmetric(
                   horizontal: 20,
                   vertical: 12,
                 ),

@@ -9,15 +9,15 @@ void showAddRiderDialog() {
     Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 30),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
+             Text(
               "Add a favorite rider",
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
             ),
-            const SizedBox(height: 20),
+             SizedBox(height: 20),
 
             Container(
               decoration: BoxDecoration(
@@ -30,28 +30,28 @@ void showAddRiderDialog() {
                     child: TextField(
                       controller: controller.phoneController,
                       keyboardType: TextInputType.phone,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         contentPadding: EdgeInsets.symmetric(horizontal: 15),
                         border: InputBorder.none,
                       ),
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.all(12),
-                    child: const Icon(Icons.person_outline),
+                    padding: EdgeInsets.all(12),
+                    child: Icon(Icons.person_outline),
                   ),
                 ],
               ),
             ),
 
-            const SizedBox(height: 25),
+             SizedBox(height: 25),
 
             SizedBox(
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
                 onPressed: controller.addRider,
-                child: const Text("Add"),
+                child: Text("Add"),
               ),
             ),
           ],

@@ -42,11 +42,11 @@ class SmallHorizontalSlider extends StatelessWidget {
         future: fetchAds(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(child: CircularProgressIndicator());
           }
 
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const SizedBox.shrink();
+            return SizedBox.shrink();
           }
 
           final ads = snapshot.data!;
@@ -54,19 +54,19 @@ class SmallHorizontalSlider extends StatelessWidget {
           return ListView.separated(
             scrollDirection: Axis.horizontal,
             itemCount: ads.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 12),
+            separatorBuilder: (_, __) => SizedBox(width: 12),
             itemBuilder: (context, index) {
               final ad = ads[index];
 
               return SizedBox(
                 width: width * 0.9,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(
+                  padding: EdgeInsets.symmetric(
                     horizontal: 18,
                     vertical: 18,
                   ),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFFE16B),
+                    color: Color(0xFFFFE16B),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
@@ -84,7 +84,7 @@ class SmallHorizontalSlider extends StatelessWidget {
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
-                            const SizedBox(height: 6),
+                             SizedBox(height: 6),
                             Text(
                               "Valid till ${ad['end_date']?.toString().split('T').first ?? ''}",
                               style: TextStyle(
@@ -96,7 +96,7 @@ class SmallHorizontalSlider extends StatelessWidget {
                           ],
                         ),
                       ),
-                      const SizedBox(width: 8),
+                       SizedBox(width: 8),
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8),
                         child: ad['ad_image'] != null

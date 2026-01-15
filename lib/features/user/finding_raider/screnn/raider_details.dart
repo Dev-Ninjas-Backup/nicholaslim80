@@ -27,14 +27,14 @@ class RaiderDetails extends StatelessWidget {
         leading: GestureDetector(
           onTap: Get.back,
           child: Padding(
-            padding: const EdgeInsets.all(8),
+            padding: EdgeInsets.all(8),
             child: Image.asset(IconPath.colorFullArrow, width: 24),
           ),
         ),
       ),
       body: Stack(
         children: [
-          const SizedBox.expand(child: GoogleMapWidget()),
+           SizedBox.expand(child: GoogleMapWidget()),
 
           DraggableScrollableSheet(
             initialChildSize: 0.5,
@@ -42,22 +42,20 @@ class RaiderDetails extends StatelessWidget {
             maxChildSize: 0.7,
             builder: (_, scrollController) {
               return Container(
-                decoration: const BoxDecoration(
+                decoration:  BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                 ),
                 child: SingleChildScrollView(
                   controller: scrollController,
                   child: Padding(
-                    padding: const EdgeInsets.all(16),
+                    padding:  EdgeInsets.all(16),
                     child: Obx(
                       () => Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _dragHandle(),
-                          const SizedBox(height: 24),
-
-                          /// RIDER INFO
+                          dragHandle(),
+                           SizedBox(height: 24),
                           Row(
                             children: [
                                CircleAvatar(
@@ -65,7 +63,7 @@ class RaiderDetails extends StatelessWidget {
                                 backgroundImage:
                                     AssetImage(ImagePath.profileImage),
                               ),
-                              const SizedBox(width: 11),
+                               SizedBox(width: 11),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -93,9 +91,7 @@ class RaiderDetails extends StatelessWidget {
                             ],
                           ),
 
-                          const SizedBox(height: 16),
-
-                          /// MESSAGE / CALL
+                           SizedBox(height: 16),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -118,10 +114,9 @@ class RaiderDetails extends StatelessWidget {
                             ],
                           ),
 
-                          const SizedBox(height: 20),
-                          const Divider(),
+                           SizedBox(height: 20),
+                           Divider(),
 
-                          /// TOTAL
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -139,8 +134,8 @@ class RaiderDetails extends StatelessWidget {
                               Row(
                                 children: [
                                   Image.asset(IconPath.visa),
-                                  const SizedBox(width: 8),
-                                  const Text("***456",
+                                   SizedBox(width: 8),
+                                   Text("***456",
                                       style: TextStyle(
                                           fontSize: 20,
                                           decoration:
@@ -150,30 +145,27 @@ class RaiderDetails extends StatelessWidget {
                             ],
                           ),
 
-                          const Divider(),
-                          const SizedBox(height: 10),
+                           Divider(),
+                           SizedBox(height: 10),
 
-                          /// DATE
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Text('Date & Time'),
+                               Text('Date & Time'),
                               Text(controller.dateTime.value),
                             ],
                           ),
 
-                          const SizedBox(height: 24),
-
-                          /// ✅ LOCATION (API DRIVEN)
+                           SizedBox(height: 24),
                           LocationRowWidget(
                             iconPath: IconPath.collectIcon,
                             title:
                                 'Collected from (${controller.pickupName.value})',
                             address: controller.pickupAddress.value,
                           ),
-                          const Icon(Icons.fiber_manual_record,
+                           Icon(Icons.fiber_manual_record,
                               size: 10, color: Colors.grey),
-                          const Icon(Icons.fiber_manual_record,
+                           Icon(Icons.fiber_manual_record,
                               size: 10, color: Colors.grey),
                           LocationRowWidget(
                             iconPath: IconPath.deliveredIcon,
@@ -182,7 +174,7 @@ class RaiderDetails extends StatelessWidget {
                             address: controller.dropAddress.value,
                           ),
 
-                          const SizedBox(height: 20),
+                           SizedBox(height: 20),
 
                           Button(
                             buttonText: 'Share Ride Information',
@@ -190,6 +182,7 @@ class RaiderDetails extends StatelessWidget {
                                 AppColors.onboardingIndicatorActive,
                             textColor: Colors.black,
                             onPressed: () {
+                              // ignore: deprecated_member_use
                               Share.share('Inviting friends.');
                             },
                           ),
@@ -206,7 +199,7 @@ class RaiderDetails extends StatelessWidget {
     );
   }
 
-  Widget _dragHandle() => Center(
+  Widget dragHandle() => Center(
         child: Container(
           width: 40,
           height: 4,
