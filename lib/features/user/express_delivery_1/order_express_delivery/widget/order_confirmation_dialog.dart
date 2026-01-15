@@ -31,7 +31,7 @@ class OrderConfirmationDialog {
 
               Obx(
                 () => Text(
-                  'Congratulations On placing your first order ${controller.orderNumber.value}!',
+                  'Congratulations!\nYour order ${controller.orderNumber.value} has been placed!',
                   style: getTextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w600,
