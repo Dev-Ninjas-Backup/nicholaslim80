@@ -5,21 +5,22 @@ import 'package:ZipBee/core/shared_prefference_service/shared_pref.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
-class DestinationService {
-  static Future<Map<String, dynamic>> createDestination(Map<String, dynamic> body) async {
+class OrderConfirmationService {
+  /// Get order details by order ID
+  static Future<Map<String, dynamic>> getOrder(int orderId) async {
     try {
       final token = await SharedPreferencesHelper.getAccessToken();
 
-      final response = await http.post(
-        Uri.parse(ApiEndPoint.createDestination),
+      final url = ApiEndPoint.getOrder.replaceAll('{orderId}', orderId.toString());
+      final response = await http.get(
+        Uri.parse(url),
         headers: {
           'Content-Type': 'application/json',
           if (token != null) 'Authorization': 'Bearer $token',
         },
-        body: jsonEncode(body),
       );
 
-      debugPrint('✅ CREATE DESTINATION RESPONSE: ${response.statusCode}\n${response.body}');
+      debugPrint('✅ GET ORDER RESPONSE: ${response.statusCode}\n${response.body}');
 
       final decoded = jsonDecode(response.body);
       return {
@@ -28,34 +29,25 @@ class DestinationService {
         'body': decoded,
       };
     } catch (e) {
-      debugPrint('❌ DestinationService.createDestination error: $e');
+      debugPrint('❌ OrderConfirmationService.getOrder error: $e');
       return {'statusCode': 500, 'success': false, 'body': {}};
     }
   }
 
-  /// Link a destination to an order
-  static Future<Map<String, dynamic>> addDestinationToOrder({
-    required int orderId,
-    required int destinationId,
-    required String stopType,
-  }) async {
+  /// Get user profile to get coin balance
+  static Future<Map<String, dynamic>> getUserProfile() async {
     try {
       final token = await SharedPreferencesHelper.getAccessToken();
 
-      final url = Uri.parse(
-        '${ApiEndPoint.addDestinationToOrder.replaceAll('{orderId}', orderId.toString())}'
-        '?destination_id=$destinationId&stop_type=$stopType'
-      );
-
-      final response = await http.patch(
-        url,
+      final response = await http.get(
+        Uri.parse(ApiEndPoint.getUserProfile),
         headers: {
           'Content-Type': 'application/json',
           if (token != null) 'Authorization': 'Bearer $token',
         },
       );
 
-      debugPrint('✅ ADD DESTINATION TO ORDER RESPONSE: ${response.statusCode}\n${response.body}');
+      debugPrint('✅ GET USER PROFILE RESPONSE: ${response.statusCode}\n${response.body}');
 
       final decoded = jsonDecode(response.body);
       return {
@@ -64,7 +56,7 @@ class DestinationService {
         'body': decoded,
       };
     } catch (e) {
-      debugPrint('❌ DestinationService.addDestinationToOrder error: $e');
+      debugPrint('❌ OrderConfirmationService.getUserProfile error: $e');
       return {'statusCode': 500, 'success': false, 'body': {}};
     }
   }

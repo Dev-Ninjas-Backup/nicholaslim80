@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class Notification1Model {
   final String title;
   final String subTitle;
@@ -12,17 +14,17 @@ class Notification1Model {
   });
 
   factory Notification1Model.fromJson(Map<String, dynamic> json) {
-    final createdAt = DateTime.parse(
-      json['createdAt'] ?? DateTime.now().toString(),
-    );
+    // Try to parse 'createdAt' or 'created_at' from the API
+    final createdAtStr = json['createdAt'] ?? json['created_at'];
+    final createdAt = createdAtStr != null
+        ? DateTime.parse(createdAtStr).toLocal()
+        : DateTime.now();
 
     return Notification1Model(
       title: json['title'] ?? '',
       subTitle: json['message'] ?? '',
-      date:
-          "${createdAt.day.toString().padLeft(2, '0')}-${createdAt.month.toString().padLeft(2, '0')}-${createdAt.year}",
-      time:
-          "${createdAt.hour % 12 == 0 ? 12 : createdAt.hour % 12}:${createdAt.minute.toString().padLeft(2, '0')} ${createdAt.hour >= 12 ? 'PM' : 'AM'}",
+      date: DateFormat('dd-MM-yyyy').format(createdAt),
+      time: DateFormat('hh:mm a').format(createdAt),
     );
   }
 
