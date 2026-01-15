@@ -12,80 +12,9 @@ import '../../../../../core/common/widgets/custom_button.dart';
 import '../../controller/order_controller.dart';
 import '../../model/order_model.dart';
 
-class ActiveOrderDetailsScreen extends StatefulWidget {
+class ActiveOrderDetailsScreen extends StatelessWidget {
   final OrderModel order;
-
   const ActiveOrderDetailsScreen({super.key, required this.order});
-
-  @override
-  State<ActiveOrderDetailsScreen> createState() =>
-      _ActiveOrderDetailsScreenState();
-}
-
-class _ActiveOrderDetailsScreenState extends State<ActiveOrderDetailsScreen> {
-  late final OrderController controller;
-  GoogleMapController? _mapController;
-  final Set<Marker> _markers = {};
-
-  @override
-  void initState() {
-    super.initState();
-    controller = Get.isRegistered<OrderController>()
-        ? Get.find<OrderController>()
-        : Get.put(OrderController());
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      controller.fetchOrderDetail(widget.order.orderId);
-    });
-    _addMarkers();
-  }
-
-  void _addMarkers() {
-    if (widget.order.pickupLat != null && widget.order.pickupLong != null) {
-      _markers.add(
-        Marker(
-          markerId: const MarkerId('pickup'),
-          position: LatLng(widget.order.pickupLat!, widget.order.pickupLong!),
-          infoWindow: const InfoWindow(title: 'Pickup Location'),
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
-        ),
-      );
-    }
-    if (widget.order.dropOffLat != null && widget.order.dropOffLong != null) {
-      _markers.add(
-        Marker(
-          markerId: const MarkerId('dropoff'),
-          position: LatLng(widget.order.dropOffLat!, widget.order.dropOffLong!),
-          infoWindow: const InfoWindow(title: 'Drop-off Location'),
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
-        ),
-      );
-    }
-  }
-
-  void _onMapCreated(GoogleMapController controller) {
-    _mapController = controller;
-    _fitBounds();
-  }
-
-  void _fitBounds() {
-    if (widget.order.pickupLat == null || widget.order.dropOffLat == null)
-      return;
-
-    LatLngBounds bounds;
-    LatLng pickup = LatLng(widget.order.pickupLat!, widget.order.pickupLong!);
-    LatLng dropoff = LatLng(
-      widget.order.dropOffLat!,
-      widget.order.dropOffLong!,
-    );
-
-    if (pickup.latitude > dropoff.latitude) {
-      bounds = LatLngBounds(southwest: dropoff, northeast: pickup);
-    } else {
-      bounds = LatLngBounds(southwest: pickup, northeast: dropoff);
-    }
-    _mapController?.animateCamera(CameraUpdate.newLatLngBounds(bounds, 50));
-  }
 
   String formatDateTime(String dateTime) {
     try {
@@ -97,8 +26,42 @@ class _ActiveOrderDetailsScreenState extends State<ActiveOrderDetailsScreen> {
     }
   }
 
+  Set<Marker> _getMarkers(OrderModel order) {
+    final Set<Marker> markers = {};
+    if (order.pickupLat != null && order.pickupLong != null) {
+      markers.add(
+        Marker(
+          markerId: const MarkerId('pickup'),
+          position: LatLng(order.pickupLat!, order.pickupLong!),
+          infoWindow: const InfoWindow(title: 'Pickup Location'),
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+        ),
+      );
+    }
+    if (order.dropOffLat != null && order.dropOffLong != null) {
+      markers.add(
+        Marker(
+          markerId: const MarkerId('dropoff'),
+          position: LatLng(order.dropOffLat!, order.dropOffLong!),
+          infoWindow: const InfoWindow(title: 'Drop-off Location'),
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+        ),
+      );
+    }
+    return markers;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final OrderController controller = Get.isRegistered<OrderController>()
+        ? Get.find<OrderController>()
+        : Get.put(OrderController());
+
+    // Trigger fetch
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.fetchOrderDetail(order.orderId);
+    });
+
     return Scaffold(
       backgroundColor: AppColors.backgroungColor,
       body: SafeArea(
@@ -107,7 +70,7 @@ class _ActiveOrderDetailsScreenState extends State<ActiveOrderDetailsScreen> {
             return const Center(child: CircularProgressIndicator());
           }
 
-          final liveOrder = controller.singleOrder.value ?? widget.order;
+          final liveOrder = controller.singleOrder.value ?? order;
 
           return Column(
             children: [
@@ -150,18 +113,45 @@ class _ActiveOrderDetailsScreenState extends State<ActiveOrderDetailsScreen> {
                 height: 200,
                 width: double.infinity,
                 child: GoogleMap(
-                  onMapCreated: _onMapCreated,
                   initialCameraPosition: CameraPosition(
                     target: LatLng(
-                      widget.order.pickupLat ?? 1.3521,
-                      widget.order.pickupLong ?? 103.8198,
+                      liveOrder.pickupLat ?? 1.3521,
+                      liveOrder.pickupLong ?? 103.8198,
                     ),
                     zoom: 12,
                   ),
-                  markers: _markers,
+                  markers: _getMarkers(liveOrder),
                   myLocationEnabled: true,
                   zoomControlsEnabled: false,
                   mapToolbarEnabled: false,
+                  onMapCreated: (mapController) {
+                    if (liveOrder.pickupLat != null &&
+                        liveOrder.dropOffLat != null) {
+                      LatLng pickup = LatLng(
+                        liveOrder.pickupLat!,
+                        liveOrder.pickupLong!,
+                      );
+                      LatLng dropoff = LatLng(
+                        liveOrder.dropOffLat!,
+                        liveOrder.dropOffLong!,
+                      );
+                      LatLngBounds bounds;
+                      if (pickup.latitude > dropoff.latitude) {
+                        bounds = LatLngBounds(
+                          southwest: dropoff,
+                          northeast: pickup,
+                        );
+                      } else {
+                        bounds = LatLngBounds(
+                          southwest: pickup,
+                          northeast: dropoff,
+                        );
+                      }
+                      mapController.animateCamera(
+                        CameraUpdate.newLatLngBounds(bounds, 50),
+                      );
+                    }
+                  },
                 ),
               ),
 
@@ -232,7 +222,7 @@ class _ActiveOrderDetailsScreenState extends State<ActiveOrderDetailsScreen> {
                         StopItem(
                           isPickup: false,
                           title:
-                              "Deliver to (Recipient: Recipient Name)", // Adjust if recipient name is available
+                              "Deliver to (Recipient: ${liveOrder.recipientName})",
                           address: liveOrder.dropOffAddress,
                         ),
 
@@ -296,7 +286,7 @@ class RiderDetails extends StatelessWidget {
               ),
               Text("Order ${order.orderId}", style: getTextStyle(fontSize: 14)),
               Text(
-                "Est. Delivery time: 30 min", // Placeholder or dynamic if available
+                "Est. Delivery time: 30 min",
                 style: getTextStyle(fontSize: 14),
               ),
             ],

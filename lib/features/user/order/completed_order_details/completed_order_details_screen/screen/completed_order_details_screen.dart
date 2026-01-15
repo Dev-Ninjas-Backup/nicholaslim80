@@ -12,31 +12,10 @@ import '../../../../../orders/completed_order_details/proof_of_delivery_screen/p
 import '../../../controller/order_controller.dart';
 import '../../../model/order_model.dart';
 
-class CompletedOrderDetailsScreen extends StatefulWidget {
+class CompletedOrderDetailsScreen extends StatelessWidget {
   final OrderModel order;
 
   const CompletedOrderDetailsScreen({super.key, required this.order});
-
-  @override
-  State<CompletedOrderDetailsScreen> createState() =>
-      _CompletedOrderDetailsScreenState();
-}
-
-class _CompletedOrderDetailsScreenState
-    extends State<CompletedOrderDetailsScreen> {
-  late final OrderController controller;
-
-  @override
-  void initState() {
-    super.initState();
-    controller = Get.isRegistered<OrderController>()
-        ? Get.find<OrderController>()
-        : Get.put(OrderController());
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      controller.fetchOrderDetail(widget.order.orderId);
-    });
-  }
 
   String formatDateTime(String dateTime) {
     try {
@@ -50,6 +29,15 @@ class _CompletedOrderDetailsScreenState
 
   @override
   Widget build(BuildContext context) {
+    final OrderController controller = Get.isRegistered<OrderController>()
+        ? Get.find<OrderController>()
+        : Get.put(OrderController());
+
+    // Trigger fetch
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.fetchOrderDetail(order.orderId);
+    });
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -58,7 +46,7 @@ class _CompletedOrderDetailsScreenState
             return const Center(child: CircularProgressIndicator());
           }
 
-          final liveOrder = controller.singleOrder.value ?? widget.order;
+          final liveOrder = controller.singleOrder.value ?? order;
 
           return Column(
             children: [
@@ -162,7 +150,8 @@ class _CompletedOrderDetailsScreenState
                         ),
                         StopItem(
                           isPickup: false,
-                          title: "Deliver to (Recipient: Recipient Name)",
+                          title:
+                              "Deliver to (Recipient: ${liveOrder.recipientName})",
                           address: liveOrder.dropOffAddress,
                         ),
 
