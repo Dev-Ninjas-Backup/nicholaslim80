@@ -11,20 +11,24 @@ import '../model/order_model.dart';
 class OrderController extends GetxController {
   final RxInt selectOrderListIndex = 0.obs;
   final RxBool isLoading = false.obs;
+  final RxBool isDetailLoading = false.obs;
 
   final orderTabs = ["Active", "Completed", "Cancelled"];
   final RxList<OrderModel> orderList = <OrderModel>[].obs;
+  final Rxn<OrderModel> singleOrder = Rxn<OrderModel>();
 
   get totalAmount => null;
+  get favoriteRiders => null;
+  get orderNumber => null;
+
   final RxBool redeemCoins = false.obs;
   void toggleRedeemCoins(bool? value) => redeemCoins.value = value ?? false;
-  get favoriteRiders => null;
+
   final RxBool toggleFavoriteRiders = false.obs;
-  get orderNumber => null;
 
   int page = 1;
   final int limit = 20;
-  String senderName = "Collect from";
+  String senderName = "";
 
   String get selectedStatus {
     switch (selectOrderListIndex.value) {
@@ -52,13 +56,23 @@ class OrderController extends GetxController {
     try {
       final token = await SharedPreferencesHelper.getAccessToken();
       if (token == null || token.isEmpty) return;
+
       final response = await http.get(
         Uri.parse(ApiEndPoint.profile),
         headers: {"Authorization": "Bearer $token"},
       );
+
       if (response.statusCode == 200) {
         final decoded = json.decode(response.body);
-        senderName = decoded['data']['username'] ?? "Collect from";
+        final data = decoded['data'];
+        senderName = data['username'] ?? "";
+
+        if (data['raiderProfile'] != null &&
+            data['raiderProfile']['registrations'] != null &&
+            (data['raiderProfile']['registrations'] as List).isNotEmpty) {
+          final reg = data['raiderProfile']['registrations'][0];
+          senderName = reg['raider_name'] ?? senderName;
+        }
       }
     } catch (e) {
       debugPrint("Profile error: $e");
@@ -67,26 +81,34 @@ class OrderController extends GetxController {
 
   Future<void> fetchOrders({bool isRefresh = false}) async {
     if (isLoading.value) return;
+
     if (isRefresh) {
       page = 1;
       orderList.clear();
       allLoaded.value = false;
     }
+
     isLoading.value = true;
+
     try {
       final token = await SharedPreferencesHelper.getAccessToken();
       if (token == null || token.isEmpty) return;
+
       final uri = Uri.parse(
         "${ApiEndPoint.order}?status=$selectedStatus&page=$page&limit=$limit",
       );
+
       final response = await http.get(
         uri,
         headers: {"Authorization": "Bearer $token", "accept": "*/*"},
       );
+
       if (response.statusCode == 200) {
         final decoded = json.decode(response.body);
         final List list = decoded['data']['data'];
+
         if (list.isEmpty) allLoaded.value = true;
+
         for (var e in list) {
           final List stops = e['orderStops'] ?? [];
           final pickup = stops.firstWhere(
@@ -94,22 +116,22 @@ class OrderController extends GetxController {
             orElse: () => {},
           );
           final drops = stops.where((s) => s['type'] == 'DROP').toList();
-          e['pickup_address'] = pickup['address'] ?? "Collect from";
+
+          e['pickup_address'] = pickup['address'] ?? "";
           e['pickup_lat'] = pickup['latitude'];
           e['pickup_long'] = pickup['longitude'];
           e['sender_name'] = senderName;
 
           if (drops.isNotEmpty) {
-            e['drop_off_address'] = drops.first['address'] ?? "Deliver to";
+            e['drop_off_address'] = drops.first['address'] ?? "";
             e['drop_off_lat'] = drops.first['latitude'];
             e['drop_off_long'] = drops.first['longitude'];
-          } else {
-            e['drop_off_address'] = "Deliver to";
           }
 
           e['delivery_location'] = drops.length > 1
               ? drops.last['address']
               : "";
+
           orderList.add(OrderModel.fromJson(e));
         }
         page++;
@@ -121,28 +143,139 @@ class OrderController extends GetxController {
     }
   }
 
-  Future<void> fetchRiderInfoById(int riderId) async {
+  Future<void> fetchOrderDetail(String orderId) async {
+    isDetailLoading.value = true;
+
     try {
       final token = await SharedPreferencesHelper.getAccessToken();
-      final url = ApiEndPoint.updateProfile.replaceAll(
-        "{id}",
-        riderId.toString(),
-      );
+      final url = ApiEndPoint.getOrder.replaceAll("{orderId}", orderId);
+
       final response = await http.get(
         Uri.parse(url),
         headers: {"Authorization": "Bearer $token"},
       );
+
       if (response.statusCode == 200) {
         final decoded = json.decode(response.body);
         final data = decoded['data'];
 
-        // Update orderList items with fetched rider info
+        final List stops = data['orderStops'] ?? [];
+        final pickup = stops.firstWhere(
+          (s) => s['type'] == 'PICKUP',
+          orElse: () => {},
+        );
+        final drops = stops.where((s) => s['type'] == 'DROP').toList();
+
+        data['pickup_address'] = pickup['address'] ?? "";
+        data['pickup_lat'] = pickup['latitude'];
+        data['pickup_long'] = pickup['longitude'];
+
+        data['sender_name'] = data['user']?['username'] ?? senderName;
+
+        if (drops.isNotEmpty) {
+          data['drop_off_address'] = drops.first['address'] ?? "";
+          data['drop_off_lat'] = drops.first['latitude'];
+          data['drop_off_long'] = drops.first['longitude'];
+          data['recipient_name'] =
+              drops.first['destination']?['contact_name'] ?? "";
+        }
+
+        singleOrder.value = OrderModel.fromJson(data);
+
+        // Still fetching rider info for image and rating which might not be in getOrder
+        if (data['assign_rider']?['userId'] != null) {
+          await fetchRiderInfoByIdForSingle(data['assign_rider']['userId']);
+        } else if (singleOrder.value?.riderId != null) {
+          await fetchRiderInfoByIdForSingle(singleOrder.value!.riderId!);
+        }
+      }
+    } catch (e) {
+      debugPrint("fetchOrderDetail error: $e");
+    } finally {
+      isDetailLoading.value = false;
+    }
+  }
+
+  Future<void> fetchRiderInfoByIdForSingle(int riderUserId) async {
+    try {
+      final token = await SharedPreferencesHelper.getAccessToken();
+      final url = ApiEndPoint.updateProfile.replaceAll(
+        "{id}",
+        riderUserId.toString(),
+      );
+
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {"Authorization": "Bearer $token"},
+      );
+
+      if (response.statusCode == 200) {
+        final decoded = json.decode(response.body);
+        final data = decoded['data'];
+
+        String riderName = "";
+        String riderImage = data['image'] ?? "";
+
+        if (data['raiderProfile']?['registrations'] != null &&
+            (data['raiderProfile']['registrations'] as List).isNotEmpty) {
+          final reg = data['raiderProfile']['registrations'][0];
+          riderName = reg['raider_name'] ?? "";
+        }
+
+        if (singleOrder.value != null) {
+          singleOrder.value = singleOrder.value!.copyWith(
+            // ✅ Only override rider name if it's currently empty
+            assignRiderName: singleOrder.value!.assignRiderName.isNotEmpty
+                ? singleOrder.value!.assignRiderName
+                : riderName,
+            assignRiderPhone: data['phone'],
+            assignRiderImage: riderImage,
+            assignRiderRating:
+                double.tryParse(data['avg_raiderRating']?.toString() ?? '0') ??
+                0.0,
+            assignRiderReviews: data['total_raiderRatings'] ?? 0,
+          );
+        }
+      }
+    } catch (e) {
+      debugPrint("fetchRiderInfoByIdForSingle error: $e");
+    }
+  }
+
+  Future<void> fetchRiderInfoById(int riderUserId) async {
+    try {
+      final token = await SharedPreferencesHelper.getAccessToken();
+      final url = ApiEndPoint.updateProfile.replaceAll(
+        "{id}",
+        riderUserId.toString(),
+      );
+
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {"Authorization": "Bearer $token"},
+      );
+
+      if (response.statusCode == 200) {
+        final decoded = json.decode(response.body);
+        final data = decoded['data'];
+
+        String riderName = "";
+        String riderImage = data['image'] ?? "";
+
+        if (data['raiderProfile']?['registrations'] != null &&
+            (data['raiderProfile']['registrations'] as List).isNotEmpty) {
+          final reg = data['raiderProfile']['registrations'][0];
+          riderName = reg['raider_name'] ?? "";
+        }
+
         for (int i = 0; i < orderList.length; i++) {
-          if (orderList[i].riderId == riderId) {
+          if (orderList[i].riderId == riderUserId) {
             orderList[i] = orderList[i].copyWith(
-              assignRiderName: data['username'],
+              assignRiderName: orderList[i].assignRiderName.isNotEmpty
+                  ? orderList[i].assignRiderName
+                  : riderName,
               assignRiderPhone: data['phone'],
-              assignRiderImage: data['image'] ?? "",
+              assignRiderImage: riderImage,
               assignRiderRating:
                   double.tryParse(
                     data['avg_raiderRating']?.toString() ?? '0',
@@ -159,9 +292,12 @@ class OrderController extends GetxController {
     }
   }
 
-  Future<void> refreshOrders() async => await fetchOrders(isRefresh: true);
+  Future<void> refreshOrders() async => fetchOrders(isRefresh: true);
+
   Future<void> loadMoreOrders() async {
-    if (!allLoaded.value && !isLoading.value) await fetchOrders();
+    if (!allLoaded.value && !isLoading.value) {
+      await fetchOrders();
+    }
   }
 
   void onTabChanged(int index) {

@@ -4,19 +4,20 @@ class OrderModel {
   final String date;
   final String pickupAddress;
   final String senderName;
+  final String recipientName;
   final String dropOffAddress;
   final String deliveryLocation;
   final String vehicleType;
   final double total;
   final bool showReceipt;
 
-  // Rider info
   final String assignRiderName;
   final String assignRiderPhone;
   final String assignRiderImage;
   final double assignRiderRating;
   final int assignRiderReviews;
   final int? riderId;
+
   final String scheduledTime;
 
   // Coordinates
@@ -31,12 +32,13 @@ class OrderModel {
     required this.date,
     required this.pickupAddress,
     required this.senderName,
+    this.recipientName = "",
     required this.dropOffAddress,
     required this.deliveryLocation,
     required this.vehicleType,
     required this.total,
     required this.showReceipt,
-    this.assignRiderName = "Rider",
+    this.assignRiderName = "",
     this.assignRiderPhone = "",
     this.assignRiderImage = "",
     this.assignRiderRating = 0.0,
@@ -50,17 +52,47 @@ class OrderModel {
   });
 
   factory OrderModel.fromJson(Map<String, dynamic> json) {
+    final collectTime = (json['collect_time'] ?? '').toString();
+    final orderStops = json['orderStops'] as List? ?? [];
+
+    Map<String, dynamic>? pickupStop;
+    Map<String, dynamic>? dropStop;
+
+    for (var stop in orderStops) {
+      if (stop['type'] == 'PICKUP') {
+        pickupStop = stop;
+      } else if (stop['type'] == 'DROP') {
+        dropStop = stop;
+      }
+    }
+
+    final vehicle = json['vehicle'] as Map<String, dynamic>?;
+    final rider = json['assign_rider'] as Map<String, dynamic>?;
+    final riderRegistrations = rider?['registrations'] as List? ?? [];
+    final riderData = riderRegistrations.isNotEmpty
+        ? riderRegistrations[0]
+        : null;
+
     return OrderModel(
       orderId: (json['id'] ?? '').toString(),
       status: (json['order_status'] ?? json['status'] ?? '').toString(),
-      date: (json['collect_time'] ?? '').toString() == "ASAP"
-          ? "Pick-up ASAP"
-          : "Scheduled Delivery",
-      pickupAddress: (json['pickup_address'] ?? "Collect from").toString(),
-      senderName: (json['sender_name'] ?? "Collect from").toString(),
-      dropOffAddress: (json['drop_off_address'] ?? "Deliver to").toString(),
+      date: collectTime == "ASAP" ? "Pick-up ASAP" : collectTime,
+      pickupAddress: (pickupStop?['address'] ?? json['pickup_address'] ?? "")
+          .toString(),
+      senderName:
+          (pickupStop?['destination']?['contact_name'] ??
+                  json['sender_name'] ??
+                  "")
+              .toString(),
+      recipientName:
+          (dropStop?['destination']?['contact_name'] ??
+                  json['recipient_name'] ??
+                  "")
+              .toString(),
+      dropOffAddress: (dropStop?['address'] ?? json['drop_off_address'] ?? "")
+          .toString(),
       deliveryLocation: (json['delivery_location'] ?? "").toString(),
-      vehicleType: _vehicleName(json['vehicle_type_id']),
+      vehicleType: (vehicle?['vehicle_type'] ?? "").toString(),
       total: double.tryParse((json['total_cost'] ?? '0').toString()) ?? 0,
       showReceipt:
           (json['order_status'] ?? json['status'] ?? '').toString() ==
@@ -68,12 +100,33 @@ class OrderModel {
       riderId: json['assign_rider_id'] is int
           ? json['assign_rider_id']
           : int.tryParse((json['assign_rider_id'] ?? '').toString()),
-      scheduledTime: (json['scheduled_time'] ?? json['collect_time'] ?? "")
-          .toString(),
-      pickupLat: double.tryParse(json['pickup_lat']?.toString() ?? ''),
-      pickupLong: double.tryParse(json['pickup_long']?.toString() ?? ''),
-      dropOffLat: double.tryParse(json['drop_off_lat']?.toString() ?? ''),
-      dropOffLong: double.tryParse(json['drop_off_long']?.toString() ?? ''),
+      scheduledTime: (json['scheduled_time'] ?? collectTime).toString(),
+      pickupLat: double.tryParse(
+        pickupStop?['latitude']?.toString() ??
+            json['pickup_lat']?.toString() ??
+            '',
+      ),
+      pickupLong: double.tryParse(
+        pickupStop?['longitude']?.toString() ??
+            json['pickup_long']?.toString() ??
+            '',
+      ),
+      dropOffLat: double.tryParse(
+        dropStop?['latitude']?.toString() ??
+            json['drop_off_lat']?.toString() ??
+            '',
+      ),
+      dropOffLong: double.tryParse(
+        dropStop?['longitude']?.toString() ??
+            json['drop_off_long']?.toString() ??
+            '',
+      ),
+      assignRiderName: (riderData?['raider_name'] ?? "").toString(),
+      assignRiderPhone: (riderData?['contact_number'] ?? "").toString(),
+      assignRiderRating:
+          double.tryParse(rider?['rankScore']?.toString() ?? '0') ?? 0.0,
+      assignRiderReviews:
+          int.tryParse(rider?['reviews_count']?.toString() ?? '0') ?? 0,
     );
   }
 
@@ -87,6 +140,7 @@ class OrderModel {
     double? pickupLong,
     double? dropOffLat,
     double? dropOffLong,
+    String? recipientName,
   }) {
     return OrderModel(
       orderId: orderId,
@@ -94,6 +148,7 @@ class OrderModel {
       date: date,
       pickupAddress: pickupAddress,
       senderName: senderName,
+      recipientName: recipientName ?? this.recipientName,
       dropOffAddress: dropOffAddress,
       deliveryLocation: deliveryLocation,
       vehicleType: vehicleType,
@@ -111,20 +166,5 @@ class OrderModel {
       dropOffLat: dropOffLat ?? this.dropOffLat,
       dropOffLong: dropOffLong ?? this.dropOffLong,
     );
-  }
-
-  static String _vehicleName(dynamic id) {
-    switch (id) {
-      case 1:
-        return "Motorbike";
-      case 2:
-        return "Bicycle";
-      case 3:
-        return "Car";
-      case 4:
-        return "Truck";
-      default:
-        return "Vehicle";
-    }
   }
 }

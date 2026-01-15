@@ -12,7 +12,7 @@ import 'package:get/get.dart';
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final HomeController ctrl = Get.find<HomeController>();
+  final HomeController ctrl = Get.put(HomeController());
 
   @override
   Widget build(BuildContext context) {
@@ -202,7 +202,7 @@ class HomeScreen extends StatelessWidget {
                 // TextButton(onPressed: () {
                 //   // Pass placeholder initial distance = 2.0 km. Replace with routing-based distance later.
                 //   Get.to(() => StackedVehicleSelectionPage(), arguments: {'initialDistanceKm': 2.0});
-                // }, 
+                // },
                 // child: Text('See all')
                 // ),
               ],
@@ -344,7 +344,9 @@ class HomeScreen extends StatelessWidget {
               : AppColors.onboardingIndicatorActive,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: selected ? AppColors.primaryButtonColor : AppColors.onboardingIndicatorActive,
+            color: selected
+                ? AppColors.primaryButtonColor
+                : AppColors.onboardingIndicatorActive,
           ),
         ),
         child: Column(
