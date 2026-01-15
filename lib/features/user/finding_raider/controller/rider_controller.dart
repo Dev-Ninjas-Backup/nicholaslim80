@@ -5,10 +5,8 @@ import 'package:ZipBee/features/user/finding_raider/screnn/connecting_rider_page
 import 'package:ZipBee/features/user/finding_raider/services/place_order_service.dart';
 
 class RiderController extends GetxController {
-  // ================= ORDER =================
    RxInt orderId = 0.obs;
 
-  // ================= BASIC INFO =================
   RxInt selectedFare = 0.obs;
 
   RxString riderName = 'Dylan Simpson'.obs;
@@ -19,7 +17,6 @@ class RiderController extends GetxController {
   RxBool firstActive = true.obs;
   RxBool secondActive = false.obs;
 
-  // ================= LOCATION =================
   RxDouble pickupLat = 0.0.obs;
   RxDouble pickupLng = 0.0.obs;
 
@@ -46,11 +43,9 @@ class RiderController extends GetxController {
     this.dropAddress.value = dropAddress;
   }
 
-  // ================= RATING =================
   RxInt rating = 0.obs;
   void setRating(int value) => rating.value = value;
 
-  // ================= PAYMENT =================
   RxInt selectedMethod = 0.obs;
 
   final paymentOptions = <PaymentOptionModel>[
@@ -73,20 +68,16 @@ class RiderController extends GetxController {
 
   void selectMethod(int index) => selectedMethod.value = index;
 
-  // ================= FARE =================
   final List<double> fareOptions = [1.2, 2.5, 4.5, 6.5];
   void selectFare(int index) => selectedFare.value = index;
 
-  // ================= TIP =================
   RxInt selectedRaiderTip = 0.obs;
   final List<double> raiderTipOptions = [10, 20, 40, 100];
   void selectTip(int index) => selectedRaiderTip.value = index;
 
-  // ================= API STATES =================
   RxBool isPlacingOrder = false.obs;
   RxBool isCancelling = false.obs;
 
-  // ================= PLACE ORDER =================
   Future<void> placeOrder() async {
     if (isPlacingOrder.value) return;
 
@@ -100,7 +91,6 @@ class RiderController extends GetxController {
       );
 
       if (success) {
-        // ✅ TEMP until backend sends names
         setLocationFromApi(
           pickupName: 'Pickup Location',
           pickupAddress: 'Selected on map',
@@ -122,23 +112,19 @@ class RiderController extends GetxController {
     }
   }
 
-  // ================= CANCEL ORDER =================
   Future<void> cancelOrder({required String reason}) async {
     if (isCancelling.value) return;
 
     isCancelling.value = true;
 
     try {
-      await Future.delayed(const Duration(seconds: 1));
+      await Future.delayed( Duration(seconds: 1));
       Get.back();
       Get.snackbar('Order Cancelled', reason);
     } finally {
       isCancelling.value = false;
     }
   }
-
-  // ================= PAYMENT LOGIC (BACKEND SAFE) =================
-  /// Stripe OFF → treated as COD
 
   String _paymentMethod() {
     switch (selectedMethod.value) {

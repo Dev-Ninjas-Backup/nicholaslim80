@@ -28,7 +28,7 @@ class SelectLocationWidget extends StatelessWidget {
 }
 
 class CustomAddButton extends StatelessWidget {
-  const CustomAddButton({super.key});
+   CustomAddButton({super.key});
 
   @override
   Widget build(BuildContext context) {

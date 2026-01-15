@@ -34,7 +34,6 @@ class LogoutDialog extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                // NO BUTTON
                 TextButton(
                   onPressed: () => Get.back(),
                   child: Text(
@@ -46,8 +45,6 @@ class LogoutDialog extends StatelessWidget {
                     ),
                   ),
                 ),
-
-                // YES BUTTON
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primaryButtonColor,

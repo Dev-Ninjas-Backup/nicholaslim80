@@ -101,8 +101,6 @@ class HomeScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 16),
-
-            // Wallet & Points Cards
             Obx(
               () => Row(
                 children: [
@@ -127,15 +125,11 @@ class HomeScreen extends StatelessWidget {
             ),
 
             SizedBox(height: 30),
-
-            // Service Options Title
             Text(
               'Service Options',
               style: getTextStyle(fontSize: 20, fontWeight: FontWeight.w600),
             ),
             SizedBox(height: 14),
-
-            // Compact Service Cards
             Row(
               children: [
                 Expanded(
@@ -187,8 +181,6 @@ class HomeScreen extends StatelessWidget {
             ),
 
             SizedBox(height: 22),
-
-            // Available Vehicles Header
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -199,23 +191,13 @@ class HomeScreen extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                // TextButton(onPressed: () {
-                //   // Pass placeholder initial distance = 2.0 km. Replace with routing-based distance later.
-                //   Get.to(() => StackedVehicleSelectionPage(), arguments: {'initialDistanceKm': 2.0});
-                // }, 
-                // child: Text('See all')
-                // ),
               ],
             ),
 
             SizedBox(height: 8),
-
-            // Vehicle Cards Horizontal List------->>
             VehicleCards(ctrl: ctrl),
 
             SizedBox(height: 30),
-
-            // Small Horizontal Slider------>>
             SmallHorizontalSlider(width: width),
 
             SizedBox(height: 30),
@@ -224,8 +206,6 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
-
-  // ---------- Helper Widgets ----------
   Widget borderedInfoCard({
     required String title,
     required String Function() valueBuilder,

@@ -15,15 +15,14 @@ class OrderControllerExpress extends GetxController {
   final isLoading = false.obs;
   final lastOrderData = <String, dynamic>{}.obs;
 
-  // Controller for Promo Code input
   final promoController = TextEditingController();
 
-  // --- UI Getters (Simplifies the UI code significantly) ---
-  String get subtotal => "S\$${double.tryParse(lastOrderData['total_fee']?.toString() ?? '0')?.toStringAsFixed(2) ?? '0.00'}";
-  String get redeemedAmount => "-S\$${double.tryParse(lastOrderData['redeemed_coins']?.toString() ?? '0')?.toStringAsFixed(2) ?? '0.00'}";
-  String get totalAmount => "S\$${double.tryParse(lastOrderData['total_cost']?.toString() ?? '0')?.toStringAsFixed(2) ?? '0.00'}";
-
-  // --- Methods ---
+  String get subtotal =>
+      "S\$${double.tryParse(lastOrderData['total_fee']?.toString() ?? '0')?.toStringAsFixed(2) ?? '0.00'}";
+  String get redeemedAmount =>
+      "-S\$${double.tryParse(lastOrderData['redeemed_coins']?.toString() ?? '0')?.toStringAsFixed(2) ?? '0.00'}";
+  String get totalAmount =>
+      "S\$${double.tryParse(lastOrderData['total_cost']?.toString() ?? '0')?.toStringAsFixed(2) ?? '0.00'}";
 
   void toggleRedeemCoins(bool value) {
     redeemCoins.value = value;
@@ -34,13 +33,15 @@ class OrderControllerExpress extends GetxController {
     favoriteRiders.value = value;
   }
 
-  /// 1. Fetch Order Details (Initial Load)
   Future<void> fetchOrderById(int orderId) async {
     try {
       isLoading.value = true;
       final token = await SharedPreferencesHelper.getToken();
-      
-      final url = ApiEndPoint.orderEstimate.replaceAll("{id}", orderId.toString());
+
+      final url = ApiEndPoint.orderEstimate.replaceAll(
+        "{id}",
+        orderId.toString(),
+      );
 
       final response = await http.get(
         Uri.parse(url),
@@ -54,6 +55,7 @@ class OrderControllerExpress extends GetxController {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         lastOrderData.value = data['data'] ?? {};
+        // ignore: invalid_use_of_protected_member
         logger.i("Fetched order: ${lastOrderData.value}");
       } else {
         logger.e("Fetch order API error: ${response.body}");
@@ -65,12 +67,11 @@ class OrderControllerExpress extends GetxController {
     }
   }
 
-  /// 2. Redeem Coins API (Updates the price summary)
   Future<void> redeemCoinApi() async {
     try {
       isLoading.value = true;
       final token = await SharedPreferencesHelper.getToken();
-      
+
       final body = {"redeem_coin": redeemCoins.value};
       final response = await http.post(
         Uri.parse(ApiEndPoint.redeemCoin),
@@ -84,8 +85,7 @@ class OrderControllerExpress extends GetxController {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        // Important: Update the whole order object so the UI reflects new totals
-        lastOrderData.value = data['data']; 
+        lastOrderData.value = data['data'];
         logger.i("Redeem coin response updated order data");
       }
     } catch (e) {
@@ -95,7 +95,6 @@ class OrderControllerExpress extends GetxController {
     }
   }
 
-  /// 3. Confirm Order (Final Action)
   Future<bool> confirmOrder(int orderId) async {
     try {
       isLoading.value = true;

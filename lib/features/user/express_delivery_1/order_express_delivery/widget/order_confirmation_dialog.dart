@@ -7,7 +7,6 @@ class OrderConfirmationDialog {
   static final ExpressDeliveryMain controller = Get.put(ExpressDeliveryMain());
 
   static void show([dynamic orderIdentifier]) {
-    // If an order identifier (id or number) is provided, update controller's orderNumber
     if (orderIdentifier != null) {
       try {
         controller.orderNumber.value = '#${orderIdentifier.toString()}';
@@ -67,7 +66,7 @@ class OrderConfirmationDialog {
           ),
         ),
       ),
-      barrierDismissible: true, // Prevents dismiss on tap outside
+      barrierDismissible: true, 
     );
   }
 }

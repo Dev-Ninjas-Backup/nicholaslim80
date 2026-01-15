@@ -9,11 +9,8 @@ import 'package:get/get.dart';
 
 class ReviewView extends StatelessWidget {
   ReviewView({super.key});
-
-  // Inject the controller
   final ReviewController controller = Get.put(ReviewController());
 
-  // Define Colors locally or in a separate theme file
   final Color kPrimaryYellow = Color(0xFFFFC107);
   final Color kGreen = Color(0xFF2ECC71);
   final Color kLime = Color(0xFFCDDC39);
@@ -49,7 +46,6 @@ class ReviewView extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // --- 1. Header & Statistics ---
             Center(
               child: Column(
                 children: [
@@ -74,8 +70,6 @@ class ReviewView extends StatelessWidget {
             buildProgressBar("Poor", 0.15, kRed),
 
             SizedBox(height: 30),
-
-            // --- 2. Rating Input Form ---
             Text(
               "Rate rider",
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -115,8 +109,6 @@ class ReviewView extends StatelessWidget {
               ),
             ),
             SizedBox(height: 20),
-
-            // Interactive Tags
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -167,15 +159,6 @@ class ReviewView extends StatelessWidget {
             ),
 
             SizedBox(height: 25),
-
-            // Button(
-            //   buttonText: 'Submit Review',
-            //   textColor: Colors.black,
-            //   backgroundColor: Colors.amber,
-            //   onPressed: () {
-            //     Get.to(RateRiderTip());
-            //   },
-            // ),
             SizedBox(
               width: double.infinity,
               height: 50,
@@ -203,8 +186,6 @@ class ReviewView extends StatelessWidget {
             ),
 
             SizedBox(height: 30),
-
-            // --- 3. Reviews List ---
             Obx(
               () => ListView.separated(
                 physics: NeverScrollableScrollPhysics(),
@@ -228,9 +209,6 @@ class ReviewView extends StatelessWidget {
       ),
     );
   }
-
-  // --- UI Helper Methods ---
-
   Widget buildReviewCard(Review review) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,

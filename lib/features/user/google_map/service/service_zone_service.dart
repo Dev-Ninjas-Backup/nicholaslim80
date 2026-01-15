@@ -31,7 +31,6 @@ class ServiceZoneService {
     }
   }
 
-  /// Returns centroid LatLng of first service zone's coordinates, or null
   static Future<LatLng?> getFirstZoneCenter() async {
     final res = await fetchServiceZones();
     final status = res['statusCode'] as int? ?? 500;

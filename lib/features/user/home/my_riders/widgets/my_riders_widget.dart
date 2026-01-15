@@ -17,17 +17,16 @@ class RidersListWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 16, right: 16, top: 28),
+      padding: EdgeInsets.only(left: 16, right: 16, top: 28),
       child: Obx(() {
         if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
+          return Center(child: CircularProgressIndicator());
         }
 
         return ListView.separated(
-          padding: const EdgeInsets.only(bottom: 20),
+          padding: EdgeInsets.only(bottom: 20),
           itemCount: controller.ridersList.length + 1,
           itemBuilder: (context, index) {
-            // Add Rider Button
             if (index == controller.ridersList.length) {
               return Center(
                 child: GestureDetector(
@@ -37,15 +36,15 @@ class RidersListWidget extends StatelessWidget {
                       border: Border.all(color: AppColors.primaryButtonColor),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    padding: const EdgeInsets.symmetric(
+                    padding: EdgeInsets.symmetric(
                       vertical: 12,
                       horizontal: 24,
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.add, size: 18),
-                        const SizedBox(width: 8),
+                         Icon(Icons.add, size: 18),
+                         SizedBox(width: 8),
                         Text(
                           'Add Rider',
                           style: getTextStyle(
@@ -64,25 +63,22 @@ class RidersListWidget extends StatelessWidget {
             final rider = controller.ridersList[index];
             final name = rider['name'] ?? '';
             final orderId = rider['order-id'] ?? '';
-            final myRaiderId = rider['myRaiderId'] ?? 0; // ✅ Correct ID
+            final myRaiderId = rider['myRaiderId'] ?? 0; 
 
             return Dismissible(
               key: Key(myRaiderId.toString()),
               direction: DismissDirection.startToEnd,
               background: Container(
                 alignment: Alignment.centerLeft,
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: EdgeInsets.symmetric(horizontal: 20),
                 color: Colors.red,
                 child: Image.asset(IconPath.delete, height: 34, width: 34),
               ),
-
-              // ✅ Confirm before delete
               confirmDismiss: (direction) async {
                 final shouldDelete = await Get.dialog<bool>(
                   DeleteRiderDialog(
                     riderName: name,
                     onConfirm: () async {
-                      // ✅ Call delete API
                       await controller.deleteRider(myRaiderId);
                       Get.back(result: true);
                     },
@@ -99,10 +95,10 @@ class RidersListWidget extends StatelessWidget {
                 final progress = controller.swipeProgress[name] ?? 0.0;
 
                 return AnimatedContainer(
-                  duration: const Duration(milliseconds: 500),
+                  duration:  Duration(milliseconds: 500),
                   color: Color.lerp(
                     AppColors.backgroungColor,
-                    const Color.fromARGB(255, 230, 189, 28),
+                     Color.fromARGB(255, 230, 189, 28),
                     progress,
                   ),
                   child: ListTile(
@@ -151,7 +147,7 @@ class RidersListWidget extends StatelessWidget {
             );
           },
           separatorBuilder: (context, index) =>
-              const Divider(color: Colors.grey, thickness: 1),
+               Divider(color: Colors.grey, thickness: 1),
         );
       }),
     );

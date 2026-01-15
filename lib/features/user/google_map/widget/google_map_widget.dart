@@ -11,28 +11,28 @@ class GoogleMapWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<_MapData>(
-      future: _initializeMap(),
+    return FutureBuilder<MapData>(
+      future: initializeMap(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
+          return  Center(child: CircularProgressIndicator());
         }
 
         if (snapshot.hasError) {
-          return const Center(child: CircularProgressIndicator());
+          return Center(child: CircularProgressIndicator());
         }
 
         final data = snapshot.data;
         if (data == null) {
-          return const Center(child: CircularProgressIndicator());
+          return  Center(child: CircularProgressIndicator());
         }
 
-        return _GoogleMapContent(data: data);
+        return GoogleMapContent(data: data);
       },
     );
   }
 
-  static Future<_MapData> _initializeMap() async {
+  static Future<MapData> initializeMap() async {
     final location = Location();
     final riderController = Get.isRegistered<RiderController>()
         ? Get.find<RiderController>()
@@ -52,7 +52,7 @@ class GoogleMapWidget extends StatelessWidget {
       } catch (_) {}
     }
 
-    return _MapData(
+    return MapData(
       riderController: riderController,
       initialFocus: initialFocus,
       currentPosition: currentPosition,
@@ -61,13 +61,13 @@ class GoogleMapWidget extends StatelessWidget {
   }
 }
 
-class _MapData {
+class MapData {
   final RiderController riderController;
   final LatLng initialFocus;
   final LatLng? currentPosition;
   final Location location;
 
-  _MapData({
+  MapData({
     required this.riderController,
     required this.initialFocus,
     this.currentPosition,
@@ -75,30 +75,30 @@ class _MapData {
   });
 }
 
-class _GoogleMapContent extends StatefulWidget {
-  final _MapData data;
+class GoogleMapContent extends StatefulWidget {
+  final MapData data;
 
-  const _GoogleMapContent({required this.data});
+   GoogleMapContent({required this.data});
 
   @override
-  State<_GoogleMapContent> createState() => _GoogleMapContentState();
+  State<GoogleMapContent> createState() => GoogleMapContentState();
 }
 
-class _GoogleMapContentState extends State<_GoogleMapContent> {
-  late final Completer<GoogleMapController> _mapController;
-  late LatLng _currentPosition;
-  Marker? _selectedMarker;
-  StreamSubscription<LocationData>? _locSub;
+class GoogleMapContentState extends State<GoogleMapContent> {
+  late final Completer<GoogleMapController> mapController;
+  late LatLng currentPosition;
+  Marker? selectedMarker;
+  StreamSubscription<LocationData>? locSub;
 
   @override
   void initState() {
     super.initState();
-    _mapController = Completer();
-    _currentPosition = widget.data.currentPosition ?? widget.data.initialFocus;
-    _listenLocation();
+    mapController = Completer();
+    currentPosition = widget.data.currentPosition ?? widget.data.initialFocus;
+    listenLocation();
   }
 
-  Future<void> _listenLocation() async {
+  Future<void> listenLocation() async {
     if (!await widget.data.location.serviceEnabled()) {
       if (!await widget.data.location.requestService()) return;
     }
@@ -108,19 +108,19 @@ class _GoogleMapContentState extends State<_GoogleMapContent> {
           PermissionStatus.granted) return;
     }
 
-    _locSub = widget.data.location.onLocationChanged.listen((loc) {
+    locSub = widget.data.location.onLocationChanged.listen((loc) {
       if (!mounted) return;
 
       if (loc.latitude != null && loc.longitude != null) {
         setState(() {
-          _currentPosition = LatLng(loc.latitude!, loc.longitude!);
+          currentPosition = LatLng(loc.latitude!, loc.longitude!);
         });
       }
     });
   }
 
-  Future<void> _moveCamera(LatLng pos) async {
-    final c = await _mapController.future;
+  Future<void> moveCamera(LatLng pos) async {
+    final c = await mapController.future;
     await c.animateCamera(
       CameraUpdate.newCameraPosition(CameraPosition(target: pos, zoom: 14)),
     );
@@ -134,28 +134,28 @@ class _GoogleMapContentState extends State<_GoogleMapContent> {
         zoom: 11,
       ),
       onMapCreated: (controller) async {
-        if (!_mapController.isCompleted) {
-          _mapController.complete(controller);
+        if (!mapController.isCompleted) {
+          mapController.complete(controller);
         }
-        await _moveCamera(widget.data.initialFocus);
+        await moveCamera(widget.data.initialFocus);
       },
       markers: {
         if (widget.data.currentPosition != null)
           Marker(
             markerId: const MarkerId('current'),
-            position: _currentPosition,
+            position: currentPosition,
             icon: BitmapDescriptor.defaultMarkerWithHue(
               BitmapDescriptor.hueAzure,
             ),
           ),
-        if (_selectedMarker != null) _selectedMarker!,
+        if (selectedMarker != null) selectedMarker!,
       },
       myLocationEnabled: true,
       myLocationButtonEnabled: true,
       onTap: (latLng) {
         setState(() {
-          _selectedMarker = Marker(
-            markerId: const MarkerId('selected'),
+          selectedMarker = Marker(
+            markerId:  MarkerId('selected'),
             position: latLng,
           );
         });
@@ -174,7 +174,7 @@ class _GoogleMapContentState extends State<_GoogleMapContent> {
 
   @override
   void dispose() {
-    _locSub?.cancel();
+    locSub?.cancel();
     super.dispose();
   }
 }

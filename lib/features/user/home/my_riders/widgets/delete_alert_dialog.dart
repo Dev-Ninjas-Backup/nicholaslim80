@@ -6,7 +6,7 @@ import 'package:get/get.dart';
 
 class DeleteRiderDialog extends StatelessWidget {
   final String riderName;
-  final VoidCallback? onConfirm; // ✅ add onConfirm
+  final VoidCallback? onConfirm; 
 
   const DeleteRiderDialog({
     super.key,
@@ -34,7 +34,7 @@ class DeleteRiderDialog extends StatelessWidget {
       ),
       actions: [
         TextButton(
-          onPressed: () => Get.back(result: false), // Cancel
+          onPressed: () => Get.back(result: false), 
           child: Text(
             'Cancel',
             style: getTextStyle(
@@ -49,7 +49,7 @@ class DeleteRiderDialog extends StatelessWidget {
             backgroundColor: AppColors.primaryButtonColor,
           ),
           onPressed: () {
-            if (onConfirm != null) onConfirm!(); // ✅ Call callback
+            if (onConfirm != null) onConfirm!(); 
           },
           child: Text(
             'Delete',

@@ -84,7 +84,7 @@ class OrderSuccessDialog {
                                   wantsConfirmationCall.value = value!,
                               activeColor: Colors.blue,
                             ),
-                            SizedBox(width: 4), // spacing খুব ছোট
+                            SizedBox(width: 4), 
                             Text('Yes', style: TextStyle(fontSize: 16)),
                           ],
                         ),
@@ -104,7 +104,7 @@ class OrderSuccessDialog {
                                   wantsConfirmationCall.value = value!,
                               activeColor: Colors.blue,
                             ),
-                            SizedBox(width: 4), // spacing খুব ছোট
+                            SizedBox(width: 4), 
                             Text('No', style: TextStyle(fontSize: 16)),
                           ],
                         ),
@@ -119,7 +119,7 @@ class OrderSuccessDialog {
           ),
         ),
       ),
-      barrierDismissible: true, // Prevent closing on outside tap
+      barrierDismissible: true, 
     );
   }
 }

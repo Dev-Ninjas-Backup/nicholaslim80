@@ -41,8 +41,8 @@ class CancelOrderDialogBody extends StatelessWidget {
         onTap: () => selectedReason.value = text,
         child: Container(
           width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: 14),
-          margin: const EdgeInsets.only(bottom: 12),
+          padding: EdgeInsets.symmetric(vertical: 14),
+          margin: EdgeInsets.only(bottom: 12),
           decoration: BoxDecoration(
             color: isSelected ? Colors.black12 : Colors.grey.shade200,
             borderRadius: BorderRadius.circular(12),
@@ -61,7 +61,7 @@ class CancelOrderDialogBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(24),
       child: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -70,13 +70,13 @@ class CancelOrderDialogBody extends StatelessWidget {
               "Are you sure you want to cancel?",
               style: getTextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
-            const SizedBox(height: 8),
+             SizedBox(height: 8),
             Text(
               "You may have to start all over again.",
               style: getTextStyle(fontSize: 12, color: Colors.grey),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 24),
+             SizedBox(height: 24),
 
             reasonButton("Changed my mind"),
             reasonButton("Too expensive for me"),
@@ -86,21 +86,21 @@ class CancelOrderDialogBody extends StatelessWidget {
             Obx(
               () => selectedReason.value == "Other"
                   ? Padding(
-                      padding: const EdgeInsets.only(top: 8),
+                      padding:  EdgeInsets.only(top: 8),
                       child: TextField(
                         controller: otherController,
                         onChanged: (v) => otherText.value = v,
                         maxLines: 2,
-                        decoration: const InputDecoration(
+                        decoration:  InputDecoration(
                           hintText: "Please specify",
                           border: OutlineInputBorder(),
                         ),
                       ),
                     )
-                  : const SizedBox(),
+                  :  SizedBox(),
             ),
 
-            const SizedBox(height: 24),
+             SizedBox(height: 24),
 
             Obx(() {
               final bool isDisabled =
@@ -118,7 +118,7 @@ class CancelOrderDialogBody extends StatelessWidget {
                       },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
-                  padding: const EdgeInsets.symmetric(
+                  padding:  EdgeInsets.symmetric(
                     horizontal: 40,
                     vertical: 14,
                   ),
@@ -127,7 +127,7 @@ class CancelOrderDialogBody extends StatelessWidget {
                   ),
                 ),
                 child: controller.isCancelling.value
-                    ? const SizedBox(
+                    ?  SizedBox(
                         height: 20,
                         width: 20,
                         child: CircularProgressIndicator(
@@ -145,7 +145,7 @@ class CancelOrderDialogBody extends StatelessWidget {
                               color: Colors.white,
                             ),
                           ),
-                          const SizedBox(width: 6),
+                           SizedBox(width: 6),
                           Image.asset(
                             IconPath.cancel,
                             height: 14,
@@ -156,11 +156,11 @@ class CancelOrderDialogBody extends StatelessWidget {
               );
             }),
 
-            const SizedBox(height: 12),
+             SizedBox(height: 12),
 
             TextButton(
               onPressed: Get.back,
-              child: const Text(
+              child: Text(
                 "No, do not want to cancel the order",
               ),
             ),
