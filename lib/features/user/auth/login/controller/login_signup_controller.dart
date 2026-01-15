@@ -75,7 +75,7 @@ class LoginSignupController extends GetxController {
         await Future.delayed(const Duration(milliseconds: 300));
 
         EasyLoading.dismiss();
-        Get.offAllNamed(AppRoutes.homeScreen);
+        Get.offAllNamed(AppRoutes.bottomNavbarScreen);
       } else {
         EasyLoading.showError(result['body']['message'] ?? "Login failed");
       }

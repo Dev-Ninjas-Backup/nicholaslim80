@@ -34,10 +34,9 @@ class _ActiveOrderDetailsScreenState extends State<ActiveOrderDetailsScreen> {
         ? Get.find<OrderController>()
         : Get.put(OrderController());
 
-    // Fetch rider info if riderId is available
-    if (widget.order.riderId != null) {
-      controller.fetchRiderInfoById(widget.order.riderId!);
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.fetchOrderDetail(widget.order.orderId);
+    });
     _addMarkers();
   }
 
@@ -92,7 +91,7 @@ class _ActiveOrderDetailsScreenState extends State<ActiveOrderDetailsScreen> {
     try {
       if (dateTime.isEmpty) return "N/A";
       final dt = DateTime.parse(dateTime);
-      return DateFormat('dd MMM yyyy, hh:mm a').format(dt);
+      return DateFormat('dd MMM yy / hh:mm a').format(dt);
     } catch (e) {
       return dateTime;
     }
@@ -104,18 +103,18 @@ class _ActiveOrderDetailsScreenState extends State<ActiveOrderDetailsScreen> {
       backgroundColor: AppColors.backgroungColor,
       body: SafeArea(
         child: Obx(() {
-          // Find the "live" order in the controller to reflect fetched rider info
-          final liveOrder = controller.orderList.firstWhere(
-            (o) => o.orderId == widget.order.orderId,
-            orElse: () => widget.order,
-          );
+          if (controller.isDetailLoading.value) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          final liveOrder = controller.singleOrder.value ?? widget.order;
 
           return Column(
             children: [
               // Top Bar
               Container(
                 width: double.infinity,
-                color: const Color(0xFFFFCC00),
+                color: const Color(0xFFE0E0E0),
                 padding: const EdgeInsets.symmetric(
                   vertical: 12,
                   horizontal: 16,
@@ -131,21 +130,24 @@ class _ActiveOrderDetailsScreenState extends State<ActiveOrderDetailsScreen> {
                     ),
                     const SizedBox(width: 10),
                     Expanded(
-                      child: Text(
-                        "Order #${liveOrder.orderId} is pending",
-                        style: getTextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
+                      child: Center(
+                        child: Text(
+                          "Order #${liveOrder.orderId} is ${liveOrder.status.toLowerCase()}",
+                          style: getTextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 16,
+                          ),
                         ),
                       ),
                     ),
+                    const SizedBox(width: 30),
                   ],
                 ),
               ),
 
               // Google Map
               SizedBox(
-                height: 250,
+                height: 200,
                 width: double.infinity,
                 child: GoogleMap(
                   onMapCreated: _onMapCreated,
@@ -168,26 +170,14 @@ class _ActiveOrderDetailsScreenState extends State<ActiveOrderDetailsScreen> {
                 child: SingleChildScrollView(
                   child: Container(
                     padding: const EdgeInsets.all(16),
-                    decoration: const BoxDecoration(
-                      color: AppColors.backgroungColor,
-                      borderRadius: BorderRadius.vertical(
-                        top: Radius.circular(22),
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 3,
-                          offset: Offset(0, -2),
-                        ),
-                      ],
-                    ),
+                    color: Colors.white,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Rider Details
                         RiderDetails(order: liveOrder),
 
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 16),
 
                         // Message & Call
                         MessageCallButtons(
@@ -202,44 +192,63 @@ class _ActiveOrderDetailsScreenState extends State<ActiveOrderDetailsScreen> {
                           totalReviews: liveOrder.assignRiderReviews,
                         ),
 
-                        const SizedBox(height: 16),
+                        const Divider(height: 32),
 
                         // Price & Payment
                         PriceAndPayment(order: liveOrder),
 
-                        const SizedBox(height: 16),
+                        const Divider(height: 32),
 
-                        // Pickup & Delivery Date/Time
+                        // Date & Time
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              "Pickup Date & Time: ",
-                              style: getTextStyle(fontWeight: FontWeight.w600),
+                              "Date & Time",
+                              style: getTextStyle(
+                                color: Colors.grey,
+                                fontSize: 14,
+                              ),
                             ),
                             Text(
                               formatDateTime(liveOrder.scheduledTime),
-                              style: getTextStyle(),
+                              style: getTextStyle(
+                                color: Colors.grey,
+                                fontSize: 14,
+                              ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 20),
+
+                        const SizedBox(height: 24),
 
                         // Stops
                         StopItem(
-                          iconPath: IconPath.locationBlue,
-                          title: "Collected from (${liveOrder.senderName})",
+                          isPickup: true,
+                          title:
+                              "Collected from (Sender: ${liveOrder.senderName})",
                           address: liveOrder.pickupAddress,
                         ),
                         StopItem(
-                          iconPath: IconPath.locationRed,
-                          title: "Deliver to",
+                          isPickup: false,
+                          title:
+                              "Deliver to (Recipient: Recipient Name)", // Adjust if recipient name is available
                           address: liveOrder.dropOffAddress,
                         ),
 
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 16),
+
+                        const SizedBox(height: 32),
 
                         CustomButton(
                           label: 'Share Ride Information',
+                          onPressed: () {},
+                          color: AppColors.primaryButtonColor,
+                          textColor: AppColors.fontColor,
+                        ),
+                        const SizedBox(height: 12),
+                        CustomButton(
+                          label: 'Place Order Again',
                           onPressed: () {},
                           color: AppColors.primaryButtonColor,
                           textColor: AppColors.fontColor,
@@ -266,31 +275,29 @@ class RiderDetails extends StatelessWidget {
     return Row(
       children: [
         CircleAvatar(
-          radius: 28,
+          radius: 40,
           backgroundImage: order.assignRiderImage.isNotEmpty
               ? NetworkImage(order.assignRiderImage) as ImageProvider
               : AssetImage(ImagePath.profileImage),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: 16),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 order.assignRiderName,
-                style: getTextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                style: getTextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               ),
+              const SizedBox(height: 4),
               Text(
                 "Vehicle type: ${order.vehicleType}",
-                style: getTextStyle(fontSize: 13),
+                style: getTextStyle(fontSize: 14),
               ),
+              Text("Order ${order.orderId}", style: getTextStyle(fontSize: 14)),
               Text(
-                "Order #${order.orderId}",
-                style: getTextStyle(fontSize: 13),
-              ),
-              Text(
-                "Scheduled Pickup: ${order.date}",
-                style: getTextStyle(fontSize: 13),
+                "Est. Delivery time: 30 min", // Placeholder or dynamic if available
+                style: getTextStyle(fontSize: 14),
               ),
             ],
           ),
@@ -325,20 +332,52 @@ class MessageCallButtons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        OutlinedButton.icon(
-          onPressed: _messageRider,
-          icon: const Icon(Icons.message, size: 20),
-          label: Text(
-            "Message",
-            style: getTextStyle(fontWeight: FontWeight.w500),
+        Expanded(
+          child: OutlinedButton(
+            onPressed: _messageRider,
+            style: OutlinedButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              side: const BorderSide(color: Colors.grey),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.message_outlined,
+                  size: 20,
+                  color: Colors.black,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  "Message",
+                  style: getTextStyle(fontWeight: FontWeight.w500),
+                ),
+              ],
+            ),
           ),
         ),
-        OutlinedButton.icon(
-          onPressed: _callRider,
-          icon: const Icon(Icons.call, size: 20),
-          label: Text("Call", style: getTextStyle(fontWeight: FontWeight.w500)),
+        const SizedBox(width: 16),
+        Expanded(
+          child: OutlinedButton(
+            onPressed: _callRider,
+            style: OutlinedButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              side: const BorderSide(color: Colors.grey),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.call_outlined, size: 20, color: Colors.black),
+                const SizedBox(width: 8),
+                Text("Call", style: getTextStyle(fontWeight: FontWeight.w500)),
+              ],
+            ),
+          ),
         ),
       ],
     );
@@ -363,17 +402,17 @@ class RatingsSection extends StatelessWidget {
           Icon(
             i <= rating ? Icons.star : Icons.star_border,
             color: Colors.amber,
-            size: 18,
+            size: 24,
           ),
-        const SizedBox(width: 6),
-        Text("${rating.toStringAsFixed(1)}/5", style: getTextStyle()),
+        const SizedBox(width: 8),
+        Text(
+          "${rating.toStringAsFixed(0)}/5",
+          style: getTextStyle(fontSize: 14),
+        ),
         const Spacer(),
-        TextButton(
-          onPressed: () {},
-          child: Text(
-            '($totalReviews Reviews)',
-            style: getTextStyle(color: Colors.lightBlue),
-          ),
+        Text(
+          '($totalReviews Reviews)',
+          style: getTextStyle(color: Colors.grey, fontSize: 14),
         ),
       ],
     );
@@ -387,20 +426,31 @@ class PriceAndPayment extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Total", style: getTextStyle(fontWeight: FontWeight.w600)),
+            Text(
+              "Total",
+              style: getTextStyle(fontWeight: FontWeight.w500, fontSize: 14),
+            ),
             Text(
               "S\$${order.total.toStringAsFixed(2)}",
-              style: getTextStyle(fontWeight: FontWeight.bold),
+              style: getTextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             ),
           ],
         ),
-        const Spacer(),
-        Image.asset(IconPath.visa, height: 22, width: 24),
-        const SizedBox(width: 4),
-        Text("****456", style: getTextStyle(fontSize: 13)),
+        Row(
+          children: [
+            Image.asset(IconPath.visa, height: 24),
+            const SizedBox(width: 8),
+            Text(
+              "****456",
+              style: getTextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+            ),
+          ],
+        ),
       ],
     );
   }
@@ -409,37 +459,72 @@ class PriceAndPayment extends StatelessWidget {
 class StopItem extends StatelessWidget {
   final String title;
   final String address;
-  final String iconPath;
+  final bool isPickup;
 
   const StopItem({
     super.key,
     required this.title,
     required this.address,
-    required this.iconPath,
+    required this.isPickup,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          iconPath.isNotEmpty
-              ? Image.asset(iconPath, height: 18, width: 18)
-              : const Icon(Icons.location_on, size: 18),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: getTextStyle(fontWeight: FontWeight.w600)),
-                Text(address, style: getTextStyle(fontSize: 13)),
-              ],
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Column(
+          children: [
+            Container(
+              height: 20,
+              width: 20,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: isPickup ? Colors.blue : Colors.red,
+                  width: 2,
+                ),
+              ),
+              child: Center(
+                child: Container(
+                  height: 8,
+                  width: 8,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: isPickup ? Colors.blue : Colors.red,
+                  ),
+                ),
+              ),
             ),
+            if (isPickup)
+              Container(height: 30, width: 2, color: Colors.grey[300]),
+          ],
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    title,
+                    style: getTextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 15,
+                    ),
+                  ),
+                  if (isPickup)
+                    const Icon(Icons.keyboard_arrow_down, color: Colors.grey),
+                ],
+              ),
+              Text(address, style: getTextStyle(fontSize: 13)),
+              const SizedBox(height: 12),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
