@@ -45,9 +45,17 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
-	<string>NSLocationWhenInUseUsageDescription</string>
-	<key>Want to disply location on map and track it</key>
-	<string>NSLocationAlwaysUsageDescription</string>
-	<key>Want to disply location on map and track it</key>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app needs your location to display it on the map and track orders.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>This app needs your location to display it on the map and track orders.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>This app needs your location to display it on the map and track orders.</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>tel</string>
+		<string>mailto</string>
+		<string>sms</string>
+	</array>
 </dict>
 </plist>
