@@ -5,12 +5,16 @@ import 'package:ZipBee/features/user/express_delivery_1/order_express_delivery/w
 import 'package:ZipBee/features/user/express_delivery_1/order_express_delivery/widget/order_confirmation_dialog.dart';
 import 'package:ZipBee/features/user/express_delivery_1/order_express_delivery/widget/order_success_dialog.dart';
 import 'package:ZipBee/features/user/express_delivery_1/order_express_delivery/widget/payment_method_widget.dart';
-import 'package:ZipBee/features/user/express_delivery_1/order_express_delivery/widget/promo_dilog_widget.dart';
+import 'package:ZipBee/features/user/stacked/show_order_confirmation/promoCode_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 
 /// Show order confirmation dialog (reusable)
-void showOrderConfirmationDialog(ExpressDeliveryMain controller) {
+void showOrderConfirmationDialog(
+  ExpressDeliveryMain controller, {
+  int orderId = 0,
+}) {
   final String formattedTotal =
       "S\$${controller.totalAmount.toStringAsFixed(2)}";
 
@@ -80,7 +84,7 @@ void showOrderConfirmationDialog(ExpressDeliveryMain controller) {
                                   MediaQuery.of(context).size.width * 0.8;
                               return SizedBox(
                                 width: width,
-                                child: PromoDialogContent(),
+                                child: PromoDialog(orderId: orderId),
                               );
                             },
                           ),
@@ -118,9 +122,23 @@ void showOrderConfirmationDialog(ExpressDeliveryMain controller) {
                     ),
                   ),
                   Obx(
-                    () => CustomToggleSwitch(
-                      value: controller.redeemCoins.value,
-                      onChanged: controller.toggleRedeemCoins,
+                    () => GestureDetector(
+                      onTap: () async {
+                        if (!controller.redeemCoins.value) {
+                          EasyLoading.show(status: 'Redeeming coins...');
+                          await controller.redeemCoinsApi(
+                            orderId: orderId,
+                            coinsAmount: 10,
+                          );
+                          EasyLoading.dismiss();
+                        }
+                      },
+                      child: CustomToggleSwitch(
+                        value: controller.redeemCoins.value,
+                        onChanged: (_) {
+                          // Toggle handled in onTap above
+                        },
+                      ),
                     ),
                   ),
                 ],
@@ -139,9 +157,22 @@ void showOrderConfirmationDialog(ExpressDeliveryMain controller) {
                     ),
                   ),
                   Obx(
-                    () => CustomToggleSwitch(
-                      value: controller.favoriteRiders.value,
-                      onChanged: controller.toggleFavoriteRiders,
+                    () => GestureDetector(
+                      onTap: () async {
+                        if (!controller.favoriteRiders.value) {
+                          EasyLoading.show(status: 'Setting favorite rider...');
+                          await controller.followFavoriteRider(
+                            orderId: orderId,
+                          );
+                          EasyLoading.dismiss();
+                        }
+                      },
+                      child: CustomToggleSwitch(
+                        value: controller.favoriteRiders.value,
+                        onChanged: (_) {
+                          // Toggle handled in onTap above
+                        },
+                      ),
                     ),
                   ),
                 ],
@@ -231,10 +262,10 @@ void showOrderConfirmationDialog(ExpressDeliveryMain controller) {
                   FilledButton(
                     onPressed: () async {
                       Get.back();
-                      OrderConfirmationDialog.show();
+                      OrderConfirmationDialog.show(orderId);
                       await Future.delayed(Duration(seconds: 3));
                       Get.back();
-                      OrderSuccessDialog.show();
+                      OrderSuccessDialog.show(orderId: orderId);
                     },
                     style: FilledButton.styleFrom(
                       backgroundColor: Colors.amber,

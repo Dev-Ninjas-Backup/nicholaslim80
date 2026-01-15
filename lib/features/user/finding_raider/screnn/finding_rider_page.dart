@@ -248,21 +248,36 @@ class FindingRiderPage extends StatelessWidget {
         borderRadius: BorderRadius.circular(6),
         border: Border.all(color: Colors.grey, width: 1.5),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            'Add amount',
-            style: getTextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: Colors.grey,
-            ),
-          ),
-          const SizedBox(width: 3),
-          const Icon(Icons.add, size: 13, color: Colors.grey),
-        ],
+child: TextButton(
+  onPressed: () {
+    
+  },
+  style: TextButton.styleFrom(
+    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+    minimumSize: Size.zero,
+    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+  ),
+  child: Row(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Text(
+        'Add amount',
+        style: getTextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          color: Colors.grey,
+        ),
       ),
+      const SizedBox(width: 3),
+      const Icon(
+        Icons.add,
+        size: 13,
+        color: Colors.grey,
+      ),
+    ],
+  ),
+)
+,
     );
   }
 

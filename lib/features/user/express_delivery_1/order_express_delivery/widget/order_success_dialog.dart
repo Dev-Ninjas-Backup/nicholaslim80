@@ -1,15 +1,15 @@
 import 'package:ZipBee/core/common/styles/global_text_style.dart';
 import 'package:ZipBee/features/user/express_delivery_1/controller/express_controller_1.dart';
-import 'package:ZipBee/features/user/finding_raider/screnn/finding_rider_page.dart';
+import 'package:ZipBee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
-
 
 class OrderSuccessDialog {
   static final ExpressDeliveryMain controller = Get.find<ExpressDeliveryMain>();
   static final RxBool wantsConfirmationCall = true.obs;
 
-  static void show() {
+  static void show({required int orderId}) {
     Get.dialog(
       Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -51,7 +51,7 @@ class OrderSuccessDialog {
                 SizedBox(height: 24),
 
                 Text(
-                  'Would you prefer to receive a confirmation call from the  assigned driver once your order is scheduled?',
+                  'Would you prefer to receive a confirmation call from the assigned driver once your order is scheduled?',
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.black54,
@@ -67,44 +67,48 @@ class OrderSuccessDialog {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       GestureDetector(
-                        onTap: () {
-                          wantsConfirmationCall.value =
-                              true; 
-                          Get.to(FindingRiderPage());
+                        onTap: () async {
+                          wantsConfirmationCall.value = true;
+                          EasyLoading.show(status: 'Notifying rider...');
+                          await controller.notifyRider(
+                            orderId: orderId,
+                            notifyRider: true,
+                          );
+                          EasyLoading.dismiss();
+                          Get.offNamed(AppRoutes.findingRider);
                         },
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Radio<bool>(
                               value: true,
-                              // ignore: deprecated_member_use
                               groupValue: wantsConfirmationCall.value,
-                              // ignore: deprecated_member_use
                               onChanged: (value) =>
                                   wantsConfirmationCall.value = value!,
                               activeColor: Colors.blue,
                             ),
-                            SizedBox(width: 4), // spacing খুব ছোট
+                            SizedBox(width: 4),
                             Text('Yes', style: TextStyle(fontSize: 16)),
                           ],
                         ),
                       ),
 
                       GestureDetector(
-                        onTap: () => Get.back(),
+                        onTap: () {
+                          wantsConfirmationCall.value = false;
+                          Get.offNamed(AppRoutes.findingRider);
+                        },
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Radio<bool>(
                               value: false,
-                              // ignore: deprecated_member_use
                               groupValue: wantsConfirmationCall.value,
-                              // ignore: deprecated_member_use
                               onChanged: (value) =>
                                   wantsConfirmationCall.value = value!,
                               activeColor: Colors.blue,
                             ),
-                            SizedBox(width: 4), // spacing খুব ছোট
+                            SizedBox(width: 4),
                             Text('No', style: TextStyle(fontSize: 16)),
                           ],
                         ),
@@ -119,7 +123,7 @@ class OrderSuccessDialog {
           ),
         ),
       ),
-      barrierDismissible: true, // Prevent closing on outside tap
+      barrierDismissible: true,
     );
   }
 }

@@ -25,8 +25,8 @@ class UserMessageController extends GetxController {
 
     final token = await SharedPreferencesHelper.getAccessToken();
     final userId = (await SharedPreferencesHelper.getUserId())?.toString();
-
-    if (token == null || userId == null) {
+    //|| userId == null
+    if (token == null) {
       debugPrint("Token or UserId missing");
       return;
     }
@@ -35,7 +35,7 @@ class UserMessageController extends GetxController {
     UserSocketService().connect(userId: userId);
 
     UserSocketService().on('receive_message', (data) {
-      debugPrint("📩 Received: $data");
+      debugPrint("📩 Received message");
 
       messages.add(
         MessageModel.fromSocket(
@@ -51,21 +51,11 @@ class UserMessageController extends GetxController {
     final text = textController.text.trim();
     if (text.isEmpty) return;
 
-    final payload = {
-      "receiverId": receiverId,
-      "content": text,
-      "messageType": "TEXT",
-    };
+    final payload = {"receiverId": 4, "content": text, "messageType": "TEXT"};
 
     UserSocketService().emit('send_message', payload);
 
-    messages.add(
-      MessageModel(
-        text: text,
-        isMe: true,
-        time: _now(),
-      ),
-    );
+    messages.add(MessageModel(text: text, isMe: true, time: _now()));
 
     textController.clear();
   }

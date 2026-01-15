@@ -46,4 +46,10 @@ class ApiEndPoint {
   static const String rating = '$baseUrl/ratings';
   static const String faq = '$baseUrl/faq';
   static const String faqRole = '$baseUrl/faq/faqs-by-role';
+
+  // Order discount & promo endpoints
+  static const String applyDiscount = '$baseUrl/order/{orderId}/apply-discount';
+  static const String notifyRider = '$baseUrl/order/{orderId}/notify-rider';
+  static const String followedRider =
+      '$baseUrl/order/followed-rider/order/{orderId}';
 }
