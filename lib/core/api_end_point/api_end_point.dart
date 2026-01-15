@@ -37,4 +37,8 @@ class ApiEndPoint {
   // Destination endpoints
   static const String createDestination = '$baseUrl/destination';
   static const String addDestinationToOrder = '$baseUrl/order/{orderId}/destinations/add';
+  
+  // Order GET endpoints
+  static const String getOrder = '$baseUrl/order/{orderId}';
+  static const String getUserProfile = '$baseUrl/users/me';
 }

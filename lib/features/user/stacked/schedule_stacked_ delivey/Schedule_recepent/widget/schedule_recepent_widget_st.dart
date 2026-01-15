@@ -22,28 +22,17 @@ class ScheduleRecipientWidgetST extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(SenderController());
+    // Use a unique tag for additional stop to get a fresh controller instance
+    final String controllerTag = isAdditionalStop ? 'additional_stop' : 'primary';
+    final controller = Get.put(
+      SenderController(),
+      tag: controllerTag,
+    );
 
-    // Prefill if address provided and fields empty, BUT not if this is an additional stop
-    if (address != null && !isAdditionalStop) {
-      if (controller.addressController.text.isEmpty) {
-        controller.addressController.text = address!.addressFromApr.isNotEmpty ? address!.addressFromApr : address!.address;
-      }
-      if (controller.floorController.text.isEmpty) controller.floorController.text = address!.floorUnit;
-      if (controller.nameController.text.isEmpty) controller.nameController.text = address!.contactName;
-      if (controller.numberController.text.isEmpty) controller.numberController.text = address!.contactNumber;
-      controller.saveAddress.value = address!.isSaved;
-    }
-    // For additional stops, always clear the fields
-    else if (isAdditionalStop) {
-      controller.addressController.clear();
-      controller.postalCodeController.clear();
-      controller.floorController.clear();
-      controller.nameController.clear();
-      controller.numberController.clear();
-      controller.noteController.clear();
-      controller.saveAddress.value = false;
-    }
+    // Initialize controller on first build with proper separation
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initializeController(controller);
+    });
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -119,7 +108,7 @@ class ScheduleRecipientWidgetST extends StatelessWidget {
             child: ElevatedButton(
               onPressed: controller.isFormValid.value
                   ? onPressed
-                  : null, // <-- use parent callback
+                  : null,
               style: ElevatedButton.styleFrom(
                 backgroundColor: controller.isFormValid.value
                     ? Colors.yellow.shade700
@@ -143,5 +132,38 @@ class ScheduleRecipientWidgetST extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  /// Initialize controller after widget build is complete
+  void _initializeController(SenderController controller) {
+    if (isAdditionalStop) {
+      // For additional stops, clear all fields
+      controller.addressController.clear();
+      controller.postalCodeController.clear();
+      controller.floorController.clear();
+      controller.nameController.clear();
+      controller.numberController.clear();
+      controller.noteController.clear();
+      controller.saveAddress.value = false;
+      controller.validateForm();
+    } else if (address != null) {
+      // For primary recipient, prefill if address provided
+      if (controller.addressController.text.isEmpty) {
+        controller.addressController.text = address!.addressFromApr.isNotEmpty
+            ? address!.addressFromApr
+            : address!.address;
+      }
+      if (controller.floorController.text.isEmpty) {
+        controller.floorController.text = address!.floorUnit;
+      }
+      if (controller.nameController.text.isEmpty) {
+        controller.nameController.text = address!.contactName;
+      }
+      if (controller.numberController.text.isEmpty) {
+        controller.numberController.text = address!.contactNumber;
+      }
+      controller.saveAddress.value = address!.isSaved;
+      controller.validateForm();
+    }
   }
 }

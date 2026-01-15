@@ -52,7 +52,9 @@ class StackedSchedulRecepmenteScreen extends StatelessWidget {
                   address: address,
                   isAdditionalStop: (Get.arguments as Map<String, dynamic>?)?['isAdditionalStop'] ?? false,
                   onPressed: () async {
-                    final controller = Get.find<SenderController>();
+                    // Get controller with the correct tag
+                    final String controllerTag = (Get.arguments as Map<String, dynamic>?)?['isAdditionalStop'] ?? false ? 'additional_stop' : 'primary';
+                    final controller = Get.find<SenderController>(tag: controllerTag);
                     final orderController = Get.find<StackedOrderController>();
                     final orderId = orderController.lastOrderId;
                     
