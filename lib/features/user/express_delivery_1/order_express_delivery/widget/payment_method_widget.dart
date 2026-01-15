@@ -2,7 +2,6 @@ import 'package:ZipBee/core/utils/constants/icon_path.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-// Payment Option Model
 class PaymentOption {
   final String title;
   final String subtitle;
@@ -11,22 +10,18 @@ class PaymentOption {
   PaymentOption({required this.title, required this.subtitle, this.imageAsset});
 }
 
-// -------------------
 // Payment Controller
-// -------------------
 class PaymentController extends GetxController {
   var selectedIndex = 0.obs;
   var selectedTitle = "Select".obs;
 }
 
-// -------------------
 // Payment Selection Widget
-// -------------------
 class PaymentSelectionWidget extends StatelessWidget {
   final List<PaymentOption> options;
   final PaymentController controller;
 
-  const PaymentSelectionWidget({
+   PaymentSelectionWidget({
     super.key,
     required this.options,
     required this.controller,
@@ -101,9 +96,6 @@ class PaymentSelectionWidget extends StatelessWidget {
   }
 }
 
-// -------------------
-// Selector Button Widget
-// -------------------
 class PaymentMethodSelector extends StatelessWidget {
   final List<PaymentOption> options;
   final PaymentController controller = Get.put(PaymentController());

@@ -106,7 +106,6 @@ class ExpressDelivery1 extends StatelessWidget {
                           FocusScope.of(context).unfocus();
                           controller.selectSchedule();
 
-                          // Open the date-time dialog
                           showDialog(
                             context: context,
                             builder: (_) => PickDateTimeDialog(),

@@ -12,34 +12,30 @@ import '../widget/promo_dialog_widget.dart';
 class StackedOrderControllerScreen extends GetxController {
   double totalAmount = 0.00;
 
-  // ✅ Track toggle state
   RxBool redeemCoins = false.obs;
   RxBool favoriteRiders = false.obs;
 
-  // ---------- FULL-WIDTH CONFIRMATION DIALOG ----------
   void showConfirmationDialog() {
     final String formattedTotal = "S\$${totalAmount.toStringAsFixed(2)}";
 
     Get.dialog(
       Dialog(
-        insetPadding: EdgeInsets.all(10), // 🔥 Full width
+        insetPadding: EdgeInsets.all(10), 
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
         child: Container(
-          width: Get.width, // Full width
+          width: Get.width, 
           padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           child: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // ---------- TITLE ----------
                 Text(
                   "Your Order",
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                 ),
                 SizedBox(height: 22),
 
-                // ---------- PROMO CODE ROW ----------
                 Row(
                   children: [
                     Image.asset(IconPath.promo, height: 24, width: 24),

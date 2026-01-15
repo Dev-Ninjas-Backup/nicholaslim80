@@ -17,7 +17,7 @@ class VehicleCards extends StatelessWidget {
 
   final HomeController ctrl;
 
-  String _assetForVehicle(StackVehicle v) {
+  String assetForVehicle(StackVehicle v) {
     final vt = v.type.toUpperCase();
     if (['MOTORCYCLE', 'BICYCLE', 'ELECTRIC_SCOOTER'].contains(vt)) {
       return IconPath.courierIcon;
@@ -36,7 +36,7 @@ class VehicleCards extends StatelessWidget {
     }
   }
 
-  String _prettyName(String raw) {
+  String prettyName(String raw) {
     return raw
         .replaceAll('_', ' ')
         .toLowerCase()
@@ -54,7 +54,6 @@ class VehicleCards extends StatelessWidget {
     return SizedBox(
       height: 310,
       child: Obx(() {
-        // combine the categorized lists into a single list for the home carousel
         final vehicles = <StackVehicle>[];
         vehicles.addAll(svc.t1);
         vehicles.addAll(svc.t2);
@@ -62,7 +61,6 @@ class VehicleCards extends StatelessWidget {
         vehicles.addAll(svc.t4);
 
         if (vehicles.isEmpty) {
-          // fallback to existing sample maps if API hasn't loaded yet
           return ListView.separated(
             scrollDirection: Axis.horizontal,
             itemCount: ctrl.vehicles.length,
@@ -179,7 +177,6 @@ class VehicleCards extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // image + non-clickable selection tick overlay
                     Container(
                       height: 100,
                       width: double.infinity,
@@ -188,7 +185,7 @@ class VehicleCards extends StatelessWidget {
                           ClipRRect(
                             borderRadius: BorderRadius.circular(8),
                             child: Image.asset(
-                              _assetForVehicle(vehicle),
+                              assetForVehicle(vehicle),
                               fit: BoxFit.fitHeight,
                               width: double.infinity,
                               height: double.infinity,
@@ -222,7 +219,7 @@ class VehicleCards extends StatelessWidget {
                       children: [
                         Expanded(
                           child: Text(
-                            _prettyName(vehicle.name),
+                            prettyName(vehicle.name),
                             style: getTextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w500,
@@ -235,20 +232,6 @@ class VehicleCards extends StatelessWidget {
                       ],
                     ),
                     SizedBox(height: 4),
-
-                    // dimension (small subtitle)
-                    // Text(
-                    //   vehicle.dimension ?? '',
-                    //   style: getTextStyle(
-                    //     fontSize: 12,
-                    //     color: AppColors.primaryFontColor,
-                    //   ),
-                    //   maxLines: 1,
-                    //   overflow: TextOverflow.ellipsis,
-                    // ),
-                    // SizedBox(height: 8),
-
-                    // details
                     Text(
                       vehicle.details,
                       style: getTextStyle(
@@ -287,8 +270,6 @@ class VehicleCards extends StatelessWidget {
                       ],
                     ),
                     SizedBox(height: 8),
-
-                    // Per km row and button
                     Row(
                       children: [
                         Expanded(
@@ -299,7 +280,6 @@ class VehicleCards extends StatelessWidget {
                         ),
                       ],
                     ),
-                    // SizedBox(height: 8),
                     Spacer(),
                     Center(
                       child: SizedBox(
@@ -317,14 +297,9 @@ class VehicleCards extends StatelessWidget {
                             debugPrint(
                               'SelectVehicle pressed -> vehicle.id=${vehicle.id} deliveryType=${ctrl.deliveryType.value}',
                             );
-                            // locally mark vehicle as selected
                             svc.selectVehicle(vehicle);
-
-                            // Build minimal order payload
                             final deliveryType = ctrl.deliveryType.value
                                 .toUpperCase();
-
-                            // Gather destinations if we have saved sender/receiver
                             final List<Map<String, dynamic>> destinations = [];
                             try {
                               final locCtrl =
@@ -360,8 +335,6 @@ class VehicleCards extends StatelessWidget {
                                 'No location controller available: $e',
                               );
                             }
-
-                            // If there are no destinations, proceed without them (API accepts orders without destinations)
                             if (destinations.isEmpty) {
                               debugPrint(
                                 'No saved sender/receiver; proceeding to create order without destinations',
@@ -375,23 +348,15 @@ class VehicleCards extends StatelessWidget {
                               'vehicle_type_id': vehicle.id,
                               'collect_time': 'ASAP',
                             };
-
-                            // only include destinations if available
                             if (destinations.isNotEmpty) {
                               payload['destinations'] = destinations;
                             }
-
-                            // Debug print request body
                             debugPrint('CreateOrder Request payload: $payload');
 
                             try {
                               EasyLoading.show(status: 'Placing order...');
                             } catch (_) {}
-
-                            // call createOrder
                             final res = await OrderService.createOrder(payload);
-
-                            // Debug print raw response
                             debugPrint('CreateOrder Response: $res');
 
                             try {
@@ -405,8 +370,6 @@ class VehicleCards extends StatelessWidget {
                             debugPrint(
                               'CreateOrder Response body (full): $body',
                             );
-
-                            // If server returned success=false, treat as failure
                             if (body['success'] != true) {
                               final serverMsg =
                                   body['error'] ??
@@ -438,21 +401,17 @@ class VehicleCards extends StatelessWidget {
                                 } else if (data.containsKey('id') ||
                                     data.containsKey('order_status') ||
                                     data.containsKey('total_cost')) {
-                                  // sometimes API returns the order directly inside `data` instead of `data.order`
                                   orderMap = Map<String, dynamic>.from(data);
                                 }
                               }
 
                               if (orderMap != null) {
-                                // show server message
                                 try {
                                   EasyLoading.showSuccess(
                                     body['message']?.toString() ??
                                         'Order created',
                                   );
                                 } catch (_) {}
-
-                                // Update StackedOrderController
                                 try {
                                   final orderCtrl =
                                       Get.find<StackedOrderController>();
@@ -465,7 +424,6 @@ class VehicleCards extends StatelessWidget {
                                       ) ??
                                       orderCtrl.totalAmount.value;
                                 } catch (_) {
-                                  // ensure it's available
                                   final oc = Get.put(StackedOrderController());
                                   try {
                                     oc.lastOrderId = orderMap['id'] as int?;
@@ -477,17 +435,13 @@ class VehicleCards extends StatelessWidget {
                                         oc.totalAmount.value;
                                   } catch (_) {}
                                 }
-
-                                // Before navigating, sync StackedScreen controllers using order fields
                                 try {
                                   final locCtrl =
                                       Get.find<StackedLocationController>();
-                                  // route_type
                                   if (orderMap['route_type'] != null) {
                                     locCtrl.isRoundTrip.value =
                                         (orderMap['route_type'] == 'ROUND');
                                   }
-                                  // collect_time
                                   if (orderMap['collect_time'] != null) {
                                     locCtrl.isNowSelected.value =
                                         (orderMap['collect_time'] == 'ASAP');
@@ -505,7 +459,6 @@ class VehicleCards extends StatelessWidget {
                                               '',
                                         );
                                   if (vid != null) {
-                                    // find vehicle in loaded lists
                                     final all = <StackVehicle>[]
                                       ..addAll(vehCtrl.t1)
                                       ..addAll(vehCtrl.t2)
@@ -523,8 +476,6 @@ class VehicleCards extends StatelessWidget {
                                       vehCtrl.selectedVehicle.value = found;
                                   }
                                 } catch (_) {}
-
-                                // Navigate to stacked screen with order data
                                 Get.toNamed(
                                   AppRoutes.getstackedScreen(),
                                   arguments: {'order': orderMap},

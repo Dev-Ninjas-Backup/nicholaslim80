@@ -19,7 +19,7 @@ class MyRidersScreen extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black87),
+          icon:  Icon(Icons.arrow_back, color: Colors.black87),
           onPressed: () => Get.back(),
         ),
         centerTitle: true,

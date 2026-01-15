@@ -26,7 +26,7 @@ class RateRiderTip extends StatelessWidget {
         leading: GestureDetector(
           onTap: () => Get.back(),
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: EdgeInsets.all(8.0),
             child: Image.asset(IconPath.colorFullArrow, width: 24, height: 24),
           ),
         ),

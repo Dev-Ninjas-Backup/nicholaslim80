@@ -19,7 +19,6 @@ class TwoSideIconText extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        // LEFT SIDE
         Expanded(
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -32,8 +31,6 @@ class TwoSideIconText extends StatelessWidget {
         ),
 
         SizedBox(width: 16),
-
-        // RIGHT SIDE
         Expanded(
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,

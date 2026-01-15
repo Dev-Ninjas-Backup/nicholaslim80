@@ -9,22 +9,15 @@ import 'package:http/http.dart' as http;
 import '../../../../core/shared_prefference_service/shared_pref.dart';
 
 class UserNotificationController extends GetxController {
-  // Selected tab index
   final RxInt selectNotificationListIndex = 0.obs;
-
-  // Loading state
   final RxBool isLoading = false.obs;
-
-  // Pagination
   final RxInt page = 1.obs;
   final int limit = 10;
   bool hasMore = true;
 
-  // Notification list
   final RxList<Notification1Model> notificationList =
       <Notification1Model>[].obs;
 
-  // Tabs
   final notificationTabs = ["Notifications", "Order Updates", "Promotions"];
 
   @override
@@ -33,8 +26,7 @@ class UserNotificationController extends GetxController {
     fetchNotifications();
   }
 
-  /// Fetch notifications from API
-  /// [loadMore] = true when user scrolls to bottom
+  
   Future<void> fetchNotifications({bool loadMore = false}) async {
     if (isLoading.value || (!hasMore && loadMore)) return;
 
@@ -42,7 +34,6 @@ class UserNotificationController extends GetxController {
     EasyLoading.show();
 
     try {
-      // Handle page
       if (loadMore) {
         page.value++;
       } else {
@@ -51,7 +42,6 @@ class UserNotificationController extends GetxController {
         notificationList.clear();
       }
 
-      // Get token
       final token = await SharedPreferencesHelper.getAccessToken();
       if (token == null || token.isEmpty) {
         EasyLoading.dismiss();
@@ -60,7 +50,6 @@ class UserNotificationController extends GetxController {
         return;
       }
 
-      // Determine type based on tab
       String type = "";
       switch (selectNotificationListIndex.value) {
         case 1:
@@ -70,10 +59,9 @@ class UserNotificationController extends GetxController {
           type = "PROMOTION";
           break;
         default:
-          type = ""; // All types
+          type = ""; 
       }
 
-      // API URL
       final uri = Uri.parse(
         "${ApiEndPoint.notification}"
         "?target_role=USER"
@@ -87,18 +75,16 @@ class UserNotificationController extends GetxController {
         headers: {'accept': '*/*', 'Authorization': 'Bearer $token'},
       );
 
-      print('📡 API CALL: $uri');
-      print('🔹 STATUS: ${response.statusCode}');
-      print('📝 BODY: ${response.body}');
+      print('API CALL: $uri');
+      print(' STATUS: ${response.statusCode}');
+      print(' BODY: ${response.body}');
 
       if (response.statusCode == 200) {
         final decoded = json.decode(response.body);
 
-        // Extract notification array
         final List list = decoded['data']?['data'] ?? [];
         final items = list.map((e) => Notification1Model.fromJson(e)).toList();
 
-        // Update hasMore based on total notifications
         final int total = decoded['data']?['total'] ?? 0;
         hasMore = page.value * limit < total;
 

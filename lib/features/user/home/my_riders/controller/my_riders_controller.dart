@@ -22,8 +22,6 @@ class MyRidersController extends GetxController {
     super.onInit();
     _loadToken().then((_) => fetchRiders());
   }
-
-  // ================= ADD RIDER =================
   Future<void> addRider() async {
     final phoneNumber = phoneController.text.trim();
     final email = emailController.text.trim();
@@ -68,7 +66,7 @@ class MyRidersController extends GetxController {
 
         EasyLoading.showSuccess("Rider added successfully");
 
-        await fetchRiders(); // refresh list
+        await fetchRiders();
       } else {
         EasyLoading.showError(
           response.body?['message'] ?? "Failed to add rider",
@@ -82,8 +80,6 @@ class MyRidersController extends GetxController {
       EasyLoading.dismiss();
     }
   }
-
-  // ================= DELETE RIDER =================
   Future<void> deleteRider(int myRaiderId) async {
     if (token.value.isEmpty) await _loadToken();
 
@@ -103,12 +99,11 @@ class MyRidersController extends GetxController {
       print("[DELETE RIDER] Response Body: ${response.body}");
 
       if (response.statusCode == 200 && response.body?['success'] == true) {
-        // Remove from local list
         ridersList.removeWhere((rider) => rider['myRaiderId'] == myRaiderId);
         ridersList.refresh();
 
         EasyLoading.showSuccess("Rider deleted successfully");
-        await fetchRiders(); // refresh list
+        await fetchRiders(); 
       } else {
         EasyLoading.showError(
           response.body?['message'] ?? "Failed to delete rider",
@@ -122,8 +117,6 @@ class MyRidersController extends GetxController {
       EasyLoading.dismiss();
     }
   }
-
-  // ================= GET RIDERS =================
   Future<void> fetchRiders() async {
     if (token.value.isEmpty) await _loadToken();
 
@@ -152,8 +145,8 @@ class MyRidersController extends GetxController {
           final riderMap = {
             'name': raiderData['raider_name'] ?? 'Unknown',
             'order-id': rider['find_by'] ?? 'Pending',
-            'raiderId': raiderData['id'], // For display/avatar
-            'myRaiderId': rider['id'], // ✅ For delete API
+            'raiderId': raiderData['id'], 
+            'myRaiderId': rider['id'], 
             'image': ImagePath.profile1,
           };
 
@@ -175,7 +168,6 @@ class MyRidersController extends GetxController {
       EasyLoading.dismiss();
     }
   }
-  // Toggle favorite (love) with API
 Future<void> toggleFavoriteApi(String name, int myRaiderId) async {
   if (token.value.isEmpty) await _loadToken();
 
@@ -202,8 +194,6 @@ Future<void> toggleFavoriteApi(String name, int myRaiderId) async {
 }
 
 
-
-  // ================= UI HELPERS =================
   void toggleLove(String name) {
     loveState[name] = !(loveState[name] ?? false);
   }
@@ -211,8 +201,6 @@ Future<void> toggleFavoriteApi(String name, int myRaiderId) async {
   void updateSwipeProgress(String name, double progress) {
     swipeProgress[name] = progress;
   }
-
-  // ================= TOKEN =================
   Future<void> _loadToken() async {
     token.value = await SharedPreferencesHelper.getAccessToken() ?? '';
     print("[TOKEN] Loaded: ${token.value}");

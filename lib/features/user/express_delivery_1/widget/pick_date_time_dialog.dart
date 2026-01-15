@@ -30,7 +30,7 @@ class PickDateTimeDialog extends StatelessWidget {
         side: BorderSide(color: Colors.amber, width: 2),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding:  EdgeInsets.all(16.0),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [

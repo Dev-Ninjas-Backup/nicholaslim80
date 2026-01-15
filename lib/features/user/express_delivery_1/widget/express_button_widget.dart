@@ -18,7 +18,6 @@ class ExpressButtonWidget extends StatelessWidget {
 
       return Column(
         children: [
-          /// ONE WAY / ROUND
           Card(
             child: Row(
               children: [
@@ -26,7 +25,7 @@ class ExpressButtonWidget extends StatelessWidget {
                   child: GestureDetector(
                     onTap: () => controller.toggleTripType(false),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      padding:  EdgeInsets.symmetric(vertical: 12),
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                         color: !isRound
@@ -48,7 +47,7 @@ class ExpressButtonWidget extends StatelessWidget {
                   child: GestureDetector(
                     onTap: () => controller.toggleTripType(true),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      padding: EdgeInsets.symmetric(vertical: 12),
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                         color: isRound
@@ -70,12 +69,11 @@ class ExpressButtonWidget extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(height: 16),
+           SizedBox(height: 16),
 
-          /// ROUTE INFO
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: Colors.grey[100],
               borderRadius: BorderRadius.circular(10),
@@ -83,11 +81,10 @@ class ExpressButtonWidget extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                /// HEADER
                 Row(
                   children: [
                     Image.asset(IconPath.exparessGrey, width: 15, height: 15),
-                    const SizedBox(width: 8),
+                     SizedBox(width: 8),
                     Text(
                       'Fixed route',
                       style: getTextStyle(
@@ -98,9 +95,8 @@ class ExpressButtonWidget extends StatelessWidget {
                   ],
                 ),
 
-                const SizedBox(height: 8),
+                 SizedBox(height: 8),
 
-                /// SENDER
                 OneWayRoundWidget(
                   controller: controller,
                   title:
@@ -115,20 +111,19 @@ class ExpressButtonWidget extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(height: 6),
-                const Icon(
+                 SizedBox(height: 6),
+                 Icon(
                   Icons.fiber_manual_record,
                   size: 10,
                   color: Colors.grey,
                 ),
-                const Icon(
+                 Icon(
                   Icons.fiber_manual_record,
                   size: 10,
                   color: Colors.grey,
                 ),
-                const SizedBox(height: 6),
+                 SizedBox(height: 6),
 
-                /// RECEIVER
                 OneWayRoundWidget(
                   controller: controller,
                   title:

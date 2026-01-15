@@ -1,4 +1,3 @@
-// ignore_for_file: unused_local_variable
 
 import 'package:ZipBee/core/common/styles/global_text_style.dart';
 import 'package:ZipBee/core/utils/constants/icon_path.dart';
@@ -26,14 +25,14 @@ class ConnectingRiderPage extends StatelessWidget {
         leading: GestureDetector(
           onTap: Get.back,
           child: Padding(
-            padding: const EdgeInsets.all(8),
+            padding: EdgeInsets.all(8),
             child: Image.asset(IconPath.colorFullArrow, width: 24),
           ),
         ),
       ),
       body: Stack(
         children: [
-          const SizedBox.expand(child: GoogleMapWidget()),
+           SizedBox.expand(child: GoogleMapWidget()),
 
           DraggableScrollableSheet(
             initialChildSize: 0.5,
@@ -41,20 +40,20 @@ class ConnectingRiderPage extends StatelessWidget {
             maxChildSize: 0.7,
             builder: (_, scrollController) {
               return Container(
-                decoration: const BoxDecoration(
+                decoration:  BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                 ),
                 child: SingleChildScrollView(
                   controller: scrollController,
                   child: Padding(
-                    padding: const EdgeInsets.all(16),
+                    padding:  EdgeInsets.all(16),
                     child: Column(
                       children: [
-                        _dragHandle(),
-                        const SizedBox(height: 16),
+                        dragHandle(),
+                         SizedBox(height: 16),
 
-                        const Text(
+                         Text(
                           'Connecting to rider...',
                           style: TextStyle(
                             fontSize: 20,
@@ -62,15 +61,13 @@ class ConnectingRiderPage extends StatelessWidget {
                             color: Colors.grey,
                           ),
                         ),
-                        const SizedBox(height: 20),
+                         SizedBox(height: 20),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [_stepBar(), _stepBar()],
                         ),
 
-                        const SizedBox(height: 16),
-
-                        /// RIDER INFO
+                         SizedBox(height: 16),
                         Row(
                           children: [
                              CircleAvatar(
@@ -78,7 +75,7 @@ class ConnectingRiderPage extends StatelessWidget {
                               backgroundImage:
                                   AssetImage(ImagePath.profileImage),
                             ),
-                            const SizedBox(width: 11),
+                             SizedBox(width: 11),
                             Obx(() => Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
@@ -105,9 +102,7 @@ class ConnectingRiderPage extends StatelessWidget {
                           ],
                         ),
 
-                        const Divider(height: 32),
-
-                        /// LOCATION (API DRIVEN)
+                         Divider(height: 32),
                         Obx(() => Column(
                               children: [
                                 LocationRowWidget(
@@ -117,9 +112,9 @@ class ConnectingRiderPage extends StatelessWidget {
                                       : 'Collected from (${controller.pickupName.value})',
                                   address: controller.pickupAddress.value,
                                 ),
-                                const Icon(Icons.fiber_manual_record,
+                                 Icon(Icons.fiber_manual_record,
                                     size: 10, color: Colors.grey),
-                                const Icon(Icons.fiber_manual_record,
+                                 Icon(Icons.fiber_manual_record,
                                     size: 10, color: Colors.grey),
                                 LocationRowWidget(
                                   iconPath: IconPath.deliveredIcon,
@@ -131,7 +126,7 @@ class ConnectingRiderPage extends StatelessWidget {
                               ],
                             )),
 
-                        const SizedBox(height: 20),
+                         SizedBox(height: 20),
 
                         Button(
                           buttonText: 'Share Ride Information',
@@ -152,7 +147,7 @@ class ConnectingRiderPage extends StatelessWidget {
     );
   }
 
-  Widget _dragHandle() => Center(
+  Widget dragHandle() => Center(
         child: Container(
           width: 40,
           height: 4,
@@ -166,7 +161,7 @@ class ConnectingRiderPage extends StatelessWidget {
   Widget _stepBar() => Container(
         width: 69,
         height: 6,
-        margin: const EdgeInsets.symmetric(horizontal: 4),
+        margin:  EdgeInsets.symmetric(horizontal: 4),
         decoration: BoxDecoration(
           color: Colors.amber,
           borderRadius: BorderRadius.circular(3),

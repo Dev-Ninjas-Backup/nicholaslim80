@@ -34,7 +34,6 @@ class _ActiveOrderDetailsScreenState extends State<ActiveOrderDetailsScreen> {
         ? Get.find<OrderController>()
         : Get.put(OrderController());
 
-    // Fetch rider info if riderId is available
     if (widget.order.riderId != null) {
       controller.fetchRiderInfoById(widget.order.riderId!);
     }
@@ -45,9 +44,9 @@ class _ActiveOrderDetailsScreenState extends State<ActiveOrderDetailsScreen> {
     if (widget.order.pickupLat != null && widget.order.pickupLong != null) {
       _markers.add(
         Marker(
-          markerId: const MarkerId('pickup'),
+          markerId: MarkerId('pickup'),
           position: LatLng(widget.order.pickupLat!, widget.order.pickupLong!),
-          infoWindow: const InfoWindow(title: 'Pickup Location'),
+          infoWindow: InfoWindow(title: 'Pickup Location'),
           icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
         ),
       );
@@ -55,9 +54,9 @@ class _ActiveOrderDetailsScreenState extends State<ActiveOrderDetailsScreen> {
     if (widget.order.dropOffLat != null && widget.order.dropOffLong != null) {
       _markers.add(
         Marker(
-          markerId: const MarkerId('dropoff'),
+          markerId:  MarkerId('dropoff'),
           position: LatLng(widget.order.dropOffLat!, widget.order.dropOffLong!),
-          infoWindow: const InfoWindow(title: 'Drop-off Location'),
+          infoWindow: InfoWindow(title: 'Drop-off Location'),
           icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
         ),
       );
@@ -104,7 +103,6 @@ class _ActiveOrderDetailsScreenState extends State<ActiveOrderDetailsScreen> {
       backgroundColor: AppColors.backgroungColor,
       body: SafeArea(
         child: Obx(() {
-          // Find the "live" order in the controller to reflect fetched rider info
           final liveOrder = controller.orderList.firstWhere(
             (o) => o.orderId == widget.order.orderId,
             orElse: () => widget.order,
@@ -112,11 +110,10 @@ class _ActiveOrderDetailsScreenState extends State<ActiveOrderDetailsScreen> {
 
           return Column(
             children: [
-              // Top Bar
               Container(
                 width: double.infinity,
-                color: const Color(0xFFFFCC00),
-                padding: const EdgeInsets.symmetric(
+                color: Color(0xFFFFCC00),
+                padding: EdgeInsets.symmetric(
                   vertical: 12,
                   horizontal: 16,
                 ),
@@ -124,12 +121,12 @@ class _ActiveOrderDetailsScreenState extends State<ActiveOrderDetailsScreen> {
                   children: [
                     GestureDetector(
                       onTap: () => Get.back(),
-                      child: const Icon(
+                      child: Icon(
                         Icons.arrow_back_ios_new_rounded,
                         size: 20,
                       ),
                     ),
-                    const SizedBox(width: 10),
+                     SizedBox(width: 10),
                     Expanded(
                       child: Text(
                         "Order #${liveOrder.orderId} is pending",
@@ -142,8 +139,6 @@ class _ActiveOrderDetailsScreenState extends State<ActiveOrderDetailsScreen> {
                   ],
                 ),
               ),
-
-              // Google Map
               SizedBox(
                 height: 250,
                 width: double.infinity,
@@ -162,13 +157,11 @@ class _ActiveOrderDetailsScreenState extends State<ActiveOrderDetailsScreen> {
                   mapToolbarEnabled: false,
                 ),
               ),
-
-              // Details
               Expanded(
                 child: SingleChildScrollView(
                   child: Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: const BoxDecoration(
+                    padding:  EdgeInsets.all(16),
+                    decoration:  BoxDecoration(
                       color: AppColors.backgroungColor,
                       borderRadius: BorderRadius.vertical(
                         top: Radius.circular(22),
@@ -184,32 +177,21 @@ class _ActiveOrderDetailsScreenState extends State<ActiveOrderDetailsScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Rider Details
                         RiderDetails(order: liveOrder),
-
-                        const SizedBox(height: 12),
-
-                        // Message & Call
+                         SizedBox(height: 12),
                         MessageCallButtons(
                           phoneNumber: liveOrder.assignRiderPhone,
                         ),
 
-                        const SizedBox(height: 12),
-
-                        // Ratings
+                         SizedBox(height: 12),
                         RatingsSection(
                           rating: liveOrder.assignRiderRating,
                           totalReviews: liveOrder.assignRiderReviews,
                         ),
-
-                        const SizedBox(height: 16),
-
-                        // Price & Payment
+                         SizedBox(height: 16),
                         PriceAndPayment(order: liveOrder),
 
-                        const SizedBox(height: 16),
-
-                        // Pickup & Delivery Date/Time
+                         SizedBox(height: 16),
                         Row(
                           children: [
                             Text(
@@ -222,9 +204,7 @@ class _ActiveOrderDetailsScreenState extends State<ActiveOrderDetailsScreen> {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 20),
-
-                        // Stops
+                         SizedBox(height: 20),
                         StopItem(
                           iconPath: IconPath.locationBlue,
                           title: "Collected from (${liveOrder.senderName})",
@@ -235,8 +215,7 @@ class _ActiveOrderDetailsScreenState extends State<ActiveOrderDetailsScreen> {
                           title: "Deliver to",
                           address: liveOrder.dropOffAddress,
                         ),
-
-                        const SizedBox(height: 20),
+                         SizedBox(height: 20),
 
                         CustomButton(
                           label: 'Share Ride Information',
@@ -271,7 +250,7 @@ class RiderDetails extends StatelessWidget {
               ? NetworkImage(order.assignRiderImage) as ImageProvider
               : AssetImage(ImagePath.profileImage),
         ),
-        const SizedBox(width: 12),
+         SizedBox(width: 12),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

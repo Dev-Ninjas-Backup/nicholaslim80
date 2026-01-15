@@ -13,20 +13,15 @@ import 'package:http/http.dart' as http;
 import '../../../../core/api_end_point/api_end_point.dart';
 
 class HomeController extends GetxController {
-  /// ================= CONTROLLERS =================
 
-  /// ================= OBSERVABLES =================
   final userName = 'Good Morning!'.obs;
   final parcelStatus = 'Live delivery status'.obs;
 
-  final walletBalance = 0.0.obs; // current wallet balance
-  final availablePoints = 0.obs; // reward points
+  final walletBalance = 0.0.obs; 
+  final availablePoints = 0.obs; 
 
   final selectedService = 'Standard'.obs;
-  final selectedVehicleId = RxnString();
-
-  /// ================= VEHICLES =================
-  final vehicles = <Map<String, dynamic>>[
+  final selectedVehicleId = RxnString();  final vehicles = <Map<String, dynamic>>[
     {
       'id': 'instant',
       'title': 'Instant Delivery',
@@ -61,26 +56,20 @@ class HomeController extends GetxController {
     },
   ].obs;
 
-  /// express | standard
   final deliveryType = 'standard'.obs;
 
-  /// AppBar bottom text
   String get parcelStatusText {
     if (deliveryType.value == 'express') return 'Express Delivery';
     if (deliveryType.value == 'standard') return 'Standard Delivery';
     if (deliveryType.value == 'stacked') return 'Stacked Delivery';
     return 'Standard Delivery';
   }
-
-  /// call from HomeScreen
   void selectDeliveryType(String type) {
     deliveryType.value = type;
   }
 
-  /// ================= DRAWER =================
   var drawerItem = <DrawerModel>[].obs;
 
-  /// ================= PROFILE API =================
   Future<void> fetchUserProfile() async {
     try {
       final token = await SharedPreferencesHelper.getAccessToken();
@@ -99,17 +88,11 @@ class HomeController extends GetxController {
         final body = jsonDecode(response.body);
         if (body['success'] == true && body['data'] != null) {
           final data = body['data'];
-
-          /// Bind username safely
           userName.value =
               "Good Morning, ${data['username']?.toString().trim() ?? ''}";
-
-          /// Bind current wallet balance safely
           walletBalance.value = (data['currentWalletBalance'] != null)
               ? double.tryParse(data['currentWalletBalance'].toString()) ?? 0
               : 0;
-
-          /// Bind reward points safely
           availablePoints.value = (data['reward_points'] != null)
               ? int.tryParse(data['reward_points'].toString()) ?? 0
               : 0;
@@ -118,17 +101,15 @@ class HomeController extends GetxController {
             "Profile loaded: wallet=${walletBalance.value}, points=${availablePoints.value}",
           );
         } else {
-          debugPrint("❌ Profile API returned success=false");
+          debugPrint(" Profile API returned success=false");
         }
       } else {
-        debugPrint("❌ Profile API failed: ${response.statusCode}");
+        debugPrint(" Profile API failed: ${response.statusCode}");
       }
     } catch (e) {
-      debugPrint("❌ PROFILE ERROR: $e");
+      debugPrint(" PROFILE ERROR: $e");
     }
   }
-
-  /// ================= LOGOUT =================
   void showLogoutDialog() {
     Get.dialog(
       LogoutDialog(
@@ -170,12 +151,8 @@ class HomeController extends GetxController {
       Get.offAllNamed(AppRoutes.loginScreen);
     }
   }
-
-  /// ================= ACTIONS =================
   void selectService(String service) => selectedService.value = service;
   void selectVehicle(String id) => selectedVehicleId.value = id;
-
-  /// ================= INIT =================
   @override
   void onInit() {
     fetchUserProfile();
