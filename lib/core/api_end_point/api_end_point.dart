@@ -7,6 +7,7 @@ class ApiEndPoint {
   static const String forgetPass = '$baseUrl/auth/forgot-password';
   static const String notificationID = '$baseUrl/notifications/{id}';
   static const String notification = '$baseUrl/notifications';
+  static const String notificationFCM = '$baseUrl/notifications/fcm-token';
   static const String logOut = '$baseUrl/auth/logout';
   static const String resetPass = '$baseUrl/auth/forgot/reset-password';
   static const String order = '$baseUrl/order/mine';
@@ -41,4 +42,7 @@ class ApiEndPoint {
   // Order GET endpoints
   static const String getOrder = '$baseUrl/order/{orderId}';
   static const String getUserProfile = '$baseUrl/users/me';
+  static const String rating = '$baseUrl/ratings';
+  static const String faq = '$baseUrl/faq';
+  static const String faqRole = '$baseUrl/faq/faqs-by-role';
 }

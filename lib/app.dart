@@ -22,7 +22,7 @@ class Nicholaslim extends StatelessWidget {
           builder: EasyLoading.init(),
           initialRoute: AppRoutes.getSplashScreen(),
 
-          // initialRoute: AppRoutes.googleMapScreen, // for testing google map 
+          // initialRoute: AppRoutes.googleMapScreen, // for testing google map
           getPages: AppRoutes.routes,
 
           initialBinding: ControllerBinder(),
