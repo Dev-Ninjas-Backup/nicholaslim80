@@ -66,10 +66,11 @@ class SenderController extends GetxController {
 
     // 1️⃣ POST: Create destination
     final destRes = await DestinationService.createDestination(body);
-    final destStatus = destRes['statusCode'] ?? 500;
     final destSuccess = destRes['success'] as bool? ?? false;
 
-    if (!destSuccess || destStatus != 201 && destStatus != 200) {
+    debugPrint('📊 CREATE DESTINATION - Success: $destSuccess');
+
+    if (!destSuccess) {
       isLoading.value = false;
       EasyLoading.dismiss();
       final msg = (destRes['body'] as Map<String, dynamic>?)?['message'] ?? 'Failed to create destination';
@@ -77,9 +78,14 @@ class SenderController extends GetxController {
       return null;
     }
 
+    // Extract destination ID from nested response
     final destData = destRes['body'] as Map<String, dynamic>? ?? {};
-    final nestedData = (destData['data'] as Map<String, dynamic>?);
-    final actualDestData = (nestedData?['data'] as Map<String, dynamic>?) ?? {};
+    final dataWrapper = destData['data'] as Map<String, dynamic>? ?? {};
+    
+    // Try to extract ID from either 'result' or nested 'data'
+    var actualDestData = (dataWrapper['result'] as Map<String, dynamic>?) ?? 
+                         (dataWrapper['data'] as Map<String, dynamic>?) ?? 
+                         {};
     
     debugPrint('✅ DESTINATION CREATED: ${jsonEncode(actualDestData)}');
     
@@ -93,17 +99,16 @@ class SenderController extends GetxController {
       return null;
     }
 
-    // 2️⃣ PATCH: Link destination to order
+    // 2️⃣ PATCH: Link destination to order (ONLY if CREATE succeeded)
     final stopType = type == 'SENDER' ? 'PICKUP' : 'DROP';
     final patchRes = await DestinationService.addDestinationToOrder(
       orderId: orderId,
       destinationId: destinationId,
       stopType: stopType,
     );
-    final patchStatus = patchRes['statusCode'] ?? 500;
     final patchSuccess = patchRes['success'] as bool? ?? false;
 
-    if (!patchSuccess || patchStatus != 200 && patchStatus != 201) {
+    if (!patchSuccess) {
       isLoading.value = false;
       EasyLoading.dismiss();
       final msg = (patchRes['body'] as Map<String, dynamic>?)?['message'] ?? 'Failed to link destination';

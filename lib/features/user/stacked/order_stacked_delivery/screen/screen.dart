@@ -213,6 +213,7 @@ class StackedOrderControllerScreen extends GetxController {
                       ),
                     ),
                     StackedPaymentMethodSelector(
+                      orderAmount: totalAmount,
                       options: [
                         StackedPaymentOption(
                           title: "Stripe",
@@ -221,12 +222,12 @@ class StackedOrderControllerScreen extends GetxController {
                         ),
                         StackedPaymentOption(
                           title: "Wallet ",
-                          subtitle: "S\$10.50",
+                          subtitle: "\$10.50",
                           imageAsset: IconPath.wallet,
                         ),
                         StackedPaymentOption(
                           title: "Cash",
-                          subtitle: "To be paid by sender or receipent",
+                          subtitle: "To be paid by SENDER or RECEIVER",
                           imageAsset: IconPath.cash,
                         ),
                       ],
