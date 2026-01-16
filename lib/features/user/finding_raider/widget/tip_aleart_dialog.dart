@@ -19,11 +19,11 @@ class TipAleartDialog extends StatelessWidget {
       insetPadding: EdgeInsets.symmetric(horizontal: 16),
       child: ConstrainedBox(
         constraints: BoxConstraints(
-          minWidth: 300, // minimum width
-          maxWidth: 400, // maximum width, change as needed
+          minWidth: 300, 
+          maxWidth: 400, 
         ),
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(16.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -39,7 +39,6 @@ class TipAleartDialog extends StatelessWidget {
               FilledButton(
                 onPressed: () {
                   Get.to(ScheduleDelivery());
-                  //Get.back();
                 },
 
                 style: FilledButton.styleFrom(

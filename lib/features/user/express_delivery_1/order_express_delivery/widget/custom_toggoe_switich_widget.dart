@@ -13,10 +13,10 @@ class CustomToggleSwitch extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      behavior: HitTestBehavior.opaque, // ✅ important
+      behavior: HitTestBehavior.opaque,
       onTap: () => onChanged(!value),
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
+        duration: Duration(milliseconds: 200),
         width: 60,
         height: 32,
         padding: EdgeInsets.all(4),
@@ -33,7 +33,7 @@ class CustomToggleSwitch extends StatelessWidget {
             decoration: BoxDecoration(
               color: value ? Colors.amber : Colors.white,
               shape: BoxShape.circle,
-              boxShadow: const [
+              boxShadow: [
                 BoxShadow(
                   color: Colors.black12,
                   blurRadius: 3,

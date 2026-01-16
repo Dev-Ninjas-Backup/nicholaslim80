@@ -52,4 +52,8 @@ class ApiEndPoint {
   static const String notifyRider = '$baseUrl/order/{orderId}/notify-rider';
   static const String followedRider =
       '$baseUrl/order/followed-rider/order/{orderId}';
+
+  // Stripe endpoints
+  static const String stripeCredentials = '$baseUrl/stripe/credentials';
+  static const String placeOrder = '$baseUrl/order/{orderId}/place';
 }

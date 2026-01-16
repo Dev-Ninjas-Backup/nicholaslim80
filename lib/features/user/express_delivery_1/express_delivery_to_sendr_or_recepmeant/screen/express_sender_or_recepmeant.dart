@@ -11,8 +11,6 @@ import 'package:ZipBee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-// 🔹 Your App Colors
-
 import '../../../Veicale_Type_on_Exprees_Delivery/controller/vehicle_secation_controller.dart';
 
 class ExpressToSenderOrRecepment extends StatelessWidget {
@@ -69,7 +67,6 @@ class ExpressToSenderOrRecepment extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // 🔹 Location Section
                 Text(
                   'Select Location',
                   style: getTextStyle(
@@ -82,7 +79,6 @@ class ExpressToSenderOrRecepment extends StatelessWidget {
 
                 SizedBox(height: 24),
 
-                // 🔹 Collect Time Section
                 Text(
                   'Collect time',
                   style: getTextStyle(
@@ -110,8 +106,6 @@ class ExpressToSenderOrRecepment extends StatelessWidget {
                           onTap: () {
                             FocusScope.of(context).unfocus();
                             vehicleController.calculationHistory();
-
-                            // Open the date-time dialog
                             showDialog(
                               context: context,
                               builder: (_) => PickDateTimeDialog(),
@@ -124,8 +118,6 @@ class ExpressToSenderOrRecepment extends StatelessWidget {
                 ),
 
                 SizedBox(height: 24),
-
-                // 🔹 Vehicle Type Section
                 Row(
                   children: [
                     Text(
@@ -150,8 +142,6 @@ class ExpressToSenderOrRecepment extends StatelessWidget {
                 VehicleTypeWidget(controller: controller),
 
                 SizedBox(height: 24),
-
-                // 🔹 Order Review Section
                 OrderReviewWidget(
                   vehicleController: vehicleController,
                   total: vehicleController.calculateTotal(),

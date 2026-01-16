@@ -87,7 +87,7 @@ class OrderSuccessDialog {
                                   wantsConfirmationCall.value = value!,
                               activeColor: Colors.blue,
                             ),
-                            SizedBox(width: 4),
+                            SizedBox(width: 4), 
                             Text('Yes', style: TextStyle(fontSize: 16)),
                           ],
                         ),
@@ -108,7 +108,7 @@ class OrderSuccessDialog {
                                   wantsConfirmationCall.value = value!,
                               activeColor: Colors.blue,
                             ),
-                            SizedBox(width: 4),
+                            SizedBox(width: 4), 
                             Text('No', style: TextStyle(fontSize: 16)),
                           ],
                         ),
@@ -123,7 +123,7 @@ class OrderSuccessDialog {
           ),
         ),
       ),
-      barrierDismissible: true,
+      barrierDismissible: true, 
     );
   }
 }

@@ -1,5 +1,8 @@
 import 'package:ZipBee/core/utils/constants/icon_path.dart';
+import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/stripe_payment_sheet_handler.dart';
+import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/stripe_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 
 // Payment Option Model
@@ -17,6 +20,7 @@ class StackedPaymentOption {
 class StackedPaymentController extends GetxController {
   var selectedIndex = 0.obs;
   var selectedTitle = "Select".obs;
+  var walletBalance = 0.0.obs;
 }
 
 // -------------------
@@ -25,12 +29,70 @@ class StackedPaymentController extends GetxController {
 class StackedPaymentSelectionWidget extends StatelessWidget {
   final List<StackedPaymentOption> options;
   final StackedPaymentController controller;
+  final double orderAmount;
 
   const StackedPaymentSelectionWidget({
     super.key,
     required this.options,
     required this.controller,
+    required this.orderAmount,
   });
+
+  /// Handle payment method selection
+  Future<void> _handlePaymentSelection(int index, StackedPaymentOption option) async {
+    controller.selectedIndex.value = index;
+    controller.selectedTitle.value = option.title;
+
+    // If Stripe is selected, trigger payment flow
+    if (option.title == "Stripe") {
+      final paymentMethodId = await StripePaymentSheetHandler.processPayment();
+
+      if (paymentMethodId != null && paymentMethodId.isNotEmpty) {
+        // Payment method obtained, now place order with it
+        EasyLoading.show(status: 'Placing order...');
+        
+        final placeRes = await StripeService.placeOrder(
+          orderId: orderAmount.toInt(), // Using orderAmount as orderId temporarily
+          paymentMethodId: paymentMethodId,
+        );
+        final placeSuccess = placeRes['success'] as bool? ?? false;
+
+        EasyLoading.dismiss();
+
+        if (placeSuccess) {
+          EasyLoading.showSuccess('Order placed successfully!');
+          Get.back();
+          // Navigate to success screen or order confirmation
+        } else {
+          final msg = (placeRes['body'] as Map<String, dynamic>?)?['message'] ?? 'Failed to place order';
+          EasyLoading.showError(msg.toString());
+        }
+      }
+    } else if (option.title == "Wallet") {
+      // Handle wallet payment - place order with wallet method
+      EasyLoading.show(status: 'Processing wallet payment...');
+      
+      final placeRes = await StripeService.placeOrder(
+        orderId: orderAmount.toInt(), // Using orderAmount as orderId temporarily
+        paymentMethodId: 'WALLET',
+      );
+      final placeSuccess = placeRes['success'] as bool? ?? false;
+
+      EasyLoading.dismiss();
+
+      if (placeSuccess) {
+        EasyLoading.showSuccess('Order placed successfully!');
+        Get.back();
+      } else {
+        final msg = (placeRes['body'] as Map<String, dynamic>?)?['message'] ?? 'Failed to place order';
+        EasyLoading.showError(msg.toString());
+      }
+    } else {
+      // Cash payment - no order placement check needed
+      EasyLoading.showSuccess('${option.title} selected');
+      Get.back();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +104,7 @@ class StackedPaymentSelectionWidget extends StatelessWidget {
         return Column(
           children: [
             Obx(
-                  () => ListTile(
+              () => ListTile(
                 leading: option.imageAsset != null
                     ? Image.asset(option.imageAsset!, width: 32, height: 32)
                     : Image.asset(IconPath.arrowBackIcon),
@@ -55,11 +117,7 @@ class StackedPaymentSelectionWidget extends StatelessWidget {
                   style: TextStyle(fontSize: 12, color: Colors.grey),
                 ),
                 trailing: GestureDetector(
-                  onTap: () {
-                    controller.selectedIndex.value = index;
-                    controller.selectedTitle.value = option.title;
-                    Get.back();
-                  },
+                  onTap: () => _handlePaymentSelection(index, option),
                   child: Container(
                     width: 24,
                     height: 24,
@@ -86,11 +144,7 @@ class StackedPaymentSelectionWidget extends StatelessWidget {
                         : null,
                   ),
                 ),
-                onTap: () {
-                  controller.selectedIndex.value = index;
-                  controller.selectedTitle.value = option.title;
-                  Get.back();
-                },
+                onTap: () => _handlePaymentSelection(index, option),
               ),
             ),
             if (index != options.length - 1) Divider(height: 1),
@@ -106,9 +160,14 @@ class StackedPaymentSelectionWidget extends StatelessWidget {
 // -------------------
 class StackedPaymentMethodSelector extends StatelessWidget {
   final List<StackedPaymentOption> options;
+  final double orderAmount;
   final StackedPaymentController controller = Get.put(StackedPaymentController());
 
-  StackedPaymentMethodSelector({super.key, required this.options});
+  StackedPaymentMethodSelector({
+    super.key,
+    required this.options,
+    required this.orderAmount,
+  });
 
   void openSelectorSheet() {
     Get.bottomSheet(
@@ -118,7 +177,11 @@ class StackedPaymentMethodSelector extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
-        child: StackedPaymentSelectionWidget(options: options, controller: controller),
+        child: StackedPaymentSelectionWidget(
+          options: options,
+          controller: controller,
+          orderAmount: orderAmount,
+        ),
       ),
     );
   }
@@ -136,7 +199,7 @@ class StackedPaymentMethodSelector extends StatelessWidget {
         child: Row(
           children: [
             Obx(
-                  () => Text(
+              () => Text(
                 controller.selectedTitle.value,
                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
               ),

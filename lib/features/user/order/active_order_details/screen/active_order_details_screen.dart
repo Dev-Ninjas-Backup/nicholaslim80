@@ -74,7 +74,6 @@ class ActiveOrderDetailsScreen extends StatelessWidget {
 
           return Column(
             children: [
-              // Top Bar
               Container(
                 width: double.infinity,
                 color: const Color(0xFFE0E0E0),
@@ -86,12 +85,12 @@ class ActiveOrderDetailsScreen extends StatelessWidget {
                   children: [
                     GestureDetector(
                       onTap: () => Get.back(),
-                      child: const Icon(
+                      child: Icon(
                         Icons.arrow_back_ios_new_rounded,
                         size: 20,
                       ),
                     ),
-                    const SizedBox(width: 10),
+                     SizedBox(width: 10),
                     Expanded(
                       child: Center(
                         child: Text(
@@ -107,8 +106,6 @@ class ActiveOrderDetailsScreen extends StatelessWidget {
                   ],
                 ),
               ),
-
-              // Google Map
               SizedBox(
                 height: 200,
                 width: double.infinity,
@@ -164,7 +161,6 @@ class ActiveOrderDetailsScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Rider Details
                         RiderDetails(order: liveOrder),
 
                         const SizedBox(height: 16),
@@ -174,9 +170,7 @@ class ActiveOrderDetailsScreen extends StatelessWidget {
                           phoneNumber: liveOrder.assignRiderPhone,
                         ),
 
-                        const SizedBox(height: 12),
-
-                        // Ratings
+                         SizedBox(height: 12),
                         RatingsSection(
                           rating: liveOrder.assignRiderRating,
                           totalReviews: liveOrder.assignRiderReviews,

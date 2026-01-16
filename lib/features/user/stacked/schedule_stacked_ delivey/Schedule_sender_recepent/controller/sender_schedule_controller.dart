@@ -60,6 +60,8 @@ class SenderScheduleController extends GetxController {
     final destStatus = destRes['statusCode'] as int? ?? 500;
     final destSuccess = destRes['success'] as bool? ?? false;
 
+    debugPrint('📊 CREATE DESTINATION - Status: $destStatus, Success: $destSuccess');
+
     if (!destSuccess || destStatus != 201 && destStatus != 200) {
       isLoading.value = false;
       EasyLoading.dismiss();
@@ -69,8 +71,12 @@ class SenderScheduleController extends GetxController {
     }
 
     final destData = destRes['body'] as Map<String, dynamic>? ?? {};
-    final nestedData = (destData['data'] as Map<String, dynamic>?);
-    final actualDestData = (nestedData?['data'] as Map<String, dynamic>?) ?? {};
+    final dataWrapper = destData['data'] as Map<String, dynamic>? ?? {};
+    
+    // Try to extract ID from either 'result' or nested 'data'
+    var actualDestData = (dataWrapper['result'] as Map<String, dynamic>?) ?? 
+                         (dataWrapper['data'] as Map<String, dynamic>?) ?? 
+                         {};
     
     debugPrint('✅ DESTINATION CREATED: ${jsonEncode(actualDestData)}');
     

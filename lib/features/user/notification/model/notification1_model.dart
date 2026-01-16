@@ -14,7 +14,6 @@ class Notification1Model {
   });
 
   factory Notification1Model.fromJson(Map<String, dynamic> json) {
-    // Try to parse 'createdAt' or 'created_at' from the API
     final createdAtStr = json['createdAt'] ?? json['created_at'];
     final createdAt = createdAtStr != null
         ? DateTime.parse(createdAtStr).toLocal()

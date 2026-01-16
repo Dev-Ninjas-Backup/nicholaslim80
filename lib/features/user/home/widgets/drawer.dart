@@ -72,8 +72,7 @@ Drawer drawer(HomeController controller) {
         Spacer(),
         GestureDetector(
           onTap: () {
-            //
-            //
+            
           },
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ZipBee/core/common/styles/global_text_style.dart';
 import 'package:ZipBee/core/utils/constants/icon_path.dart';
-import '../controller/order_express_controller.dart'; // Adjust path
+import '../controller/order_express_controller.dart';
 
 class OrderConfirmationSheet {
   static void show(int orderId) {
@@ -14,14 +14,14 @@ class OrderConfirmationSheet {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       Container(
-        decoration: const BoxDecoration(
+        decoration:  BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         ),
-        padding: const EdgeInsets.fromLTRB(20, 12, 20, 30),
+        padding:  EdgeInsets.fromLTRB(20, 12, 20, 30),
         child: Obx(() {
           if (controller.isLoading.value && controller.lastOrderData.isEmpty) {
-            return const SizedBox(
+            return  SizedBox(
               height: 300,
               child: Center(child: CircularProgressIndicator()),
             );
@@ -32,7 +32,6 @@ class OrderConfirmationSheet {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Handle bar for drag
                 Center(
                   child: Container(
                     width: 40,
@@ -43,7 +42,7 @@ class OrderConfirmationSheet {
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
+                 SizedBox(height: 20),
                 Text(
                   "Confirm Your Order",
                   style: getTextStyle(
@@ -51,37 +50,35 @@ class OrderConfirmationSheet {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 24),
+                 SizedBox(height: 24),
 
-                // --- Promo & Options Section ---
-                _buildSectionLabel("Offers & Discounts"),
-                _buildPromoRow(),
-                const Divider(height: 32),
+                buildSectionLabel("Offers & Discounts"),
+                buildPromoRow(),
+                 Divider(height: 32),
 
-                _buildToggleRow(
+                buildToggleRow(
                   title: "Redeem 10 Coins",
                   value: controller.redeemCoins.value,
                   onChanged: controller.toggleRedeemCoins,
                 ),
-                _buildToggleRow(
+                buildToggleRow(
                   title: "Favourite Riders",
                   value: controller.favoriteRiders.value,
                   onChanged: controller.toggleFavoriteRiders,
                 ),
 
-                const SizedBox(height: 24),
+                 SizedBox(height: 24),
 
-                // --- Price Breakdown Section ---
-                _buildSectionLabel("Payment Summary"),
-                const SizedBox(height: 8),
-                _buildPriceRow("Subtotal", controller.subtotal),
-                _buildPriceRow(
+                buildSectionLabel("Payment Summary"),
+                 SizedBox(height: 8),
+                buildPriceRow("Subtotal", controller.subtotal),
+                buildPriceRow(
                   "Coin/s Redeemed",
                   controller.redeemedAmount,
                   isDiscount: true,
                 ),
-                _buildPriceRow("Saved", "S\$0.00", isDiscount: true),
-                const Padding(
+                buildPriceRow("Saved", "S\$0.00", isDiscount: true),
+                 Padding(
                   padding: EdgeInsets.symmetric(vertical: 8),
                   child: Divider(),
                 ),
@@ -106,7 +103,7 @@ class OrderConfirmationSheet {
                   ],
                 ),
 
-                const SizedBox(height: 10),
+                 SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -141,15 +138,14 @@ class OrderConfirmationSheet {
                 ),
                 SizedBox(height: 20),
 
-                // --- Action Buttons ---
                 Row(
                   children: [
                     Expanded(
                       child: OutlinedButton(
                         onPressed: () => Get.back(),
                         style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          side: const BorderSide(color: Colors.red),
+                          padding: EdgeInsets.symmetric(vertical: 16),
+                          side:  BorderSide(color: Colors.red),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -163,7 +159,7 @@ class OrderConfirmationSheet {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 12),
+                     SizedBox(width: 12),
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () async {
@@ -174,14 +170,14 @@ class OrderConfirmationSheet {
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.amber,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          padding: EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
                           elevation: 0,
                         ),
                         child: controller.isLoading.value
-                            ? const SizedBox(
+                            ? SizedBox(
                                 height: 20,
                                 width: 20,
                                 child: CircularProgressIndicator(
@@ -208,9 +204,9 @@ class OrderConfirmationSheet {
     );
   }
 
-  static Widget _buildSectionLabel(String text) {
+  static Widget buildSectionLabel(String text) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding:  EdgeInsets.only(bottom: 12),
       child: Text(
         text.toUpperCase(),
         style: getTextStyle(
@@ -222,20 +218,22 @@ class OrderConfirmationSheet {
     );
   }
 
-  static Widget _buildPromoRow() {
+  static Widget buildPromoRow() {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding:  EdgeInsets.all(12),
       decoration: BoxDecoration(
+        // ignore: deprecated_member_use
         color: Colors.amber.withOpacity(0.05),
         borderRadius: BorderRadius.circular(12),
+        // ignore: deprecated_member_use
         border: Border.all(color: Colors.amber.withOpacity(0.2)),
       ),
       child: Row(
         children: [
           Image.asset(IconPath.promo, height: 24),
-          const SizedBox(width: 12),
+           SizedBox(width: 12),
           Text("Promo Code", style: getTextStyle(fontWeight: FontWeight.w600)),
-          const Spacer(),
+           Spacer(),
           TextButton(
             onPressed: () {},
             child: Text(
@@ -251,13 +249,13 @@ class OrderConfirmationSheet {
     );
   }
 
-  static Widget _buildToggleRow({
+  static Widget buildToggleRow({
     required String title,
     required bool value,
     required Function(bool) onChanged,
   }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: EdgeInsets.symmetric(vertical: 4),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -267,6 +265,7 @@ class OrderConfirmationSheet {
           ),
           Switch.adaptive(
             value: value,
+            // ignore: deprecated_member_use
             activeColor: Colors.amber,
             onChanged: onChanged,
           ),
@@ -275,13 +274,13 @@ class OrderConfirmationSheet {
     );
   }
 
-  static Widget _buildPriceRow(
+  static Widget buildPriceRow(
     String label,
     String value, {
     bool isDiscount = false,
   }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
+      padding:  EdgeInsets.symmetric(vertical: 6),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

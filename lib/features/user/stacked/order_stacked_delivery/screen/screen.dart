@@ -12,34 +12,30 @@ import '../widget/promo_dialog_widget.dart';
 class StackedOrderControllerScreen extends GetxController {
   double totalAmount = 0.00;
 
-  // ✅ Track toggle state
   RxBool redeemCoins = false.obs;
   RxBool favoriteRiders = false.obs;
 
-  // ---------- FULL-WIDTH CONFIRMATION DIALOG ----------
   void showConfirmationDialog() {
     final String formattedTotal = "S\$${totalAmount.toStringAsFixed(2)}";
 
     Get.dialog(
       Dialog(
-        insetPadding: EdgeInsets.all(10), // 🔥 Full width
+        insetPadding: EdgeInsets.all(10), 
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
         child: Container(
-          width: Get.width, // Full width
+          width: Get.width, 
           padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           child: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // ---------- TITLE ----------
                 Text(
                   "Your Order",
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                 ),
                 SizedBox(height: 22),
 
-                // ---------- PROMO CODE ROW ----------
                 Row(
                   children: [
                     Image.asset(IconPath.promo, height: 24, width: 24),
@@ -217,6 +213,7 @@ class StackedOrderControllerScreen extends GetxController {
                       ),
                     ),
                     StackedPaymentMethodSelector(
+                      orderAmount: totalAmount,
                       options: [
                         StackedPaymentOption(
                           title: "Stripe",
@@ -225,12 +222,12 @@ class StackedOrderControllerScreen extends GetxController {
                         ),
                         StackedPaymentOption(
                           title: "Wallet ",
-                          subtitle: "S\$10.50",
+                          subtitle: "\$10.50",
                           imageAsset: IconPath.wallet,
                         ),
                         StackedPaymentOption(
                           title: "Cash",
-                          subtitle: "To be paid by sender or receipent",
+                          subtitle: "To be paid by SENDER or RECEIVER",
                           imageAsset: IconPath.cash,
                         ),
                       ],

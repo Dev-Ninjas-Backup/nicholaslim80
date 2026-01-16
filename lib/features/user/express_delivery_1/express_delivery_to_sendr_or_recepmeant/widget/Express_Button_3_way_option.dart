@@ -30,7 +30,6 @@ class ExpressButtonWidget3Address extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            /// ✅ CARD moved inside container (TOP)
             Card(
               child: Row(
                 children: [
@@ -86,8 +85,6 @@ class ExpressButtonWidget3Address extends StatelessWidget {
             ),
 
             SizedBox(height: 16),
-
-            /// ✅ ORIGINAL UI (unchanged)
             isRound
                 ? Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

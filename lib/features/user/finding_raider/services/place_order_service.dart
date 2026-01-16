@@ -37,10 +37,9 @@ class PlaceOrderService {
 
       final decoded = jsonDecode(response.body);
 
-      /// ✅ REAL SUCCESS CHECK
       return decoded['success'] == true;
     } catch (e) {
-      print('❌ PLACE ORDER ERROR: $e');
+      print(' PLACE ORDER ERROR: $e');
       return false;
     }
   }
