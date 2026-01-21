@@ -74,6 +74,7 @@ class SmallHorizontalSlider extends StatelessWidget {
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
                               ad['ad_title'] ?? 'Buy GPS',
@@ -85,18 +86,18 @@ class SmallHorizontalSlider extends StatelessWidget {
                               ),
                             ),
                              SizedBox(height: 6),
-                            Text(
-                              "Valid till ${ad['end_date']?.toString().split('T').first ?? ''}",
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                                color: AppColors.subtitleFontColor,
-                              ),
-                            ),
+                            // Text(
+                            //   "Valid till ${ad['end_date']?.toString().split('T').first ?? ''}",
+                            //   style: TextStyle(
+                            //     fontSize: 12,
+                            //     fontWeight: FontWeight.w500,
+                            //     color: AppColors.subtitleFontColor,
+                            //   ),
+                            // ),
                           ],
                         ),
                       ),
-                       SizedBox(width: 8),
+                      SizedBox(width: 8),
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8),
                         child: ad['ad_image'] != null

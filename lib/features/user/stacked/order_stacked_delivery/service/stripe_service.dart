@@ -2,9 +2,16 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:ZipBee/core/api_end_point/api_end_point.dart';
+import 'package:ZipBee/core/constants/stripe_keys.dart';
 import 'package:ZipBee/core/shared_prefference_service/shared_pref.dart';
 
 class StripeService {
+  /// Get Stripe secret key (Backend use only - never expose to client)
+  static String getSecretKey() => StripeKeys.stripeSecretKey;
+
+  /// Get Stripe public key (Safe for client use)
+  static String getPublicKey() => StripeKeys.stripePublicKey;
+
   /// Fetch Stripe credentials (public key and secret key)
   static Future<Map<String, dynamic>> getStripeCredentials() async {
     try {
@@ -18,7 +25,9 @@ class StripeService {
         },
       );
 
-      debugPrint('✅ STRIPE CREDENTIALS RESPONSE: ${response.statusCode}\n${response.body}');
+      debugPrint(
+        '✅ STRIPE CREDENTIALS RESPONSE: ${response.statusCode}\n${response.body}',
+      );
 
       final decoded = jsonDecode(response.body);
       return {
@@ -41,13 +50,15 @@ class StripeService {
       final token = await SharedPreferencesHelper.getAccessToken();
 
       final url = Uri.parse(
-        ApiEndPoint.placeOrder.replaceAll('{orderId}', orderId.toString())
+        ApiEndPoint.placeOrder.replaceAll('{orderId}', orderId.toString()),
       );
 
       final body = {
         'paymentMethod': 'ONLINE_PAY',
         'paymentMethodId': paymentMethodId,
       };
+
+      debugPrint('Place Order POST body: ${body} and URL: $url');
 
       final response = await http.post(
         url,
@@ -58,7 +69,9 @@ class StripeService {
         body: jsonEncode(body),
       );
 
-      debugPrint('✅ PLACE ORDER RESPONSE: ${response.statusCode}\n${response.body}');
+      debugPrint(
+        '✅ PLACE ORDER RESPONSE: ${response.statusCode}\n${response.body}',
+      );
 
       final decoded = jsonDecode(response.body);
       return {
