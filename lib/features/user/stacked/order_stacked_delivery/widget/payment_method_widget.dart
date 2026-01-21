@@ -45,6 +45,7 @@ class StackedPaymentSelectionWidget extends StatelessWidget {
 
     // If Stripe is selected, trigger payment flow
     if (option.title == "Stripe") {
+      debugPrint('➡️ Stripe payment selected');
       final paymentMethodId = await StripePaymentSheetHandler.processPayment();
 
       if (paymentMethodId != null && paymentMethodId.isNotEmpty) {
