@@ -1,6 +1,5 @@
 import 'package:ZipBee/core/utils/constants/icon_path.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/stripe_payment_sheet_handler.dart';
-import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/stripe_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
@@ -21,6 +20,7 @@ class StackedPaymentController extends GetxController {
   var selectedIndex = 0.obs;
   var selectedTitle = "Select".obs;
   var walletBalance = 0.0.obs;
+  String? selectedPaymentMethodId; // Store payment method ID from Stripe
 }
 
 // -------------------
@@ -43,54 +43,29 @@ class StackedPaymentSelectionWidget extends StatelessWidget {
     controller.selectedIndex.value = index;
     controller.selectedTitle.value = option.title;
 
-    // If Stripe is selected, trigger payment flow
+    // If Stripe is selected, trigger payment sheet setup only (NOT place order yet)
     if (option.title == "Stripe") {
-      debugPrint('➡️ Stripe payment selected');
+      debugPrint('➡️ Stripe payment selected - setting up payment sheet');
       final paymentMethodId = await StripePaymentSheetHandler.processPayment();
 
       if (paymentMethodId != null && paymentMethodId.isNotEmpty) {
-        // Payment method obtained, now place order with it
-        EasyLoading.show(status: 'Placing order...');
-        
-        final placeRes = await StripeService.placeOrder(
-          orderId: orderAmount.toInt(), // Using orderAmount as orderId temporarily
-          paymentMethodId: paymentMethodId,
-        );
-        final placeSuccess = placeRes['success'] as bool? ?? false;
-
-        EasyLoading.dismiss();
-
-        if (placeSuccess) {
-          EasyLoading.showSuccess('Order placed successfully!');
-          Get.back();
-          // Navigate to success screen or order confirmation
-        } else {
-          final msg = (placeRes['body'] as Map<String, dynamic>?)?['message'] ?? 'Failed to place order';
-          EasyLoading.showError(msg.toString());
-        }
+        // Store payment method ID for later use in Place Order button
+        controller.selectedPaymentMethodId = paymentMethodId;
+        debugPrint('✅ Payment method saved: $paymentMethodId');
+        // Close the payment selector sheet but keep the dialog open
+        Get.back();
+        // DO NOT place order here - wait for Place Order button click
+      } else {
+        // Payment failed or cancelled, keep the selector open
+        debugPrint('❌ Stripe payment setup failed or cancelled');
       }
     } else if (option.title == "Wallet") {
-      // Handle wallet payment - place order with wallet method
-      EasyLoading.show(status: 'Processing wallet payment...');
-      
-      final placeRes = await StripeService.placeOrder(
-        orderId: orderAmount.toInt(), // Using orderAmount as orderId temporarily
-        paymentMethodId: 'WALLET',
-      );
-      final placeSuccess = placeRes['success'] as bool? ?? false;
-
-      EasyLoading.dismiss();
-
-      if (placeSuccess) {
-        EasyLoading.showSuccess('Order placed successfully!');
-        Get.back();
-      } else {
-        final msg = (placeRes['body'] as Map<String, dynamic>?)?['message'] ?? 'Failed to place order';
-        EasyLoading.showError(msg.toString());
-      }
+      // Just select wallet - do not place order yet
+      debugPrint('✅ Wallet selected');
+      Get.back();
     } else {
-      // Cash payment - no order placement check needed
-      EasyLoading.showSuccess('${option.title} selected');
+      // Cash payment - just select it
+      debugPrint('✅ Cash selected');
       Get.back();
     }
   }

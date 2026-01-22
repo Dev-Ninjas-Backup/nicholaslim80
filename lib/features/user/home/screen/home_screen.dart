@@ -5,6 +5,7 @@ import 'package:ZipBee/features/user/home/controller/home_controller.dart';
 import 'package:ZipBee/features/user/home/widgets/drawer.dart';
 import 'package:ZipBee/features/user/home/widgets/small_horizontal_slider_widget.dart';
 import 'package:ZipBee/features/user/home/widgets/vehicle_cards_widget.dart';
+import 'package:ZipBee/features/user/wallet/loyalty_and_rewards/screen/loyalty_and_rewards_screen.dart';
 import 'package:ZipBee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -105,19 +106,25 @@ class HomeScreen extends StatelessWidget {
               () => Row(
                 children: [
                   Expanded(
-                    child: borderedInfoCard(
-                      title: 'Wallet Balance',
-                      valueBuilder: () =>
-                          '\$${ctrl.walletBalance.value.toStringAsFixed(2)}',
-                      iconPath: IconPath.wallet,
+                    child: GestureDetector(
+                      onTap: () => Get.toNamed(AppRoutes.myWalletUser),
+                      child: borderedInfoCard(
+                        title: 'Wallet Balance',
+                        valueBuilder: () =>
+                            '\$${ctrl.walletBalance.value.toStringAsFixed(2)}',
+                        iconPath: IconPath.wallet,
+                      ),
                     ),
                   ),
                   SizedBox(width: 16),
                   Expanded(
-                    child: borderedInfoCard(
-                      title: 'Available Points',
-                      valueBuilder: () => '${ctrl.availablePoints.value}',
-                      iconPath: IconPath.points,
+                    child: GestureDetector(
+                      onTap: () => Get.to(LoyaltyAndRewardsScreen()),
+                      child: borderedInfoCard(
+                        title: 'Available Points',
+                        valueBuilder: () => '${ctrl.availablePoints.value}',
+                        iconPath: IconPath.points,
+                      ),
                     ),
                   ),
                 ],
@@ -214,6 +221,7 @@ class HomeScreen extends StatelessWidget {
     Color? iconBgColor,
     double iconSize = 20,
   }) {
+
     return Container(
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
