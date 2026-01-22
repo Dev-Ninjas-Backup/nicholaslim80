@@ -341,9 +341,17 @@ void showStackedOrderConfirmationDialog(StackedOrderController controller) async
                       } else if (selected.contains('wallet')) {
                         paymentMethodApi = 'WALLET';
                       } else {
+                        // Stripe payment
                         paymentMethodApi = 'ONLINE_PAY';
-                        paymentMethodId = null;
+                        paymentMethodId = paymentCtrl.selectedPaymentMethodId;
                       }
+
+                      if (paymentMethodApi == 'ONLINE_PAY' && (paymentMethodId == null || paymentMethodId.isEmpty)) {
+                        EasyLoading.showError('Please select a payment method for Stripe');
+                        return;
+                      }
+
+                      EasyLoading.show(status: 'Placing order...');
 
                       final ok = await controller.confirmPlaceOrder(
                         paymentMethod: paymentMethodApi,
@@ -351,19 +359,21 @@ void showStackedOrderConfirmationDialog(StackedOrderController controller) async
                         codCollectFrom: codCollect,
                       );
 
+                      EasyLoading.dismiss();
+
                       if (ok) {
                         debugPrint(
                           'Final placed total: ${controller.totalAmount.value}',
                         );
-                        Get.back();
 
-                        EasyLoading.showSuccess(
-                          'Order placed: \$${controller.totalAmount.value.toStringAsFixed(2)}',
-                        );
-
+                        // Show confirmation dialog
                         StackedOrderConfirmationDialog.show();
-                        await Future.delayed(const Duration(seconds: 3));
-                        Get.back();
+                        await Future.delayed(const Duration(seconds: 2));
+                        
+                        // Close confirmation dialog
+                        // Get.back();
+                        
+                        // Show success dialog
                         StackedOrderSuccessDialog.show();
                       } else {
                         EasyLoading.showError('Failed to place order');

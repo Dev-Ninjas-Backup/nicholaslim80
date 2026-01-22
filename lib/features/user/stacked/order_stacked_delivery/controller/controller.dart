@@ -191,21 +191,25 @@ class StackedOrderController extends GetxController {
       return false;
     }
 
-    final body = <String, dynamic>{
-      'paymentMethod': paymentMethod,
-      if (paymentMethodId != null) 'paymentMethodId': paymentMethodId,
-      if (paymentMethod == 'COD' && codCollectFrom != null) 'codCollectFrom': codCollectFrom,
-    }..removeWhere((k, v) => v == null);
+    debugPrint('Placing final order - Order ID: $lastOrderId, Payment Method: $paymentMethod, PaymentMethodId: $paymentMethodId, CodCollectFrom: $codCollectFrom');
 
-    debugPrint('Placing final order (place) payload: $body');
-
-    final res = await OrderService.placeOrder(lastOrderId!, body);
+    final res = await OrderService.placeOrder(
+      orderId: lastOrderId!,
+      paymentMethod: paymentMethod,
+      codCollectFrom: codCollectFrom,
+      paymentMethodId: paymentMethodId,
+    );
+    
     debugPrint('Place order full response: $res');
 
     final status = res['statusCode'] as int? ?? 500;
-    if (status == 201) {
+    final bodyData = res['body'] as Map<String, dynamic>? ?? {};
+    final success = bodyData['success'] as bool? ?? false;
+
+    // Check both status code and success flag
+    if (success && (status == 201 || status == 200)) {
       try {
-        final data = (res['body'] as Map<String, dynamic>)['data'] as Map<String, dynamic>? ?? {};
+        final data = bodyData['data'] as Map<String, dynamic>? ?? {};
         final serverTotal = double.tryParse((data['total_cost'] ?? '').toString()) ?? totalAmount.value;
         double serverFee = 0.0;
         try {
@@ -221,8 +225,8 @@ class StackedOrderController extends GetxController {
 
       return true;
     } else {
-      final msg = (res['body'] as Map<String, dynamic>?)?['message'] ?? 'Failed to place order';
-      debugPrint('confirmPlaceOrder failed: $msg');
+      final msg = bodyData['message'] ?? 'Failed to place order';
+      debugPrint('confirmPlaceOrder failed: $msg (status: $status, success: $success)');
       EasyLoading.showError(msg.toString());
       return false;
     }
