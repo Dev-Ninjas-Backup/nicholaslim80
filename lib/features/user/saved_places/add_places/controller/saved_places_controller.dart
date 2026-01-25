@@ -1,4 +1,5 @@
 import 'package:ZipBee/features/user/saved_places/add_places/service/location_service.dart';
+import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
 
 class AddPlaceController extends GetxController {
@@ -31,12 +32,12 @@ class AddPlaceController extends GetxController {
     var details = await LocationService.getPlaceDetails(placeId);
 
     if (details != null) {
-      print("--- Selected Location Details ---");
-      print("Description: $description");
-      print("Latitude: ${details['lat']}");
-      print("Longitude: ${details['lng']}");
-      print("---------------------------------");
-      
+      debugPrint("--- Selected Location Details ---");
+      debugPrint("Description: $description");
+      debugPrint("Latitude: ${details['lat']}");
+      debugPrint("Longitude: ${details['lng']}");
+      debugPrint("---------------------------------");
+
       // আপনার পরবর্তী স্ক্রিন বা লজিক এখানে লিখুন
     }
   }
