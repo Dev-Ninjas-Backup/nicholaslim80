@@ -1,18 +1,14 @@
-import 'package:ZipBee/core/common/styles/global_text_style.dart';
-import 'package:ZipBee/core/utils/constants/app_colors.dart';
-import 'package:ZipBee/features/user/saved_places/controller/saved_places_controller.dart';
-import 'package:ZipBee/features/user/saved_places/name_places/screen/name_places_screen.dart';
+import 'package:ZipBee/features/user/saved_places/add_places/controller/saved_places_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:ZipBee/core/common/styles/global_text_style.dart';
+import 'package:ZipBee/core/utils/constants/app_colors.dart';
 
 class AddPlaceScreen extends StatelessWidget {
-  final SavedPlaceController controller = Get.find();
-
-  final List<String> dummyResults = [
-    "778 Sengkang Ave 7, Singapore 530778",
-    "560 Balestier Road, Singapore 329876",
-  ];
+  // কন্ট্রোলারটিকে মেমোরিতে ইনজেক্ট করা
+  // final AddPlaceController controller = Get.put(AddPlaceController());
+  final controller = Get.put(AddPlaceController());
 
   AddPlaceScreen({super.key});
 
@@ -30,6 +26,8 @@ class AddPlaceScreen extends StatelessWidget {
         child: Column(
           children: [
             TextField(
+              // searchAddress কল করা হচ্ছে
+              onChanged: (value) => controller.searchAddress(value),
               decoration: InputDecoration(
                 hintText: 'Search an address',
                 prefixIcon: Icon(Icons.search),
@@ -43,44 +41,46 @@ class AddPlaceScreen extends StatelessWidget {
             ),
             SizedBox(height: 10),
             Expanded(
-              child: ListView.builder(
-                itemCount: dummyResults.length,
-                itemBuilder: (context, index) {
-                  final addr = dummyResults[index];
-                  return InkWell(
-                    onTap: () {
-                      controller.selectAddress(addr);
-                      Get.to(() => NamePlaceScreen());
-                    },
-                    child: Card(
-                      color: Color(0XFFFFFDF5),
-                      margin: EdgeInsets.symmetric(vertical: 6),
-                      child: ListTile(
-                        title: Text(
-                          addr.split(',')[0],
-                          style: getTextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 16,
+              child: Obx(() {
+                // isLoading এবং suggestions এখন controller থেকে আসবে
+                if (controller.isLoading.value) {
+                  return Center(child: CircularProgressIndicator());
+                }
+                
+                if (controller.suggestions.isEmpty) {
+                  return Center(child: Text("No results found"));
+                }
+
+                return ListView.builder(
+                  itemCount: controller.suggestions.length,
+                  itemBuilder: (context, index) {
+                    final suggestion = controller.suggestions[index];
+                    return InkWell(
+                      // onLocationSelected কল করা হচ্ছে
+                      onTap: () => controller.onLocationSelected(suggestion),
+                      child: Card(
+                        color: Color(0XFFFFFDF5),
+                        margin: EdgeInsets.symmetric(vertical: 6),
+                        child: ListTile(
+                          title: Text(
+                            suggestion['structured_formatting']?['main_text'] ?? "Unknown",
+                            style: getTextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
+                            ),
+                          ),
+                          subtitle: Text(
+                            suggestion['description'] ?? "",
+                            style: getTextStyle(fontSize: 12),
                           ),
                         ),
-                        subtitle: Text(addr, style: getTextStyle(fontSize: 12)),
                       ),
-                    ),
-                  );
-                },
-              ),
+                    );
+                  },
+                );
+              }),
             ),
-            Row(
-              children: [
-                Icon(Icons.near_me_outlined, color: Colors.grey),
-                SizedBox(width: 6),
-                Text(
-                  "Use my current location",
-                  style: getTextStyle(color: Colors.black54),
-                ),
-              ],
-            ),
-            SizedBox(height: 380.h),
+            // Use current location পার্ট...
           ],
         ),
       ),

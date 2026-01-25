@@ -6,7 +6,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:ZipBee/features/user/stacked/schedule_stacked_%20delivey/Schedule_recepent/service/destination_service.dart';
 import 'package:http/http.dart' as http;
 
-class SenderScheduleController extends GetxController {
+class SenderController extends GetxController {
   final postalCodeController = TextEditingController();
   final addressController = TextEditingController();
   final floorController = TextEditingController();
@@ -33,16 +33,25 @@ class SenderScheduleController extends GetxController {
   }
 
   void validateForm() {
-    final isValid =
+    isFormValid.value =
         postalCodeController.text.isNotEmpty &&
         addressController.text.isNotEmpty &&
         floorController.text.isNotEmpty &&
         nameController.text.isNotEmpty &&
         numberController.text.isNotEmpty;
-    isFormValid.value = isValid;
   }
 
-  void onPostalCodeChanged(String value) async {
+  void clearForm() {
+    addressController.clear();
+    floorController.clear();
+    nameController.clear();
+    numberController.clear();
+    noteController.clear();
+    saveAddress.value = false;
+    isFormValid.value = false;
+  }
+
+    void onPostalCodeChanged(String value) async {
     // সাধারণত ৫ বা ৬ ডিজিট হলে রিকোয়েস্ট পাঠানো ভালো (আপনার দেশের ফরম্যাট অনুযায়ী)
     if (value.length >= 5) {
       try {
@@ -68,11 +77,8 @@ class SenderScheduleController extends GetxController {
     }
   }
 
-  /// Save destination via API and link to order. Returns destination data on success, otherwise null.
-  Future<Map<String, dynamic>?> saveDestination({
-    String type = 'SENDER',
-    required int orderId,
-  }) async {
+  /// Creates a destination record on the server and links it to order. Returns destination data on success, otherwise null.
+  Future<Map<String, dynamic>?> saveDestination({String type = 'RECEIVER', required int orderId}) async {
     if (!isFormValid.value) return null;
     isLoading.value = true;
     EasyLoading.show(status: 'Saving...');
@@ -85,40 +91,35 @@ class SenderScheduleController extends GetxController {
       'contact_number': numberController.text,
       'note_to_driver': noteController.text,
       'is_saved': saveAddress.value,
-      'type': type,
+      'type': type, // SENDER / RECEIVER
       'order_id': orderId,
     };
 
     // 1️⃣ POST: Create destination
     final destRes = await DestinationService.createDestination(body);
-    final destStatus = destRes['statusCode'] as int? ?? 500;
     final destSuccess = destRes['success'] as bool? ?? false;
 
-    debugPrint(
-      '📊 CREATE DESTINATION - Status: $destStatus, Success: $destSuccess',
-    );
+    debugPrint('📊 CREATE DESTINATION - Success: $destSuccess');
 
-    if (!destSuccess || destStatus != 201 && destStatus != 200) {
+    if (!destSuccess) {
       isLoading.value = false;
       EasyLoading.dismiss();
-      final msg =
-          (destRes['body'] as Map<String, dynamic>?)?['message'] ??
-          'Failed to create destination';
+      final msg = (destRes['body'] as Map<String, dynamic>?)?['message'] ?? 'Failed to create destination';
       EasyLoading.showError(msg.toString());
       return null;
     }
 
+    // Extract destination ID from nested response
     final destData = destRes['body'] as Map<String, dynamic>? ?? {};
     final dataWrapper = destData['data'] as Map<String, dynamic>? ?? {};
-
+    
     // Try to extract ID from either 'result' or nested 'data'
-    var actualDestData =
-        (dataWrapper['result'] as Map<String, dynamic>?) ??
-        (dataWrapper['data'] as Map<String, dynamic>?) ??
-        {};
-
+    var actualDestData = (dataWrapper['result'] as Map<String, dynamic>?) ?? 
+                         (dataWrapper['data'] as Map<String, dynamic>?) ?? 
+                         {};
+    
     debugPrint('✅ DESTINATION CREATED: ${jsonEncode(actualDestData)}');
-
+    
     final destinationId = actualDestData['id'] as int? ?? 0;
     debugPrint('📋 Destination ID: $destinationId');
 
@@ -129,29 +130,26 @@ class SenderScheduleController extends GetxController {
       return null;
     }
 
-    // 2️⃣ PATCH: Link destination to order
+    // 2️⃣ PATCH: Link destination to order (ONLY if CREATE succeeded)
     final stopType = type == 'SENDER' ? 'PICKUP' : 'DROP';
     final patchRes = await DestinationService.addDestinationToOrder(
       orderId: orderId,
       destinationId: destinationId,
       stopType: stopType,
     );
-    final patchStatus = patchRes['statusCode'] as int? ?? 500;
     final patchSuccess = patchRes['success'] as bool? ?? false;
 
-    if (!patchSuccess || patchStatus != 200 && patchStatus != 201) {
+    if (!patchSuccess) {
       isLoading.value = false;
       EasyLoading.dismiss();
-      final msg =
-          (patchRes['body'] as Map<String, dynamic>?)?['message'] ??
-          'Failed to link destination';
+      final msg = (patchRes['body'] as Map<String, dynamic>?)?['message'] ?? 'Failed to link destination';
       EasyLoading.showError(msg.toString());
       return null;
     }
 
     final patchData = patchRes['body'] as Map<String, dynamic>? ?? {};
     debugPrint('✅ DESTINATION LINKED: ${jsonEncode(patchData)}');
-
+    
     final patchTotalCost = patchData['totalCost'] as num? ?? 0;
     totalCost.value = patchTotalCost.toDouble();
     debugPrint('💰 Total Cost Updated: \$${totalCost.value}');

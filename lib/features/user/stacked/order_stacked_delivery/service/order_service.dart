@@ -1,21 +1,21 @@
 import 'dart:convert';
-
 import 'package:ZipBee/core/api_end_point/api_end_point.dart';
 import 'package:ZipBee/core/shared_prefference_service/shared_pref.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 class OrderService {
-  /// Create an individual order. Returns parsed response on success or a
-  /// map with statusCode and body on error.
+  /// Create an individual order.
   static Future<Map<String, dynamic>> createOrder(Map<String, dynamic> body) async {
     try {
       final token = await SharedPreferencesHelper.getAccessToken();
+      final url = ApiEndPoint.orderCreate;
 
-      debugPrint('OrderService.createOrder REQUEST -> ${ApiEndPoint.orderCreate} body: $body');
+      debugPrint('➡️ REQUEST URL: $url');
+      debugPrint('➡️ REQUEST BODY: ${jsonEncode(body)}');
 
       final response = await http.post(
-        Uri.parse(ApiEndPoint.orderCreate),
+        Uri.parse(url),
         headers: {
           'Content-Type': 'application/json',
           if (token != null) 'Authorization': 'Bearer $token',
@@ -23,50 +23,71 @@ class OrderService {
         body: jsonEncode(body),
       );
 
-      debugPrint('OrderService.createOrder RESPONSE -> ${response.statusCode} ${response.body}');
+      debugPrint('⬅️ RESPONSE: ${response.statusCode} ${response.body}');
 
       return {
         'statusCode': response.statusCode,
         'body': jsonDecode(response.body),
       };
     } catch (e) {
-      debugPrint('OrderService.createOrder error: $e');
+      debugPrint('❌ createOrder error: $e');
       return {'statusCode': 500, 'body': {}};
     }
   }
 
-  /// Get order details by order id.
+  /// Get order details by id
   static Future<Map<String, dynamic>> getOrder(int id) async {
     try {
       final token = await SharedPreferencesHelper.getAccessToken();
+      final url = '${ApiEndPoint.baseUrl}/order/$id';
+
+      debugPrint('➡️ REQUEST URL: $url');
+      debugPrint('➡️ REQUEST BODY: NONE (GET)');
 
       final response = await http.get(
-        Uri.parse('${ApiEndPoint.baseUrl}/order/$id'),
+        Uri.parse(url),
         headers: {
           'Content-Type': 'application/json',
           if (token != null) 'Authorization': 'Bearer $token',
         },
       );
 
-      debugPrint('GET ORDER RESPONSE: ${response.statusCode} ${response.body}');
+      debugPrint('⬅️ RESPONSE: ${response.statusCode} ${response.body}');
 
       return {
         'statusCode': response.statusCode,
         'body': jsonDecode(response.body),
       };
     } catch (e) {
-      debugPrint('OrderService.getOrder error: $e');
+      debugPrint('❌ getOrder error: $e');
       return {'statusCode': 500, 'body': {}};
     }
   }
 
-  /// Place an existing order (finalize it). Endpoint: POST /order/{id}/place
-  static Future<Map<String, dynamic>> placeOrder(int id, Map<String, dynamic> body) async {
+  /// Place Order
+  static Future<Map<String, dynamic>> placeOrder({
+    required int orderId,
+    required String paymentMethod, // COD | WALLET | ONLINE_PAY
+    String? codCollectFrom,
+    String? paymentMethodId,
+  }) async {
     try {
       final token = await SharedPreferencesHelper.getAccessToken();
+      final url = '${ApiEndPoint.baseUrl}/order/$orderId/place';
+
+      final body = <String, dynamic>{
+        'paymentMethod': paymentMethod,
+        if (paymentMethod == 'COD' && codCollectFrom != null)
+          'codCollectFrom': codCollectFrom,
+        if (paymentMethod == 'ONLINE_PAY' && paymentMethodId != null)
+          'paymentMethodId': paymentMethodId,
+      };
+
+      debugPrint('➡️ REQUEST URL: $url');
+      debugPrint('➡️ REQUEST BODY: ${jsonEncode(body)}');
 
       final response = await http.post(
-        Uri.parse('${ApiEndPoint.baseUrl}/order/$id/place'),
+        Uri.parse(url),
         headers: {
           'Content-Type': 'application/json',
           if (token != null) 'Authorization': 'Bearer $token',
@@ -74,25 +95,27 @@ class OrderService {
         body: jsonEncode(body),
       );
 
-      debugPrint('PLACE ORDER RESPONSE: ${response.statusCode} ${response.body}');
+      debugPrint('⬅️ RESPONSE: ${response.statusCode} ${response.body}');
 
       return {
         'statusCode': response.statusCode,
         'body': jsonDecode(response.body),
       };
     } catch (e) {
-      debugPrint('OrderService.placeOrder error: $e');
+      debugPrint('❌ placeOrder error: $e');
       return {'statusCode': 500, 'body': {}};
     }
   }
 
-  /// Update order details via PATCH /order/{id}/update-details
-  static Future<Map<String, dynamic>> updateOrderDetails(int id, Map<String, dynamic> body) async {
+  /// Update Order Details
+  static Future<Map<String, dynamic>> updateOrderDetails(
+      int id, Map<String, dynamic> body) async {
     try {
       final token = await SharedPreferencesHelper.getAccessToken();
-
       final url = ApiEndPoint.orderUpdateDetails.replaceFirst('{id}', id.toString());
-      debugPrint('OrderService.updateOrderDetails REQUEST -> $url body: $body');
+
+      debugPrint('➡️ REQUEST URL: $url');
+      debugPrint('➡️ REQUEST BODY: ${jsonEncode(body)}');
 
       final response = await http.patch(
         Uri.parse(url),
@@ -103,14 +126,14 @@ class OrderService {
         body: jsonEncode(body),
       );
 
-      debugPrint('OrderService.updateOrderDetails RESPONSE -> ${response.statusCode} ${response.body}');
+      debugPrint('⬅️ RESPONSE: ${response.statusCode} ${response.body}');
 
       return {
         'statusCode': response.statusCode,
         'body': jsonDecode(response.body),
       };
     } catch (e) {
-      debugPrint('OrderService.updateOrderDetails error: $e');
+      debugPrint('❌ updateOrderDetails error: $e');
       return {'statusCode': 500, 'body': {}};
     }
   }

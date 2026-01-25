@@ -6,13 +6,14 @@ import 'package:ZipBee/features/user/stacked/order_stacked_delivery/widget/order
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/widget/order_success_widget.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/widget/payment_method_widget.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/widget/promo_dialog_widget.dart';
+import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/order_confirmation_service.dart';
 import 'package:ZipBee/features/user/stacked/stacked_screen/stacked_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 
 /// Show order confirmation dialog
-void showStackedOrderConfirmationDialog(StackedOrderController controller) {
+void showStackedOrderConfirmationDialog(StackedOrderController controller) async {
   /// Ensure payment controller exists
   StackedPaymentController paymentCtrl;
   try {
@@ -20,6 +21,22 @@ void showStackedOrderConfirmationDialog(StackedOrderController controller) {
   } catch (_) {
     paymentCtrl = Get.put(StackedPaymentController());
   }
+
+  // Fetch wallet balance
+  EasyLoading.show(status: 'Loading wallet...');
+  final userRes = await OrderConfirmationService.getUserProfile();
+  final userSuccess = userRes['success'] as bool? ?? false;
+
+  double walletBalance = 0.0;
+  if (userSuccess) {
+    final userData = userRes['body'] as Map<String, dynamic>? ?? {};
+    final userActualData = userData['data'] as Map<String, dynamic>? ?? {};
+    final balanceRaw = userActualData['currentWalletBalance'];
+    walletBalance = balanceRaw is String ? double.tryParse(balanceRaw) ?? 0.0 : (balanceRaw as num?)?.toDouble() ?? 0.0;
+    paymentCtrl.walletBalance.value = walletBalance;
+    debugPrint('💰 Wallet Balance: \$${walletBalance}');
+  }
+  EasyLoading.dismiss();
 
   final codCollectFrom = 'RECEIVER'.obs;
 
@@ -208,6 +225,7 @@ void showStackedOrderConfirmationDialog(StackedOrderController controller) {
                     ),
                   ),
                   StackedPaymentMethodSelector(
+                    orderAmount: controller.totalAmount.value,
                     options: [
                       StackedPaymentOption(
                         title: "Stripe",
@@ -216,7 +234,7 @@ void showStackedOrderConfirmationDialog(StackedOrderController controller) {
                       ),
                       StackedPaymentOption(
                         title: "Wallet",
-                        subtitle: "\$10.50",
+                        subtitle: "S\$${paymentCtrl.walletBalance.value.toStringAsFixed(2)}",
                         imageAsset: IconPath.wallet,
                       ),
                       StackedPaymentOption(
@@ -323,9 +341,17 @@ void showStackedOrderConfirmationDialog(StackedOrderController controller) {
                       } else if (selected.contains('wallet')) {
                         paymentMethodApi = 'WALLET';
                       } else {
+                        // Stripe payment
                         paymentMethodApi = 'ONLINE_PAY';
-                        paymentMethodId = null;
+                        paymentMethodId = paymentCtrl.selectedPaymentMethodId;
                       }
+
+                      if (paymentMethodApi == 'ONLINE_PAY' && (paymentMethodId == null || paymentMethodId.isEmpty)) {
+                        EasyLoading.showError('Please select a payment method for Stripe');
+                        return;
+                      }
+
+                      EasyLoading.show(status: 'Placing order...');
 
                       final ok = await controller.confirmPlaceOrder(
                         paymentMethod: paymentMethodApi,
@@ -333,19 +359,21 @@ void showStackedOrderConfirmationDialog(StackedOrderController controller) {
                         codCollectFrom: codCollect,
                       );
 
+                      EasyLoading.dismiss();
+
                       if (ok) {
                         debugPrint(
                           'Final placed total: ${controller.totalAmount.value}',
                         );
-                        Get.back();
 
-                        EasyLoading.showSuccess(
-                          'Order placed: \$${controller.totalAmount.value.toStringAsFixed(2)}',
-                        );
-
+                        // Show confirmation dialog
                         StackedOrderConfirmationDialog.show();
-                        await Future.delayed(const Duration(seconds: 3));
-                        Get.back();
+                        await Future.delayed(const Duration(seconds: 2));
+                        
+                        // Close confirmation dialog
+                        // Get.back();
+                        
+                        // Show success dialog
                         StackedOrderSuccessDialog.show();
                       } else {
                         EasyLoading.showError('Failed to place order');

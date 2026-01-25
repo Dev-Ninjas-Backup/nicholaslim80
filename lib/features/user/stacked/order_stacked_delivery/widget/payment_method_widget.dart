@@ -1,4 +1,5 @@
 import 'package:ZipBee/core/utils/constants/icon_path.dart';
+import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/stripe_payment_sheet_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -17,6 +18,8 @@ class StackedPaymentOption {
 class StackedPaymentController extends GetxController {
   var selectedIndex = 0.obs;
   var selectedTitle = "Select".obs;
+  var walletBalance = 0.0.obs;
+  String? selectedPaymentMethodId; // Store payment method ID from Stripe
 }
 
 // -------------------
@@ -25,12 +28,46 @@ class StackedPaymentController extends GetxController {
 class StackedPaymentSelectionWidget extends StatelessWidget {
   final List<StackedPaymentOption> options;
   final StackedPaymentController controller;
+  final double orderAmount;
 
   const StackedPaymentSelectionWidget({
     super.key,
     required this.options,
     required this.controller,
+    required this.orderAmount,
   });
+
+  /// Handle payment method selection
+  Future<void> _handlePaymentSelection(int index, StackedPaymentOption option) async {
+    controller.selectedIndex.value = index;
+    controller.selectedTitle.value = option.title;
+
+    // If Stripe is selected, trigger payment sheet setup only (NOT place order yet)
+    if (option.title == "Stripe") {
+      debugPrint('➡️ Stripe payment selected - setting up payment sheet');
+      final paymentMethodId = await StripePaymentSheetHandler.processPayment();
+
+      if (paymentMethodId != null && paymentMethodId.isNotEmpty) {
+        // Store payment method ID for later use in Place Order button
+        controller.selectedPaymentMethodId = paymentMethodId;
+        debugPrint('✅ Payment method saved: $paymentMethodId');
+        // Close the payment selector sheet but keep the dialog open
+        Get.back();
+        // DO NOT place order here - wait for Place Order button click
+      } else {
+        // Payment failed or cancelled, keep the selector open
+        debugPrint('❌ Stripe payment setup failed or cancelled');
+      }
+    } else if (option.title == "Wallet") {
+      // Just select wallet - do not place order yet
+      debugPrint('✅ Wallet selected');
+      Get.back();
+    } else {
+      // Cash payment - just select it
+      debugPrint('✅ Cash selected');
+      Get.back();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +79,7 @@ class StackedPaymentSelectionWidget extends StatelessWidget {
         return Column(
           children: [
             Obx(
-                  () => ListTile(
+              () => ListTile(
                 leading: option.imageAsset != null
                     ? Image.asset(option.imageAsset!, width: 32, height: 32)
                     : Image.asset(IconPath.arrowBackIcon),
@@ -55,11 +92,7 @@ class StackedPaymentSelectionWidget extends StatelessWidget {
                   style: TextStyle(fontSize: 12, color: Colors.grey),
                 ),
                 trailing: GestureDetector(
-                  onTap: () {
-                    controller.selectedIndex.value = index;
-                    controller.selectedTitle.value = option.title;
-                    Get.back();
-                  },
+                  onTap: () => _handlePaymentSelection(index, option),
                   child: Container(
                     width: 24,
                     height: 24,
@@ -86,11 +119,7 @@ class StackedPaymentSelectionWidget extends StatelessWidget {
                         : null,
                   ),
                 ),
-                onTap: () {
-                  controller.selectedIndex.value = index;
-                  controller.selectedTitle.value = option.title;
-                  Get.back();
-                },
+                onTap: () => _handlePaymentSelection(index, option),
               ),
             ),
             if (index != options.length - 1) Divider(height: 1),
@@ -106,9 +135,14 @@ class StackedPaymentSelectionWidget extends StatelessWidget {
 // -------------------
 class StackedPaymentMethodSelector extends StatelessWidget {
   final List<StackedPaymentOption> options;
+  final double orderAmount;
   final StackedPaymentController controller = Get.put(StackedPaymentController());
 
-  StackedPaymentMethodSelector({super.key, required this.options});
+  StackedPaymentMethodSelector({
+    super.key,
+    required this.options,
+    required this.orderAmount,
+  });
 
   void openSelectorSheet() {
     Get.bottomSheet(
@@ -118,7 +152,11 @@ class StackedPaymentMethodSelector extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
-        child: StackedPaymentSelectionWidget(options: options, controller: controller),
+        child: StackedPaymentSelectionWidget(
+          options: options,
+          controller: controller,
+          orderAmount: orderAmount,
+        ),
       ),
     );
   }
@@ -136,7 +174,7 @@ class StackedPaymentMethodSelector extends StatelessWidget {
         child: Row(
           children: [
             Obx(
-                  () => Text(
+              () => Text(
                 controller.selectedTitle.value,
                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
               ),
