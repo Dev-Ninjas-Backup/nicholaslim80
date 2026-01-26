@@ -42,6 +42,7 @@ class ApiEndPoint {
 
   // Order GET endpoints
   static const String getOrder = '$baseUrl/order/{orderId}';
+  static const String cancelOrder = '$baseUrl/order/{orderId}/cancel';
   static const String getUserProfile = '$baseUrl/users/me';
   static const String rating = '$baseUrl/ratings';
   static const String faq = '$baseUrl/faq';
