@@ -6,7 +6,7 @@ import 'package:get/get.dart';
 
 import '../controller/controller.dart';
 import 'package:ZipBee/features/user/stacked/stacked_controller/update_details_controller.dart';
-import 'package:ZipBee/features/user/stacked/order_stacked_delivery/controller/controller.dart';
+import 'package:ZipBee/features/user/stacked/order_stacked_delivery/controller/stacked_order_controller.dart';
 // additional services UI commented out
 import 'bottom_summery.dart';
 

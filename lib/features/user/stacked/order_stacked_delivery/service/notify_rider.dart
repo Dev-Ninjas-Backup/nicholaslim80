@@ -2,38 +2,38 @@ import 'dart:convert';
 
 import 'package:ZipBee/core/api_end_point/api_end_point.dart';
 import 'package:ZipBee/core/shared_prefference_service/shared_pref.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/rendering.dart';
 import 'package:http/http.dart' as http;
 
-class CancelOrderService {
-  static Future<Map<String, dynamic>> cancelOrder (int orderId) async{
+class NotifyRider {
+  static Future<Map<String, dynamic>> notifyRider({
+    required String orderId,
+    required bool notifyRider,
+  }) async {
     try {
       final token = await SharedPreferencesHelper.getAccessToken();
+      final url = ApiEndPoint.notifyOrder.replaceAll('{orderId}', orderId);
 
-      final url = ApiEndPoint.cancelOrder.replaceAll('{orderId}', orderId.toString()); 
-
-      final response = await http.patch(
+      final response = await http.post(
         Uri.parse(url), 
         headers: {
           'Content-Type': 'application/json',
           if (token != null) 'Authorization': 'Bearer $token', 
         }, 
         body: jsonEncode({
-          'reason' : 'User requested cancellation'
+          "notify_rider": notifyRider
         })
       );
-
-      debugPrint('✅ CANCEL ORDER RESPONSE: ${response.statusCode}\n${response.body}'); 
-
+      
+      debugPrint('✅ NOTIFY RIDER RESPONSE: ${response.statusCode}\n${response.body}');
       final decoded = jsonDecode(response.body);
-
       return {
         'statusCode': response.statusCode,
         'success': decoded['success'] ?? false,
         'body': decoded
       };
     } catch (e) {
-      debugPrint('❌ CancelOrderService.cancelOrder error: $e');
+      debugPrint("Error notifying rider: $e"); 
       return {'statusCode': 500, 'success': false, 'body': {}};
     }
   }

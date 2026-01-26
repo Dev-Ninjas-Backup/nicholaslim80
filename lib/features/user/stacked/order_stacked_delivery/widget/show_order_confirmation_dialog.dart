@@ -1,8 +1,8 @@
 import 'package:ZipBee/core/common/styles/global_text_style.dart';
 import 'package:ZipBee/core/utils/constants/icon_path.dart';
 import 'package:ZipBee/features/user/home/screen/home_screen.dart';
-import 'package:ZipBee/features/user/stacked/order_stacked_delivery/controller/controller.dart';
-import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/cencel_order_service.dart';
+import 'package:ZipBee/features/user/stacked/order_stacked_delivery/controller/stacked_order_controller.dart';
+import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/cancel_order_service.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/widget/custom_toggle_switch_widget.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/widget/order_confirmation_dialog.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/widget/order_success_widget.dart';
@@ -304,7 +304,7 @@ void showStackedOrderConfirmationDialog(StackedOrderController controller) async
                         // return;
                       } else {
                         EasyLoading.show(status: 'Cancelling order .......'); 
-                        final res = await CancelOrderService.cancelOrder(orderId); 
+                        final res = await CancelOrderService.cancelOrder(orderId, "Hamara Marzee"); 
                         EasyLoading.dismiss();
                         
                         if (res['success'] == true) {

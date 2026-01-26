@@ -5,6 +5,7 @@ import 'package:ZipBee/features/user/finding_raider/widget/button.dart';
 import 'package:ZipBee/features/user/finding_raider/widget/cancel_order_dialog.dart';
 import 'package:ZipBee/features/user/finding_raider/widget/location_row_widget.dart';
 import 'package:ZipBee/features/user/google_map/widget/google_map_widget.dart';
+import 'package:ZipBee/features/user/stacked/order_stacked_delivery/controller/stacked_order_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -14,8 +15,14 @@ class FindingRiderPage extends StatelessWidget {
       ? Get.find<RiderController>()
       : Get.put(RiderController());
 
+  final StackedOrderController orderController =
+      Get.find<StackedOrderController>();
+
   @override
   Widget build(BuildContext context) {
+    // Update rider controller with order information
+    _initializeWithOrderData();
+
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -31,7 +38,7 @@ class FindingRiderPage extends StatelessWidget {
       ),
       body: Stack(
         children: [
-           SizedBox.expand(child: GoogleMapWidget()),
+          SizedBox.expand(child: GoogleMapWidget()),
 
           DraggableScrollableSheet(
             initialChildSize: 0.4,
@@ -58,7 +65,7 @@ class FindingRiderPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         dragHandle(),
-                         SizedBox(height: 16),
+                        SizedBox(height: 16),
 
                         Center(
                           child: Text(
@@ -70,7 +77,7 @@ class FindingRiderPage extends StatelessWidget {
                           ),
                         ),
 
-                         SizedBox(height: 20),
+                        SizedBox(height: 20),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -78,12 +85,17 @@ class FindingRiderPage extends StatelessWidget {
                             stepBar(active: false),
                           ],
                         ),
-                         SizedBox(height: 10),
+                        SizedBox(height: 10),
 
                         Center(
-                          child: Text(
-                            'Good Fare, Your Request Gets Priority 2:00',
-                            style: getTextStyle(fontSize: 12),
+                          child: Obx(
+                            () => Text(
+                              'Order ${orderController.orderNumber.value}',
+                              style: getTextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                           ),
                         ),
 
@@ -136,14 +148,14 @@ class FindingRiderPage extends StatelessWidget {
                           ),
                         ),
 
-                         SizedBox(height: 20),
+                        SizedBox(height: 20),
 
                         buildFareOptions(),
-                         SizedBox(height: 20),
+                        SizedBox(height: 20),
 
                         Center(child: addAmountButton()),
 
-                         SizedBox(height: 20),
+                        SizedBox(height: 20),
                         Button(
                           buttonText: 'Priority order',
                           backgroundColor: Colors.amber,
@@ -151,7 +163,7 @@ class FindingRiderPage extends StatelessWidget {
                           onPressed: controller.placeOrder,
                         ),
 
-                         SizedBox(height: 24),
+                        SizedBox(height: 24),
                         Center(
                           child: FilledButton(
                             onPressed: () => showCancelOrderDialog(context),
@@ -163,10 +175,7 @@ class FindingRiderPage extends StatelessWidget {
                               ),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(6),
-                                side: BorderSide(
-                                  color: Colors.red,
-                                  width: 1.5,
-                                ),
+                                side: BorderSide(color: Colors.red, width: 1.5),
                               ),
                             ),
                             child: Row(
@@ -180,7 +189,7 @@ class FindingRiderPage extends StatelessWidget {
                                     color: Colors.red,
                                   ),
                                 ),
-                                 SizedBox(width: 3),
+                                SizedBox(width: 3),
                                 Image.asset(
                                   IconPath.cancel,
                                   height: 14,
@@ -200,6 +209,28 @@ class FindingRiderPage extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  /// Initialize rider controller with order sender/receiver data
+  void _initializeWithOrderData() {
+    final senderInfo = orderController.senderInfo.value;
+    final receiverInfo = orderController.receiverInfo.value;
+
+    if (senderInfo != null) {
+      controller.pickupName.value = senderInfo['contact_name'] as String? ?? '';
+      controller.pickupAddress.value = senderInfo['address'] as String? ?? '';
+      debugPrint(
+        '✅ Sender loaded: ${senderInfo['contact_name']} - ${senderInfo['address']}',
+      );
+    }
+
+    if (receiverInfo != null) {
+      controller.dropName.value = receiverInfo['contact_name'] as String? ?? '';
+      controller.dropAddress.value = receiverInfo['address'] as String? ?? '';
+      debugPrint(
+        '✅ Receiver loaded: ${receiverInfo['contact_name']} - ${receiverInfo['address']}',
+      );
+    }
   }
 
   Widget dragHandle() {
@@ -234,36 +265,29 @@ class FindingRiderPage extends StatelessWidget {
         borderRadius: BorderRadius.circular(6),
         border: Border.all(color: Colors.grey, width: 1.5),
       ),
-child: TextButton(
-  onPressed: () {
-    
-  },
-  style: TextButton.styleFrom(
-    padding:  EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-    minimumSize: Size.zero,
-    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-  ),
-  child: Row(
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      Text(
-        'Add amount',
-        style: getTextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
-          color: Colors.grey,
+      child: TextButton(
+        onPressed: () {},
+        style: TextButton.styleFrom(
+          padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+          minimumSize: Size.zero,
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Add amount',
+              style: getTextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey,
+              ),
+            ),
+            SizedBox(width: 3),
+            Icon(Icons.add, size: 13, color: Colors.grey),
+          ],
         ),
       ),
-       SizedBox(width: 3),
-       Icon(
-        Icons.add,
-        size: 13,
-        color: Colors.grey,
-      ),
-    ],
-  ),
-)
-,
     );
   }
 
@@ -283,12 +307,9 @@ child: TextButton(
                   ? Colors.amber
                   : Colors.white,
               child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 12,
-                ),
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                 child: Text(
-                  'S\$${controller.fareOptions[index]}',
+                  '\$${controller.fareOptions[index]}',
                   style: TextStyle(
                     color: controller.selectedFare.value == index
                         ? Colors.black

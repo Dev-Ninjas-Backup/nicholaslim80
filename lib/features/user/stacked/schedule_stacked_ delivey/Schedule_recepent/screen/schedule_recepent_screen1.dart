@@ -4,8 +4,8 @@ import 'package:ZipBee/features/user/stacked/schedule_stacked_%20delivey/Schedul
 import 'package:ZipBee/features/user/stacked/stacked_screen/stacked_screen.dart';
 import 'package:ZipBee/features/user/stacked/stacked_controller/stacked_controller.dart';
 import 'package:ZipBee/features/user/stacked/stacked_collect_from/model/model.dart';
-import 'package:ZipBee/features/user/collect_form_on_express_delivery/Sender_Part/controller_sender/sender_controller.dart';
-import 'package:ZipBee/features/user/stacked/order_stacked_delivery/controller/controller.dart';
+import 'package:ZipBee/features/user/stacked/schedule_stacked_%20delivey/Schedule_recepent/controller/recepent_controller.dart';
+import 'package:ZipBee/features/user/stacked/order_stacked_delivery/controller/stacked_order_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
@@ -54,7 +54,7 @@ class StackedSchedulRecepmenteScreen extends StatelessWidget {
                   onPressed: () async {
                     // Get controller with the correct tag
                     final String controllerTag = (Get.arguments as Map<String, dynamic>?)?['isAdditionalStop'] ?? false ? 'additional_stop' : 'primary';
-                    final controller = Get.find<SenderController>(tag: controllerTag);
+                    final controller = Get.find<RecipientController>(tag: controllerTag);
                     final orderController = Get.find<StackedOrderController>();
                     final orderId = orderController.lastOrderId;
                     

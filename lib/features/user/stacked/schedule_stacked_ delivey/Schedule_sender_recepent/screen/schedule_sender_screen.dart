@@ -7,7 +7,7 @@ import 'package:ZipBee/features/user/stacked/stacked_screen/stacked_screen.dart'
 import 'package:ZipBee/features/user/stacked/stacked_collect_from/model/model.dart';
 import 'package:ZipBee/features/user/stacked/schedule_stacked_ delivey/Schedule_recepent/screen/schedule_recepent_screen1.dart';
 import 'package:ZipBee/features/user/stacked/stacked_controller/stacked_controller.dart';
-import 'package:ZipBee/features/user/stacked/order_stacked_delivery/controller/controller.dart';
+import 'package:ZipBee/features/user/stacked/order_stacked_delivery/controller/stacked_order_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get_core/src/get_main.dart';
