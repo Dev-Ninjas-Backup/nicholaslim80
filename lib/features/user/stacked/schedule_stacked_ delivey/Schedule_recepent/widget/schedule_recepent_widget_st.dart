@@ -5,7 +5,7 @@ import 'package:ZipBee/features/user/stacked/stacked_collect_from/model/model.da
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-
+// This widget uses RecipientController (not SenderController from sender_part)
 class ScheduleRecipientWidgetST extends StatelessWidget {
   final String title;
   final VoidCallback onPressed;
@@ -25,7 +25,7 @@ class ScheduleRecipientWidgetST extends StatelessWidget {
     // Use a unique tag for additional stop to get a fresh controller instance
     final String controllerTag = isAdditionalStop ? 'additional_stop' : 'primary';
     final controller = Get.put(
-      SenderController(),
+      RecipientController(),
       tag: controllerTag,
     );
 
@@ -135,7 +135,7 @@ class ScheduleRecipientWidgetST extends StatelessWidget {
   }
 
   /// Initialize controller after widget build is complete
-  void _initializeController(SenderController controller) {
+  void _initializeController(RecipientController controller) {
     if (isAdditionalStop) {
       // For additional stops, clear all fields
       controller.addressController.clear();

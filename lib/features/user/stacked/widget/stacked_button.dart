@@ -6,7 +6,7 @@ import 'package:ZipBee/features/user/stacked/stacked_collect_from/controller/con
 import 'package:ZipBee/features/user/stacked/stacked_controller/stacked_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ZipBee/features/user/stacked/order_stacked_delivery/controller/controller.dart';
+import 'package:ZipBee/features/user/stacked/order_stacked_delivery/controller/stacked_order_controller.dart';
 import '../stacked_controller/update_details_controller.dart';
 
 class StackedButtonWidget extends StatelessWidget {
