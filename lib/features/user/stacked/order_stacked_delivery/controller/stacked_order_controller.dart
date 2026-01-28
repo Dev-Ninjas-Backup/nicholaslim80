@@ -1,3 +1,5 @@
+import 'package:ZipBee/features/user/home/screen/home_screen.dart';
+import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/cancel_order_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
@@ -22,6 +24,52 @@ class StackedOrderController extends GetxController {
 
   // Route options
   var isFixed = false.obs; // Fixed route toggle
+
+  // API Response Data
+  var placeOrderResponse = Rx<Map<String, dynamic>?>(null);
+  var isAutoConfirmation = false.obs;
+  var collectTime = 'ASAP'.obs; // 'ASAP' or 'SCHEDULED'
+  var senderInfo = Rx<Map<String, dynamic>?>(null);
+  var receiverInfo = Rx<Map<String, dynamic>?>(null);
+
+  var isCancelling = false.obs;
+
+  /// রিজন সহ অর্ডার ক্যানসেল করার ফাংশন
+  Future<void> handleOrderCancellation(String? reason) async {
+    // যদি lastOrderId না থাকে (অর্ডার ক্রিয়েট হয়নি এমন অবস্থায়)
+    if (lastOrderId == null) {
+      cancelAndReset(); // শুধু স্টেট রিসেট করে দিবে
+      Get.offAll(() => HomeScreen());
+      return;
+    }
+
+    try {
+      isCancelling.value = true;
+      
+      // আপনার বিদ্যমান CancelOrderService কল করা হচ্ছে
+      // রিজন নাল বা খালি হলে সার্ভিস ফাইল "Hamara Mardi" বসিয়ে দেবে
+      final result = await CancelOrderService.cancelOrder(lastOrderId!, reason);
+      
+      isCancelling.value = false;
+
+      if (result['success'] == true) {
+        EasyLoading.showSuccess('Order Cancelled');
+        
+        // স্টেট রিসেট করা
+        cancelAndReset(); 
+
+        // হোম স্ক্রিনে ফিরে যাওয়া
+        Get.offAll(() => HomeScreen()); 
+      } else {
+        String errorMsg = result['body']?['message'] ?? 'Failed to cancel order';
+        EasyLoading.showError(errorMsg);
+      }
+    } catch (e) {
+      isCancelling.value = false;
+      debugPrint('Error in handleOrderCancellation: $e');
+      EasyLoading.showError('An error occurred while cancelling');
+    }
+  }
 
   void toggleRedeemCoins(bool value) {
     redeemCoins.value = value;
@@ -209,7 +257,38 @@ class StackedOrderController extends GetxController {
     // Check both status code and success flag
     if (success && (status == 201 || status == 200)) {
       try {
+        // Save full response for later use
+        placeOrderResponse.value = bodyData;
+        
         final data = bodyData['data'] as Map<String, dynamic>? ?? {};
+        
+        // Extract order ID and update orderNumber
+        final orderId = data['id'] as int? ?? lastOrderId;
+        orderNumber.value = '#${orderId.toString().padLeft(6, '0')}';
+        
+        // Extract is_auto_confirmation flag
+        isAutoConfirmation.value = (data['is_auto_confirmation'] as bool?) ?? false;
+        debugPrint('Is Auto Confirmation: ${isAutoConfirmation.value}');
+        
+        // Extract collect_time
+        collectTime.value = (data['collect_time'] as String?) ?? 'ASAP';
+        debugPrint('Collect Time: ${collectTime.value}');
+        
+        // Extract sender and receiver info from destinations
+        final destinations = data['destinations'] as List<dynamic>? ?? [];
+        for (var dest in destinations) {
+          final destMap = dest as Map<String, dynamic>? ?? {};
+          final type = destMap['type'] as String? ?? '';
+          
+          if (type == 'SENDER') {
+            senderInfo.value = destMap;
+            debugPrint('Sender Info: $destMap');
+          } else if (type == 'RECEIVER') {
+            receiverInfo.value = destMap;
+            debugPrint('Receiver Info: $destMap');
+          }
+        }
+        
         final serverTotal = double.tryParse((data['total_cost'] ?? '').toString()) ?? totalAmount.value;
         double serverFee = 0.0;
         try {

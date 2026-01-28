@@ -6,7 +6,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:ZipBee/features/user/stacked/schedule_stacked_%20delivey/Schedule_recepent/service/destination_service.dart';
 import 'package:http/http.dart' as http;
 
-class SenderController extends GetxController {
+class RecipientController extends GetxController {
   final postalCodeController = TextEditingController();
   final addressController = TextEditingController();
   final floorController = TextEditingController();

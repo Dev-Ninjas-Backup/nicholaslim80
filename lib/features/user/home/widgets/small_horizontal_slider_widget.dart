@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:ZipBee/core/common/styles/global_text_style.dart';
 import 'package:ZipBee/core/shared_prefference_service/shared_pref.dart';
-import 'package:ZipBee/core/utils/constants/app_colors.dart';
 import 'package:ZipBee/core/utils/constants/icon_path.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;

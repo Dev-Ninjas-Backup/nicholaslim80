@@ -1,16 +1,14 @@
 import 'dart:convert';
 
+import 'package:ZipBee/core/api_end_point/api_end_point.dart';
 import 'package:ZipBee/core/shared_prefference_service/shared_pref.dart';
 import 'package:ZipBee/core/utils/constants/icon_path.dart';
-import 'package:ZipBee/core/utils/constants/image_path.dart';
 import 'package:ZipBee/features/user/home/model/drawer_model.dart';
 import 'package:ZipBee/features/user/home/widgets/logout_dailog_widget.dart';
 import 'package:ZipBee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-
-import '../../../../core/api_end_point/api_end_point.dart';
 
 class HomeController extends GetxController {
 
@@ -21,40 +19,10 @@ class HomeController extends GetxController {
   final availablePoints = 0.obs; 
 
   final selectedService = 'Standard'.obs;
-  final selectedVehicleId = RxnString();  final vehicles = <Map<String, dynamic>>[
-    {
-      'id': 'instant',
-      'title': 'Instant Delivery',
-      'subtitle': '2-3km · 30mins delivery',
-      'weight': '20 to 50kg',
-      'priceFrom': 10,
-      'image': AssetImage(ImagePath.vehicles2),
-    },
-    {
-      'id': 'road',
-      'title': 'Road Transport',
-      'subtitle': '1-2 days delivery',
-      'weight': '100 to 500kg',
-      'priceFrom': 70,
-      'image': AssetImage(ImagePath.vehicles1),
-    },
-    {
-      'id': 'truck',
-      'title': 'Heavy Truck',
-      'subtitle': '3-5 days delivery',
-      'weight': '500 to 2000kg',
-      'priceFrom': 220,
-      'image': AssetImage(ImagePath.vehicles2),
-    },
-    {
-      'id': 'bike',
-      'title': 'Two Wheeler',
-      'subtitle': 'Local fast delivery',
-      'weight': '0 to 20kg',
-      'priceFrom': 5,
-      'image': AssetImage(ImagePath.vehicles1),
-    },
-  ].obs;
+  final selectedVehicleId = RxnString();  
+  
+  // পরিবর্তন এখানে: স্ট্যাটিক ডাটা রিমুভ করে খালি লিস্ট রাখা হয়েছে
+  final vehicles = <Map<String, dynamic>>[].obs;
 
   final deliveryType = 'standard'.obs;
 
