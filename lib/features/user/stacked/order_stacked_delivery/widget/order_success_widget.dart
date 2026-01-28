@@ -23,125 +23,131 @@ class StackedOrderSuccessDialog {
             borderRadius: BorderRadius.circular(16),
           ),
           child: SingleChildScrollView(
-            child: Obx(
-              () => Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Obx(
-                    () => Text(
-                      'Your order ${controller.orderNumber.value} is confirmed!',
-                      style: getTextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-
-                  SizedBox(height: 24),
-
-                  Container(
-                    width: 80,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      color: Color(0xFF789F56),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(Icons.check, color: Colors.white, size: 40),
-                  ),
-                  SizedBox(height: 24),
-
-                  Text(
-                    'There is confirmation call from the assigned driver once your order is scheduled. \nThanks.',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.black54,
-                      height: 1.5,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Obx(
+                  () => Text(
+                    'Your order ${controller.orderNumber.value} is confirmed!',
+                    style: getTextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
                     ),
                     textAlign: TextAlign.center,
                   ),
+                ),
 
-                  SizedBox(height: 20),
+                SizedBox(height: 24),
 
-                  // Show Yes/No radio buttons only if is_auto_confirmation is false
-                  if (!controller.isAutoConfirmation.value)
-                    Obx(
-                      () => Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          GestureDetector(
-                            onTap: () async {
-                              wantsConfirmationCall.value = true;
-                              await _handleConfirmation(true);
-                            },
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Radio<bool>(
-                                  value: true,
-                                  groupValue: wantsConfirmationCall.value,
-                                  onChanged: (value) {
-                                    if (value != null) {
-                                      wantsConfirmationCall.value = value;
-                                    }
-                                  },
-                                  activeColor: Colors.blue,
-                                ),
-                                SizedBox(width: 4),
-                                Text('Yes', style: TextStyle(fontSize: 16)),
-                              ],
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    color: Color(0xFF789F56),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(Icons.check, color: Colors.white, size: 40),
+                ),
+                SizedBox(height: 24),
+
+                Text(
+                  'There is confirmation call from the assigned driver once your order is scheduled. \nThanks.',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.black54,
+                    height: 1.5,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+
+                SizedBox(height: 20),
+
+                // Show UI based on collect_time and isAutoConfirmation
+                Obx(
+                  () {
+                    final isAsap = controller.collectTime.value == 'ASAP';
+                    final isAuto = controller.isAutoConfirmation.value;
+                    
+                    // If ASAP or auto confirmation: show progress bar (no buttons, auto navigate)
+                    if (isAsap || isAuto) {
+                      return Padding(
+                        padding: EdgeInsets.only(top: 20),
+                        child: SizedBox(
+                          width: double.infinity,
+                          height: 50,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: LinearProgressIndicator(
+                              minHeight: 50,
+                              backgroundColor: Colors.grey[300],
+                              valueColor: AlwaysStoppedAnimation<Color>(Colors.amber),
                             ),
-                          ),
-
-                          GestureDetector(
-                            onTap: () async {
-                              wantsConfirmationCall.value = false;
-                              await _handleConfirmation(false);
-                            },
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Radio<bool>(
-                                  value: false,
-                                  groupValue: wantsConfirmationCall.value,
-                                  onChanged: (value) {
-                                    if (value != null) {
-                                      wantsConfirmationCall.value = value;
-                                    }
-                                  },
-                                  activeColor: Colors.blue,
-                                ),
-                                SizedBox(width: 4),
-                                Text('No', style: TextStyle(fontSize: 16)),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                  if (controller.isAutoConfirmation.value)
-                    Padding(
-                      padding: EdgeInsets.only(top: 20),
-                      child: SizedBox(
-                        width: double.infinity,
-                        height: 50,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: LinearProgressIndicator(
-                            minHeight: 50,
-                            backgroundColor: Colors.grey[300],
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.amber),
                           ),
                         ),
-                      ),
-                    ),
+                      );
+                    } else {
+                      // SCHEDULED: show Yes/No buttons
+                      return Obx(
+                        () => Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            GestureDetector(
+                              onTap: () async {
+                                wantsConfirmationCall.value = true;
+                                await _handleConfirmation(true);
+                              },
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Radio<bool>(
+                                    value: true,
+                                    groupValue: wantsConfirmationCall.value,
+                                    onChanged: (value) {
+                                      if (value != null) {
+                                        wantsConfirmationCall.value = value;
+                                      }
+                                    },
+                                    activeColor: Colors.blue,
+                                  ),
+                                  SizedBox(width: 4),
+                                  Text('Yes', style: TextStyle(fontSize: 16)),
+                                ],
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () async {
+                                wantsConfirmationCall.value = false;
+                                await _handleConfirmation(false);
+                              },
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Radio<bool>(
+                                    value: false,
+                                    groupValue: wantsConfirmationCall.value,
+                                    onChanged: (value) {
+                                      if (value != null) {
+                                        wantsConfirmationCall.value = value;
+                                      }
+                                    },
+                                    activeColor: Colors.blue,
+                                  ),
+                                  SizedBox(width: 4),
+                                  Text('No', style: TextStyle(fontSize: 16)),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                  },
+                ),
 
-                  SizedBox(height: 24),
-                ],
-              ),
+                SizedBox(height: 24),
+              ],
             ),
           ),
         ),
@@ -149,8 +155,8 @@ class StackedOrderSuccessDialog {
       barrierDismissible: false, // Prevent closing on outside tap
     );
 
-    // If auto confirmation is enabled, auto navigate after delay
-    if (controller.isAutoConfirmation.value) {
+    // Auto navigate if ASAP or auto confirmation (no API call needed)
+    if (controller.isAutoConfirmation.value || controller.collectTime.value == 'ASAP') {
       Future.delayed(Duration(seconds: 3), () {
         Get.back(); // Close dialog
         Get.to(() => FindingRiderPage());

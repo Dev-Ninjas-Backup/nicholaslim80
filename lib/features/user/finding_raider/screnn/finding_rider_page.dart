@@ -3,7 +3,7 @@ import 'package:ZipBee/core/utils/constants/icon_path.dart';
 import 'package:ZipBee/features/user/finding_raider/controller/rider_controller.dart';
 import 'package:ZipBee/features/user/finding_raider/widget/button.dart';
 import 'package:ZipBee/features/user/finding_raider/widget/cancel_order_dialog.dart';
-import 'package:ZipBee/features/user/finding_raider/widget/location_row_widget.dart';
+import 'package:ZipBee/features/user/finding_raider/widget/order_location_info_widget.dart';
 import 'package:ZipBee/features/user/google_map/widget/google_map_widget.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/controller/stacked_order_controller.dart';
 import 'package:flutter/material.dart';
@@ -11,17 +11,16 @@ import 'package:get/get.dart';
 
 class FindingRiderPage extends StatelessWidget {
   FindingRiderPage({super.key});
+  
   final RiderController controller = Get.isRegistered<RiderController>()
       ? Get.find<RiderController>()
       : Get.put(RiderController());
 
-  final StackedOrderController orderController =
-      Get.find<StackedOrderController>();
+  final StackedOrderController orderController = Get.find<StackedOrderController>();
 
   @override
   Widget build(BuildContext context) {
-    // Update rider controller with order information
-    _initializeWithOrderData();
+    _initializeWithOrderData(); // ডাটা ইনিশিয়ালাইজেশন পার্ট
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -31,53 +30,43 @@ class FindingRiderPage extends StatelessWidget {
         leading: GestureDetector(
           onTap: Get.back,
           child: Padding(
-            padding: EdgeInsets.all(8),
+            padding: const EdgeInsets.all(8),
             child: Image.asset(IconPath.colorFullArrow, width: 24, height: 24),
           ),
         ),
       ),
       body: Stack(
         children: [
-          SizedBox.expand(child: GoogleMapWidget()),
-
+          const SizedBox.expand(child: GoogleMapWidget()),
           DraggableScrollableSheet(
             initialChildSize: 0.4,
             minChildSize: 0.3,
             maxChildSize: 0.7,
             builder: (_, scrollController) {
               return Container(
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                   boxShadow: [
-                    BoxShadow(
-                      color: Colors.black26,
-                      blurRadius: 10,
-                      spreadRadius: 2,
-                    ),
+                    BoxShadow(color: Colors.black26, blurRadius: 10, spreadRadius: 2),
                   ],
                 ),
                 child: SingleChildScrollView(
                   controller: scrollController,
                   child: Padding(
-                    padding: EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         dragHandle(),
-                        SizedBox(height: 16),
-
+                        const SizedBox(height: 16),
                         Center(
                           child: Text(
                             'Finding your rider',
-                            style: getTextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w600,
-                            ),
+                            style: getTextStyle(fontSize: 20, fontWeight: FontWeight.w600),
                           ),
                         ),
-
-                        SizedBox(height: 20),
+                        const SizedBox(height: 20),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -85,97 +74,48 @@ class FindingRiderPage extends StatelessWidget {
                             stepBar(active: false),
                           ],
                         ),
-                        SizedBox(height: 10),
-
+                        const SizedBox(height: 10),
                         Center(
                           child: Obx(
                             () => Text(
                               'Order ${orderController.orderNumber.value}',
-                              style: getTextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                              ),
+                              style: getTextStyle(fontSize: 12, fontWeight: FontWeight.w600),
                             ),
                           ),
                         ),
 
-                        SizedBox(height: 20),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 10),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Obx(
-                                () => LocationRowWidget(
-                                  iconPath: IconPath.collectIcon,
-                                  title: controller.pickupName.value.isEmpty
-                                      ? 'Collected from'
-                                      : 'Collected from (Sender: ${controller.pickupName.value})',
-                                  address:
-                                      controller.pickupAddress.value.isEmpty
-                                      ? '-'
-                                      : controller.pickupAddress.value,
-                                ),
-                              ),
-                              Column(
-                                children: [
-                                  Icon(
-                                    Icons.fiber_manual_record,
-                                    size: 8,
-                                    color: Colors.grey,
-                                  ),
-                                  SizedBox(height: 6),
-                                  Icon(
-                                    Icons.fiber_manual_record,
-                                    size: 8,
-                                    color: Colors.grey,
-                                  ),
-                                ],
-                              ),
-                              Obx(
-                                () => LocationRowWidget(
-                                  iconPath: IconPath.deliveredIcon,
-                                  title: controller.dropName.value.isEmpty
-                                      ? 'Deliver to'
-                                      : 'Deliver to (Recipient: ${controller.dropName.value})',
-                                  address: controller.dropAddress.value.isEmpty
-                                      ? '-'
-                                      : controller.dropAddress.value,
-                                ),
-                              ),
-                            ],
-                          ),
+                        const SizedBox(height: 20),
+
+                        // --- নতুন রিইউজেবল উইজেট এখানে কল করা হয়েছে ---
+                        OrderLocationInfoWidget(
+                          pickupName: controller.pickupName,
+                          pickupAddress: controller.pickupAddress,
+                          dropName: controller.dropName,
+                          dropAddress: controller.dropAddress,
                         ),
+                        // -------------------------------------------
 
-                        SizedBox(height: 20),
-
+                        const SizedBox(height: 20),
                         buildFareOptions(),
-                        SizedBox(height: 20),
-
+                        const SizedBox(height: 20),
                         Center(child: addAmountButton()),
-
-                        SizedBox(height: 20),
+                        const SizedBox(height: 20),
                         Button(
                           buttonText: 'Priority order',
                           backgroundColor: Colors.amber,
                           textColor: Colors.black,
                           onPressed: controller.placeOrder,
                         ),
-
-                        SizedBox(height: 24),
+                        const SizedBox(height: 24),
                         Center(
                           child: FilledButton(
                             onPressed: () => showCancelOrderDialog(context),
                             style: FilledButton.styleFrom(
                               backgroundColor: Colors.white,
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 8,
-                              ),
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(6),
-                                side: BorderSide(color: Colors.red, width: 1.5),
+                                side: const BorderSide(color: Colors.red, width: 1.5),
                               ),
                             ),
                             child: Row(
@@ -183,18 +123,10 @@ class FindingRiderPage extends StatelessWidget {
                               children: [
                                 Text(
                                   'Cancel order',
-                                  style: getTextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.red,
-                                  ),
+                                  style: getTextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.red),
                                 ),
-                                SizedBox(width: 3),
-                                Image.asset(
-                                  IconPath.cancel,
-                                  height: 14,
-                                  width: 14,
-                                ),
+                                const SizedBox(width: 3),
+                                Image.asset(IconPath.cancel, height: 14, width: 14),
                               ],
                             ),
                           ),
@@ -219,17 +151,11 @@ class FindingRiderPage extends StatelessWidget {
     if (senderInfo != null) {
       controller.pickupName.value = senderInfo['contact_name'] as String? ?? '';
       controller.pickupAddress.value = senderInfo['address'] as String? ?? '';
-      debugPrint(
-        '✅ Sender loaded: ${senderInfo['contact_name']} - ${senderInfo['address']}',
-      );
     }
 
     if (receiverInfo != null) {
       controller.dropName.value = receiverInfo['contact_name'] as String? ?? '';
       controller.dropAddress.value = receiverInfo['address'] as String? ?? '';
-      debugPrint(
-        '✅ Receiver loaded: ${receiverInfo['contact_name']} - ${receiverInfo['address']}',
-      );
     }
   }
 

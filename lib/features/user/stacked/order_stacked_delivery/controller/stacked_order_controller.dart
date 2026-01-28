@@ -28,6 +28,7 @@ class StackedOrderController extends GetxController {
   // API Response Data
   var placeOrderResponse = Rx<Map<String, dynamic>?>(null);
   var isAutoConfirmation = false.obs;
+  var collectTime = 'ASAP'.obs; // 'ASAP' or 'SCHEDULED'
   var senderInfo = Rx<Map<String, dynamic>?>(null);
   var receiverInfo = Rx<Map<String, dynamic>?>(null);
 
@@ -268,6 +269,10 @@ class StackedOrderController extends GetxController {
         // Extract is_auto_confirmation flag
         isAutoConfirmation.value = (data['is_auto_confirmation'] as bool?) ?? false;
         debugPrint('Is Auto Confirmation: ${isAutoConfirmation.value}');
+        
+        // Extract collect_time
+        collectTime.value = (data['collect_time'] as String?) ?? 'ASAP';
+        debugPrint('Collect Time: ${collectTime.value}');
         
         // Extract sender and receiver info from destinations
         final destinations = data['destinations'] as List<dynamic>? ?? [];
