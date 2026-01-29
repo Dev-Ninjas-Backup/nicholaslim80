@@ -1,12 +1,17 @@
+import 'package:ZipBee/features/user/finding_raider/services/priority_order_service.dart';
+import 'package:ZipBee/features/user/stacked/order_stacked_delivery/controller/stacked_order_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart'; // নতুন অ্যাড করা হয়েছে
 import 'package:ZipBee/core/utils/constants/icon_path.dart';
 import 'package:ZipBee/features/user/finding_raider/model/payment_option_model.dart';
 import 'package:ZipBee/features/user/finding_raider/screnn/connecting_rider_page.dart';
 import 'package:ZipBee/features/user/finding_raider/services/place_order_service.dart';
-import 'package:ZipBee/features/user/finding_raider/services/get_order_api_service.dart'; // API Service Import
+import 'package:ZipBee/features/user/finding_raider/services/get_order_api_service.dart';
 
 class RiderController extends GetxController {
+  final _box = GetStorage(); // GetStorage instance
   RxInt orderId = 0.obs;
 
   RxInt selectedFare = 0.obs;
@@ -30,12 +35,49 @@ class RiderController extends GetxController {
   // New loading state for API
   RxBool isLoading = false.obs;
 
-  // --- নতুন ডাটা ফেচিং মেথড (আগের কিছু ডিলিট না করে যোগ করা হয়েছে) ---
+  // fareOptions এখন রিয়েল-টাইম আপডেট হবে এবং ক্যাশ থেকে ডাটা নিবে
+  final RxList<double> fareOptions = <double>[1.2, 2.5, 4.5, 6.5].obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    _loadFareOptionsFromCache(); // কন্ট্রোলার স্টার্ট হওয়ার সময় ক্যাশ লোড হবে
+  }
+
+  // ক্যাশ থেকে ইউনিক ৪টি অ্যামাউন্ট লোড করার মেথড
+  void _loadFareOptionsFromCache() {
+    List? savedFares = _box.read<List>('fare_cache');
+    if (savedFares != null && savedFares.isNotEmpty) {
+      fareOptions.assignAll(savedFares.cast<double>());
+      debugPrint('✅ Cache Loaded: ${fareOptions.value}');
+    }
+  }
+
+  // নতুন অ্যামাউন্ট অ্যাড এবং ক্যাশ সেভ করার মেথড (ইউনিক ৪টি)
+  void addNewAmount(double amount) {
+    debugPrint('🚀 Adding new amount to cache: $amount');
+    
+    List<double> currentList = List<double>.from(fareOptions);
+    
+    // যদি অ্যামাউন্টটি আগে থেকেই থাকে, তবে সেটি রিমুভ করে শুরুতে নিয়ে আসবো (ইউনিক রাখতে)
+    currentList.remove(amount);
+    currentList.insert(0, amount);
+
+    // ৪টির বেশি ডাটা রাখবো না
+    if (currentList.length > 4) {
+      currentList = currentList.sublist(0, 4);
+    }
+
+    fareOptions.assignAll(currentList);
+    _box.write('fare_cache', currentList); // ক্যাশে পার্মানেন্টলি সেভ
+    selectedFare.value = 0; // নতুন অ্যামাউন্টটি সিলেক্টেড থাকবে
+    debugPrint('✅ Storage Updated: $currentList');
+  }
+
+  // --- নতুন ডাটা ফেচিং মেথড ---
   Future<void> fetchOrderData(int id) async {
     isLoading.value = true;
-    debugPrint(
-      '🚀 fetchOrderData started for ID: $id',
-    ); // এটা প্রিন্ট না হলে বুঝবেন কন্ট্রোলার মেথড কল হয়নি
+    debugPrint('🚀 fetchOrderData started for ID: $id');
 
     try {
       final result = await GetOrderApiService.fetchOrderDetails(id);
@@ -112,7 +154,7 @@ class RiderController extends GetxController {
 
   void selectMethod(int index) => selectedMethod.value = index;
 
-  final List<double> fareOptions = [1.2, 2.5, 4.5, 6.5];
+  // fareOptions এখন RxList থেকে ডাইনামিকলি কাজ করবে
   void selectFare(int index) => selectedFare.value = index;
 
   RxInt selectedRaiderTip = 0.obs;
@@ -135,7 +177,6 @@ class RiderController extends GetxController {
       );
 
       if (success) {
-        // Success logic remains the same
         firstActive.value = false;
         secondActive.value = true;
 
@@ -161,6 +202,49 @@ class RiderController extends GetxController {
       Get.snackbar('Order Cancelled', reason);
     } finally {
       isCancelling.value = false;
+    }
+  }
+
+  Future<void> priorityOrder() async {
+    if (isLoading.value) return;
+
+    // ১. বর্তমানে সিলেক্টেড অ্যামাউন্ট গেট করা
+    double selectedAmount = fareOptions[selectedFare.value];
+
+    // ২. অর্ডার আইডি গেট করা (আপনার স্ট্যাকড অর্ডার কন্ট্রোলার থেকে)
+    final StackedOrderController orderController = Get.find<StackedOrderController>();
+    String rawId = orderController.orderNumber.value.replaceAll(RegExp(r'[^0-9]'), '');
+    int? id = int.tryParse(rawId);
+
+    if (id == null || id == 0) {
+      EasyLoading.showError("Invalid Order ID");
+      return;
+    }
+
+    EasyLoading.show(status: 'Processing Priority...');
+
+    try {
+      final res = await PriorityOrderService.makePriorityOrder(
+        orderId: id,
+        amount: selectedAmount,
+      );
+
+      if (res['success'] == true) {
+        EasyLoading.showSuccess('Priority Order Activated!');
+        
+        // Success হলে পরবর্তী স্ক্রিনে যাওয়া
+        firstActive.value = false;
+        secondActive.value = true;
+        Get.to(() => ConnectingRiderPage());
+      } else {
+        String msg = res['body']['message'] ?? "Failed to prioritize order";
+        EasyLoading.showError(msg);
+      }
+    } catch (e) {
+      EasyLoading.showError("Something went wrong");
+      debugPrint("❌ Priority Order UI Error: $e");
+    } finally {
+      EasyLoading.dismiss();
     }
   }
 

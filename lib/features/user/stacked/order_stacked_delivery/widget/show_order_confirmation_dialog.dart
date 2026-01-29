@@ -235,7 +235,7 @@ void showStackedOrderConfirmationDialog(StackedOrderController controller) async
                       ),
                       StackedPaymentOption(
                         title: "Wallet",
-                        subtitle: "S\$${paymentCtrl.walletBalance.value.toStringAsFixed(2)}",
+                        subtitle: "\$${paymentCtrl.walletBalance.value.toStringAsFixed(2)}",
                         imageAsset: IconPath.wallet,
                       ),
                       StackedPaymentOption(
