@@ -142,6 +142,8 @@ class ConnectingRiderPage extends StatelessWidget {
                         ),
 
                         Divider(height: 32),
+
+                        // Collection and Delivery Locations 
                         Obx(
                           () => Column(
                             children: [
