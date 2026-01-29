@@ -1,4 +1,7 @@
+import 'package:ZipBee/features/user/finding_raider/services/priority_order_service.dart';
+import 'package:ZipBee/features/user/stacked/order_stacked_delivery/controller/stacked_order_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart'; // নতুন অ্যাড করা হয়েছে
 import 'package:ZipBee/core/utils/constants/icon_path.dart';
@@ -199,6 +202,49 @@ class RiderController extends GetxController {
       Get.snackbar('Order Cancelled', reason);
     } finally {
       isCancelling.value = false;
+    }
+  }
+
+  Future<void> priorityOrder() async {
+    if (isLoading.value) return;
+
+    // ১. বর্তমানে সিলেক্টেড অ্যামাউন্ট গেট করা
+    double selectedAmount = fareOptions[selectedFare.value];
+
+    // ২. অর্ডার আইডি গেট করা (আপনার স্ট্যাকড অর্ডার কন্ট্রোলার থেকে)
+    final StackedOrderController orderController = Get.find<StackedOrderController>();
+    String rawId = orderController.orderNumber.value.replaceAll(RegExp(r'[^0-9]'), '');
+    int? id = int.tryParse(rawId);
+
+    if (id == null || id == 0) {
+      EasyLoading.showError("Invalid Order ID");
+      return;
+    }
+
+    EasyLoading.show(status: 'Processing Priority...');
+
+    try {
+      final res = await PriorityOrderService.makePriorityOrder(
+        orderId: id,
+        amount: selectedAmount,
+      );
+
+      if (res['success'] == true) {
+        EasyLoading.showSuccess('Priority Order Activated!');
+        
+        // Success হলে পরবর্তী স্ক্রিনে যাওয়া
+        firstActive.value = false;
+        secondActive.value = true;
+        Get.to(() => ConnectingRiderPage());
+      } else {
+        String msg = res['body']['message'] ?? "Failed to prioritize order";
+        EasyLoading.showError(msg);
+      }
+    } catch (e) {
+      EasyLoading.showError("Something went wrong");
+      debugPrint("❌ Priority Order UI Error: $e");
+    } finally {
+      EasyLoading.dismiss();
     }
   }
 

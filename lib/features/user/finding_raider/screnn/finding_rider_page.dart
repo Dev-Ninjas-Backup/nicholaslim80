@@ -142,7 +142,7 @@ class FindingRiderPage extends StatelessWidget {
                                     buttonText: 'Priority order',
                                     backgroundColor: Colors.amber,
                                     textColor: Colors.black,
-                                    onPressed: controller.placeOrder,
+                                    onPressed: controller.priorityOrder ,
                                   ),
                                 ),
                                 const SizedBox(height: 24),
