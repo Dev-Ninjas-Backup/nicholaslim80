@@ -6,6 +6,8 @@ import 'package:ZipBee/features/user/finding_raider/widget/cancel_order_dialog.d
 import 'package:ZipBee/features/user/finding_raider/widget/order_location_info_widget.dart';
 import 'package:ZipBee/features/user/google_map/widget/google_map_widget.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/controller/stacked_order_controller.dart';
+import 'package:ZipBee/features/user/finding_raider/widget/add_amount_dialog.dart'; // নতুন ডায়ালগ ইমপোর্ট
+import 'package:ZipBee/features/user/stacked/order_stacked_delivery/widget/payment_method_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -23,14 +25,13 @@ class FindingRiderPage extends StatelessWidget {
   Widget build(BuildContext context) {
     // API কল করার লজিক
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // শুধু সংখ্যা বের করে আনার জন্য রেজেক্স ব্যবহার করা নিরাপদ
       String rawId = orderController.orderNumber.value.replaceAll(
         RegExp(r'[^0-9]'),
         '',
       );
       int? id = int.tryParse(rawId);
 
-      debugPrint('🔍 Attempting to fetch order with ID: $id (Raw: ${orderController.orderNumber.value})',);
+      debugPrint('🔍 Attempting to fetch order with ID: $id (Raw: ${orderController.orderNumber.value})');
 
       if (id != null && id != 0) {
         controller.fetchOrderData(id);
@@ -56,7 +57,6 @@ class FindingRiderPage extends StatelessWidget {
         children: [
           const SizedBox.expand(child: GoogleMapWidget()),
 
-          // API লোডিং এর সময় ইন্ডিকেটর দেখানো
           Obx(
             () => controller.isLoading.value
                 ? const Center(
@@ -121,7 +121,6 @@ class FindingRiderPage extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 20),
 
-                                // অর্ডারের লোকেশন উইজেট
                                 OrderLocationInfoWidget(
                                   pickupName: controller.pickupName,
                                   pickupAddress: controller.pickupAddress,
@@ -132,8 +131,9 @@ class FindingRiderPage extends StatelessWidget {
                                 const SizedBox(height: 20),
                                 buildFareOptions(),
                                 const SizedBox(height: 20),
-                                Center(child: addAmountButton()),
+                                Center(child: addAmountButton(context)),
                                 const SizedBox(height: 20),
+
                                 Padding(
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 16,
@@ -142,10 +142,11 @@ class FindingRiderPage extends StatelessWidget {
                                     buttonText: 'Priority order',
                                     backgroundColor: Colors.amber,
                                     textColor: Colors.black,
-                                    onPressed: controller.placeOrder,
+                                    onPressed: controller.priorityOrder ,
                                   ),
                                 ),
                                 const SizedBox(height: 24),
+
                                 Center(
                                   child: FilledButton(
                                     onPressed: () =>
@@ -223,19 +224,21 @@ class FindingRiderPage extends StatelessWidget {
     );
   }
 
-  Widget addAmountButton() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: Colors.grey, width: 1.5),
-      ),
-      child: TextButton(
-        onPressed: () {},
-        style: TextButton.styleFrom(
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-          minimumSize: Size.zero,
-          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+  Widget addAmountButton(BuildContext context) {
+    StackedPaymentController paymentCtrl;
+    try {
+      paymentCtrl = Get.find<StackedPaymentController>();
+    } catch (_) {
+      paymentCtrl = Get.put(StackedPaymentController());
+    }
+
+    return GestureDetector(
+      onTap: () => showAddAmountDialog(context, controller, paymentCtrl),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(6),
+          border: Border.all(color: Colors.grey, width: 1.5),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -257,11 +260,11 @@ class FindingRiderPage extends StatelessWidget {
   }
 
   Widget buildFareOptions() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: List.generate(controller.fareOptions.length, (index) {
-        return Obx(
-          () => GestureDetector(
+    return Obx(() {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: List.generate(controller.fareOptions.length, (index) {
+          return GestureDetector(
             onTap: () => controller.selectFare(index),
             child: Card(
               elevation: controller.selectedFare.value == index ? 8 : 2,
@@ -277,7 +280,7 @@ class FindingRiderPage extends StatelessWidget {
                   vertical: 12,
                 ),
                 child: Text(
-                  '\$${controller.fareOptions[index]}',
+                  '\$${controller.fareOptions[index].toStringAsFixed(1)}',
                   style: TextStyle(
                     color: controller.selectedFare.value == index
                         ? Colors.black
@@ -288,9 +291,9 @@ class FindingRiderPage extends StatelessWidget {
                 ),
               ),
             ),
-          ),
-        );
-      }),
-    );
+          );
+        }),
+      );
+    });
   }
 }
