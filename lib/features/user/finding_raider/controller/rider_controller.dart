@@ -1,11 +1,13 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ZipBee/core/utils/constants/icon_path.dart';
 import 'package:ZipBee/features/user/finding_raider/model/payment_option_model.dart';
 import 'package:ZipBee/features/user/finding_raider/screnn/connecting_rider_page.dart';
 import 'package:ZipBee/features/user/finding_raider/services/place_order_service.dart';
+import 'package:ZipBee/features/user/finding_raider/services/get_order_api_service.dart'; // API Service Import
 
 class RiderController extends GetxController {
-   RxInt orderId = 0.obs;
+  RxInt orderId = 0.obs;
 
   RxInt selectedFare = 0.obs;
 
@@ -24,6 +26,48 @@ class RiderController extends GetxController {
   RxString pickupAddress = ''.obs;
   RxString dropName = ''.obs;
   RxString dropAddress = ''.obs;
+
+  // New loading state for API
+  RxBool isLoading = false.obs;
+
+  // --- নতুন ডাটা ফেচিং মেথড (আগের কিছু ডিলিট না করে যোগ করা হয়েছে) ---
+  Future<void> fetchOrderData(int id) async {
+    isLoading.value = true;
+    debugPrint(
+      '🚀 fetchOrderData started for ID: $id',
+    ); // এটা প্রিন্ট না হলে বুঝবেন কন্ট্রোলার মেথড কল হয়নি
+
+    try {
+      final result = await GetOrderApiService.fetchOrderDetails(id);
+
+      if (result['success'] == true && result['data'] != null) {
+        final List orderStops = result['data']['orderStops'] ?? [];
+
+        for (var stop in orderStops) {
+          final destination = stop['destination'];
+          if (destination != null) {
+            final String type = destination['type'] ?? '';
+
+            if (type == 'SENDER') {
+              pickupName.value = destination['contact_name'] ?? '';
+              pickupAddress.value = destination['address'] ?? '';
+              debugPrint('✅ Pickup Set: ${pickupName.value}');
+            } else if (type == 'RECEIVER') {
+              dropName.value = destination['contact_name'] ?? '';
+              dropAddress.value = destination['address'] ?? '';
+              debugPrint('✅ Drop Set: ${dropName.value}');
+            }
+          }
+        }
+      } else {
+        debugPrint('❌ API Success was false or data was null');
+      }
+    } catch (e) {
+      debugPrint('❌ Controller Error: $e');
+    } finally {
+      isLoading.value = false;
+    }
+  }
 
   void setPickupLocation(double lat, double lng) {
     pickupLat.value = lat;
@@ -91,13 +135,7 @@ class RiderController extends GetxController {
       );
 
       if (success) {
-        setLocationFromApi(
-          pickupName: 'Pickup Location',
-          pickupAddress: 'Selected on map',
-          dropName: 'Drop Location',
-          dropAddress: 'Selected destination',
-        );
-
+        // Success logic remains the same
         firstActive.value = false;
         secondActive.value = true;
 
@@ -118,7 +156,7 @@ class RiderController extends GetxController {
     isCancelling.value = true;
 
     try {
-      await Future.delayed( Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
       Get.back();
       Get.snackbar('Order Cancelled', reason);
     } finally {

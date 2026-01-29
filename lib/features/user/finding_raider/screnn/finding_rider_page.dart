@@ -11,16 +11,33 @@ import 'package:get/get.dart';
 
 class FindingRiderPage extends StatelessWidget {
   FindingRiderPage({super.key});
-  
+
   final RiderController controller = Get.isRegistered<RiderController>()
       ? Get.find<RiderController>()
       : Get.put(RiderController());
 
-  final StackedOrderController orderController = Get.find<StackedOrderController>();
+  final StackedOrderController orderController =
+      Get.find<StackedOrderController>();
 
   @override
   Widget build(BuildContext context) {
-    _initializeWithOrderData(); // ডাটা ইনিশিয়ালাইজেশন পার্ট
+    // API কল করার লজিক
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // শুধু সংখ্যা বের করে আনার জন্য রেজেক্স ব্যবহার করা নিরাপদ
+      String rawId = orderController.orderNumber.value.replaceAll(
+        RegExp(r'[^0-9]'),
+        '',
+      );
+      int? id = int.tryParse(rawId);
+
+      debugPrint('🔍 Attempting to fetch order with ID: $id (Raw: ${orderController.orderNumber.value})',);
+
+      if (id != null && id != 0) {
+        controller.fetchOrderData(id);
+      } else {
+        debugPrint('⚠️ Error: Order ID is null or zero. API not called.');
+      }
+    });
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -38,125 +55,147 @@ class FindingRiderPage extends StatelessWidget {
       body: Stack(
         children: [
           const SizedBox.expand(child: GoogleMapWidget()),
-          DraggableScrollableSheet(
-            initialChildSize: 0.4,
-            minChildSize: 0.3,
-            maxChildSize: 0.7,
-            builder: (_, scrollController) {
-              return Container(
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-                  boxShadow: [
-                    BoxShadow(color: Colors.black26, blurRadius: 10, spreadRadius: 2),
-                  ],
-                ),
-                child: SingleChildScrollView(
-                  controller: scrollController,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        dragHandle(),
-                        const SizedBox(height: 16),
-                        Center(
-                          child: Text(
-                            'Finding your rider',
-                            style: getTextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+
+          // API লোডিং এর সময় ইন্ডিকেটর দেখানো
+          Obx(
+            () => controller.isLoading.value
+                ? const Center(
+                    child: CircularProgressIndicator(color: Colors.amber),
+                  )
+                : DraggableScrollableSheet(
+                    initialChildSize: 0.4,
+                    minChildSize: 0.3,
+                    maxChildSize: 0.7,
+                    builder: (_, scrollController) {
+                      return Container(
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(20),
                           ),
-                        ),
-                        const SizedBox(height: 20),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            stepBar(active: true),
-                            stepBar(active: false),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black26,
+                              blurRadius: 10,
+                              spreadRadius: 2,
+                            ),
                           ],
                         ),
-                        const SizedBox(height: 10),
-                        Center(
-                          child: Obx(
-                            () => Text(
-                              'Order ${orderController.orderNumber.value}',
-                              style: getTextStyle(fontSize: 12, fontWeight: FontWeight.w600),
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(height: 20),
-
-                        // --- নতুন রিইউজেবল উইজেট এখানে কল করা হয়েছে ---
-                        OrderLocationInfoWidget(
-                          pickupName: controller.pickupName,
-                          pickupAddress: controller.pickupAddress,
-                          dropName: controller.dropName,
-                          dropAddress: controller.dropAddress,
-                        ),
-                        // -------------------------------------------
-
-                        const SizedBox(height: 20),
-                        buildFareOptions(),
-                        const SizedBox(height: 20),
-                        Center(child: addAmountButton()),
-                        const SizedBox(height: 20),
-                        Button(
-                          buttonText: 'Priority order',
-                          backgroundColor: Colors.amber,
-                          textColor: Colors.black,
-                          onPressed: controller.placeOrder,
-                        ),
-                        const SizedBox(height: 24),
-                        Center(
-                          child: FilledButton(
-                            onPressed: () => showCancelOrderDialog(context),
-                            style: FilledButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(6),
-                                side: const BorderSide(color: Colors.red, width: 1.5),
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
+                        child: SingleChildScrollView(
+                          controller: scrollController,
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  'Cancel order',
-                                  style: getTextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.red),
+                                dragHandle(),
+                                const SizedBox(height: 16),
+                                Center(
+                                  child: Text(
+                                    'Finding your rider',
+                                    style: getTextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
                                 ),
-                                const SizedBox(width: 3),
-                                Image.asset(IconPath.cancel, height: 14, width: 14),
+                                const SizedBox(height: 20),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    stepBar(active: true),
+                                    stepBar(active: false),
+                                  ],
+                                ),
+                                const SizedBox(height: 10),
+                                Center(
+                                  child: Obx(
+                                    () => Text(
+                                      'Order ${orderController.orderNumber.value}',
+                                      style: getTextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 20),
+
+                                // অর্ডারের লোকেশন উইজেট
+                                OrderLocationInfoWidget(
+                                  pickupName: controller.pickupName,
+                                  pickupAddress: controller.pickupAddress,
+                                  dropName: controller.dropName,
+                                  dropAddress: controller.dropAddress,
+                                ),
+
+                                const SizedBox(height: 20),
+                                buildFareOptions(),
+                                const SizedBox(height: 20),
+                                Center(child: addAmountButton()),
+                                const SizedBox(height: 20),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                  ),
+                                  child: Button(
+                                    buttonText: 'Priority order',
+                                    backgroundColor: Colors.amber,
+                                    textColor: Colors.black,
+                                    onPressed: controller.placeOrder,
+                                  ),
+                                ),
+                                const SizedBox(height: 24),
+                                Center(
+                                  child: FilledButton(
+                                    onPressed: () =>
+                                        showCancelOrderDialog(context),
+                                    style: FilledButton.styleFrom(
+                                      backgroundColor: Colors.white,
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                        vertical: 8,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(6),
+                                        side: const BorderSide(
+                                          color: Colors.red,
+                                          width: 1.5,
+                                        ),
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          'Cancel order',
+                                          style: getTextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
+                                            color: Colors.red,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 3),
+                                        Image.asset(
+                                          IconPath.cancel,
+                                          height: 14,
+                                          width: 14,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
                               ],
                             ),
                           ),
                         ),
-                      ],
-                    ),
+                      );
+                    },
                   ),
-                ),
-              );
-            },
           ),
         ],
       ),
     );
-  }
-
-  /// Initialize rider controller with order sender/receiver data
-  void _initializeWithOrderData() {
-    final senderInfo = orderController.senderInfo.value;
-    final receiverInfo = orderController.receiverInfo.value;
-
-    if (senderInfo != null) {
-      controller.pickupName.value = senderInfo['contact_name'] as String? ?? '';
-      controller.pickupAddress.value = senderInfo['address'] as String? ?? '';
-    }
-
-    if (receiverInfo != null) {
-      controller.dropName.value = receiverInfo['contact_name'] as String? ?? '';
-      controller.dropAddress.value = receiverInfo['address'] as String? ?? '';
-    }
   }
 
   Widget dragHandle() {
@@ -176,7 +215,7 @@ class FindingRiderPage extends StatelessWidget {
     return Container(
       width: 69,
       height: 6,
-      margin: EdgeInsets.symmetric(horizontal: 4),
+      margin: const EdgeInsets.symmetric(horizontal: 4),
       decoration: BoxDecoration(
         color: active ? Colors.amber : Colors.grey,
         borderRadius: BorderRadius.circular(3),
@@ -186,7 +225,7 @@ class FindingRiderPage extends StatelessWidget {
 
   Widget addAmountButton() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(6),
         border: Border.all(color: Colors.grey, width: 1.5),
@@ -194,7 +233,7 @@ class FindingRiderPage extends StatelessWidget {
       child: TextButton(
         onPressed: () {},
         style: TextButton.styleFrom(
-          padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
           minimumSize: Size.zero,
           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
         ),
@@ -209,8 +248,8 @@ class FindingRiderPage extends StatelessWidget {
                 color: Colors.grey,
               ),
             ),
-            SizedBox(width: 3),
-            Icon(Icons.add, size: 13, color: Colors.grey),
+            const SizedBox(width: 3),
+            const Icon(Icons.add, size: 13, color: Colors.grey),
           ],
         ),
       ),
@@ -233,7 +272,10 @@ class FindingRiderPage extends StatelessWidget {
                   ? Colors.amber
                   : Colors.white,
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ),
                 child: Text(
                   '\$${controller.fareOptions[index]}',
                   style: TextStyle(
