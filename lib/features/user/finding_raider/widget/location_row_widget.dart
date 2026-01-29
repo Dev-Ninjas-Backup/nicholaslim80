@@ -1,5 +1,6 @@
-import 'package:ZipBee/core/common/styles/global_text_style.dart';
+import 'package:ZipBee/core/utils/constants/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:ZipBee/core/common/styles/global_text_style.dart';
 
 class LocationRowWidget extends StatelessWidget {
   final String iconPath;
@@ -16,38 +17,39 @@ class LocationRowWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Image.asset(iconPath, width: 14, height: 14),
-        SizedBox(width: 16),
+        Image.asset(iconPath, height: 32, width: 32),
+        const SizedBox(width: 12),
         Expanded(
-          child: _buildLocationCard(title: title, address: address),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: getTextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.black87,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis, // নাম বড় হলে ডট দেখাবে
+              ),
+              const SizedBox(height: 2),
+              Text(
+                address,
+                style: getTextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w400,
+                  color: AppColors.subtitleFontColor,
+                ),
+                maxLines: 2, // এড্রেস ২ লাইন পর্যন্ত দেখাবে
+                overflow: TextOverflow.ellipsis, // এর বেশি হলে ডট দেখাবে
+              ),
+            ],
+          ),
         ),
       ],
     );
   }
-}
-
-Widget _buildLocationCard({required String title, required String address}) {
-  return Padding(
-    padding: EdgeInsets.all(8),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: getTextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-        ),
-        Text(
-          address,
-          style: getTextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-            color: Colors.grey,
-          ),
-        ),
-      ],
-    ),
-  );
 }
