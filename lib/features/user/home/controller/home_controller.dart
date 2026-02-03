@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:ZipBee/core/api_end_point/api_end_point.dart';
+import 'package:ZipBee/core/controllers/app_controller.dart';
 import 'package:ZipBee/core/shared_prefference_service/shared_pref.dart';
 import 'package:ZipBee/core/utils/constants/icon_path.dart';
 import 'package:ZipBee/features/user/home/model/drawer_model.dart';
@@ -188,6 +189,13 @@ Future<void> checkAndShowPopup(BuildContext context) async {
   @override
   void onInit() {
     fetchUserProfile();
+
+    // 🔄 Listen for profile changes from app controller
+    final appController = Get.find<AppController>();
+    ever(appController.appRebuildTrigger, (_) {
+      debugPrint('🔄 Profile changed detected in HomeController, refreshing data...');
+      fetchUserProfile();
+    });
 
     drawerItem.addAll([
       DrawerModel(

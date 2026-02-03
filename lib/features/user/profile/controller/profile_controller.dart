@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:ZipBee/core/api_end_point/api_end_point.dart';
+import 'package:ZipBee/core/controllers/app_controller.dart';
 import 'package:ZipBee/core/shared_prefference_service/shared_pref.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
@@ -166,6 +167,15 @@ class ProfileController extends GetxController {
         updateProfileItems();
         editingIndex.value = -1;
         debugPrint('✅ Profile updated successfully');
+        
+        // 🔄 Trigger app rebuild to refresh data on all screens
+        try {
+          final appController = Get.find<AppController>();
+          appController.rebuildApp();
+          debugPrint('🔄 App rebuild triggered from profile controller');
+        } catch (e) {
+          debugPrint('⚠️ AppController not found: $e');
+        }
       } else if (response.statusCode == 401) {
         errorMessage('Session expired. Please login again.');
         Get.offAllNamed('/login');
