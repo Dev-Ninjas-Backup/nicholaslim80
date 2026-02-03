@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:ZipBee/core/api_end_point/api_end_point.dart';
+import 'package:ZipBee/core/service/socket_service.dart';
 import 'package:ZipBee/core/shared_prefference_service/shared_pref.dart';
 import 'package:ZipBee/core/utils/constants/icon_path.dart';
 import 'package:ZipBee/features/user/home/model/drawer_model.dart';
@@ -14,17 +15,15 @@ import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 
 class HomeController extends GetxController {
-
   final userName = 'Good Morning!'.obs;
   final parcelStatus = 'Live delivery status'.obs;
 
-  final walletBalance = 0.0.obs; 
-  final availablePoints = 0.obs; 
+  final walletBalance = 0.0.obs;
+  final availablePoints = 0.obs;
 
   final selectedService = 'Standard'.obs;
-  final selectedVehicleId = RxnString();  
-  
-  // পরিবর্তন এখানে: স্ট্যাটিক ডাটা রিমুভ করে খালি লিস্ট রাখা হয়েছে
+  final selectedVehicleId = RxnString();
+
   final vehicles = <Map<String, dynamic>>[].obs;
 
   final deliveryType = 'standard'.obs;
@@ -35,11 +34,14 @@ class HomeController extends GetxController {
     if (deliveryType.value == 'stacked') return 'Stacked Delivery';
     return 'Standard Delivery';
   }
+
   void selectDeliveryType(String type) {
     deliveryType.value = type;
   }
 
   var drawerItem = <DrawerModel>[].obs;
+
+  final SocketService _socketService = SocketService();
 
   Future<void> fetchUserProfile() async {
     try {
@@ -59,6 +61,10 @@ class HomeController extends GetxController {
         final body = jsonDecode(response.body);
         if (body['success'] == true && body['data'] != null) {
           final data = body['data'];
+          final userId = data['id'].toString();
+          await SharedPreferencesHelper.saveUserId(userId);
+          debugPrint('💾 Saved User ID after signup: $userId');
+          
           userName.value =
               "Good Morning, ${data['username']?.toString().trim() ?? ''}";
           walletBalance.value = (data['currentWalletBalance'] != null)
@@ -71,6 +77,9 @@ class HomeController extends GetxController {
           debugPrint(
             "Profile loaded: wallet=${walletBalance.value}, points=${availablePoints.value}",
           );
+
+          // 🔌 Connect to Socket.IO after successful profile fetch
+          _connectToSocket(token);
         } else {
           debugPrint(" Profile API returned success=false");
         }
@@ -81,6 +90,18 @@ class HomeController extends GetxController {
       debugPrint(" PROFILE ERROR: $e");
     }
   }
+
+  // 🔌 Connect to Socket.IO
+  Future<void> _connectToSocket(String token) async {
+    try {
+      final socketService = SocketService();
+      await socketService.connect(token);
+      debugPrint('🔌 Socket connection initiated');
+    } catch (e) {
+      debugPrint('❌ Socket connection failed: $e');
+    }
+  }
+
   void showLogoutDialog() {
     Get.dialog(
       LogoutDialog(
@@ -118,68 +139,12 @@ class HomeController extends GetxController {
     } catch (e) {
       debugPrint("LOGOUT ERROR: $e");
     } finally {
+      // 🔌 Disconnect socket on logout
+      final socketService = SocketService();
+      socketService.disconnect();
+
       await SharedPreferencesHelper.logout();
       Get.offAllNamed(AppRoutes.loginScreen);
-    }
-  }
-
-  // Popup Handling
-Future<void> checkAndShowPopup(BuildContext context) async {
-    final response = await DashboardPopupService.fetchPopups();
-    
-    if (response['success'] == true && response['data'] != null) {
-      List popups = response['data'];
-      
-      // শুধুমাত্র Active পপআপগুলো ফিল্টার করা
-      List activePopups = popups.where((p) => p['isActive'] == true).toList();
-
-      if (activePopups.isNotEmpty) {
-        // র‍্যান্ডমলি একটি অবজেক্ট সিলেক্ট করা
-        final random = Random();
-        final selectedPopup = activePopups[random.nextInt(activePopups.length)];
-        
-        _showPopupDialog(context, selectedPopup);
-      }
-    }
-  }
-
-  void _showPopupDialog(BuildContext context, Map<String, dynamic> data) {
-    Get.dialog(
-      AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-        title: Text(data['title'] ?? "Announcement"),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (data['image_link'] != null)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: Image.network(data['image_link'], errorBuilder: (c,e,s) => SizedBox.shrink()),
-              ),
-            Text(data['desc'] ?? ""),
-            const SizedBox(height: 15),
-            GestureDetector(
-              onTap: () => _launchURL(data['redirect_link']),
-              child: Text(
-                "Click here to learn more",
-                style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline, fontWeight: FontWeight.bold),
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(onPressed: () => Get.back(), child: const Text("Close")),
-        ],
-      ),
-    );
-  }
-
-  Future<void> _launchURL(String? url) async {
-    if (url == null || url.isEmpty) return;
-    final Uri uri = Uri.parse(url);
-    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
-      debugPrint('❌ Could not launch $url');
     }
   }
 
@@ -188,6 +153,7 @@ Future<void> checkAndShowPopup(BuildContext context) async {
   @override
   void onInit() {
     fetchUserProfile();
+    connectSocket();
 
     drawerItem.addAll([
       DrawerModel(
@@ -228,5 +194,11 @@ Future<void> checkAndShowPopup(BuildContext context) async {
     ]);
 
     super.onInit();
+  }
+
+  void connectSocket() async{
+    final token = await SharedPreferencesHelper.getAccessToken();
+    await _socketService.connect(token ?? "");
+    
   }
 }
