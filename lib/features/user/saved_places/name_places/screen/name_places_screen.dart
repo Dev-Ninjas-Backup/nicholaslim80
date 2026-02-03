@@ -2,11 +2,11 @@ import 'package:ZipBee/core/common/styles/global_text_style.dart';
 import 'package:ZipBee/core/common/widgets/custom_button.dart';
 import 'package:ZipBee/core/utils/constants/app_colors.dart';
 import 'package:ZipBee/features/user/saved_places/controller/saved_places_controller.dart';
+import 'package:ZipBee/features/user/saved_places/screen/saved_place_screenn.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-
 
 class NamePlaceScreen extends StatelessWidget {
   NamePlaceScreen({super.key});
@@ -91,7 +91,10 @@ class NamePlaceScreen extends StatelessWidget {
                   return;
                 }
 
-                await controller.savePlace(name);
+                final ok = await controller.savePlace(name);
+                if (ok) {
+                  Get.to(SavedPlaceScreen());
+                }
               },
             ),
 
