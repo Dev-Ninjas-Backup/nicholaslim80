@@ -177,10 +177,12 @@ class StackedSenderScheduleScreen extends StatelessWidget {
                                     // If Add Stop flow requested, navigate to recipient screen to add a recipient stop
                                     final args = Get.arguments as Map<String, dynamic>?;
                                     if (args != null && args['navigateNextToRecipient'] == true) {
+                                      debugPrint('if executed');
                                       Get.to(() => StackedSchedulRecepmenteScreen(), arguments: {'addAsStop': true});
                                     } else {
                                       // Regular flow: back to stacked screen
-                                      Get.to(() => StackedScreen());
+                                      debugPrint('else executed');
+                                      Get.back();
                                     }
                                   }
                                 }
