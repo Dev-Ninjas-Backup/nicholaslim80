@@ -11,7 +11,7 @@ class UserMyWalletController extends GetxController {
   var isLoading = false.obs;
 
   /// Stripe wallet balance
-  var currentBalance = 0.obs;
+  RxDouble currentBalance = 0.0.obs;
 
   /// Wallet history (NO MODEL)
   var recentTransactionList = <Map<String, dynamic>>[].obs;
@@ -49,7 +49,9 @@ class UserMyWalletController extends GetxController {
         await SharedPreferencesHelper.saveUserId(userId!);
 
         /// ✅ Stripe balance only
-        currentBalance.value = body['data']['stripe_balance'] ?? 0;
+        currentBalance.value =
+            double.tryParse(body['data']['currentWalletBalance'].toString()) ??
+            0.0;
 
         await loadWalletHistory();
       }

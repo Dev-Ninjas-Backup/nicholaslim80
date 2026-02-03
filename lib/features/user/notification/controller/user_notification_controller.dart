@@ -18,7 +18,7 @@ class UserNotificationController extends GetxController {
   final RxList<Notification1Model> notificationList =
       <Notification1Model>[].obs;
 
-  final notificationTabs = ["Notifications", "Order Updates", "Promotions"];
+  final notificationTabs = ["Notifications", "Order Update", "Promotions"];
 
   @override
   void onInit() {
@@ -26,7 +26,6 @@ class UserNotificationController extends GetxController {
     fetchNotifications();
   }
 
-  
   Future<void> fetchNotifications({bool loadMore = false}) async {
     if (isLoading.value || (!hasMore && loadMore)) return;
 
@@ -59,7 +58,7 @@ class UserNotificationController extends GetxController {
           type = "PROMOTION";
           break;
         default:
-          type = ""; 
+          type = "";
       }
 
       final uri = Uri.parse(
