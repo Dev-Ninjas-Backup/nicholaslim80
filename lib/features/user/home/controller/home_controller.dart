@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:ZipBee/core/api_end_point/api_end_point.dart';
+import 'package:ZipBee/core/service/socket_service.dart';
 import 'package:ZipBee/core/shared_prefference_service/shared_pref.dart';
 import 'package:ZipBee/core/utils/constants/icon_path.dart';
 import 'package:ZipBee/features/user/home/model/drawer_model.dart';
@@ -11,17 +12,15 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
 class HomeController extends GetxController {
-
   final userName = 'Good Morning!'.obs;
   final parcelStatus = 'Live delivery status'.obs;
 
-  final walletBalance = 0.0.obs; 
-  final availablePoints = 0.obs; 
+  final walletBalance = 0.0.obs;
+  final availablePoints = 0.obs;
 
   final selectedService = 'Standard'.obs;
-  final selectedVehicleId = RxnString();  
-  
-  // পরিবর্তন এখানে: স্ট্যাটিক ডাটা রিমুভ করে খালি লিস্ট রাখা হয়েছে
+  final selectedVehicleId = RxnString();
+
   final vehicles = <Map<String, dynamic>>[].obs;
 
   final deliveryType = 'standard'.obs;
@@ -32,11 +31,14 @@ class HomeController extends GetxController {
     if (deliveryType.value == 'stacked') return 'Stacked Delivery';
     return 'Standard Delivery';
   }
+
   void selectDeliveryType(String type) {
     deliveryType.value = type;
   }
 
   var drawerItem = <DrawerModel>[].obs;
+
+  final SocketService _socketService = SocketService();
 
   Future<void> fetchUserProfile() async {
     try {
@@ -56,6 +58,10 @@ class HomeController extends GetxController {
         final body = jsonDecode(response.body);
         if (body['success'] == true && body['data'] != null) {
           final data = body['data'];
+          final userId = data['id'].toString();
+          await SharedPreferencesHelper.saveUserId(userId);
+          debugPrint('💾 Saved User ID after signup: $userId');
+          
           userName.value =
               "Good Morning, ${data['username']?.toString().trim() ?? ''}";
           walletBalance.value = (data['currentWalletBalance'] != null)
@@ -68,6 +74,9 @@ class HomeController extends GetxController {
           debugPrint(
             "Profile loaded: wallet=${walletBalance.value}, points=${availablePoints.value}",
           );
+
+          // 🔌 Connect to Socket.IO after successful profile fetch
+          _connectToSocket(token);
         } else {
           debugPrint(" Profile API returned success=false");
         }
@@ -78,6 +87,18 @@ class HomeController extends GetxController {
       debugPrint(" PROFILE ERROR: $e");
     }
   }
+
+  // 🔌 Connect to Socket.IO
+  Future<void> _connectToSocket(String token) async {
+    try {
+      final socketService = SocketService();
+      await socketService.connect(token);
+      debugPrint('🔌 Socket connection initiated');
+    } catch (e) {
+      debugPrint('❌ Socket connection failed: $e');
+    }
+  }
+
   void showLogoutDialog() {
     Get.dialog(
       LogoutDialog(
@@ -115,15 +136,21 @@ class HomeController extends GetxController {
     } catch (e) {
       debugPrint("LOGOUT ERROR: $e");
     } finally {
+      // 🔌 Disconnect socket on logout
+      final socketService = SocketService();
+      socketService.disconnect();
+
       await SharedPreferencesHelper.logout();
       Get.offAllNamed(AppRoutes.loginScreen);
     }
   }
+
   void selectService(String service) => selectedService.value = service;
   void selectVehicle(String id) => selectedVehicleId.value = id;
   @override
   void onInit() {
     fetchUserProfile();
+    connectSocket();
 
     drawerItem.addAll([
       DrawerModel(
@@ -164,5 +191,11 @@ class HomeController extends GetxController {
     ]);
 
     super.onInit();
+  }
+
+  void connectSocket() async{
+    final token = await SharedPreferencesHelper.getAccessToken();
+    await _socketService.connect(token ?? "");
+    
   }
 }
