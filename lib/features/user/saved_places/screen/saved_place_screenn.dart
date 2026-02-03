@@ -36,6 +36,7 @@ class SavedPlaceScreen extends StatelessWidget {
           padding: EdgeInsets.all(16),
           child: Obx(() {
             final places = controller.savedPlaces;
+            final loading = controller.isLoading.value;
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -45,46 +46,65 @@ class SavedPlaceScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 Expanded(
-                  child: ListView(
-                    children: [
-                      ...places.map(
-                        (p) => Card(
-                          color: Color(0XFFFFFDF5),
-                          elevation: 1,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                  child: RefreshIndicator(
+                    onRefresh: controller.fetchPlaces,
+                    child: loading
+                        ? const Center(child: CircularProgressIndicator())
+                        : ListView(
+                            children: [
+                              if (places.isEmpty)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 40),
+                                  child: Center(
+                                    child: Text(
+                                      'No saved places yet',
+                                      style: getTextStyle(
+                                        fontSize: 14,
+                                        color: Colors.black54,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ...places.map(
+                                (p) => Card(
+                                  color: Color(0XFFFFFDF5),
+                                  elevation: 1,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: ListTile(
+                                    title: Text(
+                                      p.name,
+                                      style:
+                                          getTextStyle(fontWeight: FontWeight.w600),
+                                    ),
+                                    subtitle: Text(
+                                      p.address,
+                                      style: getTextStyle(fontSize: 13),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Card(
+                                color: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: ListTile(
+                                  leading: Icon(Icons.add, color: Colors.amber),
+                                  title: Text(
+                                    "Add Place",
+                                    style: getTextStyle(fontWeight: FontWeight.w500),
+                                  ),
+                                  onTap: () => Get.to(() => AddPlaceScreen()),
+                                  trailing: Icon(
+                                    Icons.chevron_right,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                          child: ListTile(
-                            title: Text(
-                              p.name,
-                              style: getTextStyle(fontWeight: FontWeight.w600),
-                            ),
-                            subtitle: Text(
-                              p.address,
-                              style: getTextStyle(fontSize: 13),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Card(
-                        color: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: ListTile(
-                          leading: Icon(Icons.add, color: Colors.amber),
-                          title: Text(
-                            "Add Place",
-                            style: getTextStyle(fontWeight: FontWeight.w500),
-                          ),
-                          onTap: () => Get.to(() => AddPlaceScreen()),
-                          trailing: Icon(
-                            Icons.chevron_right,
-                            color: Colors.grey,
-                          ),
-                        ),
-                      ),
-                    ],
                   ),
                 ),
               ],

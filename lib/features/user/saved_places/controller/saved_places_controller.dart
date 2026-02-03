@@ -19,10 +19,16 @@ class SavedPlaceController extends GetxController {
   Future<void> fetchPlaces() async {
     try {
       isLoading.value = true;
+      print('DEBUG SavedPlaceController.fetchPlaces -> called');
       final data = await service.getPlaces();
+      print(
+        'DEBUG SavedPlaceController.fetchPlaces -> fetched ${data.length} items',
+      );
       savedPlaces.assignAll(data);
-    } catch (e) {
-      EasyLoading.showError('Could not load saved places');
+    } catch (e, st) {
+      print('DEBUG SavedPlaceController.fetchPlaces -> error: $e');
+      print(st);
+      EasyLoading.showError('Could not load saved places: $e');
     } finally {
       isLoading.value = false;
     }
