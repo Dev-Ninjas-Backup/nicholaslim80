@@ -1,28 +1,39 @@
 import 'package:ZipBee/core/common/styles/global_text_style.dart';
 import 'package:ZipBee/core/utils/constants/icon_path.dart';
-import 'package:ZipBee/core/utils/constants/image_path.dart';
 import 'package:ZipBee/features/user/finding_raider/controller/rider_controller.dart';
 import 'package:ZipBee/features/user/finding_raider/screnn/raider_details.dart';
 import 'package:ZipBee/features/user/finding_raider/widget/button.dart';
 import 'package:ZipBee/features/user/finding_raider/widget/location_row_widget.dart';
+import 'package:ZipBee/features/user/finding_raider/widget/payment_Info_widget.dart';
 import 'package:ZipBee/features/user/google_map/widget/google_map_widget.dart';
+import 'package:ZipBee/features/user/stacked/order_stacked_delivery/controller/stacked_order_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ConnectingRiderPage extends StatelessWidget {
   final RiderController controller = Get.find<RiderController>();
 
+    final StackedOrderController orderController = Get.find<StackedOrderController>();
+
   ConnectingRiderPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Start polling when page opens
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _startPollingAndHandleRiderAssignment();
+    });
+
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: GestureDetector(
-          onTap: Get.back,
+          onTap: () {
+            controller.stopPollingAssignRider();
+            Get.back();
+          },
           child: Padding(
             padding: EdgeInsets.all(8),
             child: Image.asset(IconPath.colorFullArrow, width: 24),
@@ -67,78 +78,49 @@ class ConnectingRiderPage extends StatelessWidget {
                         ),
 
                         SizedBox(height: 16),
-                        Row(
-                          children: [
-                            CircleAvatar(
-                              radius: 36,
-                              backgroundImage: AssetImage(
-                                ImagePath.profileImage,
-                              ),
-                            ),
-                            SizedBox(width: 11),
-                            Obx(
-                              () => Column(
+                        // Payment Information - Updated with API data
+                        Obx(
+                          () => Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Name: ${controller.riderName.value}',
+                                    'Order ${orderController.orderNumber.value}',
+                                    style: getTextStyle(fontSize: 12),
+                                  ),
+                                  Text(
+                                    '\$${controller.totalCost.value.toStringAsFixed(2)}',
                                     style: getTextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
                                     ),
-                                  ),
-                                  Text(
-                                    'Vehicle type: ${controller.vehicleType.value}',
-                                    style: getTextStyle(fontSize: 13),
-                                  ),
-                                  Text(
-                                    'Order ${controller.orderId.value}',
-                                    style: getTextStyle(fontSize: 13),
-                                  ),
-                                  Text(
-                                    'Arriving in ${controller.arrivalTime.value}',
-                                    style: getTextStyle(fontSize: 13),
                                   ),
                                 ],
                               ),
-                            ),
-                          ],
+                              PaymentInfoWidget(),
+                            ],
+                          ),
                         ),
-                        Divider(),
 
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Total',
-                                  style: getTextStyle(fontSize: 12),
-                                ),
-                                Text(
-                                  '/\$24.00',
-                                  style: getTextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Image.asset(IconPath.visa),
-                                SizedBox(width: 8),
-                                Text(
-                                  "***456",
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    decoration: TextDecoration.underline,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
+                        Divider(height: 32),
+
+                        // Date & Time
+                        Obx(
+                          () => Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Date & Time',
+                                style: getTextStyle(fontSize: 12),
+                              ),
+                              Text(
+                                _formatDateTime(controller.orderCreatedAt.value),
+                                style: getTextStyle(fontSize: 12),
+                              ),
+                            ],
+                          ),
                         ),
 
                         Divider(height: 32),
@@ -193,6 +175,29 @@ class ConnectingRiderPage extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  // Start polling and handle rider assignment
+  void _startPollingAndHandleRiderAssignment() {
+    controller.startPollingAssignRider(
+      () {
+        debugPrint('✅ Rider assigned, navigating to next screen');
+        controller.stopPollingAssignRider();
+        // Navigate to next screen after rider is assigned
+        Get.to(() => RaiderDetails());
+      },
+    );
+  }
+
+  // Format datetime from ISO string
+  String _formatDateTime(String isoString) {
+    if (isoString.isEmpty) return 'N/A';
+    try {
+      final dateTime = DateTime.parse(isoString);
+      return '${dateTime.day}/${dateTime.month}/${dateTime.year} ${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}';
+    } catch (e) {
+      return 'N/A';
+    }
   }
 
   Widget dragHandle() => Center(

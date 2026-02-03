@@ -3,7 +3,8 @@ import 'package:ZipBee/features/user/stacked/order_stacked_delivery/controller/s
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart'; // নতুন অ্যাড করা হয়েছে
+import 'package:get_storage/get_storage.dart';
+import 'dart:async';
 import 'package:ZipBee/core/utils/constants/icon_path.dart';
 import 'package:ZipBee/features/user/finding_raider/model/payment_option_model.dart';
 import 'package:ZipBee/features/user/finding_raider/screnn/connecting_rider_page.dart';
@@ -35,6 +36,15 @@ class RiderController extends GetxController {
   // New loading state for API
   RxBool isLoading = false.obs;
 
+  // Order Payment Information
+  RxDouble totalCost = 0.0.obs;
+  RxString paymentType = ''.obs; // COD, WALLET, ONLINE_PAY
+  RxBool assignRiderNull = true.obs;
+  Rx<dynamic> assignRiderData = Rx<dynamic>(null);
+  RxString orderCreatedAt = ''.obs;
+  
+  Timer? _pollTimer;
+
   // fareOptions এখন রিয়েল-টাইম আপডেট হবে এবং ক্যাশ থেকে ডাটা নিবে
   final RxList<double> fareOptions = <double>[1.2, 2.5, 4.5, 6.5].obs;
 
@@ -49,7 +59,7 @@ class RiderController extends GetxController {
     List? savedFares = _box.read<List>('fare_cache');
     if (savedFares != null && savedFares.isNotEmpty) {
       fareOptions.assignAll(savedFares.cast<double>());
-      debugPrint('✅ Cache Loaded: ${fareOptions.value}');
+      debugPrint('✅ Cache Loaded: $savedFares');
     }
   }
 
@@ -83,7 +93,23 @@ class RiderController extends GetxController {
       final result = await GetOrderApiService.fetchOrderDetails(id);
 
       if (result['success'] == true && result['data'] != null) {
-        final List orderStops = result['data']['orderStops'] ?? [];
+        final data = result['data'];
+        
+        // Payment Information
+        totalCost.value = double.tryParse(data['total_cost']?.toString() ?? '0') ?? 0.0;
+        paymentType.value = data['pay_type'] ?? '';
+        orderCreatedAt.value = data['created_at'] ?? '';
+        
+        // Check assign_rider status
+        assignRiderData.value = data['assign_rider'];
+        assignRiderNull.value = data['assign_rider'] == null;
+        
+        debugPrint('✅ Total Cost: ${totalCost.value}');
+        debugPrint('✅ Payment Type: ${paymentType.value}');
+        debugPrint('✅ Assign Rider: ${data['assign_rider']}');
+        debugPrint('✅ Created At: ${orderCreatedAt.value}');
+        
+        final List orderStops = data['orderStops'] ?? [];
 
         for (var stop in orderStops) {
           final destination = stop['destination'];
@@ -109,6 +135,52 @@ class RiderController extends GetxController {
     } finally {
       isLoading.value = false;
     }
+  }
+
+  // Poll order to check assign_rider status
+  Future<void> startPollingAssignRider(VoidCallback? onAssignedRider) async {
+    // Get order ID from StackedOrderController
+    final StackedOrderController orderController = Get.find<StackedOrderController>();
+    String rawId = orderController.orderNumber.value.replaceAll(RegExp(r'[^0-9]'), '');
+    int? id = int.tryParse(rawId);
+
+    if (id == null || id == 0) {
+      debugPrint('❌ Invalid Order ID');
+      return;
+    }
+
+    _pollTimer?.cancel();
+    
+    // Initial fetch
+    await fetchOrderData(id);
+    
+    if (!assignRiderNull.value) {
+      onAssignedRider?.call();
+      return;
+    }
+    
+    _pollTimer = Timer.periodic(Duration(seconds: 3), (timer) async {
+      debugPrint('🔄 Polling order $id...');
+      await fetchOrderData(id);
+      
+      if (!assignRiderNull.value) {
+        debugPrint('✅ Rider assigned! Stopping poll.');
+        timer.cancel();
+        onAssignedRider?.call();
+      }
+    });
+  }
+
+  void stopPollingAssignRider() {
+    _pollTimer?.cancel();
+    _pollTimer = null;
+    debugPrint('⏹️ Polling stopped');
+  }
+
+  @override
+  void onClose() {
+    _pollTimer?.cancel();
+    super.onClose();
   }
 
   void setPickupLocation(double lat, double lng) {
