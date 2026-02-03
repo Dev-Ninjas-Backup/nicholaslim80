@@ -16,9 +16,12 @@ class PriorityOrderService {
       // URL: https://api.zipbee.sg/api/v1/order/{orderId}/priority-order
       final url = "${ApiEndPoint.baseUrl}/order/$orderId/priority-order";
 
+      // Convert amount to integer (multiply by 100 if you need cents, or just round to int)
+      final amountAsInt = amount.toInt();
+
       final Map<String, dynamic> requestBody = {
         "payType": payType,
-        "amount": amount,
+        "amount": amountAsInt,
       };
 
       debugPrint('🚀 PRIORITY ORDER REQUEST URL: $url');
@@ -39,14 +42,30 @@ class PriorityOrderService {
 
       final decoded = jsonDecode(response.body);
 
+      // Handle message as either String or List
+      String errorMessage = '';
+      if (decoded['message'] is List) {
+        errorMessage = (decoded['message'] as List).isNotEmpty 
+            ? decoded['message'][0].toString() 
+            : 'Unknown error';
+      } else {
+        errorMessage = decoded['message']?.toString() ?? 'Unknown error';
+      }
+
       return {
         'statusCode': response.statusCode,
         'success': decoded['success'] ?? false,
+        'message': errorMessage,
         'body': decoded
       };
     } catch (e) {
       debugPrint('❌ PriorityOrderService Error: $e');
-      return {'statusCode': 500, 'success': false, 'body': {}};
+      return {
+        'statusCode': 500,
+        'success': false,
+        'message': e.toString(),
+        'body': {}
+      };
     }
   }
 }

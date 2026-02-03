@@ -8,7 +8,7 @@ import '../controller/controller.dart';
 import '../widget/address_list_widget.dart';
 import '../widget/build_filter_chips.dart';
 
-class StackedCollectFormScreen extends StatelessWidget {
+class StackedCollectFormScreen extends StatefulWidget {
   final StackedCollectFormController controller;
   final String? addressType; // 'SENDER' or 'RECEIVER'
 
@@ -18,9 +18,21 @@ class StackedCollectFormScreen extends StatelessWidget {
     this.addressType,
   });
 
+  @override
+  State<StackedCollectFormScreen> createState() => _StackedCollectFormScreenState();
+}
+
+class _StackedCollectFormScreenState extends State<StackedCollectFormScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Initialize controller with address type filter only once
+    widget.controller.initializeWithAddressType(widget.addressType);
+  }
+
   String get appBarTitle {
     // If addressType is provided, use it to determine title
-    if (addressType == 'RECEIVER') {
+    if (widget.addressType == 'RECEIVER') {
       return "Deliver To";
     }
     // Default to "Collect From" for SENDER or when not specified
@@ -52,21 +64,15 @@ class StackedCollectFormScreen extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: 16.0),
         child: Column(
           children: [
-            StackedFilterChipsWidget(controller: controller),
+            SizedBox(height: 12),
+            StackedFilterChipsWidget(controller: widget.controller),
             SizedBox(height: 20),
-            StackedAddressListWidget(
-              controller: controller,
-              addressType: addressType,
+            Expanded(
+              child: StackedAddressListWidget(
+                controller: widget.controller,
+                addressType: widget.addressType,
+              ),
             ),
-            // CustomButton(
-            //   onPressed: () {
-            //     // Add new address with specific type
-            //     _navigateToAddScreen(addressType ?? 'SENDER');
-            //   }, 
-            //   label: 'Add', 
-            //   color: AppColors.onboardingIndicatorActive, 
-            //   textColor: AppColors.primaryFontColor,
-            // ),
             SizedBox(height: 20,)
           ],
         ),

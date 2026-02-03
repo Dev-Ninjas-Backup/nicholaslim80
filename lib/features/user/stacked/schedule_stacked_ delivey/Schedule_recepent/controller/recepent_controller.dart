@@ -24,7 +24,7 @@ class RecipientController extends GetxController {
     super.onInit();
     postalCodeController.addListener(() {
       onPostalCodeChanged(postalCodeController.text);
-      validateForm(); // সাথে ভ্যালিডেশনও চেক করবে
+      validateForm(); 
     });
     addressController.addListener(validateForm);
     floorController.addListener(validateForm);
