@@ -15,23 +15,41 @@ import '../sender_part/screen/screen.dart';
 class StackedCollectFormController extends GetxController {
   // .obs makes variables reactive so UI updates automatically
   var selectedFilterIndex = 0.obs;
+  var selectedTypeFilter = 'ALL'.obs; // 'ALL', 'SENDER', 'RECEIVER'
   var isLoading = false.obs;
   var addressList = <StackedAddressModel>[].obs;
   var selectedAddress = Rxn<StackedAddressModel>();
 
   // Filter names
   final List<String> filters = ["Recent", "Frequently Used", "Saved"];
+  final List<String> typeFilters = ["All", "Sender", "Receiver"];
 
   // Raw lists
   List<StackedAddressModel> _savedList = [];
   List<StackedAddressModel> _recentList = [];
   List<StackedAddressModel> _frequentlyList = [];
 
+  // Address type to filter by (passed from parent screen)
+  String? _addressTypeFilter;
+
   @override
   void onInit() {
     super.onInit();
     // Load initial data
     fetchAddresses();
+  }
+
+  // Initialize with address type filter (called from screen)
+  void initializeWithAddressType(String? addressType) {
+    if (addressType != null) {
+      _addressTypeFilter = addressType;
+      // Set the type filter based on addressType
+      if (addressType == 'SENDER') {
+        selectedTypeFilter.value = 'SENDER';
+      } else if (addressType == 'RECEIVER') {
+        selectedTypeFilter.value = 'RECEIVER';
+      }
+    }
   }
 
   // Change active filter tab
@@ -43,6 +61,22 @@ class StackedCollectFormController extends GetxController {
     } else {
       fetchAddresses();
     }
+  }
+
+  // Change type filter (All, Sender, Receiver)
+  void changeTypeFilter(int index) {
+    switch (index) {
+      case 0:
+        selectedTypeFilter.value = 'ALL';
+        break;
+      case 1:
+        selectedTypeFilter.value = 'SENDER';
+        break;
+      case 2:
+        selectedTypeFilter.value = 'RECEIVER';
+        break;
+    }
+    _applyFilter();
   }
 
   // Fetch address data from API and categorize
@@ -67,16 +101,17 @@ class StackedCollectFormController extends GetxController {
 
       if (response.statusCode == 200) {
         final decoded = json.decode(response.body);
+        debugPrint('🚀 DESTINATION RESPONSE: ${response.statusCode} & 📦 Body: ${response.body}');
         if (decoded['success'] == true && decoded['data'] != null) {
           final List list = decoded['data'];
 
-          // Map to model and decide icon
+          // Map to model and decide icon based on type
           List<StackedAddressModel> all = list.map<StackedAddressModel>((e) {
             String icon = e['type'] == 'SENDER' ? IconPath.location : IconPath.locationBlue;
             return StackedAddressModel.fromJson(Map<String, dynamic>.from(e), iconPath: icon);
           }).toList();
 
-          // Categorize
+          // Categorize by recency/frequency
           _savedList = all.where((a) => a.isSaved == true).toList();
           _recentList = all.where((a) => a.lastUsedAt != null && a.isSaved == false).toList();
           _frequentlyList = all.where((a) => a.useCount >= 1 && a.isSaved == false && a.lastUsedAt == null).toList();
@@ -101,18 +136,30 @@ class StackedCollectFormController extends GetxController {
   }
 
   void _applyFilter() {
+    // Get filtered list based on recency/frequency
+    List<StackedAddressModel> filtered;
+    
     switch (selectedFilterIndex.value) {
       case 0:
-        addressList.assignAll(_recentList);
+        filtered = _recentList;
         break;
       case 1:
-        addressList.assignAll(_frequentlyList);
+        filtered = _frequentlyList;
         break;
       case 2:
-        addressList.assignAll(_savedList);
+        filtered = _savedList;
         break;
       default:
-        addressList.assignAll(_recentList);
+        filtered = _recentList;
+    }
+
+    // Apply type filter (SENDER, RECEIVER, or ALL)
+    if (selectedTypeFilter.value == 'ALL') {
+      addressList.assignAll(filtered);
+    } else {
+      addressList.assignAll(
+        filtered.where((a) => a.type == selectedTypeFilter.value).toList(),
+      );
     }
   }
 
