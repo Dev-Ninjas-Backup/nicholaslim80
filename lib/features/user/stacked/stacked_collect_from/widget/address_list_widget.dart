@@ -59,10 +59,10 @@ class StackedAddressListWidget extends StatelessWidget {
             onTap: () {
               // Route based on addressType
               if (addressType == 'RECEIVER') {
-                Get.to(() => StackedSchedulRecepmenteScreen(address: address));
+                Get.off(() => StackedSchedulRecepmenteScreen(address: address));
               } else {
                 // Default to SENDER
-                Get.to(() => StackedSenderScheduleScreen(address: address));
+                Get.off(() => StackedSenderScheduleScreen(address: address));
               }
             },
           );

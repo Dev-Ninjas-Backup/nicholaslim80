@@ -93,11 +93,11 @@ class StackedSchedulRecepmenteScreen extends StatelessWidget {
                         // Add as additional recipient stop
                         locationController.addRecipientStop(savedAddress);
                         // Return to stacked screen
-                        Get.to(() => StackedScreen());
+                        Get.back();
                       } else {
                         // Primary receiver update
                         locationController.updateReceiverData(savedAddress);
-                        Get.to(() => StackedScreen());
+                        Get.back();
                       }
                     }
                   },
