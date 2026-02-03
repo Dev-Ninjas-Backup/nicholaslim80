@@ -21,6 +21,9 @@ class HomeScreen extends StatelessWidget {
     const padding = 16.0;
     final media = MediaQuery.of(context);
     final width = media.size.width;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ctrl.checkAndShowPopup(context);
+    });
 
     return Scaffold(
       key: _scaffoldKey,

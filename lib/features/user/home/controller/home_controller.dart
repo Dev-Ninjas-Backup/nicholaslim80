@@ -1,15 +1,18 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:ZipBee/core/api_end_point/api_end_point.dart';
 import 'package:ZipBee/core/service/socket_service.dart';
 import 'package:ZipBee/core/shared_prefference_service/shared_pref.dart';
 import 'package:ZipBee/core/utils/constants/icon_path.dart';
 import 'package:ZipBee/features/user/home/model/drawer_model.dart';
+import 'package:ZipBee/features/user/home/service/dashboard_popup_service.dart';
 import 'package:ZipBee/features/user/home/widgets/logout_dailog_widget.dart';
 import 'package:ZipBee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 
 class HomeController extends GetxController {
   final userName = 'Good Morning!'.obs;
@@ -44,7 +47,7 @@ class HomeController extends GetxController {
     try {
       final token = await SharedPreferencesHelper.getAccessToken();
       if (token == null || token.isEmpty) return;
-      debugPrint("Fetching profile $token");
+      debugPrint("Fetching profile token:  $token");
 
       final response = await http.get(
         Uri.parse(ApiEndPoint.profile),
@@ -67,8 +70,8 @@ class HomeController extends GetxController {
           walletBalance.value = (data['currentWalletBalance'] != null)
               ? double.tryParse(data['currentWalletBalance'].toString()) ?? 0
               : 0;
-          availablePoints.value = (data['reward_points'] != null)
-              ? int.tryParse(data['reward_points'].toString()) ?? 0
+          availablePoints.value = (data['current_coin_balance'] != null)
+              ? int.tryParse(data['current_coin_balance'].toString()) ?? 0
               : 0;
 
           debugPrint(
