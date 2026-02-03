@@ -33,56 +33,56 @@ class StandardFaqScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: const [
-              _StandardFaqTile(
+              StandardFaqTile(
                 title: '1. Delivery Type',
                 description:
                     'Standard delivery allows you to choose a flexible delivery time window with affordable charges.',
               ),
               SizedBox(height: 20),
 
-              _StandardFaqTile(
+              StandardFaqTile(
                 title: '2. Pickup & Drop-off Addresses',
                 description:
                     'Add your sender and receiver addresses. You will have the option to modify or update them before confirming.',
               ),
               SizedBox(height: 20),
 
-              _StandardFaqTile(
+              StandardFaqTile(
                 title: '3. Scheduled Time Slot',
                 description:
                     'Select a preferred delivery slot. Delivery will be completed within the selected time window.',
               ),
               SizedBox(height: 20),
 
-              _StandardFaqTile(
+              StandardFaqTile(
                 title: '4. Charges',
                 description:
                     'Standard delivery charges vary based on: • Distance • Delivery time slot • Item weight & type.',
               ),
               SizedBox(height: 20),
 
-              _StandardFaqTile(
+              StandardFaqTile(
                 title: '5. Tracking',
                 description:
                     'Track your package in real time. Updates will be shown once the rider picks up your item.',
               ),
               SizedBox(height: 20),
 
-              _StandardFaqTile(
+              StandardFaqTile(
                 title: '6. Communication',
                 description:
                     'You can chat or call the rider from inside the app once the delivery is assigned.',
               ),
               SizedBox(height: 20),
 
-              _StandardFaqTile(
+              StandardFaqTile(
                 title: '7. Vehicle Type',
                 description:
                     'Choose your preferred vehicle based on the package size and weight.',
               ),
               SizedBox(height: 20),
 
-              _StandardFaqTile(
+            StandardFaqTile(
                 title: '8. Cancellation',
                 description:
                     'You may cancel before the rider is assigned or picked up the item (cancellation fees may apply).',
@@ -95,11 +95,11 @@ class StandardFaqScreen extends StatelessWidget {
   }
 }
 
-class _StandardFaqTile extends StatelessWidget {
+class StandardFaqTile extends StatelessWidget {
   final String title;
   final String description;
 
-  const _StandardFaqTile({
+  const StandardFaqTile({
     required this.title,
     required this.description,
   });
