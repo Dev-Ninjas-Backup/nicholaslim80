@@ -17,7 +17,7 @@ class ResetPasswordScreen extends StatelessWidget {
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(56),
         child: Container(
-          decoration: BoxDecoration(
+          decoration: BoxDecoration( 
             color: Colors.white,
             boxShadow: [
               BoxShadow(
