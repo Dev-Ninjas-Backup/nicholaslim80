@@ -123,9 +123,9 @@ class LoginSignupController extends GetxController {
       debugPrint('➡️ Signup result: $result');
 
       if (result['statusCode'] == 201) {
-        final userId = result['body']['user']['id'].toString();
-        await SharedPreferencesHelper.saveUserId(userId);
-        debugPrint('💾 Saved User ID after signup: $userId');
+        // final userId = result['body']['user']['id'].toString();
+        // await SharedPreferencesHelper.saveUserId(userId);
+        // debugPrint('💾 Saved User ID after signup: $userId');
 
         EasyLoading.dismiss();
         Get.toNamed(AppRoutes.verificationScreen, arguments: {"email": email});
