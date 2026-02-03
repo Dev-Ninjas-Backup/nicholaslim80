@@ -44,20 +44,19 @@ class StackedButtonWidget extends StatelessWidget {
                       }
                     },
                     child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      alignment: Alignment.center,
                       decoration: BoxDecoration(
                         color: !controller.isRoundTrip.value
                             ? AppColors.primaryButtonColor
                             : Colors.transparent,
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      alignment: Alignment.center,
                       child: Text(
                         "One way",
                         style: getTextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black,
                         ),
                       ),
                     ),
@@ -84,20 +83,19 @@ class StackedButtonWidget extends StatelessWidget {
                       }
                     },
                     child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      alignment: Alignment.center,
                       decoration: BoxDecoration(
                         color: controller.isRoundTrip.value
                             ? AppColors.primaryButtonColor
                             : Colors.transparent,
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      alignment: Alignment.center,
                       child: Text(
                         "Round",
                         style: getTextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black,
                         ),
                       ),
                     ),
@@ -120,6 +118,60 @@ class StackedButtonWidget extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                /// ================= FIXED ROUTE =================
+                Obx(() {
+                  final orderController = Get.put(StackedOrderController());
+                  final isSelected = orderController.isFixed.value;
+
+                  return GestureDetector(
+                    onTap: () async {
+                      final newVal = !isSelected;
+                      orderController.isFixed.value = newVal;
+
+                      try {
+                        final upd = Get.put(UpdateDetailsController());
+                        if (orderController.lastOrderId != null) {
+                          await upd.patchIsFixed(
+                            orderController.lastOrderId!,
+                            newVal,
+                          );
+                        }
+                      } catch (_) {
+                        orderController.isFixed.value = isSelected;
+                      }
+                    },
+                    child: Container(
+                      margin: const EdgeInsets.only(bottom: 16),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isSelected ? Colors.amber : Colors.grey.shade200,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: isSelected ? Colors.amber : Colors.grey,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Image.asset(IconPath.exparess, width: 24, height: 24),
+                          const SizedBox(width: 6),
+                          Text(
+                            "Fixed route",
+                            style: getTextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: isSelected ? Colors.white : Colors.black,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }),
+
                 /// =================== SENDER LIST ===================
                 Obx(() {
                   final count = controller.collectedStops.isNotEmpty
