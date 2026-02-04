@@ -9,6 +9,7 @@ import '../../../../../../core/utils/constants/app_colors.dart';
 import '../../../../../../core/utils/constants/icon_path.dart';
 import '../../../../../../core/utils/constants/image_path.dart';
 import '../../../../../orders/completed_order_details/proof_of_delivery_screen/proof_of_delivery_screen.dart';
+import '../../../../finding_raider/screnn/review_view.dart';
 import '../../../controller/order_controller.dart';
 import '../../../model/order_model.dart';
 
@@ -189,8 +190,10 @@ class CompletedOrderDetailsScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 12),
                         CustomButton(
-                          label: 'Place Order Again',
-                          onPressed: () {},
+                          label: 'Rating & Review',
+                          onPressed: () {
+                            Get.to(ReviewView());
+                          },
                           color: AppColors.primaryButtonColor,
                           textColor: AppColors.fontColor,
                         ),

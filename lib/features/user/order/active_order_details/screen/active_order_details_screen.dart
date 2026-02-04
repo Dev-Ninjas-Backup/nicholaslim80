@@ -1,3 +1,4 @@
+import 'package:ZipBee/features/user/finding_raider/screnn/review_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -232,8 +233,10 @@ class ActiveOrderDetailsScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 12),
                         CustomButton(
-                          label: 'Place Order Again',
-                          onPressed: () {},
+                          label: 'Rating & Review Rider',
+                          onPressed: () {
+                            Get.to(() => ReviewView());
+                          },
                           color: AppColors.primaryButtonColor,
                           textColor: AppColors.fontColor,
                         ),
