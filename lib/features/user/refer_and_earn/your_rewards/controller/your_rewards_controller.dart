@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter/foundation.dart';
 
-
 class YourRewardsController extends GetxController {
   var totalCredits = 0.obs;
   var rewardMoney = 0.obs;
@@ -13,11 +12,18 @@ class YourRewardsController extends GetxController {
 
   final String? referCode;
 
-  YourRewardsController({int initialCredits = 0, this.referCode, int initialRewardMoney = 0}) {
+  YourRewardsController({
+    int initialCredits = 0,
+    this.referCode,
+    int initialRewardMoney = 0,
+  }) {
     totalCredits.value = initialCredits;
     rewardMoney.value = initialRewardMoney;
     debugPrint('initialRewardMoney: ${rewardMoney.value}');
   }
+
+  // USD value of credits using backend base price formula: basePrice * credits / 100
+  double get rewardInDollar => (totalCredits.value * currencyValue.value) / 100;
 
   @override
   void onInit() {
@@ -36,79 +42,117 @@ class YourRewardsController extends GetxController {
     debugPrint('fetchBasePrice result: $result');
     if (result['statusCode'] == 200) {
       final body = result['body'];
-      final value = body is Map && body.containsKey('data') ? body['data'] : null;
+      final value = body is Map && body.containsKey('data')
+          ? body['data']
+          : null;
       if (value != null) {
-        currencyValue.value = (value as num).toDouble();
+        final parsed = value is num
+            ? value.toDouble()
+            : double.tryParse(value.toString());
+        if (parsed != null) {
+          currencyValue.value = parsed;
+        } else {
+          debugPrint('fetchBasePrice: unable to parse base price $value');
+        }
         debugPrint('currencyValue: ${currencyValue.value}');
       } else {
         debugPrint('fetchBasePrice: no data field in body: $body');
       }
     } else {
-      debugPrint('fetchBasePrice failed: ${result['statusCode']} ${result['body']}');
+      debugPrint(
+        'fetchBasePrice failed: ${result['statusCode']} ${result['body']}',
+      );
     }
   }
 
   Future<void> fetchReferralHistory() async {
-    final code = referCode ?? (Get.arguments != null ? Get.arguments['referralCode'] as String? : null);
+    final code =
+        referCode ??
+        (Get.arguments != null
+            ? Get.arguments['referralCode'] as String?
+            : null);
     if (code == null || code.isEmpty) return;
 
-    final result = await YourRewardsService.fetchReferralHistory(referCode: code);
+    final result = await YourRewardsService.fetchReferralHistory(
+      referCode: code,
+    );
     debugPrint('fetchReferralHistory full result: $result');
 
     if (result['statusCode'] != 200) {
-      debugPrint('fetchReferralHistory failed: ${result['statusCode']} ${result['body']}');
+      debugPrint(
+        'fetchReferralHistory failed: ${result['statusCode']} ${result['body']}',
+      );
       return;
     }
 
     final body = result['body'];
-      // The endpoint response structure can vary; try to find list inside body or data
-      List<dynamic>? list;
-      if (body is Map && body.containsKey('data')) {
-        final d = body['data'];
-        if (d is List) list = d;
-        if (d is Map && d.containsKey('rows')) list = d['rows'];
-      }
-      if (list == null && body is List) list = body;
+    // The endpoint response structure can vary; try to find list inside body or data
+    List<dynamic>? list;
+    if (body is Map && body.containsKey('data')) {
+      final d = body['data'];
+      if (d is List) list = d;
+      if (d is Map && d.containsKey('rows')) list = d['rows'];
+    }
+    if (list == null && body is List) list = body;
 
-      if (list != null) {
-        referralHistory.clear();
-        for (var item in list) {
-          // item expected to have username and created_at; user object may be nested
-          String username = '';
-          if (item is Map) {
-            if (item['user'] is Map) {
-              username = item['user']['username'] ?? item['user']['name'] ?? '';
-            }
-            username = username.isNotEmpty ? username : (item['username'] ?? item['name'] ?? '');
+    if (list != null) {
+      referralHistory.clear();
+      for (var item in list) {
+        // item expected to have username and created_at; user object may be nested
+        String username = '';
+        if (item is Map) {
+          if (item['user'] is Map) {
+            username = item['user']['username'] ?? item['user']['name'] ?? '';
           }
-
-          final createdAt = (item is Map)
-              ? (item['created_at'] ?? item['createdAt'] ?? item['user']?['created_at'] ?? '')
-              : '';
-
-          // format date: keep day, month (short), year
-          String dateStr = '';
-          try {
-            if (createdAt != null && createdAt.toString().isNotEmpty) {
-              final dt = DateTime.parse(createdAt.toString());
-              dateStr = '${dt.day.toString().padLeft(2, '0')} ${_monthShort(dt.month)} ${dt.year}';
-            }
-          } catch (e) {
-            debugPrint('Date parse error: $e');
-            dateStr = createdAt.toString();
-          }
-
-          // debugprint username and date
-          debugPrint('Referral item - username: $username');
-          debugPrint('Referral item - date: $dateStr');
-
-          referralHistory.add({'username': username, 'date': dateStr});
+          username = username.isNotEmpty
+              ? username
+              : (item['username'] ?? item['name'] ?? '');
         }
+
+        final createdAt = (item is Map)
+            ? (item['created_at'] ??
+                  item['createdAt'] ??
+                  item['user']?['created_at'] ??
+                  '')
+            : '';
+
+        // format date: keep day, month (short), year
+        String dateStr = '';
+        try {
+          if (createdAt != null && createdAt.toString().isNotEmpty) {
+            final dt = DateTime.parse(createdAt.toString());
+            dateStr =
+                '${dt.day.toString().padLeft(2, '0')} ${_monthShort(dt.month)} ${dt.year}';
+          }
+        } catch (e) {
+          debugPrint('Date parse error: $e');
+          dateStr = createdAt.toString();
+        }
+
+        // debugprint username and date
+        debugPrint('Referral item - username: $username');
+        debugPrint('Referral item - date: $dateStr');
+
+        referralHistory.add({'username': username, 'date': dateStr});
       }
+    }
   }
 
   String _monthShort(int month) {
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
     return months[month - 1];
   }
 
@@ -119,7 +163,7 @@ class YourRewardsController extends GetxController {
       return;
     }
 
-    final result = await YourRewardsService.redeemCoin(coin: coin);
+    final result = await YourRewardsService.redeemPoint(coin: coin);
     debugPrint('redeemCredits result: $result');
 
     final body = result['body'];
@@ -131,7 +175,9 @@ class YourRewardsController extends GetxController {
       if (body.containsKey('message')) {
         message = body['message'].toString();
       }
-      if (body.containsKey('error') && body['error'] is Map && body['error']['message'] != null) {
+      if (body.containsKey('error') &&
+          body['error'] is Map &&
+          body['error']['message'] != null) {
         message = body['error']['message'].toString();
       }
       if (body.containsKey('success')) {

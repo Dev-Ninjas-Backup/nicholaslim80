@@ -61,4 +61,6 @@ class ApiEndPoint {
   // Stripe endpoints
   static const String stripeCredentials = '$baseUrl/stripe/credentials';
   static const String placeOrder = '$baseUrl/order/{orderId}/place';
+  //redeem-point
+  static const String redeemPoint = '$baseUrl/referloyality/redeem-point';
 }
