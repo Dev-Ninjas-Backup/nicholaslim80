@@ -50,6 +50,7 @@ class ApiEndPoint {
 
   static const String getUserProfile = '$baseUrl/users/me';
   static const String rating = '$baseUrl/ratings';
+  static const String ratingId = '$baseUrl/ratings/{type}/{id}';
   static const String faq = '$baseUrl/faq';
   static const String faqRole = '$baseUrl/faq/faqs-by-role';
 
@@ -62,5 +63,10 @@ class ApiEndPoint {
   // Stripe endpoints
   static const String stripeCredentials = '$baseUrl/stripe/credentials';
   static const String placeOrder = '$baseUrl/order/{orderId}/place';
+
   static const String addMoney = '$baseUrl/wallet/add-money/mobile';
+
+  //redeem-point
+  static const String redeemPoint = '$baseUrl/referloyality/redeem-point';
+
 }

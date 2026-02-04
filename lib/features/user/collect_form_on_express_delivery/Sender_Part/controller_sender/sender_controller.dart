@@ -106,6 +106,8 @@ class SenderController extends GetxController {
       destinationId: destinationId,
       stopType: stopType,
     );
+
+    debugPrint('ei je salay  - Success: $patchRes');
     final patchSuccess = patchRes['success'] as bool? ?? false;
 
     if (!patchSuccess) {
