@@ -54,11 +54,10 @@ class StackedOrderController extends GetxController {
 
       if (result['success'] == true) {
         EasyLoading.showSuccess('Order Cancelled');
-        
-        // স্টেট রিসেট করা
+
         cancelAndReset(); 
 
-        // হোম স্ক্রিনে ফিরে যাওয়া
+
         Get.offAll(() => HomeScreen()); 
       } else {
         String errorMsg = result['body']?['message'] ?? 'Failed to cancel order';
