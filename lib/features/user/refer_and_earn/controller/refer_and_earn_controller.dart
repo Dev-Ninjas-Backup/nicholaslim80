@@ -7,7 +7,6 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 
-
 class ReferAndEarnController extends GetxController {
   // observable values
   RxString referralCode = ''.obs;
@@ -40,15 +39,17 @@ class ReferAndEarnController extends GetxController {
         if (rawLink.startsWith('http')) {
           referralLink.value = rawLink;
         } else {
-          referralLink.value = '${ApiEndPoint.baseUrl.replaceAll(RegExp(r"/+"), '')}/$rawLink';
+          referralLink.value =
+              '${ApiEndPoint.baseUrl.replaceAll(RegExp(r"/+"), '')}/$rawLink';
         }
       } else {
         referralLink.value = '';
       }
 
-      rewardPoints.value = data['reward_points'] ?? 0;
-      // also fetch rewardMoney from user data
-      rewardMoney.value = data['rewardMoney'] ?? data['reward_money'] ?? 0;
+      final rewardPointsRaw = data['reward_points'];
+      final rewardMoneyRaw = data['rewardMoney'] ?? data['reward_money'];
+      rewardPoints.value = _asInt(rewardPointsRaw);
+      rewardMoney.value = _asInt(rewardMoneyRaw);
 
       debugPrint('Referral Code: ${referralCode.value}');
       debugPrint('Referral Link: ${referralLink.value}');
@@ -73,14 +74,24 @@ class ReferAndEarnController extends GetxController {
   // ---------------- navigation ----------------
   void openRewards() {
     // pass current reward points, reward money and referral code to the YourRewardsScreen
-    Get.to(() => YourRewardsScreen(), arguments: {
-      'totalCredits': rewardPoints.value,
-      'rewardMoney': rewardMoney.value,
-      'referralCode': referralCode.value,
-    });
+    Get.to(
+      () => YourRewardsScreen(),
+      arguments: {
+        'totalCredits': rewardPoints.value,
+        'rewardMoney': rewardMoney.value,
+        'referralCode': referralCode.value,
+      },
+    );
   }
 
   void openHowItWorks() {
     Get.to(() => HowItWorksScreen());
+  }
+
+  int _asInt(dynamic value) {
+    if (value == null) return 0;
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    return int.tryParse(value.toString()) ?? 0;
   }
 }
