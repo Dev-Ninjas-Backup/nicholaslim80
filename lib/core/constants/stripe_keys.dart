@@ -3,11 +3,11 @@
 class StripeKeys {
   // Stripe Secret Key (Backend use only)
   static const String stripeSecretKey =
-      'sk_test_51SajilBojBeI3sJoFuVgMDmZn0uVQHPnqEHVfOAQnUeXxctPoGEBt7B2eM4J85UQD8mBPmpuPihI7H929dJtd3VA0006Dmswby';
+      'sk_test_51SknuvDXBOtCRfi2FGjiPc9fgJMRLuYHtDPYJiNpTTTxgvRmSBt8ZSNKnPVHQygbxtcydniGg8jvluY9HY0PLYuF00Udg0Ihhz';
 
   // Stripe Public Key (Client side)
   static const String stripePublicKey =
-      'pk_test_51SajilBojBeI3sJoqnjO7VaXEhgQzV4gSeMoTiWXdHuhMXIfC6AuFM74xedRQWNupvpuEErGwn65ju98t301lTQM00ChLOeiyE';
+      'pk_test_51SknuvDXBOtCRfi2drGBAdKBna0ZOkJLdUfkHRbxsuJIS5gd4QWFpPVNowaNyCUZDDeKRfkU5BFQY1H0BzxQ3a6Q00Z5dHGGgY';
 
   // Merchant display name
   static const String merchantDisplayName = 'ZipBee Delivery';

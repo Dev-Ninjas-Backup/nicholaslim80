@@ -84,4 +84,50 @@ class StripeService {
       return {'statusCode': 500, 'success': false, 'body': {}};
     }
   }
+
+  /// Add money to wallet to initialize Stripe payment
+  static Future<Map<String, dynamic>> addMoneyToWallet({
+    required double amount,
+    required String currency,
+    required int orderId,
+  }) async {
+    try {
+      final token = await SharedPreferencesHelper.getAccessToken();
+
+      final url = Uri.parse(ApiEndPoint.addMoney);
+
+      final body = {
+        'amount': amount,
+        'currency': currency,
+        'orderId': orderId,
+        'payType': 'ONLINE_PAY',
+        'type': 'PAYMENT'
+      };
+
+      debugPrint('➡️ Add Money POST body: $body and URL: $url');
+
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          if (token != null) 'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode(body),
+      );
+
+      debugPrint(
+        '✅ ADD MONEY RESPONSE: ${response.statusCode}\n${response.body}',
+      );
+
+      final decoded = jsonDecode(response.body);
+      return {
+        'statusCode': response.statusCode,
+        'success': decoded['success'] ?? false,
+        'body': decoded,
+      };
+    } catch (e) {
+      debugPrint('❌ StripeService.addMoneyToWallet error: $e');
+      return {'statusCode': 500, 'success': false, 'body': {}};
+    }
+  }
 }

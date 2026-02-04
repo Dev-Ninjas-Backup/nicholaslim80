@@ -3,6 +3,7 @@ import 'package:ZipBee/core/utils/constants/icon_path.dart';
 import 'package:ZipBee/features/user/home/screen/home_screen.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/controller/stacked_order_controller.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/cancel_order_service.dart';
+import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/stripe_payment_sheet_handler.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/widget/custom_toggle_switch_widget.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/widget/order_confirmation_dialog.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/widget/order_success_widget.dart';
@@ -349,55 +350,76 @@ void showStackedOrderConfirmationDialog(StackedOrderController controller) async
                   /// Place Order
                   FilledButton(
                     onPressed: () async {
-                      final selected = paymentCtrl.selectedTitle.value
-                          .toLowerCase();
+                      final selected = paymentCtrl.selectedTitle.value.toLowerCase();
 
-                      String paymentMethodApi;
-                      String? paymentMethodId;
-                      String? codCollect;
+                      debugPrint('➡️ Place Order clicked - Payment method: $selected');
 
-                      if (selected.contains('cash')) {
-                        paymentMethodApi = 'COD';
-                        codCollect = codCollectFrom.value;
-                      } else if (selected.contains('wallet')) {
-                        paymentMethodApi = 'WALLET';
-                      } else {
-                        // Stripe payment
-                        paymentMethodApi = 'ONLINE_PAY';
-                        paymentMethodId = paymentCtrl.selectedPaymentMethodId;
-                      }
-
-                      if (paymentMethodApi == 'ONLINE_PAY' && (paymentMethodId == null || paymentMethodId.isEmpty)) {
-                        EasyLoading.showError('Please select a payment method for Stripe');
-                        return;
-                      }
-
-                      EasyLoading.show(status: 'Placing order...');
-
-                      final ok = await controller.confirmPlaceOrder(
-                        paymentMethod: paymentMethodApi,
-                        paymentMethodId: paymentMethodId,
-                        codCollectFrom: codCollect,
-                      );
-
-                      EasyLoading.dismiss();
-
-                      if (ok) {
-                        debugPrint(
-                          'Final placed total: ${controller.totalAmount.value}',
+                      // Handle STRIPE separately
+                      if (selected.contains('stripe')) {
+                        debugPrint('➡️ Stripe payment flow initiated');
+                        
+                        // Step 1: Call addMoney API and show payment sheet
+                        debugPrint('➡️ Step 1: Calling addMoney API and initiating payment');
+                        final paymentResult = await StripePaymentSheetHandler.initiatePayment(
+                          amount: controller.totalAmount.value,
+                          orderId: controller.lastOrderId ?? 0,
                         );
+
+                        if (paymentResult == null) {
+                          debugPrint('❌ Stripe payment failed or cancelled');
+                          EasyLoading.showError('Payment failed or cancelled');
+                          return;
+                        }
+
+                        debugPrint('✅ Stripe payment successful: $paymentResult');
+                        debugPrint('✅ No need to call placeOrder API - payment already processed');
 
                         // Show confirmation dialog
                         StackedOrderConfirmationDialog.show();
                         await Future.delayed(const Duration(seconds: 2));
                         
-                        // Close confirmation dialog
-                        // Get.back();
-                        
                         // Show success dialog
                         StackedOrderSuccessDialog.show();
                       } else {
-                        EasyLoading.showError('Failed to place order');
+                        // Handle WALLET and CASH
+                        String paymentMethodApi;
+                        String? codCollect;
+
+                        if (selected.contains('cash')) {
+                          debugPrint('✅ Cash payment selected');
+                          paymentMethodApi = 'COD';
+                          codCollect = codCollectFrom.value;
+                        } else if (selected.contains('wallet')) {
+                          debugPrint('✅ Wallet payment selected');
+                          paymentMethodApi = 'WALLET';
+                          codCollect = null;
+                        } else {
+                          EasyLoading.showError('Please select a payment method');
+                          return;
+                        }
+
+                        EasyLoading.show(status: 'Placing order...');
+
+                        final ok = await controller.confirmPlaceOrder(
+                          paymentMethod: paymentMethodApi,
+                          paymentMethodId: null,
+                          codCollectFrom: codCollect,
+                        );
+
+                        EasyLoading.dismiss();
+
+                        if (ok) {
+                          debugPrint('Final placed total: ${controller.totalAmount.value}');
+
+                          // Show confirmation dialog
+                          StackedOrderConfirmationDialog.show();
+                          await Future.delayed(const Duration(seconds: 2));
+                          
+                          // Show success dialog
+                          StackedOrderSuccessDialog.show();
+                        } else {
+                          EasyLoading.showError('Failed to place order');
+                        }
                       }
                     },
                     style: FilledButton.styleFrom(

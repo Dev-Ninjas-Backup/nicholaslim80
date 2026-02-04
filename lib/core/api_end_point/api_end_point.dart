@@ -1,8 +1,9 @@
 class ApiEndPoint {
-  static const String baseUrl = 'https://api.zipbee.sg/api/v1';
+  // static const String baseUrl = 'https://api.zipbee.sg/api/v1';
   static const String socketUrl = 'https://api.zipbee.sg';
 
-  //static const String baseUrl = 'http://10.10.20.130:3000/api/v1';
+  static const String baseUrl = 'http://10.10.20.130:3000/api/v1';
+  
   static const String login = '$baseUrl/auth/login';
   static const String signUp = '$baseUrl/auth/signup';
   static const String verifyOtp = '$baseUrl/auth/verify';
@@ -62,6 +63,10 @@ class ApiEndPoint {
   // Stripe endpoints
   static const String stripeCredentials = '$baseUrl/stripe/credentials';
   static const String placeOrder = '$baseUrl/order/{orderId}/place';
+
+  static const String addMoney = '$baseUrl/wallet/add-money/mobile';
+
   //redeem-point
   static const String redeemPoint = '$baseUrl/referloyality/redeem-point';
+
 }
