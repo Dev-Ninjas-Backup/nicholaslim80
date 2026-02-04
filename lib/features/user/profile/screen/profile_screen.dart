@@ -15,45 +15,119 @@ class ProfileScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.backgroungColor,
+
+      /// ✅ APP BAR CENTER TITLE
+      appBar: AppBar(
+        backgroundColor: AppColors.backgroungColor,
+        elevation: 0,
+        centerTitle: true,
+        title: Text(
+          "Profile",
+          style: getTextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+        ),
+      ),
+
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
               children: [
-                Row(
+                /// 🔥 PROFILE IMAGE WITH EDIT ICON
+                const SizedBox(height: 20),
+                Stack(
+                  alignment: Alignment.center,
                   children: [
-                    Align(
-                      alignment: Alignment.center,
-                      child: Text("Profile", style: getTextStyle()),
-                    ),
-                    Spacer(),
                     ClipRRect(
-                      borderRadius: BorderRadius.circular(50),
+                      borderRadius: BorderRadius.circular(60),
                       child: Image.asset(
                         ImagePath.profileImage,
-                        height: 34,
-                        width: 34,
+                        height: 100,
+                        width: 100,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+
+                    /// EDIT ICON OVERLAY
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.2),
+                              blurRadius: 4,
+                            ),
+                          ],
+                        ),
+                        child: const Icon(
+                          Icons.camera_alt,
+                          size: 18,
+                          color: Colors.black,
+                        ),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 36),
+
+                const SizedBox(height: 30),
+
+                /// 🔽 PROFILE INFO SECTION
                 Obx(() {
-                  if (controller.isLoading.value) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (controller.errorMessage.value.isNotEmpty) {
+                  final name = controller.userModel.value.userProfile.firstName;
+                  if (controller.errorMessage.value.isNotEmpty) {
                     return Center(child: Text(controller.errorMessage.value));
                   } else {
                     return ListView.builder(
                       padding: EdgeInsets.zero,
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      itemCount: controller.profileItem.length,
+                      itemCount:
+                          controller.profileItem.length +
+                          3, // +3: First, Last, DOB
                       itemBuilder: (_, index) {
                         return Obx(() {
                           final isEditing =
                               controller.editingIndex.value == index;
+
+                          /// ---------- TITLE ----------
+                          String title;
+                          if (index == 0) {
+                            title = "First Name";
+                          } else if (index == 1) {
+                            title = "Last Name";
+                          } else if (index == 2) {
+                            title = "Date of Birth";
+                          } else {
+                            title = controller.profileItem[index - 3].title;
+                          }
+
+                          /// ---------- SUBTITLE ----------
+                          String subtitle;
+                          if (index == 0) {
+                            subtitle = controller
+                                .userModel
+                                .value
+                                .userProfile
+                                .firstName;
+                          } else if (index == 1) {
+                            subtitle =
+                                controller.userModel.value.userProfile.lastName;
+                          } else if (index == 2) {
+                            subtitle = controller
+                                .userModel
+                                .value
+                                .userProfile
+                                .dateOfBirth;
+                          } else {
+                            subtitle =
+                                controller.profileItem[index - 3].subtitle;
+                          }
+
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 16),
                             child: Column(
@@ -68,7 +142,7 @@ class ProfileScreen extends StatelessWidget {
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            controller.profileItem[index].title,
+                                            title,
                                             style: getTextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.w700,
@@ -77,35 +151,28 @@ class ProfileScreen extends StatelessWidget {
                                           const SizedBox(height: 4),
                                           isEditing
                                               ? TextFormField(
+                                                  autofocus: true,
                                                   controller: controller
                                                       .getControllerForIndex(
                                                         index,
                                                       ),
-                                                  autofocus: true,
-                                                  keyboardType: index == 1
+                                                  keyboardType: index == 3
                                                       ? TextInputType
                                                             .emailAddress
-                                                      : index == 2
+                                                      : index == 4
                                                       ? TextInputType.phone
                                                       : TextInputType.text,
-                                                  style: getTextStyle(
-                                                    fontWeight: FontWeight.w500,
-                                                  ),
                                                   decoration:
                                                       const InputDecoration(
-                                                        isDense: true,
-                                                        contentPadding:
-                                                            EdgeInsets.symmetric(
-                                                              vertical: 8,
-                                                            ),
                                                         border:
                                                             InputBorder.none,
+                                                        isDense: true,
                                                       ),
                                                 )
                                               : Text(
-                                                  controller
-                                                      .profileItem[index]
-                                                      .subtitle,
+                                                  subtitle.isEmpty
+                                                      ? "Not set"
+                                                      : subtitle,
                                                   style: getTextStyle(
                                                     fontWeight: FontWeight.w500,
                                                   ),
@@ -114,6 +181,8 @@ class ProfileScreen extends StatelessWidget {
                                       ),
                                     ),
                                     const SizedBox(width: 8),
+
+                                    /// EDIT / SAVE BUTTON
                                     isEditing
                                         ? Row(
                                             mainAxisSize: MainAxisSize.min,
@@ -129,23 +198,38 @@ class ProfileScreen extends StatelessWidget {
                                               const SizedBox(width: 12),
                                               GestureDetector(
                                                 onTap: () {
-                                                  // Update only the edited field
                                                   controller.updateUserProfile(
-                                                    username: index == 0
+                                                    firstName: index == 0
+                                                        ? controller
+                                                              .firstNameController
+                                                              .text
+                                                        : null,
+                                                    lastName: index == 1
+                                                        ? controller
+                                                              .lastNameController
+                                                              .text
+                                                        : null,
+                                                    dateOfBirth: index == 2
+                                                        ? controller
+                                                              .dobController
+                                                              .text
+                                                        : null,
+                                                    username: index == 3
                                                         ? controller
                                                               .usernameController
                                                               .text
                                                         : null,
-                                                    email: index == 1
+                                                    email: index == 4
                                                         ? controller
                                                               .emailController
                                                               .text
                                                         : null,
-                                                    phone: index == 2
+                                                    phone: index == 5
                                                         ? controller
                                                               .phoneController
                                                               .text
                                                         : null,
+                                                    // Date of Birth save can be handled in controller later
                                                   );
                                                 },
                                                 child: const Icon(

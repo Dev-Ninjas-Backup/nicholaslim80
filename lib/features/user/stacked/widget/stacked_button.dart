@@ -17,8 +17,6 @@ class StackedButtonWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      // Use controller.isRoundTrip.value directly where needed; avoid copying to a local variable to keep behavior dynamic
-
       return Column(
         children: [
           /// =================== TOP TOGGLE (ONE WAY + ROUND) ===================
@@ -29,35 +27,36 @@ class StackedButtonWidget extends StatelessWidget {
                   child: GestureDetector(
                     onTap: () async {
                       final previous = controller.isRoundTrip.value;
-                      controller.toggleTripType(false); // optimistic
+                      controller.toggleTripType(false);
 
                       try {
                         final upd = Get.put(UpdateDetailsController());
                         final oc = Get.find<StackedOrderController>();
                         if (oc.lastOrderId != null) {
-                          final ok = await upd.patchRouteType(oc.lastOrderId!, 'ONE_WAY');
+                          final ok = await upd.patchRouteType(
+                            oc.lastOrderId!,
+                            'ONE_WAY',
+                          );
                           if (!ok) controller.toggleTripType(previous);
                         }
-                      } catch (e) {
+                      } catch (_) {
                         controller.toggleTripType(previous);
-                        debugPrint('patchRouteType ONE_WAY error: $e');
                       }
                     },
                     child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      alignment: Alignment.center,
                       decoration: BoxDecoration(
                         color: !controller.isRoundTrip.value
                             ? AppColors.primaryButtonColor
                             : Colors.transparent,
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      alignment: Alignment.center,
                       child: Text(
                         "One way",
                         style: getTextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black,
                         ),
                       ),
                     ),
@@ -67,35 +66,36 @@ class StackedButtonWidget extends StatelessWidget {
                   child: GestureDetector(
                     onTap: () async {
                       final previous = controller.isRoundTrip.value;
-                      controller.toggleTripType(true); // optimistic
+                      controller.toggleTripType(true);
 
                       try {
                         final upd = Get.put(UpdateDetailsController());
                         final oc = Get.find<StackedOrderController>();
                         if (oc.lastOrderId != null) {
-                          final ok = await upd.patchRouteType(oc.lastOrderId!, 'ROUND');
+                          final ok = await upd.patchRouteType(
+                            oc.lastOrderId!,
+                            'ROUND',
+                          );
                           if (!ok) controller.toggleTripType(previous);
                         }
-                      } catch (e) {
+                      } catch (_) {
                         controller.toggleTripType(previous);
-                        debugPrint('patchRouteType ROUND error: $e');
                       }
                     },
                     child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      alignment: Alignment.center,
                       decoration: BoxDecoration(
                         color: controller.isRoundTrip.value
                             ? AppColors.primaryButtonColor
                             : Colors.transparent,
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      alignment: Alignment.center,
                       child: Text(
                         "Round",
                         style: getTextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black,
                         ),
                       ),
                     ),
@@ -115,78 +115,64 @@ class StackedButtonWidget extends StatelessWidget {
               color: Colors.grey[100],
               borderRadius: BorderRadius.circular(10),
             ),
-
-            /// =================== ROUND TRIP UI ===================
-            // Use round-trip structure for both one-way and round visually
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  spacing: 8,
-                  children: [
-                    /// -------- FIXED ROUTE BUTTON --------
-                    Obx(() {
-                      final orderController = Get.put(StackedOrderController());
-                      final isSelected = orderController.isFixed.value;
+                /// ================= FIXED ROUTE =================
+                Obx(() {
+                  final orderController = Get.put(StackedOrderController());
+                  final isSelected = orderController.isFixed.value;
 
-                      return GestureDetector(
-                        onTap: () async {
-                          final newVal = !isSelected;
-                          // Optimistically toggle UI
-                          orderController.isFixed.value = newVal;
+                  return GestureDetector(
+                    onTap: () async {
+                      final newVal = !isSelected;
+                      orderController.isFixed.value = newVal;
 
-                          try {
-                            final upd = Get.put(UpdateDetailsController());
-                            if (orderController.lastOrderId != null) {
-                              await upd.patchIsFixed(orderController.lastOrderId!, newVal);
-                            }
-                          } catch (_) {
-                            // revert on error
-                            orderController.isFixed.value = isSelected;
-                          }
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: isSelected
-                                ? Colors.amber
-                                : Colors.grey.shade200,
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                              color: isSelected ? Colors.amber : Colors.grey,
+                      try {
+                        final upd = Get.put(UpdateDetailsController());
+                        if (orderController.lastOrderId != null) {
+                          await upd.patchIsFixed(
+                            orderController.lastOrderId!,
+                            newVal,
+                          );
+                        }
+                      } catch (_) {
+                        orderController.isFixed.value = isSelected;
+                      }
+                    },
+                    child: Container(
+                      margin: const EdgeInsets.only(bottom: 16),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isSelected ? Colors.amber : Colors.grey.shade200,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: isSelected ? Colors.amber : Colors.grey,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Image.asset(IconPath.exparess, width: 24, height: 24),
+                          const SizedBox(width: 6),
+                          Text(
+                            "Fixed route",
+                            style: getTextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: isSelected ? Colors.white : Colors.black,
                             ),
                           ),
-                          child: Row(
-                            children: [
-                              Image.asset(
-                                IconPath.exparess,
-                                width: 24,
-                                height: 24,
-                              ),
-                              Text(
-                                "Fixed route",
-                                style: getTextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                  color: isSelected
-                                      ? Colors.white
-                                      : Colors.black,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    }),
-                  ],
-                ),
+                        ],
+                      ),
+                    ),
+                  );
+                }),
 
-                const SizedBox(height: 16),
-
-                /// =================== SENDER LIST (works for both round and one-way) ===================
+                /// =================== SENDER LIST ===================
                 Obx(() {
                   final count = controller.collectedStops.isNotEmpty
                       ? controller.collectedStops.length
@@ -213,7 +199,6 @@ class StackedButtonWidget extends StatelessWidget {
                         children: [
                           Row(
                             children: [
-                              /// NEW ICON ADDED LIKE ONEWAY
                               Image.asset(
                                 IconPath.collectIcon,
                                 width: 24,
@@ -246,6 +231,15 @@ class StackedButtonWidget extends StatelessWidget {
                                   ],
                                 ),
                               ),
+
+                              /// ✅ SENDER TICK
+                              if (controller.senderData.value != null)
+                                const Icon(
+                                  Icons.check_circle,
+                                  color: Colors.green,
+                                  size: 18,
+                                ),
+
                               IconButton(
                                 icon: const Icon(Icons.edit, size: 18),
                                 onPressed: () {
@@ -268,7 +262,7 @@ class StackedButtonWidget extends StatelessWidget {
                   );
                 }),
 
-                /// =================== RECEIVER LIST (works for both round and one-way) ===================
+                /// =================== RECEIVER LIST ===================
                 Obx(() {
                   final count = controller.recipientStops.isNotEmpty
                       ? controller.recipientStops.length
@@ -295,7 +289,6 @@ class StackedButtonWidget extends StatelessWidget {
                         children: [
                           Row(
                             children: [
-                              /// NEW ICON ADDED LIKE ONEWAY
                               Image.asset(
                                 IconPath.deliveredIcon,
                                 width: 24,
@@ -328,6 +321,15 @@ class StackedButtonWidget extends StatelessWidget {
                                   ],
                                 ),
                               ),
+
+                              /// ✅ RECEIVER TICK
+                              if (controller.receiverData.value != null)
+                                const Icon(
+                                  Icons.check_circle,
+                                  color: Colors.green,
+                                  size: 18,
+                                ),
+
                               IconButton(
                                 icon: const Icon(Icons.edit, size: 18),
                                 onPressed: () {

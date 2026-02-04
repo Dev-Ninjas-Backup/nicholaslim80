@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:ZipBee/core/api_end_point/api_end_point.dart';
+import 'package:ZipBee/core/controllers/app_controller.dart';
 import 'package:ZipBee/core/shared_prefference_service/shared_pref.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
@@ -8,9 +9,18 @@ import 'package:http/http.dart' as http;
 
 class ProfileController extends GetxController {
   // ================= OBSERVABLES =================
-  var userProfile = UserModel(username: '', email: '', phone: '').obs;
-  var isLoading = false.obs;
+  var userModel = UserModel(
+    username: '',
+    email: '',
+    phone: '',
+    userProfile: userProfileModel(firstName: '', lastName: '', dateOfBirth: ''),
+  ).obs;
+  //var isLoading = false.obs;
   var errorMessage = ''.obs;
+
+  var firstName = ''.obs;
+  var lastName = ''.obs;
+  var dob = ''.obs;
 
   var profileItem = <ProfileModel>[].obs;
   var editingIndex = (-1).obs; // Which field is being edited
@@ -19,6 +29,9 @@ class ProfileController extends GetxController {
   final usernameController = TextEditingController();
   final emailController = TextEditingController();
   final phoneController = TextEditingController();
+  final firstNameController = TextEditingController();
+  final lastNameController = TextEditingController();
+  final dobController = TextEditingController();
 
   int? userId; // store fetched userId
 
@@ -33,7 +46,7 @@ class ProfileController extends GetxController {
       return;
     }
 
-    isLoading(true);
+    //isLoading(true);
     errorMessage('');
 
     final url = ApiEndPoint.profile; // /users/me
@@ -50,13 +63,18 @@ class ProfileController extends GetxController {
         final parsedResponse = json.decode(response.body);
         final data = parsedResponse['data'];
         if (data != null) {
-          userProfile.value = UserModel.fromJsonData(data);
+          debugPrint('profile loaded: $data');
+          debugPrint('eije profile : ${data['profile']}');
+          userModel.value = UserModel.fromJsonData(data);
           userId = data['id']; // store ID in memory
-          debugPrint('✅ User profile loaded: ${userProfile.value.toJson()}');
+          debugPrint('✅ User profile loaded: ${userModel.value.toJson()}');
 
-          usernameController.text = userProfile.value.username;
-          emailController.text = userProfile.value.email;
-          phoneController.text = userProfile.value.phone;
+          usernameController.text = userModel.value.username;
+          emailController.text = userModel.value.email;
+          phoneController.text = userModel.value.phone;
+          firstNameController.text = userModel.value.userProfile.firstName;
+          lastNameController.text = userModel.value.userProfile.lastName;
+          dobController.text = userModel.value.userProfile.dateOfBirth;
 
           updateProfileItems();
         }
@@ -72,7 +90,7 @@ class ProfileController extends GetxController {
       errorMessage('Error fetching profile: $error');
       debugPrint('❌ Exception fetching profile: $error');
     } finally {
-      isLoading(false);
+      //isLoading(false);
       debugPrint('⬅️ Finished fetching profile');
     }
   }
@@ -81,13 +99,13 @@ class ProfileController extends GetxController {
   void updateProfileItems() {
     profileItem.clear();
     profileItem.add(
-      ProfileModel(title: 'Username', subtitle: userProfile.value.username),
+      ProfileModel(title: 'Username', subtitle: userModel.value.username),
     );
     profileItem.add(
-      ProfileModel(title: 'Email', subtitle: userProfile.value.email),
+      ProfileModel(title: 'Email', subtitle: userModel.value.email),
     );
     profileItem.add(
-      ProfileModel(title: 'Phone', subtitle: userProfile.value.phone),
+      ProfileModel(title: 'Phone', subtitle: userModel.value.phone),
     );
     debugPrint(
       '📄 Updated profile items: ${profileItem.map((e) => e.toJson())}',
@@ -101,9 +119,12 @@ class ProfileController extends GetxController {
   }
 
   void cancelEditing() {
-    usernameController.text = userProfile.value.username;
-    emailController.text = userProfile.value.email;
-    phoneController.text = userProfile.value.phone;
+    usernameController.text = userModel.value.username;
+    emailController.text = userModel.value.email;
+    phoneController.text = userModel.value.phone;
+    firstNameController.text = userModel.value.userProfile.firstName;
+    lastNameController.text = userModel.value.userProfile.lastName;
+    dobController.text = userModel.value.userProfile.dateOfBirth;
     editingIndex.value = -1;
     debugPrint('❌ Editing canceled');
   }
@@ -113,6 +134,9 @@ class ProfileController extends GetxController {
     String? username,
     String? email,
     String? phone,
+    String? firstName,
+    String? lastName,
+    String? dateOfBirth,
   }) async {
     if (userId == null) {
       errorMessage('User ID not found. Cannot update.');
@@ -126,7 +150,7 @@ class ProfileController extends GetxController {
       return;
     }
 
-    isLoading(true);
+    //isLoading(true);
     errorMessage('');
 
     final url = ApiEndPoint.userProfile.replaceAll('{id}', userId.toString());
@@ -139,6 +163,9 @@ class ProfileController extends GetxController {
     if (username != null) bodyData['username'] = username;
     if (email != null) bodyData['email'] = email;
     if (phone != null) bodyData['phone'] = phone;
+    if (firstName != null) bodyData['firstName'] = firstName;
+    if (lastName != null) bodyData['lastName'] = lastName;
+    if (dateOfBirth != null) bodyData['dob'] = dateOfBirth;
 
     debugPrint('📡 PATCH $url');
     debugPrint('📝 Body: $bodyData');
@@ -155,17 +182,28 @@ class ProfileController extends GetxController {
         final parsedResponse = json.decode(response.body);
         final data = parsedResponse['data'];
         if (data != null) {
-          userProfile.value = UserModel.fromJsonData(data);
+          userModel.value = UserModel.fromJsonData(data);
         } else {
-          userProfile.value = UserModel(
-            username: username ?? userProfile.value.username,
-            email: email ?? userProfile.value.email,
-            phone: phone ?? userProfile.value.phone,
-          );
+          debugPrint('response is bull');
+          // userModel.value = UserModel(
+          //   username: username ?? userModel.value.username,
+          //   email: email ?? userModel.value.email,
+          //   phone: phone ?? userModel.value.phone,
+          //   userProfile: userProfileModel.fromJsonData(data['profile']),
+          // );
         }
         updateProfileItems();
         editingIndex.value = -1;
         debugPrint('✅ Profile updated successfully');
+        
+        // 🔄 Trigger app rebuild to refresh data on all screens
+        try {
+          final appController = Get.find<AppController>();
+          appController.rebuildApp();
+          debugPrint('🔄 App rebuild triggered from profile controller');
+        } catch (e) {
+          debugPrint('⚠️ AppController not found: $e');
+        }
       } else if (response.statusCode == 401) {
         errorMessage('Session expired. Please login again.');
         Get.offAllNamed('/login');
@@ -176,17 +214,23 @@ class ProfileController extends GetxController {
       errorMessage('Update error: $error');
       debugPrint('❌ Exception updating profile: $error');
     } finally {
-      isLoading(false);
+      //isLoading(false);
     }
   }
 
   TextEditingController getControllerForIndex(int index) {
     switch (index) {
       case 0:
-        return usernameController;
+        return firstNameController;
       case 1:
-        return emailController;
+        return lastNameController;
       case 2:
+        return dobController;
+      case 3:
+        return usernameController;
+      case 4:
+        return emailController;
+      case 5:
         return phoneController;
       default:
         return TextEditingController();
@@ -205,6 +249,9 @@ class ProfileController extends GetxController {
     usernameController.dispose();
     emailController.dispose();
     phoneController.dispose();
+    firstNameController.dispose();
+    lastNameController.dispose();
+    dobController.dispose();
     super.onClose();
   }
 }
@@ -222,14 +269,23 @@ class UserModel {
   final String username;
   final String email;
   final String phone;
+  userProfileModel userProfile;
 
-  UserModel({required this.username, required this.email, required this.phone});
+  UserModel({
+    required this.username,
+    required this.email,
+    required this.phone,
+    required this.userProfile,
+  });
 
   factory UserModel.fromJsonData(Map<String, dynamic> data) {
+    debugPrint('inside model parsing: $data');
+    debugPrint('inside profile model parsing: ${data['profile']}');
     return UserModel(
       username: data['username'] ?? '',
       email: data['email'] ?? '',
       phone: data['phone'] ?? '',
+      userProfile: userProfileModel.fromJsonData(data['profile']),
     );
   }
 
@@ -238,4 +294,22 @@ class UserModel {
     'email': email,
     'phone': phone,
   };
+}
+
+class userProfileModel {
+  final String firstName;
+  final String lastName;
+  final String dateOfBirth;
+  userProfileModel({
+    required this.firstName,
+    required this.lastName,
+    required this.dateOfBirth,
+  });
+  factory userProfileModel.fromJsonData(Map<String, dynamic> data) {
+    return userProfileModel(
+      firstName: data['firstName'] ?? '',
+      lastName: data['lastName'] ?? '',
+      dateOfBirth: data['dob'] ?? '',
+    );
+  }
 }

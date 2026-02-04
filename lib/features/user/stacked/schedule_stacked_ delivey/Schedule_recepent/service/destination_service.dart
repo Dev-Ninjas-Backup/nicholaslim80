@@ -40,6 +40,7 @@ class DestinationService {
     required String stopType,
   }) async {
     try {
+      debugPrint('DestinationService.addDestinationToOrder orderId: $orderId, destinationId: $destinationId');
       final token = await SharedPreferencesHelper.getAccessToken();
 
       final url = Uri.parse(
