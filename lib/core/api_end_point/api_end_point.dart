@@ -49,6 +49,7 @@ class ApiEndPoint {
 
   static const String getUserProfile = '$baseUrl/users/me';
   static const String rating = '$baseUrl/ratings';
+  static const String ratingId = '$baseUrl/ratings/{type}/{id}';
   static const String faq = '$baseUrl/faq';
   static const String faqRole = '$baseUrl/faq/faqs-by-role';
 

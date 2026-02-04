@@ -1,3 +1,4 @@
+import 'package:ZipBee/features/user/finding_raider/screnn/review_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -85,12 +86,9 @@ class ActiveOrderDetailsScreen extends StatelessWidget {
                   children: [
                     GestureDetector(
                       onTap: () => Get.back(),
-                      child: Icon(
-                        Icons.arrow_back_ios_new_rounded,
-                        size: 20,
-                      ),
+                      child: Icon(Icons.arrow_back_ios_new_rounded, size: 20),
                     ),
-                     SizedBox(width: 10),
+                    SizedBox(width: 10),
                     Expanded(
                       child: Center(
                         child: Text(
@@ -170,7 +168,7 @@ class ActiveOrderDetailsScreen extends StatelessWidget {
                           phoneNumber: liveOrder.assignRiderPhone,
                         ),
 
-                         SizedBox(height: 12),
+                        SizedBox(height: 12),
                         RatingsSection(
                           rating: liveOrder.assignRiderRating,
                           totalReviews: liveOrder.assignRiderReviews,
@@ -232,8 +230,15 @@ class ActiveOrderDetailsScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 12),
                         CustomButton(
-                          label: 'Place Order Again',
-                          onPressed: () {},
+                          label: 'Rating & Review Rider',
+                          onPressed: () {
+                            Get.to(
+                              () => ReviewView(
+                                orderId: liveOrder.orderId,
+                                riderId: liveOrder.riderId,
+                              ),
+                            );
+                          },
                           color: AppColors.primaryButtonColor,
                           textColor: AppColors.fontColor,
                         ),
