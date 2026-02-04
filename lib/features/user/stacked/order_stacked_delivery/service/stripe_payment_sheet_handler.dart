@@ -1,18 +1,15 @@
-import 'dart:convert';
-
-import 'package:ZipBee/core/shared_prefference_service/shared_pref.dart';
+import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/stripe_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:ZipBee/core/constants/stripe_keys.dart';
-import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
 
 /// Stripe Payment Sheet Handler
 /// Manages initialization and presentation of Stripe Payment Sheet
 class StripePaymentSheetHandler {
   static const String _merchantDisplayName = StripeKeys.merchantDisplayName;
   static Map<String, dynamic>? paymentIntent;
+  static double _orderAmount = 0.0;
 
   /// Initialize Stripe Payment Sheet with payment method
   /// Returns true if successful, false otherwise
@@ -42,112 +39,110 @@ class StripePaymentSheetHandler {
     }
   }
 
-  /// Create PaymentIntent on backend
-  static Future<Map<String, dynamic>?> _createPaymentIntent() async {
+  /// Initialize and present Stripe payment sheet when Place Order is clicked
+  static Future<String?> initiatePayment({
+    required double amount,
+    required int orderId,
+  }) async {
     try {
-      debugPrint('➡️ Creating SetupIntent on backend');
-      final token = await SharedPreferencesHelper.getAccessToken();
-      final String backendUrl =
-          "https://api.zipbee.sg/api/v1/wallet/create-setup-intent";
+      debugPrint('➡️ Step 1: Initiating Stripe payment for amount: \$$amount');
+      _orderAmount = amount;
 
-      final response = await http.post(
-        Uri.parse(backendUrl),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode({}),
+      EasyLoading.show(status: 'Getting payment details...');
+
+      // Step 1: Get Client Secret from API
+      debugPrint('➡️ Step 2: Calling Add Money API');
+      debugPrint('➡️ Order ID for payment: $orderId');
+      final response = await StripeService.addMoneyToWallet(
+        amount: _orderAmount,
+        currency: 'usd',
+        orderId: orderId,
       );
 
-      debugPrint(
-        '✅ SetupIntent Response: ${response.statusCode}\n${response.body}',
-      );
+      debugPrint('✅ Add Money API Response: ${response['body']}');
 
-      if (response.statusCode != 200 && response.statusCode != 201) {
-        debugPrint('❌ Failed to create SetupIntent: ${response.statusCode}');
+      if (!response['success']) {
+        debugPrint('❌ API Error: ${response['body']}');
+        EasyLoading.showError('Failed to get payment details');
         return null;
       }
 
-      final paymentIntentData = jsonDecode(response.body);
-      debugPrint(
-        '✅ SetupIntent created successfully with secret: ${paymentIntentData['clientSecret'] ?? paymentIntentData['client_secret'] ?? "N/A"}',
-      );
-
-      return paymentIntentData;
-    } catch (e) {
-      debugPrint('❌ Error creating PaymentIntent: $e');
-      return null;
-    }
-  }
-
-  /// Present Stripe payment sheet and get payment method ID
-  static Future<String?> presentPaymentSheet() async {
-    try {
-      debugPrint('➡️ Creating PaymentIntent');
-
-      // Step 1: Create PaymentIntent on backend
-      paymentIntent = await _createPaymentIntent();
-
-      if (paymentIntent == null) {
-        debugPrint('❌ Failed to create PaymentIntent');
-        EasyLoading.showError('Failed to create payment intent');
-        return null;
-      }
-
-      // Extract client secret (handle both camelCase and snake_case)
-      final clientSecret =
-          paymentIntent!['clientSecret'] ?? paymentIntent!['client_secret'];
+      final clientSecret = response['body']['data']?['clientSecret'];
 
       if (clientSecret == null || clientSecret.isEmpty) {
-        debugPrint('❌ Client secret is missing from response');
+        debugPrint('❌ Client secret missing from response');
         EasyLoading.showError('Invalid payment response');
         return null;
       }
 
       debugPrint('✅ Client Secret obtained: $clientSecret');
+      debugPrint('✅ Using Stripe Publishable Key: ${StripeKeys.stripePublicKey.substring(0, 20)}...');
 
-      // Step 2: Initialize payment sheet with client secret
-      debugPrint('➡️ Initializing Payment Sheet');
-      EasyLoading.show(status: 'Setting up payment...');
-
-      await Stripe.instance.initPaymentSheet(
-        paymentSheetParameters: SetupPaymentSheetParameters(
-          merchantDisplayName: _merchantDisplayName,
-          setupIntentClientSecret: clientSecret,
-          style: ThemeMode.light,
-          appearance: PaymentSheetAppearance(
-            colors: PaymentSheetAppearanceColors(primary: Colors.amber),
-            shapes: PaymentSheetShape(borderRadius: 16),
+      // Step 2: Initialize Payment Sheet
+      debugPrint('➡️ Step 3: Initializing Payment Sheet');
+      try {
+        await Stripe.instance.initPaymentSheet(
+          paymentSheetParameters: SetupPaymentSheetParameters(
+            paymentIntentClientSecret: clientSecret,
+            merchantDisplayName: _merchantDisplayName,
+            style: ThemeMode.light,
+            appearance: PaymentSheetAppearance(
+              colors: PaymentSheetAppearanceColors(primary: Colors.amber),
+              shapes: PaymentSheetShape(borderRadius: 16),
+            ),
           ),
-        ),
-      );
+        );
+        debugPrint('✅ Payment Sheet initialized successfully');
+      } catch (initError) {
+        debugPrint('❌ Payment Sheet init error: $initError');
+        EasyLoading.dismiss();
+        EasyLoading.showError('Failed to initialize payment: $initError');
+        return null;
+      }
 
-      debugPrint('✅ Payment Sheet initialized successfully');
       EasyLoading.dismiss();
 
-      // Step 3: Present the payment sheet
-      debugPrint('➡️ Presenting Payment Sheet to user');
+      // Step 3: Present Payment Sheet
+      debugPrint('➡️ Step 4: Presenting Payment Sheet to user');
       EasyLoading.show(status: 'Opening payment sheet...');
 
-      await Stripe.instance.presentPaymentSheet();
+      try {
+        await Stripe.instance.presentPaymentSheet();
+      } catch (e) {
+        debugPrint('❌ Presentation error: $e');
+        EasyLoading.dismiss();
+        
+        if (e.toString().contains('cancelled')) {
+          debugPrint('⚠️ User cancelled payment');
+          EasyLoading.showInfo('Payment cancelled');
+        } else {
+          EasyLoading.showError('Payment sheet error: $e');
+        }
+        return null;
+      }
 
-      debugPrint('✅ Payment Sheet presented successfully');
+      debugPrint('✅ Payment Sheet presented and confirmed');
       EasyLoading.dismiss();
 
-      // Return success indicator
-      return 'payment_method_saved_${DateTime.now().millisecondsSinceEpoch}';
+      // Step 4: Payment successful
+      debugPrint('✅ Payment completed successfully');
+      EasyLoading.showSuccess('Payment Successful!');
+
+      return 'payment_success_${DateTime.now().millisecondsSinceEpoch}';
     } on StripeException catch (e) {
       debugPrint('❌ Stripe Exception: ${e.error.localizedMessage}');
+      debugPrint('❌ Stripe Error Code: ${e.error.code}');
+      debugPrint('❌ Stripe Error Details: ${e.error}');
       EasyLoading.dismiss();
       EasyLoading.showError('Payment failed: ${e.error.localizedMessage}');
       return null;
     } catch (e) {
-      debugPrint('❌ Payment error: $e');
+      debugPrint('❌ Error: $e');
+      debugPrint('❌ Error Type: ${e.runtimeType}');
+      debugPrint('❌ Error Stacktrace: ${e.toString()}');
       EasyLoading.dismiss();
 
-      // Check if user cancelled
-      if (e.toString().contains('cancelled') ||
-          e.toString().contains('USER_CANCELLED')) {
+      if (e.toString().contains('cancelled')) {
         debugPrint('⚠️ User cancelled payment');
         EasyLoading.showInfo('Payment cancelled');
       } else {
@@ -157,58 +152,5 @@ class StripePaymentSheetHandler {
     }
   }
 
-  /// Complete flow: Create PaymentIntent, initialize, and present payment sheet
-  /// Returns payment method ID on success
-  static Future<String?> processPayment() async {
-    try {
-      if (Get.isBottomSheetOpen == true) {
-        debugPrint('➡️ Closing existing bottom sheet');
-        Get.back();
-      }
-
-      // Validate keys are configured
-      if (!StripeKeys.isConfigured()) {
-        debugPrint('❌ Stripe keys not configured properly');
-        EasyLoading.showError('Payment system not properly configured');
-        return null;
-      }
-
-      debugPrint('➡️ Starting Stripe payment process');
-
-      // Step 1: Initialize Stripe with configured public key
-      EasyLoading.show(status: 'Setting up payment...');
-
-      final initialized = await initializePaymentSheet(
-        publicKey: StripeKeys.stripePublicKey,
-        merchantDisplayName: _merchantDisplayName,
-      );
-
-      if (!initialized) {
-        debugPrint('❌ Failed to initialize Stripe');
-        EasyLoading.dismiss();
-        EasyLoading.showError('Failed to initialize payment system');
-        return null;
-      }
-
-      EasyLoading.dismiss();
-
-      // Step 2: Present payment sheet
-      debugPrint('➡️ Presenting payment sheet');
-      final paymentMethodId = await presentPaymentSheet();
-
-      if (paymentMethodId != null && paymentMethodId.isNotEmpty) {
-        debugPrint('✅ Payment successful: $paymentMethodId');
-        EasyLoading.showSuccess('Payment method selected!');
-        return paymentMethodId;
-      }
-
-      debugPrint('⚠️ Payment returned null');
-      return null;
-    } catch (e) {
-      debugPrint('❌ Error in processPayment: $e');
-      EasyLoading.dismiss();
-      EasyLoading.showError('Payment setup failed: $e');
-      return null;
-    }
-  }
+  /// Don't need processPayment anymore - use initiatePayment directly
 }
