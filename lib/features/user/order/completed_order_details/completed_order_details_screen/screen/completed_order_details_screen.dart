@@ -192,7 +192,12 @@ class CompletedOrderDetailsScreen extends StatelessWidget {
                         CustomButton(
                           label: 'Rating & Review',
                           onPressed: () {
-                            Get.to(ReviewView());
+                            Get.to(
+                              () => ReviewView(
+                                orderId: liveOrder.orderId,
+                                riderId: liveOrder.riderId,
+                              ),
+                            );
                           },
                           color: AppColors.primaryButtonColor,
                           textColor: AppColors.fontColor,

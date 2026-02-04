@@ -1,15 +1,25 @@
 import 'package:ZipBee/core/common/styles/global_text_style.dart';
 import 'package:ZipBee/core/utils/constants/app_colors.dart';
 import 'package:ZipBee/features/user/finding_raider/controller/review_controller.dart';
+import 'package:ZipBee/features/user/finding_raider/controller/rider_controller.dart';
 import 'package:ZipBee/features/user/finding_raider/model/review_model.dart';
 import 'package:ZipBee/features/user/finding_raider/screnn/rate_rider_tip.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-
 class ReviewView extends StatelessWidget {
-  ReviewView({super.key});
-  final ReviewController controller = Get.put(ReviewController());
+  final String orderId;
+  final int? riderId;
+
+  ReviewView({super.key, required this.orderId, required this.riderId}) {
+    if (!Get.isRegistered<RiderController>()) {
+      Get.put(RiderController());
+    }
+  }
+
+  late final ReviewController controller = Get.put(
+    ReviewController(orderId: orderId, riderId: riderId),
+  );
 
   final Color kPrimaryYellow = Color(0xFFFFC107);
   final Color kGreen = Color(0xFF2ECC71);
@@ -26,9 +36,7 @@ class ReviewView extends StatelessWidget {
         backgroundColor: AppColors.backgroungColor,
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Get.back();
-          },
+          onPressed: () => Get.back(),
         ),
         title: Text(
           'Reviews',
@@ -38,7 +46,6 @@ class ReviewView extends StatelessWidget {
             fontWeight: FontWeight.w700,
           ),
         ),
-
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -46,28 +53,50 @@ class ReviewView extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Center(
-              child: Column(
-                children: [
-                  Text(
-                    "4.0",
-                    style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: 5),
-                  buildStarRow(4.0, size: 24),
-                  SizedBox(height: 5),
-                  Text(
-                    "Based on 24 reviews",
-                    style: TextStyle(color: kGreyText, fontSize: 14),
-                  ),
-                ],
+            Obx(
+              () => Center(
+                child: Column(
+                  children: [
+                    Text(
+                      controller.averageRating.value.toStringAsFixed(1),
+                      style: const TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+                    buildStarRow(controller.averageRating.value, size: 24),
+                    const SizedBox(height: 5),
+                    Text(
+                      "Based on ${controller.totalReviews.value} reviews",
+                      style: TextStyle(color: kGreyText, fontSize: 14),
+                    ),
+                  ],
+                ),
               ),
             ),
             SizedBox(height: 20),
-            buildProgressBar("Excellent", 0.9, kGreen),
-            buildProgressBar("Good", 0.7, kLime),
-            buildProgressBar("Average", 0.5, kOrange),
-            buildProgressBar("Poor", 0.15, kRed),
+
+            // ✅ Dynamic Progress Bars
+            Obx(() {
+              final percentages = controller.getRatingPercentages();
+              return Column(
+                children: [
+                  buildProgressBar(
+                    "Excellent",
+                    percentages["Excellent"] ?? 0,
+                    kGreen,
+                  ),
+                  buildProgressBar("Good", percentages["Good"] ?? 0, kLime),
+                  buildProgressBar(
+                    "Average",
+                    percentages["Average"] ?? 0,
+                    kOrange,
+                  ),
+                  buildProgressBar("Poor", percentages["Poor"] ?? 0, kRed),
+                ],
+              );
+            }),
 
             SizedBox(height: 30),
             Text(
@@ -76,7 +105,7 @@ class ReviewView extends StatelessWidget {
             ),
             SizedBox(height: 5),
             Text(
-              "Your feeback helps us to improve your experience!",
+              "Your feedback helps us to improve your experience!",
               style: TextStyle(color: kGreyText, fontSize: 13),
             ),
             SizedBox(height: 15),
@@ -119,7 +148,12 @@ class ReviewView extends StatelessWidget {
                         () => buildRadioItem(
                           "Fast delivery",
                           controller.isFastDelivery.value,
-                          () => controller.isFastDelivery.toggle(),
+                          () {
+                            controller.isFastDelivery.toggle();
+                            if (controller.isFastDelivery.value) {
+                              controller.isSlowDelivery.value = false;
+                            }
+                          },
                         ),
                       ),
                       SizedBox(height: 10),
@@ -127,7 +161,12 @@ class ReviewView extends StatelessWidget {
                         () => buildRadioItem(
                           "Item/s delivered in\ngood condition",
                           controller.isGoodCondition.value,
-                          () => controller.isGoodCondition.toggle(),
+                          () {
+                            controller.isGoodCondition.toggle();
+                            if (controller.isGoodCondition.value) {
+                              controller.isBadCondition.value = false;
+                            }
+                          },
                         ),
                       ),
                     ],
@@ -141,7 +180,12 @@ class ReviewView extends StatelessWidget {
                         () => buildRadioItem(
                           "Slow in delivery",
                           controller.isSlowDelivery.value,
-                          () => controller.isSlowDelivery.toggle(),
+                          () {
+                            controller.isSlowDelivery.toggle();
+                            if (controller.isSlowDelivery.value) {
+                              controller.isFastDelivery.value = false;
+                            }
+                          },
                         ),
                       ),
                       SizedBox(height: 10),
@@ -149,7 +193,12 @@ class ReviewView extends StatelessWidget {
                         () => buildRadioItem(
                           "Item/s delivered\nin bad condition",
                           controller.isBadCondition.value,
-                          () => controller.isBadCondition.toggle(),
+                          () {
+                            controller.isBadCondition.toggle();
+                            if (controller.isBadCondition.value) {
+                              controller.isGoodCondition.value = false;
+                            }
+                          },
                         ),
                       ),
                     ],
@@ -164,8 +213,9 @@ class ReviewView extends StatelessWidget {
               height: 50,
               child: ElevatedButton(
                 onPressed: () {
-                  controller.submitReview();
-                  Get.to(RateRiderTip());
+                  controller.submitReview().then((_) {
+                    Get.to(() => RateRiderTip());
+                  });
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: kPrimaryYellow,
@@ -209,14 +259,22 @@ class ReviewView extends StatelessWidget {
       ),
     );
   }
+
+  // ------------------ Helper Widgets ------------------
+
   Widget buildReviewCard(Review review) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         CircleAvatar(
           radius: 24,
-          backgroundImage: NetworkImage(review.imageUrl),
+          backgroundImage: review.imageUrl.isNotEmpty
+              ? NetworkImage(review.imageUrl)
+              : null,
           backgroundColor: Colors.grey.shade200,
+          child: review.imageUrl.isEmpty
+              ? Icon(Icons.person, size: 24, color: Colors.grey)
+              : null,
         ),
         SizedBox(width: 12),
         Expanded(
