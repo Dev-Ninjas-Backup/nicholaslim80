@@ -92,7 +92,7 @@ class RecipientController extends GetxController {
       'note_to_driver': noteController.text,
       'is_saved': saveAddress.value,
       'type': type, // SENDER / RECEIVER
-      'order_id': orderId,
+      
     };
 
     // 1️⃣ POST: Create destination
@@ -137,6 +137,7 @@ class RecipientController extends GetxController {
       destinationId: destinationId,
       stopType: stopType,
     );
+    debugPrint('ei je salay  - Success: $patchRes');
     final patchSuccess = patchRes['success'] as bool? ?? false;
 
     if (!patchSuccess) {

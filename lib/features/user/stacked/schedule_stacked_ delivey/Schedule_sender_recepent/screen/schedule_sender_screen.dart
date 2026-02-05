@@ -3,7 +3,6 @@ import 'package:ZipBee/core/utils/constants/app_colors.dart';
 import 'package:ZipBee/features/user/google_map/widget/google_map_widget.dart';
 import 'package:ZipBee/features/user/collect_form_on_express_delivery/Sender_Part/widget_sender/text_filed_widget.dart';
 import 'package:ZipBee/features/user/stacked/schedule_stacked_ delivey/Schedule_sender_recepent/controller/sender_schedule_controller.dart';
-import 'package:ZipBee/features/user/stacked/stacked_screen/stacked_screen.dart';
 import 'package:ZipBee/features/user/stacked/stacked_collect_from/model/model.dart';
 import 'package:ZipBee/features/user/stacked/schedule_stacked_ delivey/Schedule_recepent/screen/schedule_recepent_screen1.dart';
 import 'package:ZipBee/features/user/stacked/stacked_controller/stacked_controller.dart';
@@ -178,7 +177,7 @@ class StackedSenderScheduleScreen extends StatelessWidget {
                                     final args = Get.arguments as Map<String, dynamic>?;
                                     if (args != null && args['navigateNextToRecipient'] == true) {
                                       debugPrint('if executed');
-                                      Get.to(() => StackedSchedulRecepmenteScreen(), arguments: {'addAsStop': true});
+                                      Get.off(() => StackedSchedulRecepmenteScreen(), arguments: {'addAsStop': true});
                                     } else {
                                       // Regular flow: back to stacked screen
                                       debugPrint('else executed');

@@ -1,6 +1,6 @@
 import 'package:ZipBee/core/utils/constants/icon_path.dart';
-import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/stripe_payment_sheet_handler.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 
 // Payment Option Model
@@ -42,29 +42,21 @@ class StackedPaymentSelectionWidget extends StatelessWidget {
     controller.selectedIndex.value = index;
     controller.selectedTitle.value = option.title;
 
-    // If Stripe is selected, trigger payment sheet setup only (NOT place order yet)
+    // Just select the payment method - don't process payment yet
     if (option.title == "Stripe") {
-      debugPrint('➡️ Stripe payment selected - setting up payment sheet');
-      final paymentMethodId = await StripePaymentSheetHandler.processPayment();
-
-      if (paymentMethodId != null && paymentMethodId.isNotEmpty) {
-        // Store payment method ID for later use in Place Order button
-        controller.selectedPaymentMethodId = paymentMethodId;
-        debugPrint('✅ Payment method saved: $paymentMethodId');
-        // Close the payment selector sheet but keep the dialog open
-        Get.back();
-        // DO NOT place order here - wait for Place Order button click
-      } else {
-        // Payment failed or cancelled, keep the selector open
-        debugPrint('❌ Stripe payment setup failed or cancelled');
-      }
-    } else if (option.title == "Wallet") {
-      // Just select wallet - do not place order yet
-      debugPrint('✅ Wallet selected');
+      debugPrint('➡️ Stripe selected - Payment will process on Place Order');
+      controller.selectedPaymentMethodId = 'stripe';
+      EasyLoading.showInfo('Stripe selected');
       Get.back();
-    } else {
-      // Cash payment - just select it
+    } else if (option.title == "Wallet") {
+      debugPrint('✅ Wallet selected');
+      controller.selectedPaymentMethodId = 'wallet';
+      EasyLoading.showInfo('Wallet selected');
+      Get.back();
+    } else if (option.title == "Cash") {
       debugPrint('✅ Cash selected');
+      controller.selectedPaymentMethodId = 'cash';
+      EasyLoading.showInfo('Cash selected');
       Get.back();
     }
   }
