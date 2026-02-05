@@ -36,6 +36,7 @@ class ApiEndPoint {
   // Canonical create order endpoint (public)
   static const String orderCreate = '$baseUrl/order';
   static const String orderUpdateDetails = '$baseUrl/order/{id}/update-details';
+  static const String orderId = '$baseUrl/order/{id}';
   static const String orderEstimate = '$baseUrl/coin-management/redeem-coin';
 
   // Destination endpoints
@@ -52,6 +53,7 @@ class ApiEndPoint {
   static const String rating = '$baseUrl/ratings';
   static const String ratingId = '$baseUrl/ratings/{type}/{id}';
   static const String faq = '$baseUrl/faq';
+  static const String tip = '$baseUrl/tips/{order_id}/tip';
   static const String faqRole = '$baseUrl/faq/faqs-by-role';
 
   // Order discount & promo endpoints

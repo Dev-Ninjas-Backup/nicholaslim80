@@ -72,7 +72,7 @@ class CompletedOrderDetailsScreen extends StatelessWidget {
                     Expanded(
                       child: Center(
                         child: Text(
-                          "Order #${liveOrder.orderId} is ${liveOrder.status.toLowerCase()}",
+                          "Order ${liveOrder.orderId} is ${liveOrder.status.toLowerCase()}",
                           style: getTextStyle(
                             fontWeight: FontWeight.w500,
                             fontSize: 16,
@@ -388,7 +388,7 @@ class PriceAndPayment extends StatelessWidget {
               style: getTextStyle(fontWeight: FontWeight.w500, fontSize: 14),
             ),
             Text(
-              "S\$${order.total.toStringAsFixed(2)}",
+              "\$${order.total.toStringAsFixed(2)}",
               style: getTextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             ),
           ],

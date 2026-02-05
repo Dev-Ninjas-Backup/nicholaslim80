@@ -30,11 +30,97 @@ class ReviewController extends GetxController {
   var averageRating = 0.0.obs;
   var totalReviews = 0.obs;
 
+  /// Rider info for tip screen
+  var actualRiderId = 0.obs;
+  var riderName = "".obs;
+  var riderImage = "".obs;
+
   @override
   void onInit() {
     super.onInit();
+    // Fetch order details to get actual rider ID
+    _fetchOrderDetails();
     if (riderId != null) {
       fetchRatings();
+    }
+  }
+
+  /// Fetch order details to get rider ID and fetch rider profile
+  Future<void> _fetchOrderDetails() async {
+    try {
+      final token = await SharedPreferencesHelper.getAccessToken();
+      if (token == null || token.isEmpty) return;
+
+      final int parsedOrderId = int.tryParse(orderId) ?? 0;
+      if (parsedOrderId == 0) return;
+
+      final uri = Uri.parse(
+        '${ApiEndPoint.getOrder.replaceFirst('{orderId}', orderId)}',
+      );
+
+      final res = await http.get(
+        uri,
+        headers: {'accept': '*/*', 'Authorization': 'Bearer $token'},
+      );
+
+      debugPrint("Fetch Order Details Status: ${res.statusCode}");
+
+      if (res.statusCode == 200) {
+        final body = jsonDecode(res.body);
+        final orderData = body['data'];
+
+        final fetchedRiderId = orderData['assign_rider_id'];
+        if (fetchedRiderId != null) {
+          actualRiderId.value = int.tryParse(fetchedRiderId.toString()) ?? 0;
+          debugPrint("✅ Rider ID from order: ${actualRiderId.value}");
+
+          // Fetch rider profile data
+          await _fetchRiderProfile(actualRiderId.value);
+        }
+      }
+    } catch (e) {
+      debugPrint("_fetchOrderDetails error: $e");
+    }
+  }
+
+  /// Fetch rider profile to get name and image
+  Future<void> _fetchRiderProfile(int id) async {
+    try {
+      final token = await SharedPreferencesHelper.getAccessToken();
+      if (token == null || token.isEmpty) return;
+
+      final uri = Uri.parse('${ApiEndPoint.profile}');
+
+      final res = await http.get(
+        uri,
+        headers: {'accept': '*/*', 'Authorization': 'Bearer $token'},
+      );
+
+      debugPrint("Fetch Rider Profile Status: ${res.statusCode}");
+
+      if (res.statusCode == 200) {
+        final body = jsonDecode(res.body);
+        final userData = body['data'];
+
+        // Get rider name from raider profile
+        if (userData['raiderProfile'] != null &&
+            userData['raiderProfile']['registrations'] != null &&
+            userData['raiderProfile']['registrations'].isNotEmpty) {
+          riderName.value =
+              userData['raiderProfile']['registrations'][0]['raider_name'] ??
+              "Rider";
+        } else {
+          riderName.value = userData['username'] ?? "Rider";
+        }
+        debugPrint('✅ Rider Name: ${riderName.value}');
+
+        riderImage.value = userData['image'] ?? "";
+
+        debugPrint("✅ Rider Name: ${riderName.value}");
+        debugPrint("✅ Rider Image: ${riderImage.value}");
+      }
+    } catch (e) {
+      debugPrint("_fetchRiderProfile error: $e");
     }
   }
 
@@ -129,7 +215,7 @@ class ReviewController extends GetxController {
       final body = {
         "type": "raider",
         "orderId": parsedOrderId,
-        "raiderId": riderId,
+        "raider_id": riderId,
         "user_id": int.tryParse(userId.toString()) ?? 0,
         "rating_star": inputRating.value.toInt(),
         "notes": commentController.text.trim(),
