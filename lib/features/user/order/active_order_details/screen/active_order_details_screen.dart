@@ -1,3 +1,4 @@
+import 'package:ZipBee/features/user/chat/screen/chat_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -85,12 +86,9 @@ class ActiveOrderDetailsScreen extends StatelessWidget {
                   children: [
                     GestureDetector(
                       onTap: () => Get.back(),
-                      child: Icon(
-                        Icons.arrow_back_ios_new_rounded,
-                        size: 20,
-                      ),
+                      child: Icon(Icons.arrow_back_ios_new_rounded, size: 20),
                     ),
-                     SizedBox(width: 10),
+                    SizedBox(width: 10),
                     Expanded(
                       child: Center(
                         child: Text(
@@ -168,9 +166,10 @@ class ActiveOrderDetailsScreen extends StatelessWidget {
                         // Message & Call
                         MessageCallButtons(
                           phoneNumber: liveOrder.assignRiderPhone,
+                          order: liveOrder,
                         ),
 
-                         SizedBox(height: 12),
+                        SizedBox(height: 12),
                         RatingsSection(
                           rating: liveOrder.assignRiderRating,
                           totalReviews: liveOrder.assignRiderReviews,
@@ -293,7 +292,8 @@ class RiderDetails extends StatelessWidget {
 
 class MessageCallButtons extends StatelessWidget {
   final String? phoneNumber;
-  const MessageCallButtons({super.key, this.phoneNumber});
+  final OrderModel order;
+  const MessageCallButtons({super.key, this.phoneNumber, required this.order});
 
   void _callRider() async {
     if (phoneNumber != null && phoneNumber!.isNotEmpty) {
@@ -319,7 +319,14 @@ class MessageCallButtons extends StatelessWidget {
       children: [
         Expanded(
           child: OutlinedButton(
-            onPressed: _messageRider,
+            onPressed: () {
+              Get.to(
+                ChatScreen(
+                  receiverId: order.orderId,
+                  senderName: order.assignRiderName,
+                ),
+              );
+            },
             style: OutlinedButton.styleFrom(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
