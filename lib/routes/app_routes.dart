@@ -1,5 +1,6 @@
 import 'package:ZipBee/features/kamrul_express/screen/kamrul_express_screen.dart';
 import 'package:ZipBee/features/onboarding/screen/onboarding_screen.dart';
+import 'package:ZipBee/features/orders/completed_order_details/proof_of_delivery/screen/proof_of_delivery_screen2.dart';
 import 'package:ZipBee/features/splash/screen/splash_screen.dart';
 import 'package:ZipBee/features/user/auth/forgotPassword/screen/forgot_password_screen.dart';
 import 'package:ZipBee/features/user/auth/login/screen/login_signup_screen.dart';
@@ -17,6 +18,7 @@ import 'package:ZipBee/features/user/home/controller/home_controller.dart';
 import 'package:ZipBee/features/user/home/my_riders/screen/my_riders.dart';
 import 'package:ZipBee/features/user/home/screen/home_screen.dart';
 import 'package:ZipBee/features/user/notification/screen/user_notification1.dart';
+import 'package:ZipBee/features/user/order/completed_order_details/proof_of_delivery_screen/proof_of_delivery_screen.dart';
 import 'package:ZipBee/features/user/profile/screen/profile_screen.dart';
 import 'package:ZipBee/features/user/refer_and_earn/screen/refer_and_earn_screen.dart';
 import 'package:ZipBee/features/user/saved_places/screen/saved_place_screenn.dart';
@@ -35,6 +37,7 @@ class AppRoutes {
 
   static String splashScreen = '/splashScreen';
   static String onboardingScreen = '/onboardingScreen';
+  static String proofOfDeliveryScreen = '/proofOfDeliveryScreen';
   static String loginScreen = '/loginScreen';
   static String verificationScreen = '/verificationScreen';
   static String homeScreen = '/homeScreen';
@@ -90,6 +93,7 @@ class AppRoutes {
 
   static String getSplashScreen() => splashScreen;
   static String getOnboardingScreen() => onboardingScreen;
+  static String getProofOfDeliveryScreen() => proofOfDeliveryScreen;
   static String getLoginScreen() => loginScreen;
   static String getverificationScreen() => verificationScreen;
   static String gethomeScreen() => homeScreen;
@@ -165,6 +169,7 @@ class AppRoutes {
       page: () => OnboardingScreen(),
       transition: Transition.fadeIn,
     ),
+    GetPage(name: proofOfDeliveryScreen, page: () => ProofOfDeliveryScreen2()),
     GetPage(
       name: accountScreen,
       page: () => ProfileScreen(),
