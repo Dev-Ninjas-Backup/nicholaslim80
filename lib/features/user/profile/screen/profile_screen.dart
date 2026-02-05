@@ -78,7 +78,8 @@ class ProfileScreen extends StatelessWidget {
 
                 /// 🔽 PROFILE INFO SECTION
                 Obx(() {
-                  final name = controller.userModel.value.userProfile.firstName;
+                  final name =
+                      controller.userModel.value.userProfile?.firstName ?? '';
                   if (controller.errorMessage.value.isNotEmpty) {
                     return Center(child: Text(controller.errorMessage.value));
                   } else {
@@ -109,20 +110,29 @@ class ProfileScreen extends StatelessWidget {
                           /// ---------- SUBTITLE ----------
                           String subtitle;
                           if (index == 0) {
-                            subtitle = controller
-                                .userModel
-                                .value
-                                .userProfile
-                                .firstName;
+                            subtitle =
+                                controller
+                                    .userModel
+                                    .value
+                                    .userProfile
+                                    ?.firstName ??
+                                '';
                           } else if (index == 1) {
                             subtitle =
-                                controller.userModel.value.userProfile.lastName;
+                                controller
+                                    .userModel
+                                    .value
+                                    .userProfile
+                                    ?.lastName ??
+                                '';
                           } else if (index == 2) {
-                            subtitle = controller
-                                .userModel
-                                .value
-                                .userProfile
-                                .dateOfBirth;
+                            subtitle =
+                                controller
+                                    .userModel
+                                    .value
+                                    .userProfile
+                                    ?.dateOfBirth ??
+                                '';
                           } else {
                             subtitle =
                                 controller.profileItem[index - 3].subtitle;
