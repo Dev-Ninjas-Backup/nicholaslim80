@@ -24,8 +24,7 @@ void _configEasyLoading() {
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  const String stripePublicKey =
-      'pk_test_51SajilBojBeI3sJoqnjO7VaXEhgQzV4gSeMoTiWXdHuhMXIfC6AuFM74xedRQWNupvpuEErGwn65ju98t301lTQM00ChLOeiyE';
+  const String stripePublicKey = 'pk_test_51SknuvDXBOtCRfi2drGBAdKBna0ZOkJLdUfkHRbxsuJIS5gd4QWFpPVNowaNyCUZDDeKRfkU5BFQY1H0BzxQ3a6Q00Z5dHGGgY';
 
   // Merchant display name
 

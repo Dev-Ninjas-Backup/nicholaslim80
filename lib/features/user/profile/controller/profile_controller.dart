@@ -72,9 +72,10 @@ class ProfileController extends GetxController {
           usernameController.text = userModel.value.username;
           emailController.text = userModel.value.email;
           phoneController.text = userModel.value.phone;
-          firstNameController.text = userModel.value.userProfile.firstName;
-          lastNameController.text = userModel.value.userProfile.lastName;
-          dobController.text = userModel.value.userProfile.dateOfBirth;
+          firstNameController.text =
+              userModel.value.userProfile?.firstName ?? '';
+          lastNameController.text = userModel.value.userProfile?.lastName ?? '';
+          dobController.text = userModel.value.userProfile?.dateOfBirth ?? '';
 
           updateProfileItems();
         }
@@ -122,9 +123,9 @@ class ProfileController extends GetxController {
     usernameController.text = userModel.value.username;
     emailController.text = userModel.value.email;
     phoneController.text = userModel.value.phone;
-    firstNameController.text = userModel.value.userProfile.firstName;
-    lastNameController.text = userModel.value.userProfile.lastName;
-    dobController.text = userModel.value.userProfile.dateOfBirth;
+    firstNameController.text = userModel.value.userProfile?.firstName ?? '';
+    lastNameController.text = userModel.value.userProfile?.lastName ?? '';
+    dobController.text = userModel.value.userProfile?.dateOfBirth ?? '';
     editingIndex.value = -1;
     debugPrint('❌ Editing canceled');
   }
@@ -195,7 +196,7 @@ class ProfileController extends GetxController {
         updateProfileItems();
         editingIndex.value = -1;
         debugPrint('✅ Profile updated successfully');
-        
+
         // 🔄 Trigger app rebuild to refresh data on all screens
         try {
           final appController = Get.find<AppController>();
@@ -269,13 +270,13 @@ class UserModel {
   final String username;
   final String email;
   final String phone;
-  userProfileModel userProfile;
+  userProfileModel? userProfile;
 
   UserModel({
     required this.username,
     required this.email,
     required this.phone,
-    required this.userProfile,
+    this.userProfile,
   });
 
   factory UserModel.fromJsonData(Map<String, dynamic> data) {
@@ -285,7 +286,9 @@ class UserModel {
       username: data['username'] ?? '',
       email: data['email'] ?? '',
       phone: data['phone'] ?? '',
-      userProfile: userProfileModel.fromJsonData(data['profile']),
+      userProfile: data['profile'] != null
+          ? userProfileModel.fromJsonData(data['profile'])
+          : null, // ✅ handle null
     );
   }
 

@@ -7,7 +7,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 class MyRidersController extends GetxController {
   var ridersList = <Map<String, dynamic>>[].obs;
-  var loveState = <String, bool>{}.obs;
+  var loveState = <int, bool>{}.obs; // keyed by myRaiderId to avoid name collisions
   var swipeProgress = <String, double>{}.obs;
 
   final phoneController = TextEditingController(text: "+65");
@@ -22,6 +22,7 @@ class MyRidersController extends GetxController {
     super.onInit();
     _loadToken().then((_) => fetchRiders());
   }
+
   Future<void> addRider() async {
     final phoneNumber = phoneController.text.trim();
     final email = emailController.text.trim();
@@ -80,6 +81,7 @@ class MyRidersController extends GetxController {
       EasyLoading.dismiss();
     }
   }
+
   Future<void> deleteRider(int myRaiderId) async {
     if (token.value.isEmpty) await _loadToken();
 
@@ -103,7 +105,7 @@ class MyRidersController extends GetxController {
         ridersList.refresh();
 
         EasyLoading.showSuccess("Rider deleted successfully");
-        await fetchRiders(); 
+        await fetchRiders();
       } else {
         EasyLoading.showError(
           response.body?['message'] ?? "Failed to delete rider",
@@ -117,6 +119,7 @@ class MyRidersController extends GetxController {
       EasyLoading.dismiss();
     }
   }
+
   Future<void> fetchRiders() async {
     if (token.value.isEmpty) await _loadToken();
 
@@ -145,13 +148,14 @@ class MyRidersController extends GetxController {
           final riderMap = {
             'name': raiderData['raider_name'] ?? 'Unknown',
             'order-id': rider['find_by'] ?? 'Pending',
-            'raiderId': raiderData['id'], 
-            'myRaiderId': rider['id'], 
+            'raiderId': raiderData['id'],
+            'myRaiderId': rider['id'],
             'image': ImagePath.profile1,
           };
 
           ridersList.add(riderMap);
-          loveState[riderMap['name']] = false;
+          final isFav = rider['is_fav'] == true;
+          loveState[riderMap['myRaiderId']] = isFav;
         }
 
         print("[FETCH RIDERS] Fetched ${ridersList.length} riders.");
@@ -168,39 +172,54 @@ class MyRidersController extends GetxController {
       EasyLoading.dismiss();
     }
   }
-Future<void> toggleFavoriteApi(String name, int myRaiderId) async {
-  if (token.value.isEmpty) await _loadToken();
 
-  try {
-    loveState[name] = !(loveState[name] ?? false);
+  Future<void> toggleFavoriteApi(int myRaiderId, String name) async {
+    debugPrint("[FAV] Tapped favorite for $name (myRaiderId: $myRaiderId)");
+    if (token.value.isEmpty) await _loadToken();
 
-    final response = await _connect.patch(
-      "${ApiEndPoint.toggleFavorite}/$myRaiderId", 
-      {"is_fav": loveState[name]},
-      headers: {
-        "Authorization": "Bearer ${token.value}",
-        "Content-Type": "application/json",
-      },
-    );
+    final previous = loveState[myRaiderId] ?? false;
+    try {
+      loveState[myRaiderId] = !previous;
+      loveState.refresh();
 
-    if (response.statusCode != 200) {
-      loveState[name] = !(loveState[name] ?? false);
-      ridersList.refresh();
+      final response = await _connect.patch(
+        "${ApiEndPoint.addRaider}/$myRaiderId",
+        {"is_fav": loveState[myRaiderId]},
+        headers: {
+          "Authorization": "Bearer ${token.value}",
+          "Content-Type": "application/json",
+        },
+      );
+
+      debugPrint("[FAV] Response code: ${response.statusCode}");
+      debugPrint("[FAV] Response body: ${response.body}");
+
+      final success =
+          (response.statusCode == 200 || response.statusCode == 201) &&
+              response.body?['success'] == true;
+
+      if (!success) {
+        loveState[myRaiderId] = previous; // revert on failure
+        loveState.refresh();
+        EasyLoading.showError(
+          response.body?['message'] ?? "Failed to update favorite",
+        );
+      }
+    } catch (e) {
+      loveState[myRaiderId] = previous;
+      loveState.refresh();
+      EasyLoading.showError("Network error or server issue");
     }
-  } catch (e) {
-    loveState[name] = !(loveState[name] ?? false);
-    ridersList.refresh();
   }
-}
 
-
-  void toggleLove(String name) {
-    loveState[name] = !(loveState[name] ?? false);
+  void toggleLove(int myRaiderId) {
+    loveState[myRaiderId] = !(loveState[myRaiderId] ?? false);
   }
 
   void updateSwipeProgress(String name, double progress) {
     swipeProgress[name] = progress;
   }
+
   Future<void> _loadToken() async {
     token.value = await SharedPreferencesHelper.getAccessToken() ?? '';
     print("[TOKEN] Loaded: ${token.value}");

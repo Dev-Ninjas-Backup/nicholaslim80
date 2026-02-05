@@ -6,10 +6,11 @@ import 'package:get/get.dart';
 
 class ChatScreen extends StatelessWidget {
   final String receiverId;
-  ChatScreen({required this.receiverId, Key? key}) : super(key: key);
+  final String senderName;
+  ChatScreen({required this.receiverId, Key? key, required this.senderName})
+    : super(key: key);
 
-  final UserMessageController controller =
-      Get.put(UserMessageController());
+  final UserMessageController controller = Get.put(UserMessageController());
 
   @override
   Widget build(BuildContext context) {
@@ -23,9 +24,9 @@ class ChatScreen extends StatelessWidget {
           onPressed: () => Get.back(),
         ),
         title: Column(
-          children: const [
+          children: [
             Text(
-              "John Conley",
+              senderName.isNotEmpty ? senderName : "Rider Name",
               style: TextStyle(
                 color: Colors.black,
                 fontWeight: FontWeight.bold,
@@ -67,9 +68,7 @@ class ChatScreen extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 15),
                 itemCount: controller.messages.length,
                 itemBuilder: (context, index) {
-                  return ChatBubble(
-                    message: controller.messages[index],
-                  );
+                  return ChatBubble(message: controller.messages[index]);
                 },
               );
             }),
@@ -101,14 +100,12 @@ class ChatScreen extends StatelessWidget {
                   border: InputBorder.none,
                 ),
                 textInputAction: TextInputAction.send,
-                onSubmitted: (_) =>
-                    controller.sendMessage(receiverId),
+                onSubmitted: (_) => controller.sendMessage(receiverId),
               ),
             ),
             IconButton(
               icon: const Icon(Icons.send),
-              onPressed: () =>
-                  controller.sendMessage(receiverId),
+              onPressed: () => controller.sendMessage(receiverId),
             ),
           ],
         ),

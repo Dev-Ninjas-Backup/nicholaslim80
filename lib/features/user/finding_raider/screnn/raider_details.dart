@@ -1,6 +1,7 @@
 import 'package:ZipBee/core/common/styles/global_text_style.dart';
 import 'package:ZipBee/core/utils/constants/app_colors.dart';
 import 'package:ZipBee/core/utils/constants/icon_path.dart';
+import 'package:ZipBee/features/user/bottom_navbar/screen/bottom_navbar_screen.dart';
 import 'package:ZipBee/features/user/finding_raider/controller/rider_controller.dart';
 import 'package:ZipBee/features/user/finding_raider/widget/button.dart';
 import 'package:ZipBee/features/user/finding_raider/widget/custom_icon_text_button.dart';
@@ -35,7 +36,10 @@ class _RaiderDetailsState extends State<RaiderDetails> {
 
   void _fetchOrderDataOnInit() {
     // Get order ID from StackedOrderController
-    String rawId = orderController.orderNumber.value.replaceAll(RegExp(r'[^0-9]'), '');
+    String rawId = orderController.orderNumber.value.replaceAll(
+      RegExp(r'[^0-9]'),
+      '',
+    );
     int? id = int.tryParse(rawId);
 
     if (id != null && id != 0) {
@@ -51,7 +55,9 @@ class _RaiderDetailsState extends State<RaiderDetails> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: GestureDetector(
-          onTap: Get.back,
+          onTap: () {
+            Get.offAll(() => BottomNavbarScreen());
+          },
           child: Padding(
             padding: EdgeInsets.all(8),
             child: Image.asset(IconPath.colorFullArrow, width: 24),
@@ -82,7 +88,7 @@ class _RaiderDetailsState extends State<RaiderDetails> {
                         children: [
                           dragHandle(),
                           SizedBox(height: 24),
-                          
+
                           // Display rider info from API
                           RaiderInfoWidget(),
 
@@ -118,8 +124,10 @@ class _RaiderDetailsState extends State<RaiderDetails> {
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('Total',
-                                      style: getTextStyle(fontSize: 12)),
+                                  Text(
+                                    'Total',
+                                    style: getTextStyle(fontSize: 12),
+                                  ),
                                   Text(
                                     '\$${controller.totalCost.value.toStringAsFixed(2)}',
                                     style: getTextStyle(
@@ -140,7 +148,11 @@ class _RaiderDetailsState extends State<RaiderDetails> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text('Date & Time'),
-                              Text(_formatDateTime(controller.orderCreatedAt.value)),
+                              Text(
+                                _formatDateTime(
+                                  controller.orderCreatedAt.value,
+                                ),
+                              ),
                             ],
                           ),
 
@@ -152,10 +164,16 @@ class _RaiderDetailsState extends State<RaiderDetails> {
                                 : 'Collected from (${controller.pickupName.value})',
                             address: controller.pickupAddress.value,
                           ),
-                          Icon(Icons.fiber_manual_record,
-                              size: 10, color: Colors.grey),
-                          Icon(Icons.fiber_manual_record,
-                              size: 10, color: Colors.grey),
+                          Icon(
+                            Icons.fiber_manual_record,
+                            size: 10,
+                            color: Colors.grey,
+                          ),
+                          Icon(
+                            Icons.fiber_manual_record,
+                            size: 10,
+                            color: Colors.grey,
+                          ),
                           LocationRowWidget(
                             iconPath: IconPath.deliveredIcon,
                             title: controller.dropName.value.isEmpty
@@ -172,8 +190,59 @@ class _RaiderDetailsState extends State<RaiderDetails> {
                                 AppColors.onboardingIndicatorActive,
                             textColor: Colors.black,
                             onPressed: () {
-                              // ignore: deprecated_member_use
-                              Share.share('Inviting friends.');
+                              // Extracting data safely
+                              final assignRider =
+                                  controller.assignRiderData.value;
+                              final registration =
+                                  (assignRider != null &&
+                                      assignRider['registrations'] != null &&
+                                      (assignRider['registrations'] as List)
+                                          .isNotEmpty)
+                                  ? assignRider['registrations'][0]
+                                  : null;
+
+                              final riderName =
+                                  registration?['raider_name'] ??
+                                  'Not Assigned';
+                              final orderId = orderController.orderNumber.value;
+                              final pickup =
+                                  controller.pickupAddress.value.isEmpty
+                                  ? 'N/A'
+                                  : controller.pickupAddress.value;
+                              final destination =
+                                  controller.dropAddress.value.isEmpty
+                                  ? 'N/A'
+                                  : controller.dropAddress.value;
+                              final totalCost = controller.totalCost.value
+                                  .toStringAsFixed(2);
+
+                              // Formatting Payment Type
+                              String paymentMethod = 'Online Payment';
+                              if (controller.paymentType.value == 'COD')
+                                paymentMethod = 'Cash on Delivery';
+                              if (controller.paymentType.value == 'WALLET')
+                                paymentMethod = 'Wallet';
+
+                              // Professional English Share Message
+                              final String shareMessage =
+                                  '''
+🐝 *ZipBee | Ride Details*
+--------------------------------------
+🆔 *Order ID:* $orderId
+👤 *Rider:* $riderName
+💰 *Total Fare:* \$$totalCost ($paymentMethod)
+
+📍 *Pickup:* $pickup
+
+🏁 *Drop-off:* $destination
+
+📅 *Date & Time:* ${_formatDateTime(controller.orderCreatedAt.value)}
+--------------------------------------
+Track your ride live on the ZipBee app.
+*Safe travels!*
+''';
+
+                              Share.share(shareMessage);
                             },
                           ),
                         ],
@@ -190,62 +259,54 @@ class _RaiderDetailsState extends State<RaiderDetails> {
   }
 
   Widget dragHandle() => Center(
-        child: Container(
-          width: 40,
-          height: 4,
-          decoration: BoxDecoration(
-            color: Colors.grey[300],
-            borderRadius: BorderRadius.circular(2),
-          ),
-        ),
-      );
+    child: Container(
+      width: 40,
+      height: 4,
+      decoration: BoxDecoration(
+        color: Colors.grey[300],
+        borderRadius: BorderRadius.circular(2),
+      ),
+    ),
+  );
 
   // Build payment display based on payment type
   Widget _buildPaymentDisplay() {
-    return Obx(
-      () {
-        final payType = controller.paymentType.value;
+    return Obx(() {
+      final payType = controller.paymentType.value;
 
-        if (payType == 'ONLINE_PAY') {
-          return Row(
-            children: [
-              Image.asset(IconPath.visa, height: 24),
-              SizedBox(width: 8),
-            ],
-          );
-        } else if (payType == 'WALLET') {
-          return Row(
-            children: [
-              Image.asset(IconPath.wallet, height: 24),
-              SizedBox(width: 8),
-              Text(
-                'Wallet',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          );
-        } else if (payType == 'COD') {
-          return Row(
-            children: [
-              Icon(Icons.money, size: 24, color: Colors.green),
-              SizedBox(width: 8),
-              Text(
-                'Cash',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          );
-        }
+      if (payType == 'ONLINE_PAY') {
+        return Row(
+          children: [
+            Image.asset(IconPath.visa, height: 24),
+            SizedBox(width: 8),
+          ],
+        );
+      } else if (payType == 'WALLET') {
+        return Row(
+          children: [
+            Image.asset(IconPath.wallet, height: 24),
+            SizedBox(width: 8),
+            Text(
+              'Wallet',
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+            ),
+          ],
+        );
+      } else if (payType == 'COD') {
+        return Row(
+          children: [
+            Icon(Icons.money, size: 24, color: Colors.green),
+            SizedBox(width: 8),
+            Text(
+              'Cash',
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+            ),
+          ],
+        );
+      }
 
-        return SizedBox.shrink();
-      },
-    );
+      return SizedBox.shrink();
+    });
   }
 
   // Format datetime from ISO string
