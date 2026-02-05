@@ -64,7 +64,6 @@ class AppRoutes {
   static String riderAccountScreen = '/riderAccountScreen';
   static String chatScreen = '/chatScreen';
 
-
   //user notification
   static String userNotification = '/user/notification';
   static String userOrderDetails = '/userOrderDetails';
@@ -81,7 +80,8 @@ class AppRoutes {
   // google map screen (practice file)
   static String googleMapScreen = "/googleMapScreen";
 
-  static String stackedSchedulRecepmenteScreen = "/stackedSchedulRecepmenteScreen";
+  static String stackedSchedulRecepmenteScreen =
+      "/stackedSchedulRecepmenteScreen";
   static String standardFAQ = "/standardFAQ";
 
   // static String scheduledelivery = "/scheduledelivery";
@@ -231,7 +231,10 @@ class AppRoutes {
 
     // google map screen (practice file)
     GetPage(name: googleMapScreen, page: () => GoogleMapScreen()),
-    GetPage(name: chatScreen, page: () => ChatScreen(receiverId: '',)),
+    GetPage(
+      name: chatScreen,
+      page: () => ChatScreen(receiverId: '', senderName: ''),
+    ),
 
     GetPage(
       name: stackedFAQScreen,
@@ -254,8 +257,7 @@ class AppRoutes {
       name: stackedSchedulRecepmenteScreen,
       page: () => StackedSchedulRecepmenteScreen(),
     ),
-    
-    // Schedule Sender Screen 
 
+    // Schedule Sender Screen
   ];
 }

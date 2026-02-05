@@ -1,4 +1,8 @@
+
+import 'package:ZipBee/features/user/chat/screen/chat_screen.dart';
+
 import 'package:ZipBee/features/user/finding_raider/screnn/review_view.dart';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -166,6 +170,7 @@ class ActiveOrderDetailsScreen extends StatelessWidget {
                         // Message & Call
                         MessageCallButtons(
                           phoneNumber: liveOrder.assignRiderPhone,
+                          order: liveOrder,
                         ),
 
                         SizedBox(height: 12),
@@ -298,7 +303,8 @@ class RiderDetails extends StatelessWidget {
 
 class MessageCallButtons extends StatelessWidget {
   final String? phoneNumber;
-  const MessageCallButtons({super.key, this.phoneNumber});
+  final OrderModel order;
+  const MessageCallButtons({super.key, this.phoneNumber, required this.order});
 
   void _callRider() async {
     if (phoneNumber != null && phoneNumber!.isNotEmpty) {
@@ -324,7 +330,14 @@ class MessageCallButtons extends StatelessWidget {
       children: [
         Expanded(
           child: OutlinedButton(
-            onPressed: _messageRider,
+            onPressed: () {
+              Get.to(
+                ChatScreen(
+                  receiverId: order.orderId,
+                  senderName: order.assignRiderName,
+                ),
+              );
+            },
             style: OutlinedButton.styleFrom(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
