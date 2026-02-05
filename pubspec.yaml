@@ -57,6 +57,7 @@ dependencies:
   flutter_typeahead: ^5.2.0
   get_storage: ^2.1.1
   carousel_slider: ^5.1.1
+  dio: ^5.4.0
 
 dev_dependencies:
   flutter_test:
