@@ -1,32 +1,71 @@
-import 'package:ZipBee/core/utils/constants/image_path.dart';
 import 'package:get/get.dart';
+import '../model/proof_of_delivery_model.dart';
+import '../service/proof_of_delivery_api_service.dart';
 
 class ProofOfDeliveryController extends GetxController {
-  final trackingNumber = "SPXSG057083664199".obs;
-  final deliveredAt = "23-09-2025 13:47".obs;
+  final apiService = ProofOfDeliveryApiService();
+  // Order id is received via Get.arguments in onInit. (Removed invalid `Get.args;` statement)
 
-  final deliveryDate = "23-September-2025".obs;
-  final location = "Singapore".obs;
-  final coordinates = "1.0178°N | 103.051° | 0.8028°E".obs;
-  final orderId = "SPXSG057083664199 | 186651CBD4-Main-SMR".obs;
+  final isLoading = true.obs;
 
-  /// Images
-  final images = <String>[
-    ImagePath.deliveryBox,
-    ImagePath.deliveryBox,
-    ImagePath.deliveryBox,
-    ImagePath.deliveryBox,
-  ];
+  final images = <String>[].obs;
+  final selectedImage = ''.obs;
 
-  late RxString selectedImage;
+  final trackingNumber = ''.obs;
+  final deliveredAt = ''.obs;
+  final location = ''.obs;
 
   @override
   void onInit() {
-    selectedImage = images.first.obs; 
     super.onInit();
+    // Safely read `Get.arguments` which may be null or not an int.
+    final args = Get.arguments;
+    if (args == null) {
+      print('No orderId provided to ProofOfDeliveryController');
+      return;
+    }
+
+    int? orderId;
+    if (args is int) {
+      orderId = args;
+    } else {
+      orderId = int.tryParse(args.toString());
+    }
+
+    if (orderId == null) {
+      print('Invalid orderId argument: $args');
+      return;
+    }
+
+    fetchOrder(orderId);
   }
 
-  void changeImage(String imagePath) {
-    selectedImage.value = imagePath;
+  Future<void> fetchOrder(int orderId) async {
+    try {
+      isLoading.value = true;
+
+      final response = await apiService.getOrderDetails(orderId);
+      final data = response.data['data'];
+
+      final model = ProofOfDeliveryModel.fromJson(data);
+
+      trackingNumber.value = model.trackingNumber;
+      deliveredAt.value = model.deliveredAt;
+      location.value = model.location;
+
+      images.assignAll(model.proofImages);
+
+      if (images.isNotEmpty) {
+        selectedImage.value = images.first;
+      }
+    } catch (e) {
+      print("❌ POD ERROR: $e");
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  void changeImage(String image) {
+    selectedImage.value = image;
   }
 }

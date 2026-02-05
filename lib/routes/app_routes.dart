@@ -1,5 +1,6 @@
 import 'package:ZipBee/features/kamrul_express/screen/kamrul_express_screen.dart';
 import 'package:ZipBee/features/onboarding/screen/onboarding_screen.dart';
+import 'package:ZipBee/features/orders/completed_order_details/proof_of_delivery/binding/proof_of_delivery_binding.dart';
 import 'package:ZipBee/features/orders/completed_order_details/proof_of_delivery/screen/proof_of_delivery_screen2.dart';
 import 'package:ZipBee/features/splash/screen/splash_screen.dart';
 import 'package:ZipBee/features/user/auth/forgotPassword/screen/forgot_password_screen.dart';
@@ -169,7 +170,12 @@ class AppRoutes {
       page: () => OnboardingScreen(),
       transition: Transition.fadeIn,
     ),
-    GetPage(name: proofOfDeliveryScreen, page: () => ProofOfDeliveryScreen2()),
+    GetPage(
+  name: '/ProofOfDeliveryScreen2',
+  page: () =>  ProofOfDeliveryScreen2(),
+  binding: ProofOfDeliveryBinding(),
+),
+
     GetPage(
       name: accountScreen,
       page: () => ProfileScreen(),

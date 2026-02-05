@@ -159,8 +159,11 @@ class CompletedOrderDetailsScreen extends StatelessWidget {
                         const SizedBox(height: 16),
 
                         GestureDetector(
-                          onTap: () =>
-                              Get.to(() =>  ProofOfDeliveryScreen2()),
+                          onTap: () => Get.toNamed(
+                            '/ProofOfDeliveryScreen2',
+                            arguments: liveOrder.orderId, // orderId
+                          ),
+
                           child: Row(
                             children: [
                               const Icon(
