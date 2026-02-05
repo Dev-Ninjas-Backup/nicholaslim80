@@ -10,7 +10,6 @@ class OrderModel {
   final String vehicleType;
   final double total;
   final bool showReceipt;
-
   final String assignRiderName;
   final String assignRiderPhone;
   final String assignRiderImage;

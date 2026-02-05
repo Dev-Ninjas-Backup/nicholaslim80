@@ -1,10 +1,8 @@
-import 'package:ZipBee/features/user/finding_raider/screnn/review_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
-
 import '../../../../../../core/common/styles/global_text_style.dart';
 import '../../../../../../core/utils/constants/app_colors.dart';
 import '../../../../../../core/utils/constants/icon_path.dart';
@@ -229,19 +227,6 @@ class ActiveOrderDetailsScreen extends StatelessWidget {
                           textColor: AppColors.fontColor,
                         ),
                         const SizedBox(height: 12),
-                        CustomButton(
-                          label: 'Rating & Review Rider',
-                          onPressed: () {
-                            Get.to(
-                              () => ReviewView(
-                                orderId: liveOrder.orderId,
-                                riderId: liveOrder.riderId,
-                              ),
-                            );
-                          },
-                          color: AppColors.primaryButtonColor,
-                          textColor: AppColors.fontColor,
-                        ),
                       ],
                     ),
                   ),

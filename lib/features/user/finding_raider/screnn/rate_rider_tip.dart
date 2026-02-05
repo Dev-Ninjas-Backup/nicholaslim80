@@ -2,17 +2,18 @@ import 'package:ZipBee/core/common/styles/global_text_style.dart';
 import 'package:ZipBee/core/utils/constants/app_colors.dart';
 import 'package:ZipBee/core/utils/constants/icon_path.dart';
 import 'package:ZipBee/core/utils/constants/image_path.dart';
-import 'package:ZipBee/features/user/finding_raider/controller/rider_controller.dart';
+import 'package:ZipBee/features/user/bottom_navbar/screen/bottom_navbar_screen.dart';
+import 'package:ZipBee/features/user/finding_raider/model/payment_option_model.dart';
 import 'package:ZipBee/features/user/finding_raider/widget/button.dart';
 import 'package:ZipBee/features/user/finding_raider/widget/payment_option_widget.dart';
-import 'package:ZipBee/features/user/finding_raider/widget/tip_aleart_dialog.dart';
-import 'package:ZipBee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../controller/rider_tip.dart';
 
 class RateRiderTip extends StatelessWidget {
-  final RiderController controller = Get.find<RiderController>();
+  final RiderTipController controller = Get.put(RiderTipController());
+
   RateRiderTip({super.key});
 
   @override
@@ -26,7 +27,7 @@ class RateRiderTip extends StatelessWidget {
         leading: GestureDetector(
           onTap: () => Get.back(),
           child: Padding(
-            padding: EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(8.0),
             child: Image.asset(IconPath.colorFullArrow, width: 24, height: 24),
           ),
         ),
@@ -35,14 +36,16 @@ class RateRiderTip extends StatelessWidget {
         child: Obx(
           () => Column(
             children: [
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Center(
                 child: CircleAvatar(
                   radius: 40,
-                  backgroundImage: AssetImage(ImagePath.profileImage),
+                  backgroundImage: controller.riderImage.value.isNotEmpty
+                      ? NetworkImage(controller.riderImage.value)
+                      : AssetImage(ImagePath.profileImage) as ImageProvider,
                 ),
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               Center(
                 child: Text(
                   controller.riderName.value,
@@ -52,10 +55,28 @@ class RateRiderTip extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(height: 18),
+              const SizedBox(height: 8),
+
+              /// ---------------- STARS ----------------
+              Center(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: List.generate(5, (index) {
+                    return Icon(
+                      index < controller.riderRating.value
+                          ? Icons.star
+                          : Icons.star_border,
+                      color: Colors.amber,
+                      size: 28,
+                    );
+                  }),
+                ),
+              ),
+              const SizedBox(height: 18),
+
               Center(
                 child: Text(
-                  'Wow! A 4 star!\nDo you want to tip your rider?',
+                  'Wow! ${controller.riderRating.value.toStringAsFixed(1)} star!\nDo you want to tip your rider?',
                   style: getTextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w700,
@@ -63,12 +84,15 @@ class RateRiderTip extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
               ),
-              SizedBox(height: 25),
+              const SizedBox(height: 25),
 
               Expanded(
                 child: Container(
                   color: Colors.white,
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 20,
+                  ),
                   child: LayoutBuilder(
                     builder: (context, constraints) {
                       return SingleChildScrollView(
@@ -79,17 +103,17 @@ class RateRiderTip extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
+                              const Text(
                                 'Tipping your rider',
-                                style: getTextStyle(
+                                style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
-                              SizedBox(height: 10),
+                              const SizedBox(height: 10),
                               ListView.separated(
                                 shrinkWrap: true,
-                                physics: NeverScrollableScrollPhysics(),
+                                physics: const NeverScrollableScrollPhysics(),
                                 itemCount: controller.paymentOptions.length,
                                 separatorBuilder: (_, __) => Divider(
                                   color: Colors.grey.shade300,
@@ -98,36 +122,36 @@ class RateRiderTip extends StatelessWidget {
                                 itemBuilder: (context, index) {
                                   final option =
                                       controller.paymentOptions[index];
+                                  final paymentModel = PaymentOptionModel(
+                                    title: option["title"] ?? "",
+                                    subtitle: option["method"] ?? "",
+                                  );
                                   return PaymentOptionWidget(
                                     index: index,
-                                    option: option,
+                                    option: paymentModel,
                                   );
                                 },
                               ),
-                              SizedBox(height: 20),
+                              const SizedBox(height: 20),
 
-                              raiderTipAmount(),
-                              SizedBox(height: 20),
+                              _buildTipAmountSelection(),
+
+                              const SizedBox(height: 20),
 
                               Button(
                                 buttonText: 'Give a Tip',
                                 backgroundColor: AppColors.primaryButtonColor,
                                 textColor: AppColors.fontColor,
                                 onPressed: () {
-                                  Get.dialog(
-                                    TipAleartDialog(),
-                                    barrierDismissible: true,
-                                  );
+                                  controller.submitTip();
                                 },
                               ),
-                              SizedBox(height: 16),
+                              const SizedBox(height: 16),
 
                               Center(
                                 child: TextButton(
                                   onPressed: () {
-                                    Get.toNamed(
-                                      AppRoutes.getexpressDelivery1(),
-                                    );
+                                    Get.to(() => BottomNavbarScreen());
                                   },
                                   child: Text(
                                     'Maybe next time',
@@ -154,7 +178,8 @@ class RateRiderTip extends StatelessWidget {
     );
   }
 
-  Widget raiderTipAmount() {
+  /// ---------------- TIP AMOUNT SELECTION ----------------
+  Widget _buildTipAmountSelection() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: List.generate(controller.raiderTipOptions.length, (index) {
@@ -170,9 +195,12 @@ class RateRiderTip extends StatelessWidget {
                   ? Colors.amber
                   : Colors.white,
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 22, vertical: 14),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 22,
+                  vertical: 14,
+                ),
                 child: Text(
-                  'S\$${controller.raiderTipOptions[index].toStringAsFixed(0)}',
+                  '\$${controller.raiderTipOptions[index].toStringAsFixed(0)}',
                   style: TextStyle(
                     color: controller.selectedRaiderTip.value == index
                         ? Colors.black
