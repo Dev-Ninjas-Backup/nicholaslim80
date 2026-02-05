@@ -10,6 +10,8 @@ import 'package:ZipBee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../see_all_controller/see_all_controller.dart';
+
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -201,6 +203,17 @@ class HomeScreen extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
+                TextButton(
+                  onPressed: () {
+                    final seeAllCtrl = Get.isRegistered<SeeAllOrderController>()
+                        ? Get.find<SeeAllOrderController>()
+                        : Get.put(SeeAllOrderController());
+
+                    // Automatically select first vehicle and create order
+                    seeAllCtrl.createOrderAuto();
+                  },
+                  child: Text('See All'),
+                ),
               ],
             ),
 
@@ -216,6 +229,7 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
+
   Widget borderedInfoCard({
     required String title,
     required String Function() valueBuilder,
@@ -224,7 +238,6 @@ class HomeScreen extends StatelessWidget {
     Color? iconBgColor,
     double iconSize = 20,
   }) {
-
     return Container(
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
