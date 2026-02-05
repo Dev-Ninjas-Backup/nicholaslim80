@@ -36,15 +36,12 @@ class RidersListWidget extends StatelessWidget {
                       border: Border.all(color: AppColors.primaryButtonColor),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    padding: EdgeInsets.symmetric(
-                      vertical: 12,
-                      horizontal: 24,
-                    ),
+                    padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                         Icon(Icons.add, size: 18),
-                         SizedBox(width: 8),
+                        Icon(Icons.add, size: 18),
+                        SizedBox(width: 8),
                         Text(
                           'Add Rider',
                           style: getTextStyle(
@@ -63,7 +60,7 @@ class RidersListWidget extends StatelessWidget {
             final rider = controller.ridersList[index];
             final name = rider['name'] ?? '';
             final orderId = rider['order-id'] ?? '';
-            final myRaiderId = rider['myRaiderId'] ?? 0; 
+            final myRaiderId = rider['myRaiderId'] ?? 0;
 
             return Dismissible(
               key: Key(myRaiderId.toString()),
@@ -95,10 +92,10 @@ class RidersListWidget extends StatelessWidget {
                 final progress = controller.swipeProgress[name] ?? 0.0;
 
                 return AnimatedContainer(
-                  duration:  Duration(milliseconds: 500),
+                  duration: Duration(milliseconds: 500),
                   color: Color.lerp(
                     AppColors.backgroungColor,
-                     Color.fromARGB(255, 230, 189, 28),
+                    Color.fromARGB(255, 230, 189, 28),
                     progress,
                   ),
                   child: ListTile(
@@ -129,25 +126,24 @@ class RidersListWidget extends StatelessWidget {
                         fontWeight: FontWeight.w400,
                       ),
                     ),
-                    trailing: Obx(
-                      () => IconButton(
+                    trailing: Obx(() {
+                      final isFav = controller.loveState[myRaiderId] ?? false;
+                      return IconButton(
                         icon: Icon(
                           Icons.favorite,
-                          color: controller.loveState[name]!
-                              ? Colors.black
-                              : Colors.grey,
+                          color: isFav ? Colors.black : Colors.grey,
                         ),
                         onPressed: () =>
-                            controller.toggleFavoriteApi(name, myRaiderId),
-                      ),
-                    ),
+                            controller.toggleFavoriteApi(myRaiderId, name),
+                      );
+                    }),
                   ),
                 );
               }),
             );
           },
           separatorBuilder: (context, index) =>
-               Divider(color: Colors.grey, thickness: 1),
+              Divider(color: Colors.grey, thickness: 1),
         );
       }),
     );
