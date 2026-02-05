@@ -1,5 +1,6 @@
 import 'package:ZipBee/core/common/styles/global_text_style.dart';
 import 'package:ZipBee/core/utils/constants/icon_path.dart';
+import 'package:ZipBee/features/user/bottom_navbar/screen/bottom_navbar_screen.dart';
 import 'package:ZipBee/features/user/finding_raider/controller/rider_controller.dart';
 import 'package:ZipBee/features/user/finding_raider/screnn/raider_details.dart';
 import 'package:ZipBee/features/user/finding_raider/widget/button.dart';
@@ -9,11 +10,13 @@ import 'package:ZipBee/features/user/google_map/widget/google_map_widget.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/controller/stacked_order_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:share_plus/share_plus.dart';
 
 class ConnectingRiderPage extends StatelessWidget {
   final RiderController controller = Get.find<RiderController>();
 
-    final StackedOrderController orderController = Get.find<StackedOrderController>();
+  final StackedOrderController orderController =
+      Get.find<StackedOrderController>();
 
   ConnectingRiderPage({super.key});
 
@@ -32,7 +35,7 @@ class ConnectingRiderPage extends StatelessWidget {
         leading: GestureDetector(
           onTap: () {
             controller.stopPollingAssignRider();
-            Get.back();
+            Get.offAll(() => BottomNavbarScreen());
           },
           child: Padding(
             padding: EdgeInsets.all(8),
@@ -116,7 +119,9 @@ class ConnectingRiderPage extends StatelessWidget {
                                 style: getTextStyle(fontSize: 12),
                               ),
                               Text(
-                                _formatDateTime(controller.orderCreatedAt.value),
+                                _formatDateTime(
+                                  controller.orderCreatedAt.value,
+                                ),
                                 style: getTextStyle(fontSize: 12),
                               ),
                             ],
@@ -125,7 +130,7 @@ class ConnectingRiderPage extends StatelessWidget {
 
                         Divider(height: 32),
 
-                        // Collection and Delivery Locations 
+                        // Collection and Delivery Locations
                         Obx(
                           () => Column(
                             children: [
@@ -163,7 +168,50 @@ class ConnectingRiderPage extends StatelessWidget {
                           buttonText: 'Share Ride Information',
                           backgroundColor: Colors.amber,
                           textColor: Colors.black,
-                          onPressed: () => Get.to(() => RaiderDetails()),
+                          onPressed: () {
+                            // Collect available data
+                            final orderId = orderController.orderNumber.value;
+                            final pickup =
+                                controller.pickupAddress.value.isEmpty
+                                ? 'N/A'
+                                : controller.pickupAddress.value;
+                            final destination =
+                                controller.dropAddress.value.isEmpty
+                                ? 'N/A'
+                                : controller.dropAddress.value;
+                            final totalCost = controller.totalCost.value
+                                .toStringAsFixed(2);
+
+                            // Determine payment method
+                            String paymentMethod = 'Online Payment';
+                            if (controller.paymentType.value == 'COD')
+                              paymentMethod = 'Cash on Delivery';
+                            if (controller.paymentType.value == 'WALLET')
+                              paymentMethod = 'Wallet';
+
+                            // Professional English Share Message (Without Rider Info)
+                            final String shareMessage =
+                                '''
+🐝 *ZipBee | Ride Request*
+--------------------------------------
+🆔 *Order ID:* $orderId
+💰 *Estimated Fare:* \$$totalCost ($paymentMethod)
+🔄 *Status:* Searching for Rider...
+
+📍 *Pickup:* $pickup
+
+🏁 *Drop-off:* $destination
+
+📅 *Requested on:* ${_formatDateTime(controller.orderCreatedAt.value)}
+--------------------------------------
+Track your ride live on the ZipBee app.
+*Safe travels!*
+''';
+
+                            // Share using the share_plus package
+                            // Note: Ensure 'import 'package:share_plus/share_plus.dart';' is added at the top
+                            Share.share(shareMessage);
+                          },
                         ),
                       ],
                     ),
@@ -179,14 +227,12 @@ class ConnectingRiderPage extends StatelessWidget {
 
   // Start polling and handle rider assignment
   void _startPollingAndHandleRiderAssignment() {
-    controller.startPollingAssignRider(
-      () {
-        debugPrint('✅ Rider assigned, navigating to next screen');
-        controller.stopPollingAssignRider();
-        // Navigate to next screen after rider is assigned
-        Get.to(() => RaiderDetails());
-      },
-    );
+    controller.startPollingAssignRider(() {
+      debugPrint('✅ Rider assigned, navigating to next screen');
+      controller.stopPollingAssignRider();
+      // Navigate to next screen after rider is assigned
+      Get.to(() => RaiderDetails());
+    });
   }
 
   // Format datetime from ISO string

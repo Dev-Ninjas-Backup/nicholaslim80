@@ -1,5 +1,6 @@
 import 'package:ZipBee/core/common/styles/global_text_style.dart';
 import 'package:ZipBee/core/utils/constants/icon_path.dart';
+import 'package:ZipBee/features/user/bottom_navbar/screen/bottom_navbar_screen.dart';
 import 'package:ZipBee/features/user/finding_raider/controller/rider_controller.dart';
 import 'package:ZipBee/features/user/finding_raider/widget/button.dart';
 import 'package:ZipBee/features/user/finding_raider/widget/cancel_order_dialog.dart';
@@ -46,7 +47,9 @@ class FindingRiderPage extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: GestureDetector(
-          onTap: Get.back,
+          onTap: () {
+            Get.offAll(() => BottomNavbarScreen());
+          },
           child: Padding(
             padding: const EdgeInsets.all(8),
             child: Image.asset(IconPath.colorFullArrow, width: 24, height: 24),
