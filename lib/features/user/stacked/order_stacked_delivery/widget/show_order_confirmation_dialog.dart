@@ -1,6 +1,6 @@
 import 'package:ZipBee/core/common/styles/global_text_style.dart';
 import 'package:ZipBee/core/utils/constants/icon_path.dart';
-import 'package:ZipBee/features/user/home/screen/home_screen.dart';
+import 'package:ZipBee/features/user/bottom_navbar/screen/bottom_navbar_screen.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/controller/stacked_order_controller.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/cancel_order_service.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/stripe_payment_sheet_handler.dart';
@@ -301,7 +301,7 @@ void showStackedOrderConfirmationDialog(StackedOrderController controller) async
 
                       if (orderId == null) {
                         EasyLoading.showError('Order ID not found. Please try again.');
-                        Get.off( () => HomeScreen());
+                        Get.off( () => BottomNavbarScreen());
                         // return;
                       } else {
                         EasyLoading.show(status: 'Cancelling order .......'); 
@@ -310,7 +310,7 @@ void showStackedOrderConfirmationDialog(StackedOrderController controller) async
                         
                         if (res['success'] == true) {
                           EasyLoading.showSuccess('Order cancelled successfully.');
-                          Get.off(() => HomeScreen());
+                          Get.off(() => BottomNavbarScreen());
                         } else {
                           final msg = (res['body'] as Map<String, dynamic>?)?['message'] ?? 'Failed to cancel order';
                           EasyLoading.showError(msg.toString());
@@ -318,7 +318,7 @@ void showStackedOrderConfirmationDialog(StackedOrderController controller) async
                       } 
                       // Get.back();
                       // controller.cancelAndReset();
-                      Get.off(() => HomeScreen());
+                      Get.off(() => BottomNavbarScreen());
                     },
                     style: FilledButton.styleFrom(
                       backgroundColor: Colors.white,

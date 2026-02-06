@@ -1,4 +1,4 @@
-import 'package:ZipBee/features/user/home/screen/home_screen.dart';
+import 'package:ZipBee/features/user/bottom_navbar/screen/bottom_navbar_screen.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/cancel_order_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -39,7 +39,7 @@ class StackedOrderController extends GetxController {
     // যদি lastOrderId না থাকে (অর্ডার ক্রিয়েট হয়নি এমন অবস্থায়)
     if (lastOrderId == null) {
       cancelAndReset(); // শুধু স্টেট রিসেট করে দিবে
-      Get.offAll(() => HomeScreen());
+      Get.offAll(() => BottomNavbarScreen());
       return;
     }
 
@@ -58,7 +58,7 @@ class StackedOrderController extends GetxController {
         cancelAndReset(); 
 
 
-        Get.offAll(() => HomeScreen()); 
+        Get.offAll(() => BottomNavbarScreen()); 
       } else {
         String errorMsg = result['body']?['message'] ?? 'Failed to cancel order';
         EasyLoading.showError(errorMsg);
