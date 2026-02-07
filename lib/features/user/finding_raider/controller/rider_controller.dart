@@ -92,6 +92,8 @@ class RiderController extends GetxController {
     try {
       final result = await GetOrderApiService.fetchOrderDetails(id);
 
+      debugPrint('📊 API Response: Success=${result['success']}, HasData=${result['data'] != null}');
+
       if (result['success'] == true && result['data'] != null) {
         final data = result['data'];
         
@@ -104,10 +106,12 @@ class RiderController extends GetxController {
         assignRiderData.value = data['assign_rider'];
         assignRiderNull.value = data['assign_rider'] == null;
         
-        debugPrint('✅ Total Cost: ${totalCost.value}');
-        debugPrint('✅ Payment Type: ${paymentType.value}');
-        debugPrint('✅ Assign Rider: ${data['assign_rider']}');
-        debugPrint('✅ Created At: ${orderCreatedAt.value}');
+        debugPrint('✅ Order Fetched Successfully:');
+        debugPrint('   - Order ID: $id');
+        debugPrint('   - Total Cost: ${totalCost.value}');
+        debugPrint('   - Payment Type: ${paymentType.value}');
+        debugPrint('   - Assign Rider: ${data['assign_rider']}');
+        debugPrint('   - Created At: ${orderCreatedAt.value}');
         
         final List orderStops = data['orderStops'] ?? [];
 
@@ -129,6 +133,7 @@ class RiderController extends GetxController {
         }
       } else {
         debugPrint('❌ API Success was false or data was null');
+        debugPrint('❌ Response: $result');
       }
     } catch (e) {
       debugPrint('❌ Controller Error: $e');
