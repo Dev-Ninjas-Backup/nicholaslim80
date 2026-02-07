@@ -4,17 +4,13 @@ import 'package:ZipBee/core/utils/constants/icon_path.dart';
 import 'package:ZipBee/features/user/finding_raider/widget/location_row_widget.dart';
 
 class OrderLocationInfoWidget extends StatelessWidget {
-  final RxString pickupName;
-  final RxString pickupAddress;
-  final RxString dropName;
-  final RxString dropAddress;
+  final RxList<Map<String, String>> pickupStops;
+  final RxList<Map<String, String>> dropStops;
 
   const OrderLocationInfoWidget({
     super.key,
-    required this.pickupName,
-    required this.pickupAddress,
-    required this.dropName,
-    required this.dropAddress,
+    required this.pickupStops,
+    required this.dropStops,
   });
 
   @override
@@ -24,39 +20,44 @@ class OrderLocationInfoWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Collected from section
-          Obx(
-            () => LocationRowWidget(
-              iconPath: IconPath.collectIcon,
-              title: pickupName.value.isEmpty
-                  ? 'Collected from'
-                  : 'Collected from (Sender: ${pickupName.value})',
-              address: pickupAddress.value.isEmpty ? '-' : pickupAddress.value,
-            ),
-          ),
-          
-          // Connecting dots
-          const Padding(
-            padding: EdgeInsets.only(left: 12, top: 4, bottom: 4),
-            child: Column(
-              children: [
-                Icon(Icons.fiber_manual_record, size: 8, color: Colors.grey),
-                SizedBox(height: 6),
-                Icon(Icons.fiber_manual_record, size: 8, color: Colors.grey),
-              ],
-            ),
-          ),
+          // --- Pickup List ---
+          Obx(() => ListView.builder(
+                padding: EdgeInsets.zero, // এখানে জিরো প্যাডিং দিলে উপরের স্পেস চলে যাবে
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: pickupStops.length,
+                itemBuilder: (context, index) {
+                  return LocationRowWidget(
+                    iconPath: IconPath.collectIcon,
+                    title: 'Collected from (Sender: ${pickupStops[index]['name']})',
+                    address: pickupStops[index]['address'] ?? '-',
+                  );
+                },
+              )),
 
-          // Deliver to section
-          Obx(
-            () => LocationRowWidget(
-              iconPath: IconPath.deliveredIcon,
-              title: dropName.value.isEmpty
-                  ? 'Deliver to'
-                  : 'Deliver to (Recipient: ${dropName.value})',
-              address: dropAddress.value.isEmpty ? '-' : dropAddress.value,
+          SizedBox(height: 8),
+          // Connecting Dots
+          if (pickupStops.isNotEmpty && dropStops.isNotEmpty)
+            const Padding(
+              padding: EdgeInsets.only(left: 12, top: 2, bottom: 2),
+              child: Icon(Icons.more_vert, size: 20, color: Colors.grey),
             ),
-          ),
+          SizedBox(height: 8),
+
+          // --- Drop List ---
+          Obx(() => ListView.builder(
+                padding: EdgeInsets.zero, // এখানেও জিরো প্যাডিং ব্যবহার করুন
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: dropStops.length,
+                itemBuilder: (context, index) {
+                  return LocationRowWidget(
+                    iconPath: IconPath.deliveredIcon,
+                    title: 'Deliver to (Recipient: ${dropStops[index]['name']})',
+                    address: dropStops[index]['address'] ?? '-',
+                  );
+                },
+              )),
         ],
       ),
     );

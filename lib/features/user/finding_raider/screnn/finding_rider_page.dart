@@ -29,15 +29,16 @@ class FindingRiderPage extends StatelessWidget {
       final rawOrderNumber = orderController.orderNumber.value;
       debugPrint('🔍 Finding Rider Page Initialized');
       debugPrint('🔍 Raw OrderNumber from controller: $rawOrderNumber');
-      debugPrint('🔍 LastOrderId from controller: ${orderController.lastOrderId}');
-      
-      String rawId = rawOrderNumber.replaceAll(
-        RegExp(r'[^0-9]'),
-        '',
+      debugPrint(
+        '🔍 LastOrderId from controller: ${orderController.lastOrderId}',
       );
+
+      String rawId = rawOrderNumber.replaceAll(RegExp(r'[^0-9]'), '');
       int? id = int.tryParse(rawId);
 
-      debugPrint('🔍 Attempting to fetch order with ID: $id (Raw: $rawOrderNumber)');
+      debugPrint(
+        '🔍 Attempting to fetch order with ID: $id (Raw: $rawOrderNumber)',
+      );
 
       if (id != null && id != 0) {
         debugPrint('📡 Calling fetchOrderData with orderId: $id');
@@ -132,10 +133,8 @@ class FindingRiderPage extends StatelessWidget {
                                 const SizedBox(height: 20),
 
                                 OrderLocationInfoWidget(
-                                  pickupName: controller.pickupName,
-                                  pickupAddress: controller.pickupAddress,
-                                  dropName: controller.dropName,
-                                  dropAddress: controller.dropAddress,
+                                  pickupStops: controller.pickupStops,
+                                  dropStops: controller.dropStops,
                                 ),
 
                                 const SizedBox(height: 20),
@@ -152,7 +151,7 @@ class FindingRiderPage extends StatelessWidget {
                                     buttonText: 'Priority order',
                                     backgroundColor: Colors.amber,
                                     textColor: Colors.black,
-                                    onPressed: controller.priorityOrder ,
+                                    onPressed: controller.priorityOrder,
                                   ),
                                 ),
                                 const SizedBox(height: 24),

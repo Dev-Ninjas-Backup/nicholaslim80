@@ -33,6 +33,10 @@ class RiderController extends GetxController {
   RxString dropName = ''.obs;
   RxString dropAddress = ''.obs;
 
+  // --- New Lists for Multiple Stops ---
+  RxList<Map<String, String>> pickupStops = <Map<String, String>>[].obs;
+  RxList<Map<String, String>> dropStops = <Map<String, String>>[].obs;
+
   // New loading state for API
   RxBool isLoading = false.obs;
 
@@ -45,13 +49,13 @@ class RiderController extends GetxController {
   
   Timer? _pollTimer;
 
-  // fareOptions এখন রিয়েল-টাইম আপডেট হবে এবং ক্যাশ থেকে ডাটা নিবে
+  // fareOptions এখন রিয়েল-টাইম আপডেট হবে এবং ক্যাশ থেকে ডাটা নিবে
   final RxList<double> fareOptions = <double>[1.2, 2.5, 4.5, 6.5].obs;
 
   @override
   void onInit() {
     super.onInit();
-    _loadFareOptionsFromCache(); // কন্ট্রোলার স্টার্ট হওয়ার সময় ক্যাশ লোড হবে
+    _loadFareOptionsFromCache(); // কন্ট্রোলার স্টার্ট হওয়ার সময় ক্যাশ লোড হবে
   }
 
   // ক্যাশ থেকে ইউনিক ৪টি অ্যামাউন্ট লোড করার মেথড
@@ -69,7 +73,7 @@ class RiderController extends GetxController {
     
     List<double> currentList = List<double>.from(fareOptions);
     
-    // যদি অ্যামাউন্টটি আগে থেকেই থাকে, তবে সেটি রিমুভ করে শুরুতে নিয়ে আসবো (ইউনিক রাখতে)
+    // যদি অ্যামাউন্টটি আগে থেকেই থাকে, তবে সেটি রিমুভ করে শুরুতে নিয়ে আসবো (ইউনিক রাখতে)
     currentList.remove(amount);
     currentList.insert(0, amount);
 
@@ -115,22 +119,39 @@ class RiderController extends GetxController {
         
         final List orderStops = data['orderStops'] ?? [];
 
+        // Clear lists before adding new data
+        pickupStops.clear();
+        dropStops.clear();
+
         for (var stop in orderStops) {
           final destination = stop['destination'];
           if (destination != null) {
             final String type = destination['type'] ?? '';
 
             if (type == 'SENDER') {
+              // Add to list for Multiple Stops
+              pickupStops.add({
+                'name': destination['contact_name'] ?? '',
+                'address': destination['address'] ?? '',
+              });
+
               pickupName.value = destination['contact_name'] ?? '';
               pickupAddress.value = destination['address'] ?? '';
               debugPrint('✅ Pickup Set: ${pickupName.value}');
             } else if (type == 'RECEIVER') {
+              // Add to list for Multiple Stops
+              dropStops.add({
+                'name': destination['contact_name'] ?? '',
+                'address': destination['address'] ?? '',
+              });
+
               dropName.value = destination['contact_name'] ?? '';
               dropAddress.value = destination['address'] ?? '';
               debugPrint('✅ Drop Set: ${dropName.value}');
             }
           }
         }
+        debugPrint('📦 Total Pickups: ${pickupStops.length}, Total Drops: ${dropStops.length}');
       } else {
         debugPrint('❌ API Success was false or data was null');
         debugPrint('❌ Response: $result');
@@ -309,7 +330,7 @@ class RiderController extends GetxController {
       if (res['success'] == true) {
         EasyLoading.showSuccess('Priority Order Activated!');
         
-        // Success হলে পরবর্তী স্ক্রিনে যাওয়া
+        // Success হলে পরবর্তী স্ক্রিনে যাওয়া
         firstActive.value = false;
         secondActive.value = true;
         Get.to(() => ConnectingRiderPage());
