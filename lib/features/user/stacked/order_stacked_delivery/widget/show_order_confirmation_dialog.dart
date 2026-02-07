@@ -372,7 +372,21 @@ void showStackedOrderConfirmationDialog(StackedOrderController controller) async
                         }
 
                         debugPrint('✅ Stripe payment successful: $paymentResult');
-                        debugPrint('✅ No need to call placeOrder API - payment already processed');
+                        debugPrint('✅ Stripe payment already processed - no need to call placeOrder API');
+
+                        // Ensure orderNumber is properly set for FindingRiderPage
+                        final orderId = controller.lastOrderId;
+                        if (orderId != null && orderId != 0) {
+                          controller.orderNumber.value = '#${orderId.toString().padLeft(6, '0')}';
+                          controller.isAutoConfirmation.value = true;
+                          controller.collectTime.value = 'ASAP';
+                          
+                          debugPrint('✅ OrderId: $orderId, OrderNumber: ${controller.orderNumber.value}');
+                        } else {
+                          debugPrint('❌ OrderId is null or zero - cannot proceed');
+                          EasyLoading.showError('Order ID not found');
+                          return;
+                        }
 
                         // Show confirmation dialog
                         StackedOrderConfirmationDialog.show();

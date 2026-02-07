@@ -26,18 +26,25 @@ class FindingRiderPage extends StatelessWidget {
   Widget build(BuildContext context) {
     // API কল করার লজিক
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      String rawId = orderController.orderNumber.value.replaceAll(
+      final rawOrderNumber = orderController.orderNumber.value;
+      debugPrint('🔍 Finding Rider Page Initialized');
+      debugPrint('🔍 Raw OrderNumber from controller: $rawOrderNumber');
+      debugPrint('🔍 LastOrderId from controller: ${orderController.lastOrderId}');
+      
+      String rawId = rawOrderNumber.replaceAll(
         RegExp(r'[^0-9]'),
         '',
       );
       int? id = int.tryParse(rawId);
 
-      debugPrint('🔍 Attempting to fetch order with ID: $id (Raw: ${orderController.orderNumber.value})');
+      debugPrint('🔍 Attempting to fetch order with ID: $id (Raw: $rawOrderNumber)');
 
       if (id != null && id != 0) {
+        debugPrint('📡 Calling fetchOrderData with orderId: $id');
         controller.fetchOrderData(id);
       } else {
         debugPrint('⚠️ Error: Order ID is null or zero. API not called.');
+        debugPrint('⚠️ OrderNumber value: "$rawOrderNumber"');
       }
     });
 

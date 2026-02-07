@@ -158,6 +158,9 @@ class StackedOrderSuccessDialog {
     // Auto navigate if ASAP or auto confirmation (no API call needed)
     if (controller.isAutoConfirmation.value || controller.collectTime.value == 'ASAP') {
       Future.delayed(Duration(seconds: 3), () {
+        debugPrint('✅ Auto-navigating to FindingRiderPage');
+        debugPrint('✅ OrderId: ${controller.lastOrderId}');
+        debugPrint('✅ OrderNumber: ${controller.orderNumber.value}');
         Get.back(); // Close dialog
         Get.to(() => FindingRiderPage());
       });
@@ -172,6 +175,8 @@ class StackedOrderSuccessDialog {
         return;
       }
 
+      debugPrint('📢 Notifying Rider - OrderId: $orderId, WantsCall: $wantsCall');
+
       EasyLoading.show(status: 'Processing...');
 
       final res = await NotifyRider.notifyRider(
@@ -184,6 +189,7 @@ class StackedOrderSuccessDialog {
       final success = res['success'] as bool? ?? false;
       if (success) {
         debugPrint('✅ Rider notification sent: $wantsCall');
+        debugPrint('✅ Navigating to FindingRiderPage with OrderId: $orderId');
         Get.back(); // Close dialog
         Get.to(() => FindingRiderPage());
       } else {

@@ -128,7 +128,11 @@ class StripePaymentSheetHandler {
       debugPrint('✅ Payment completed successfully');
       EasyLoading.showSuccess('Payment Successful!');
 
-      return 'payment_success_${DateTime.now().millisecondsSinceEpoch}';
+      // Return payment intent ID as payment method identifier
+      final paymentIntentId = paymentIntent?['id'] ?? 'stripe_${DateTime.now().millisecondsSinceEpoch}';
+      debugPrint('✅ Payment Intent ID: $paymentIntentId');
+      
+      return paymentIntentId;
     } on StripeException catch (e) {
       debugPrint('❌ Stripe Exception: ${e.error.localizedMessage}');
       debugPrint('❌ Stripe Error Code: ${e.error.code}');
