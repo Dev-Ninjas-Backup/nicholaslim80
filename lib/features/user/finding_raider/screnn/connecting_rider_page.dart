@@ -4,7 +4,7 @@ import 'package:ZipBee/features/user/bottom_navbar/screen/bottom_navbar_screen.d
 import 'package:ZipBee/features/user/finding_raider/controller/rider_controller.dart';
 import 'package:ZipBee/features/user/finding_raider/screnn/raider_details.dart';
 import 'package:ZipBee/features/user/finding_raider/widget/button.dart';
-import 'package:ZipBee/features/user/finding_raider/widget/location_row_widget.dart';
+import 'package:ZipBee/features/user/finding_raider/widget/order_location_info_widget.dart';
 import 'package:ZipBee/features/user/finding_raider/widget/payment_Info_widget.dart';
 import 'package:ZipBee/features/user/google_map/widget/google_map_widget.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/controller/stacked_order_controller.dart';
@@ -131,37 +131,12 @@ class ConnectingRiderPage extends StatelessWidget {
                         Divider(height: 32),
 
                         // Collection and Delivery Locations
-                        Obx(
-                          () => Column(
-                            children: [
-                              LocationRowWidget(
-                                iconPath: IconPath.collectIcon,
-                                title: controller.pickupName.value.isEmpty
-                                    ? 'Collected from'
-                                    : 'Collected from (${controller.pickupName.value})',
-                                address: controller.pickupAddress.value,
-                              ),
-                              Icon(
-                                Icons.fiber_manual_record,
-                                size: 10,
-                                color: Colors.grey,
-                              ),
-                              Icon(
-                                Icons.fiber_manual_record,
-                                size: 10,
-                                color: Colors.grey,
-                              ),
-                              LocationRowWidget(
-                                iconPath: IconPath.deliveredIcon,
-                                title: controller.dropName.value.isEmpty
-                                    ? 'Deliver to'
-                                    : 'Deliver to (${controller.dropName.value})',
-                                address: controller.dropAddress.value,
-                              ),
-                            ],
-                          ),
+                        OrderLocationInfoWidget(
+                          pickupStops: controller.pickupStops,
+                          dropStops: controller.dropStops,
                         ),
 
+                      
                         SizedBox(height: 20),
 
                         Button(
