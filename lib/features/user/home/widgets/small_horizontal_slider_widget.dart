@@ -8,6 +8,8 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import 'ad_dialogue.dart';
+
 class SmallHorizontalSlider extends StatelessWidget {
   const SmallHorizontalSlider({super.key, required this.width});
 
@@ -59,11 +61,11 @@ class SmallHorizontalSlider extends StatelessWidget {
 
               return GestureDetector(
                 onTap: () {
-                  /// 👉 handle click here
-                  debugPrint("Tapped ad id: ${ad['id']}");
-
-                  /// example:
-                  /// Get.toNamed(Routes.adDetails, arguments: ad);
+                  /// 👉 open dialog and pass full map
+                  showDialog(
+                    context: context,
+                    builder: (_) => AdDetailsDialog(ad: ad),
+                  );
                 },
                 child: Container(
                   width: width,
@@ -105,8 +107,8 @@ class SmallHorizontalSlider extends StatelessWidget {
                         child: ad['ad_image'] != null
                             ? Image.network(
                                 ad['ad_image'],
-                                height: 70,
-                                width: 70,
+                                height: 125,
+                                width: 150,
                                 fit: BoxFit.cover,
                                 errorBuilder: (_, __, ___) => Image.asset(
                                   IconPath.mappin,
