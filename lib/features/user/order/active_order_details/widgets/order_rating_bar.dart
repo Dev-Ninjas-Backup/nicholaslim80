@@ -11,12 +11,24 @@ class OrderRatingBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        for (int i = 1; i <= 5; i++)
-          Icon(i <= rating ? Icons.star : Icons.star_border, color: Colors.amber, size: 24),
+        // ৫টি স্টার জেনারেট করা
+        ...List.generate(5, (index) {
+          return Icon(
+            index < rating.floor() ? Icons.star : Icons.star_border,
+            color: Colors.amber,
+            size: 20,
+          );
+        }),
         const SizedBox(width: 8),
-        Text("${rating.toStringAsFixed(0)}/5", style: getTextStyle(fontSize: 14)),
+        Text(
+          rating > 0 ? rating.toStringAsFixed(1) : "0.0", 
+          style: getTextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+        ),
         const Spacer(),
-        Text('($totalReviews Reviews)', style: getTextStyle(color: Colors.grey, fontSize: 14)),
+        Text(
+          '($totalReviews Reviews)',
+          style: getTextStyle(color: Colors.grey, fontSize: 13),
+        ),
       ],
     );
   }

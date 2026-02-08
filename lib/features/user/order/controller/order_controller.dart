@@ -265,6 +265,40 @@ class OrderController extends GetxController {
     }
   }
 
+  // OrderController এর ভেতরে এই মেথডটি আপডেট বা যোগ করুন
+Future<void> fetchRiderRatings(int riderId) async {
+  try {
+    final token = await SharedPreferencesHelper.getAccessToken();
+    final uri = Uri.parse('${ApiEndPoint.rating}?type=raider&id=$riderId');
+
+    final res = await http.get(
+      uri,
+      headers: {'accept': '*/*', 'Authorization': 'Bearer $token'},
+    );
+
+    if (res.statusCode == 200) {
+      final body = jsonDecode(res.body);
+      final Map<String, dynamic> dataMap = body['data'] ?? {};
+      final List list = dataMap['data'] ?? [];
+      
+      double totalStar = 0;
+      for (var item in list) {
+        totalStar += (item['rating_star'] ?? 0).toDouble();
+      }
+
+      // অরিজিনাল এভারেজ এবং রিভিউ কাউন্ট আপডেট করা
+      if (singleOrder.value != null) {
+        singleOrder.value = singleOrder.value!.copyWith(
+          assignRiderRating: list.isNotEmpty ? (totalStar / list.length) : 0.0,
+          assignRiderReviews: list.length,
+        );
+      }
+    }
+  } catch (e) {
+    debugPrint("Error fetching rider ratings: $e");
+  }
+}
+
   Future<void> refreshOrders() async => fetchOrders(isRefresh: true);
   Future<void> loadMoreOrders() async { if (!allLoaded.value && !isLoading.value) await fetchOrders(); }
   void onTabChanged(int index) { if (selectOrderListIndex.value != index) { selectOrderListIndex.value = index; allLoaded.value = false; fetchOrders(isRefresh: true); } }
