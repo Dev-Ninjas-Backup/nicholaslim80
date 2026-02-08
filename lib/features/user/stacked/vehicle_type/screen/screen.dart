@@ -19,8 +19,11 @@ class StackedVehicleSelectionPage extends StatelessWidget {
     final args = Get.arguments as Map<String, dynamic>?;
     if (args != null && args['initialDistanceKm'] != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        controller.totalDistanceKm.value = (args['initialDistanceKm'] as num).toDouble();
-        debugPrint('Initial distance passed: ${controller.totalDistanceKm.value} km');
+        controller.totalDistanceKm.value = (args['initialDistanceKm'] as num)
+            .toDouble();
+        debugPrint(
+          'Initial distance passed: ${controller.totalDistanceKm.value} km',
+        );
       });
     }
 
@@ -51,7 +54,7 @@ class StackedVehicleSelectionPage extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 tabs: [
-                    Tab(
+                  Tab(
                     icon: Image.asset(
                       IconPath.bike2,
                       height: 60,
@@ -100,4 +103,3 @@ class StackedVehicleSelectionPage extends StatelessWidget {
     );
   }
 }
-

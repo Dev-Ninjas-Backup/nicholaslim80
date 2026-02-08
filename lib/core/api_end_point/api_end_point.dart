@@ -46,6 +46,11 @@ class ApiEndPoint {
 
   // Order GET endpoints
   static const String getOrder = '$baseUrl/order/{orderId}';
+  static const String additionalService = '$baseUrl/additional-services';
+  static const String additionOrder =
+      '$baseUrl/order/{order_id}/apply-addition/{serviceId}';
+  static const String additionOrderD =
+      '$baseUrl/order/{order_id}/remove-addition/{serviceId}';
   static const String cancelOrder = '$baseUrl/order/{orderId}/cancel';
   static const String notifyOrder = '$baseUrl/order/{orderId}/notify-rider';
 
