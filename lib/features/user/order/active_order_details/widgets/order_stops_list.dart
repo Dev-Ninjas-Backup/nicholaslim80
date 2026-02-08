@@ -1,57 +1,57 @@
 import 'package:flutter/material.dart';
-import '../../../../../../core/common/styles/global_text_style.dart';
+import 'package:ZipBee/core/utils/constants/icon_path.dart';
+import '../../../finding_raider/widget/location_row_widget.dart';
 
 class OrderStopsList extends StatelessWidget {
-  final String senderName;
-  final String pickupAddress;
-  final String recipientName;
-  final String dropOffAddress;
+  final List<Map<String, String>> pickupStops;
+  final List<Map<String, String>> dropStops;
 
   const OrderStopsList({
     super.key,
-    required this.senderName,
-    required this.pickupAddress,
-    required this.recipientName,
-    required this.dropOffAddress,
+    required this.pickupStops,
+    required this.dropStops,
   });
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: [
-        _buildStopItem(isPickup: true, title: "Collected from (Sender: $senderName)", address: pickupAddress),
-        _buildStopItem(isPickup: false, title: "Deliver to (Recipient: $recipientName)", address: dropOffAddress),
-      ],
-    );
-  }
-
-  Widget _buildStopItem({required bool isPickup, required String title, required String address}) {
-    return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Column(
-          children: [
-            Container(
-              height: 20, width: 20,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: isPickup ? Colors.blue : Colors.red, width: 2),
-              ),
-              child: Center(child: Container(height: 8, width: 8, decoration: BoxDecoration(shape: BoxShape.circle, color: isPickup ? Colors.blue : Colors.red))),
-            ),
-            if (isPickup) Container(height: 30, width: 2, color: Colors.grey[300]),
-          ],
+        // --- Collected from (Multiple Pickups) ---
+        ListView.builder(
+          padding: EdgeInsets.zero,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: pickupStops.length,
+          itemBuilder: (context, index) {
+            return LocationRowWidget(
+              iconPath: IconPath.collectIcon,
+              title: "Collected from (Sender: ${pickupStops[index]['name']})",
+              address: pickupStops[index]['address']!,
+            );
+          },
         ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(title, style: getTextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
-              Text(address, style: getTextStyle(fontSize: 13)),
-              const SizedBox(height: 12),
-            ],
+
+        // স্টপগুলোর মধ্যে কানেক্টিং ডট বা গ্যাপ দেওয়ার জন্য
+        if (pickupStops.isNotEmpty && dropStops.isNotEmpty)
+          const Padding(
+            padding: EdgeInsets.only(left: 12, top: 4, bottom: 4),
+            child: Icon(Icons.more_vert, size: 20, color: Colors.grey),
           ),
+
+        // --- Deliver to (Multiple Drops) ---
+        ListView.builder(
+          padding: EdgeInsets.zero,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: dropStops.length,
+          itemBuilder: (context, index) {
+            return LocationRowWidget(
+              iconPath: IconPath.deliveredIcon,
+              title: "Deliver to (Recipient: ${dropStops[index]['name']})",
+              address: dropStops[index]['address']!,
+            );
+          },
         ),
       ],
     );

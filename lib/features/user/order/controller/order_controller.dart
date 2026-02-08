@@ -1,11 +1,9 @@
 import 'dart:convert';
-
 import 'package:ZipBee/core/api_end_point/api_end_point.dart';
 import 'package:ZipBee/core/shared_prefference_service/shared_pref.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-
 import '../model/order_model.dart';
 
 class OrderController extends GetxController {
@@ -32,14 +30,10 @@ class OrderController extends GetxController {
 
   String get selectedStatus {
     switch (selectOrderListIndex.value) {
-      case 0:
-        return "ONGOING";
-      case 1:
-        return "COMPLETED";
-      case 2:
-        return "CANCELLED";
-      default:
-        return "ONGOING";
+      case 0: return "ONGOING";
+      case 1: return "COMPLETED";
+      case 2: return "CANCELLED";
+      default: return "ONGOING";
     }
   }
 
@@ -81,40 +75,27 @@ class OrderController extends GetxController {
 
   Future<void> fetchOrders({bool isRefresh = false}) async {
     if (isLoading.value) return;
-
     if (isRefresh) {
       page = 1;
       orderList.clear();
       allLoaded.value = false;
     }
-
     isLoading.value = true;
-
     try {
       final token = await SharedPreferencesHelper.getAccessToken();
       if (token == null || token.isEmpty) return;
 
-      final uri = Uri.parse(
-        "${ApiEndPoint.order}?status=$selectedStatus&page=$page&limit=$limit",
-      );
-
-      final response = await http.get(
-        uri,
-        headers: {"Authorization": "Bearer $token", "accept": "*/*"},
-      );
+      final uri = Uri.parse("${ApiEndPoint.order}?status=$selectedStatus&page=$page&limit=$limit");
+      final response = await http.get(uri, headers: {"Authorization": "Bearer $token", "accept": "*/*"});
 
       if (response.statusCode == 200) {
         final decoded = json.decode(response.body);
         final List list = decoded['data']['data'];
-
         if (list.isEmpty) allLoaded.value = true;
 
         for (var e in list) {
           final List stops = e['orderStops'] ?? [];
-          final pickup = stops.firstWhere(
-            (s) => s['type'] == 'PICKUP',
-            orElse: () => {},
-          );
+          final pickup = stops.firstWhere((s) => s['type'] == 'PICKUP', orElse: () => {});
           final drops = stops.where((s) => s['type'] == 'DROP').toList();
 
           e['pickup_address'] = pickup['address'] ?? "";
@@ -127,11 +108,7 @@ class OrderController extends GetxController {
             e['drop_off_lat'] = drops.first['latitude'];
             e['drop_off_long'] = drops.first['longitude'];
           }
-
-          e['delivery_location'] = drops.length > 1
-              ? drops.last['address']
-              : "";
-
+          e['delivery_location'] = drops.length > 1 ? drops.last['address'] : "";
           orderList.add(OrderModel.fromJson(e));
         }
         page++;
@@ -145,44 +122,33 @@ class OrderController extends GetxController {
 
   Future<void> fetchOrderDetail(String orderId) async {
     isDetailLoading.value = true;
-
     try {
       final token = await SharedPreferencesHelper.getAccessToken();
       final url = ApiEndPoint.getOrder.replaceAll("{orderId}", orderId);
-
-      final response = await http.get(
-        Uri.parse(url),
-        headers: {"Authorization": "Bearer $token"},
-      );
+      final response = await http.get(Uri.parse(url), headers: {"Authorization": "Bearer $token"});
 
       if (response.statusCode == 200) {
         final decoded = json.decode(response.body);
         final data = decoded['data'];
-
         final List stops = data['orderStops'] ?? [];
-        final pickup = stops.firstWhere(
-          (s) => s['type'] == 'PICKUP',
-          orElse: () => {},
-        );
+        
+        final pickup = stops.firstWhere((s) => s['type'] == 'PICKUP', orElse: () => {});
         final drops = stops.where((s) => s['type'] == 'DROP').toList();
 
         data['pickup_address'] = pickup['address'] ?? "";
         data['pickup_lat'] = pickup['latitude'];
         data['pickup_long'] = pickup['longitude'];
-
         data['sender_name'] = data['user']?['username'] ?? senderName;
 
         if (drops.isNotEmpty) {
           data['drop_off_address'] = drops.first['address'] ?? "";
           data['drop_off_lat'] = drops.first['latitude'];
           data['drop_off_long'] = drops.first['longitude'];
-          data['recipient_name'] =
-              drops.first['destination']?['contact_name'] ?? "";
+          data['recipient_name'] = drops.first['destination']?['contact_name'] ?? "";
         }
 
         singleOrder.value = OrderModel.fromJson(data);
 
-        // Still fetching rider info for image and rating which might not be in getOrder
         if (data['assign_rider']?['userId'] != null) {
           await fetchRiderInfoByIdForSingle(data['assign_rider']['userId']);
         } else if (singleOrder.value?.riderId != null) {
@@ -196,23 +162,49 @@ class OrderController extends GetxController {
     }
   }
 
+// ✅ Corrected method to handle multiple pickup stops
+  List<Map<String, String>> getPickupStops(OrderModel? order) {
+    if (order == null || order.rawOrderStops == null) return [];
+    
+    final List stops = order.rawOrderStops!;
+    final filtered = stops.where((s) => s['type'] == 'PICKUP').toList();
+
+    if (filtered.isEmpty) {
+      return [{"name": order.senderName, "address": order.pickupAddress}];
+    }
+
+    return filtered.map<Map<String, String>>((s) => {
+      "name": s['destination']?['contact_name']?.toString() ?? order.senderName,
+      "address": s['address']?.toString() ?? order.pickupAddress,
+    }).toList();
+  }
+
+  // ✅ Corrected method to handle multiple drop stops
+  List<Map<String, String>> getDropStops(OrderModel? order) {
+    if (order == null || order.rawOrderStops == null) return [];
+    
+    final List stops = order.rawOrderStops!;
+    final filtered = stops.where((s) => s['type'] == 'DROP').toList();
+
+    if (filtered.isEmpty) {
+      return [{"name": order.recipientName, "address": order.dropOffAddress}];
+    }
+
+    return filtered.map<Map<String, String>>((s) => {
+      "name": s['destination']?['contact_name']?.toString() ?? order.recipientName,
+      "address": s['address']?.toString() ?? order.dropOffAddress,
+    }).toList();
+  }
+
   Future<void> fetchRiderInfoByIdForSingle(int riderUserId) async {
     try {
       final token = await SharedPreferencesHelper.getAccessToken();
-      final url = ApiEndPoint.updateProfile.replaceAll(
-        "{id}",
-        riderUserId.toString(),
-      );
-
-      final response = await http.get(
-        Uri.parse(url),
-        headers: {"Authorization": "Bearer $token"},
-      );
+      final url = ApiEndPoint.updateProfile.replaceAll("{id}", riderUserId.toString());
+      final response = await http.get(Uri.parse(url), headers: {"Authorization": "Bearer $token"});
 
       if (response.statusCode == 200) {
         final decoded = json.decode(response.body);
         final data = decoded['data'];
-
         String riderName = "";
         String riderImage = data['image'] ?? "";
 
@@ -224,15 +216,10 @@ class OrderController extends GetxController {
 
         if (singleOrder.value != null) {
           singleOrder.value = singleOrder.value!.copyWith(
-            // ✅ Only override rider name if it's currently empty
-            assignRiderName: singleOrder.value!.assignRiderName.isNotEmpty
-                ? singleOrder.value!.assignRiderName
-                : riderName,
+            assignRiderName: singleOrder.value!.assignRiderName.isNotEmpty ? singleOrder.value!.assignRiderName : riderName,
             assignRiderPhone: data['phone'],
             assignRiderImage: riderImage,
-            assignRiderRating:
-                double.tryParse(data['avg_raiderRating']?.toString() ?? '0') ??
-                0.0,
+            assignRiderRating: double.tryParse(data['avg_raiderRating']?.toString() ?? '0') ?? 0.0,
             assignRiderReviews: data['total_raiderRatings'] ?? 0,
           );
         }
@@ -245,20 +232,12 @@ class OrderController extends GetxController {
   Future<void> fetchRiderInfoById(int riderUserId) async {
     try {
       final token = await SharedPreferencesHelper.getAccessToken();
-      final url = ApiEndPoint.updateProfile.replaceAll(
-        "{id}",
-        riderUserId.toString(),
-      );
-
-      final response = await http.get(
-        Uri.parse(url),
-        headers: {"Authorization": "Bearer $token"},
-      );
+      final url = ApiEndPoint.updateProfile.replaceAll("{id}", riderUserId.toString());
+      final response = await http.get(Uri.parse(url), headers: {"Authorization": "Bearer $token"});
 
       if (response.statusCode == 200) {
         final decoded = json.decode(response.body);
         final data = decoded['data'];
-
         String riderName = "";
         String riderImage = data['image'] ?? "";
 
@@ -271,16 +250,10 @@ class OrderController extends GetxController {
         for (int i = 0; i < orderList.length; i++) {
           if (orderList[i].riderId == riderUserId) {
             orderList[i] = orderList[i].copyWith(
-              assignRiderName: orderList[i].assignRiderName.isNotEmpty
-                  ? orderList[i].assignRiderName
-                  : riderName,
+              assignRiderName: orderList[i].assignRiderName.isNotEmpty ? orderList[i].assignRiderName : riderName,
               assignRiderPhone: data['phone'],
               assignRiderImage: riderImage,
-              assignRiderRating:
-                  double.tryParse(
-                    data['avg_raiderRating']?.toString() ?? '0',
-                  ) ??
-                  0.0,
+              assignRiderRating: double.tryParse(data['avg_raiderRating']?.toString() ?? '0') ?? 0.0,
               assignRiderReviews: data['total_raiderRatings'] ?? 0,
             );
           }
@@ -293,18 +266,6 @@ class OrderController extends GetxController {
   }
 
   Future<void> refreshOrders() async => fetchOrders(isRefresh: true);
-
-  Future<void> loadMoreOrders() async {
-    if (!allLoaded.value && !isLoading.value) {
-      await fetchOrders();
-    }
-  }
-
-  void onTabChanged(int index) {
-    if (selectOrderListIndex.value != index) {
-      selectOrderListIndex.value = index;
-      allLoaded.value = false;
-      fetchOrders(isRefresh: true);
-    }
-  }
+  Future<void> loadMoreOrders() async { if (!allLoaded.value && !isLoading.value) await fetchOrders(); }
+  void onTabChanged(int index) { if (selectOrderListIndex.value != index) { selectOrderListIndex.value = index; allLoaded.value = false; fetchOrders(isRefresh: true); } }
 }

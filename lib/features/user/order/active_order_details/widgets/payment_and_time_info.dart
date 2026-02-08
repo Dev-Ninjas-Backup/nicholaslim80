@@ -10,13 +10,6 @@ class PaymentAndTimeInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String formattedTime = "N/A";
-    try {
-      if (order.scheduledTime.isNotEmpty) {
-        formattedTime = DateFormat('dd MMM yy / hh:mm a').format(DateTime.parse(order.scheduledTime));
-      }
-    } catch (_) {}
-
     return Column(
       children: [
         Row(
@@ -25,28 +18,62 @@ class PaymentAndTimeInfo extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Total", style: getTextStyle(fontWeight: FontWeight.w500, fontSize: 14)),
-                Text("S\$${order.total.toStringAsFixed(2)}", style: getTextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                Text('Total', style: getTextStyle(fontSize: 12)),
+                Text(
+                  'S\$${order.total.toStringAsFixed(2)}',
+                  style: getTextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                ),
               ],
             ),
-            Row(
-              children: [
-                Image.asset(IconPath.visa, height: 24),
-                const SizedBox(width: 8),
-                Text("****456", style: getTextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
-              ],
-            ),
+            _buildPaymentDisplay(),
           ],
         ),
         const Divider(height: 32),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text("Date & Time", style: getTextStyle(color: Colors.grey, fontSize: 14)),
-            Text(formattedTime, style: getTextStyle(color: Colors.grey, fontSize: 14)),
+            Text('Date & Time', style: getTextStyle(fontSize: 14)),
+            Text(
+              _formatDateTime(order.scheduledTime),
+              style: getTextStyle(fontSize: 14),
+            ),
           ],
         ),
       ],
     );
+  }
+
+  Widget _buildPaymentDisplay() {
+    final String payType = "COD"; // অথবা order.paymentType যদি আপনার মডেলে থাকে
+
+    if (payType == 'ONLINE_PAY' || payType == 'STRIPE') {
+      return Image.asset(IconPath.visa, height: 24);
+    } else if (payType == 'WALLET') {
+      return Row(
+        children: [
+          Image.asset(IconPath.wallet, height: 24),
+          const SizedBox(width: 8),
+          const Text('Wallet', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+        ],
+      );
+    } else {
+      return Row(
+        children: [
+          const Icon(Icons.money, size: 24, color: Colors.green),
+          const SizedBox(width: 8),
+          const Text('Cash', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+        ],
+      );
+    }
+  }
+
+  String _formatDateTime(String isoString) {
+    if (isoString.isEmpty) return 'N/A';
+    try {
+      final dateTime = DateTime.parse(isoString);
+      return DateFormat('dd/MM/yyyy HH:mm').format(dateTime);
+    } catch (e) {
+      return 'N/A';
+    }
   }
 }

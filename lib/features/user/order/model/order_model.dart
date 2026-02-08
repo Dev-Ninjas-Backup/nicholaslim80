@@ -25,6 +25,9 @@ class OrderModel {
   final double? dropOffLat;
   final double? dropOffLong;
 
+  // ✅ rawOrderStops field added to handle multiple stops in controller
+  final List? rawOrderStops;
+
   OrderModel({
     required this.orderId,
     required this.status,
@@ -48,6 +51,7 @@ class OrderModel {
     this.pickupLong,
     this.dropOffLat,
     this.dropOffLong,
+    this.rawOrderStops,
   });
 
   factory OrderModel.fromJson(Map<String, dynamic> json) {
@@ -71,6 +75,11 @@ class OrderModel {
     final riderData = riderRegistrations.isNotEmpty
         ? riderRegistrations[0]
         : null;
+
+    // ✅ Logic updated: use created_at if scheduled_time is null
+    final String timeValue = (json['scheduled_time'] != null && json['scheduled_time'].toString() != "null") 
+        ? json['scheduled_time'].toString() 
+        : (json['created_at'] ?? '').toString();
 
     return OrderModel(
       orderId: (json['id'] ?? '').toString(),
@@ -99,7 +108,7 @@ class OrderModel {
       riderId: json['assign_rider_id'] is int
           ? json['assign_rider_id']
           : int.tryParse((json['assign_rider_id'] ?? '').toString()),
-      scheduledTime: (json['scheduled_time'] ?? collectTime).toString(),
+      scheduledTime: timeValue, // ✅ now holds created_at if scheduled is null
       pickupLat: double.tryParse(
         pickupStop?['latitude']?.toString() ??
             json['pickup_lat']?.toString() ??
@@ -126,6 +135,7 @@ class OrderModel {
           double.tryParse(rider?['rankScore']?.toString() ?? '0') ?? 0.0,
       assignRiderReviews:
           int.tryParse(rider?['reviews_count']?.toString() ?? '0') ?? 0,
+      rawOrderStops: orderStops, // ✅ mapping raw list for controller
     );
   }
 
@@ -140,6 +150,7 @@ class OrderModel {
     double? dropOffLat,
     double? dropOffLong,
     String? recipientName,
+    List? rawOrderStops,
   }) {
     return OrderModel(
       orderId: orderId,
@@ -164,6 +175,7 @@ class OrderModel {
       pickupLong: pickupLong ?? this.pickupLong,
       dropOffLat: dropOffLat ?? this.dropOffLat,
       dropOffLong: dropOffLong ?? this.dropOffLong,
+      rawOrderStops: rawOrderStops ?? this.rawOrderStops,
     );
   }
 }
