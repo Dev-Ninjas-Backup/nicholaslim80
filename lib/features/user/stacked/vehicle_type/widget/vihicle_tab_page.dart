@@ -49,6 +49,12 @@ class StackedVehicleTabPage extends StatelessWidget {
 
                 const SizedBox(height: 20),
 
+                Text(
+                  'Additional Service',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 20),
+
                 /// ADDITIONAL SERVICES
                 Obx(() {
                   final orderId = orderController.lastOrderId?.toString();
@@ -70,10 +76,11 @@ class StackedVehicleTabPage extends StatelessWidget {
                           );
                         },
                         child: Container(
+                          height: 72,
                           margin: const EdgeInsets.only(bottom: 12),
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: AppColors.onboardingIndicatorNotActive,
+                            color: Colors.white,
                             border: Border.all(
                               color: selected
                                   ? AppColors.primaryButtonColor
@@ -84,8 +91,14 @@ class StackedVehicleTabPage extends StatelessWidget {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(service.serviceName),
-                              Text("S\$${service.value}"),
+                              Text(
+                                service.serviceName,
+                                style: TextStyle(fontSize: 20),
+                              ),
+                              Text(
+                                "\$${service.value}",
+                                style: TextStyle(fontSize: 20),
+                              ),
                             ],
                           ),
                         ),

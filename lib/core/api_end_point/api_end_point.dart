@@ -77,4 +77,5 @@ class ApiEndPoint {
   static const String redeemPoint = '$baseUrl/referloyality/redeem-point';
   //make favorite
   static const String makeFavorite = '$baseUrl/my-raider/makefav/{id}';
+  static const String impression = '$baseUrl/advertise/{id}/impression';
 }

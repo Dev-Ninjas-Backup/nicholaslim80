@@ -66,7 +66,7 @@ class StackedBottomSummary extends StatelessWidget {
                                 : subtotal);
 
                       return Text(
-                        'S\$${amountToShow.toStringAsFixed(2)}',
+                        '\$${amountToShow.toStringAsFixed(2)}',
                         style: getTextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -75,7 +75,7 @@ class StackedBottomSummary extends StatelessWidget {
                       );
                     } catch (_) {
                       return Text(
-                        'S\$${subtotal.toStringAsFixed(2)}',
+                        '\$${subtotal.toStringAsFixed(2)}',
                         style: getTextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
