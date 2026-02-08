@@ -19,7 +19,6 @@ import 'package:ZipBee/features/user/home/controller/home_controller.dart';
 import 'package:ZipBee/features/user/home/my_riders/screen/my_riders.dart';
 import 'package:ZipBee/features/user/home/screen/home_screen.dart';
 import 'package:ZipBee/features/user/notification/screen/user_notification1.dart';
-import 'package:ZipBee/features/user/order/completed_order_details/proof_of_delivery_screen/proof_of_delivery_screen.dart';
 import 'package:ZipBee/features/user/profile/screen/profile_screen.dart';
 import 'package:ZipBee/features/user/refer_and_earn/screen/refer_and_earn_screen.dart';
 import 'package:ZipBee/features/user/saved_places/screen/saved_place_screenn.dart';

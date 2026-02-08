@@ -8,7 +8,6 @@ import '../../../../../../core/common/widgets/custom_button.dart';
 import '../../../../../../core/utils/constants/app_colors.dart';
 import '../../../../../../core/utils/constants/icon_path.dart';
 import '../../../../../../core/utils/constants/image_path.dart';
-import '../../../../../orders/completed_order_details/proof_of_delivery/screen/proof_of_delivery_screen2.dart';
 import '../../../../finding_raider/screnn/review_view.dart';
 import '../../../controller/order_controller.dart';
 import '../../../model/order_model.dart';
