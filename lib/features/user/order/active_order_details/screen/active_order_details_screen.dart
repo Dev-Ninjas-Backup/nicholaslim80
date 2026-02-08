@@ -6,8 +6,6 @@ import '../../../../../../core/utils/constants/app_colors.dart';
 import '../../../../../core/common/widgets/custom_button.dart';
 import '../../controller/order_controller.dart';
 import '../../model/order_model.dart';
-
-// নতুন উইজেটগুলো ইমপোর্ট করুন
 import '../widgets/rider_details_card.dart';
 import '../widgets/message_call_section.dart';
 import '../widgets/order_rating_bar.dart';
@@ -21,13 +19,16 @@ class ActiveOrderDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final OrderController controller = Get.put(OrderController());
-    WidgetsBinding.instance.addPostFrameCallback((_) => controller.fetchOrderDetail(order.orderId));
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => controller.fetchOrderDetail(order.orderId),
+    );
 
     return Scaffold(
       backgroundColor: AppColors.backgroungColor,
       body: SafeArea(
         child: Obx(() {
-          if (controller.isDetailLoading.value) return const Center(child: CircularProgressIndicator());
+          if (controller.isDetailLoading.value)
+            return const Center(child: CircularProgressIndicator());
           final liveOrder = controller.singleOrder.value ?? order;
 
           return Column(
@@ -46,18 +47,24 @@ class ActiveOrderDetailsScreen extends StatelessWidget {
                         const SizedBox(height: 16),
                         MessageCallSection(order: liveOrder),
                         const SizedBox(height: 12),
-                        OrderRatingBar(rating: liveOrder.assignRiderRating, totalReviews: liveOrder.assignRiderReviews),
+                        OrderRatingBar(
+                          rating: liveOrder.assignRiderRating,
+                          totalReviews: liveOrder.assignRiderReviews,
+                        ),
                         const Divider(height: 32),
                         PaymentAndTimeInfo(order: liveOrder),
                         const SizedBox(height: 24),
                         OrderStopsList(
-                          senderName: liveOrder.senderName,
-                          pickupAddress: liveOrder.pickupAddress,
-                          recipientName: liveOrder.recipientName,
-                          dropOffAddress: liveOrder.dropOffAddress,
+                          pickupStops: controller.getPickupStops(liveOrder),
+                          dropStops: controller.getDropStops(liveOrder),
                         ),
                         const SizedBox(height: 32),
-                        CustomButton(label: 'Share Ride Information', onPressed: () {}, color: AppColors.primaryButtonColor, textColor: AppColors.fontColor),
+                        CustomButton(
+                          label: 'Share Ride Information',
+                          onPressed: () {},
+                          color: AppColors.primaryButtonColor,
+                          textColor: AppColors.fontColor,
+                        ),
                         const SizedBox(height: 12),
                       ],
                     ),
@@ -78,8 +85,18 @@ class ActiveOrderDetailsScreen extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       child: Row(
         children: [
-          GestureDetector(onTap: () => Get.back(), child: const Icon(Icons.arrow_back_ios_new_rounded, size: 20)),
-          Expanded(child: Center(child: Text("Order #${liveOrder.orderId} is ${liveOrder.status.toLowerCase()}", style: getTextStyle(fontWeight: FontWeight.w500, fontSize: 16)))),
+          GestureDetector(
+            onTap: () => Get.back(),
+            child: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+          ),
+          Expanded(
+            child: Center(
+              child: Text(
+                "Order #${liveOrder.orderId} is ${liveOrder.status.toLowerCase()}",
+                style: getTextStyle(fontWeight: FontWeight.w500, fontSize: 16),
+              ),
+            ),
+          ),
           const SizedBox(width: 30),
         ],
       ),
@@ -88,12 +105,33 @@ class ActiveOrderDetailsScreen extends StatelessWidget {
 
   Widget _buildMap(OrderModel liveOrder) {
     return SizedBox(
-      height: 200, width: double.infinity,
+      height: 200,
+      width: double.infinity,
       child: GoogleMap(
-        initialCameraPosition: CameraPosition(target: LatLng(liveOrder.pickupLat ?? 1.3521, liveOrder.pickupLong ?? 103.8198), zoom: 12),
+        initialCameraPosition: CameraPosition(
+          target: LatLng(
+            liveOrder.pickupLat ?? 1.3521,
+            liveOrder.pickupLong ?? 103.8198,
+          ),
+          zoom: 12,
+        ),
         markers: {
-           if (liveOrder.pickupLat != null) Marker(markerId: const MarkerId('pickup'), position: LatLng(liveOrder.pickupLat!, liveOrder.pickupLong!), icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue)),
-           if (liveOrder.dropOffLat != null) Marker(markerId: const MarkerId('dropoff'), position: LatLng(liveOrder.dropOffLat!, liveOrder.dropOffLong!), icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed)),
+          if (liveOrder.pickupLat != null)
+            Marker(
+              markerId: const MarkerId('pickup'),
+              position: LatLng(liveOrder.pickupLat!, liveOrder.pickupLong!),
+              icon: BitmapDescriptor.defaultMarkerWithHue(
+                BitmapDescriptor.hueBlue,
+              ),
+            ),
+          if (liveOrder.dropOffLat != null)
+            Marker(
+              markerId: const MarkerId('dropoff'),
+              position: LatLng(liveOrder.dropOffLat!, liveOrder.dropOffLong!),
+              icon: BitmapDescriptor.defaultMarkerWithHue(
+                BitmapDescriptor.hueRed,
+              ),
+            ),
         },
         zoomControlsEnabled: false,
       ),
