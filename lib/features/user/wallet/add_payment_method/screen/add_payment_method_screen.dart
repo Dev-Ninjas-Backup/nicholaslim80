@@ -1,18 +1,21 @@
 import 'package:ZipBee/core/utils/constants/app_colors.dart';
 import 'package:ZipBee/features/user/finding_raider/widget/button.dart';
 import 'package:ZipBee/features/user/wallet/add_payment_method/controller/add_payment_method_controller.dart';
-import 'package:ZipBee/features/user/wallet/add_payment_method/widget/created_wallet_success_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 
 class AddPaymentMethodScreen extends StatelessWidget {
-  AddPaymentMethodScreen({super.key});
+  final String clientSecret;
 
-  final controller = Get.put(AddPaymentMethodController());
+  AddPaymentMethodScreen({required this.clientSecret, super.key});
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.put(
+      AddPaymentMethodController(clientSecret: clientSecret),
+    );
+
     return Scaffold(
       backgroundColor: AppColors.backgroungColor,
       appBar: AppBar(
@@ -135,13 +138,15 @@ class AddPaymentMethodScreen extends StatelessWidget {
 
             Spacer(),
 
-            Button(
-              buttonText: 'Save Card',
-              textColor: AppColors.primaryFontColor,
-              backgroundColor: AppColors.primaryButtonColor,
-              onPressed: () {
-                Get.to(CreatedWalletSuccessWidget());
-              },
+            Obx(
+              () => Button(
+                buttonText: 'Save Card',
+                textColor: AppColors.primaryFontColor,
+                backgroundColor: AppColors.primaryButtonColor,
+                onPressed: controller.isProcessing.value
+                    ? null
+                    : () => controller.saveCard(),
+              ),
             ),
 
             SizedBox(height: 90),

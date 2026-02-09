@@ -19,6 +19,7 @@ class AddFundsPaymentService {
       final body = {
         'amount': amount,
         'currency': currency,
+        'orderId': null, // Optional: can be empty for wallet top-up'',
         'payType': 'ONLINE_PAY',
         'type': 'ADD_MONEY',
       };

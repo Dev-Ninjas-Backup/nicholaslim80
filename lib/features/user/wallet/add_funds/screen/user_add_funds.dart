@@ -1,6 +1,5 @@
 import 'package:ZipBee/core/common/styles/global_text_style.dart';
 import 'package:ZipBee/core/utils/constants/app_colors.dart';
-import 'package:ZipBee/features/user/wallet/add_payment_method/screen/add_payment_method_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -208,24 +207,116 @@ class UserAddFunds extends StatelessWidget {
             SizedBox(height: 16),
 
             InkWell(
-              onTap: () {
-                Get.to(AddPaymentMethodScreen());
-              },
-              child: Row(
-                children: [
-                  Icon(Icons.add, size: 22),
-                  SizedBox(width: 8),
-                  Text(
-                    "Add payment method",
-                    style: getTextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
+              onTap: controller.togglePaymentMethodForm,
+              child: Obx(
+                () => Row(
+                  children: [
+                    Icon(Icons.add, size: 22),
+                    SizedBox(width: 8),
+                    Text(
+                      "Add payment method",
+                      style: getTextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
-                  ),
-                  Spacer(),
-                  Icon(Icons.arrow_forward_ios, size: 24),
-                ],
+                    Spacer(),
+                    Icon(
+                      controller.showPaymentMethodForm.value
+                          ? Icons.arrow_drop_up
+                          : Icons.arrow_forward_ios,
+                      size: 24,
+                    ),
+                  ],
+                ),
               ),
+            ),
+
+            // Payment Method Form - Toggle visibility
+            Obx(
+              () => controller.showPaymentMethodForm.value
+                  ? Column(
+                      children: [
+                        SizedBox(height: 16),
+                        Divider(thickness: 0.8),
+                        SizedBox(height: 16),
+
+                        Text(
+                          'Click the button below to add a new payment method.',
+                          style: getTextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.grey,
+                          ),
+                        ),
+
+                        SizedBox(height: 14),
+
+                        // Open Stripe Payment Sheet Button
+                        Obx(
+                          () => SizedBox(
+                            width: double.infinity,
+                            height: 48,
+                            child: ElevatedButton.icon(
+                              onPressed: controller.isAddingPaymentMethod.value
+                                  ? null
+                                  : controller.addPaymentMethod,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.amber,
+                                disabledBackgroundColor: Colors.grey,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              icon: Icon(
+                                Icons.credit_card,
+                                color: Colors.black,
+                              ),
+                              label: Text(
+                                controller.isAddingPaymentMethod.value
+                                    ? 'Processing...'
+                                    : 'Add Card via Stripe',
+                                style: getTextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        SizedBox(height: 12),
+
+                        // Cancel Button
+                        SizedBox(
+                          width: double.infinity,
+                          height: 48,
+                          child: OutlinedButton(
+                            onPressed:
+                                controller.isAddingPaymentMethod.value
+                                    ? null
+                                    : controller.togglePaymentMethodForm,
+                            style: OutlinedButton.styleFrom(
+                              side: BorderSide(color: Colors.grey),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            child: Text(
+                              'Cancel',
+                              style: getTextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        SizedBox(height: 16),
+                      ],
+                    )
+                  : SizedBox.shrink(),
             ),
           ],
         ),
