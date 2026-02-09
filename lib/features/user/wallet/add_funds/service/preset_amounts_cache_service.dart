@@ -28,7 +28,7 @@ class PresetAmountsCacheService {
     }
   }
 
-  /// Add new amount to cache (keeps latest 4)
+  /// Add new amount to cache (keeps latest 4) - removes duplicates
   static Future<void> addAmount(double amount) async {
     try {
       if (amount <= 0) return;
@@ -45,7 +45,10 @@ class PresetAmountsCacheService {
             .toList();
       }
 
-      // Add new amount
+      // Remove duplicate if already exists (to move it to the end)
+      amounts.removeWhere((a) => a == amount);
+
+      // Add new amount to the end
       amounts.add(amount);
 
       // Keep only latest 4 amounts
@@ -58,6 +61,8 @@ class PresetAmountsCacheService {
         _cacheKey,
         amounts.join(','),
       );
+
+      debugPrint('✅ Added amount to cache: $amount, Total: $amounts');
     } catch (e) {
       debugPrint('Error saving preset amount: $e');
     }

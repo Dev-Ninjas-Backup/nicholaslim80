@@ -6,7 +6,11 @@ class ManagePaymentController extends GetxController {
   RxBool hasDbspay = false.obs;
 
   void onAddPayment() {
-    Get.snackbar("Add Payment", "Navigate to add payment method");
+    Get.snackbar(
+      "Add Payment Method",
+      "Go to Add Funds screen to add a new payment method",
+      duration: Duration(seconds: 2),
+    );
   }
 
   void onStripeTap() {
