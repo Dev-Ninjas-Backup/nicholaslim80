@@ -49,54 +49,76 @@ class UserAddFunds extends StatelessWidget {
 
             // 🔹 Preset Amount Buttons
             Obx(
-              () => Wrap(
-                spacing: 14,
-                children: List.generate(controller.presetAmounts.length, (
-                  index,
-                ) {
-                  bool selected = controller.selectedIndex.value == index;
-                  return GestureDetector(
-                    onTap: () => controller.onPresetTap(index),
-                    child: Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 21,
-                        vertical: 10,
-                      ),
-                      decoration: BoxDecoration(
-                        color: selected ? Colors.amber : Colors.white,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: selected ? Colors.transparent : Colors.grey,
+              () => Center(
+                child: Wrap(
+                  spacing: 14,
+                  children: List.generate(controller.presetAmounts.length, (
+                    index,
+                  ) {
+                    bool selected = controller.selectedIndex.value == index;
+                    return GestureDetector(
+                      onTap: () => controller.onPresetTap(index),
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 21,
+                          vertical: 10,
+                        ),
+                        decoration: BoxDecoration(
+                          color: selected ? Colors.amber : Colors.white,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: selected ? Colors.transparent : Colors.grey,
+                          ),
+                        ),
+                        child: Text(
+                          "\$${controller.presetAmounts[index].toInt()}",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: selected ? Colors.black : Colors.grey[800],
+                          ),
                         ),
                       ),
-                      child: Text(
-                        "S\$${controller.presetAmounts[index].toInt()}",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: selected ? Colors.black : Colors.grey[800],
-                        ),
-                      ),
-                    ),
-                  );
-                }),
+                    );
+                  }),
+                ),
               ),
             ),
 
             SizedBox(height: 18),
 
-            // 🔹 Custom Amount TextField
-            TextField(
-              controller: controller.customAmountController,
-              keyboardType: TextInputType.number,
-              onChanged: controller.onCustomAmountChanged,
-              decoration: InputDecoration(
-                hintText: "Enter a custom amount",
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
+            // 🔹 Custom Amount TextField with Add Button
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: controller.customAmountController,
+                    keyboardType: TextInputType.number,
+                    onChanged: controller.onCustomAmountChanged,
+                    decoration: InputDecoration(
+                      hintText: "Enter a custom amount",
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                    ),
+                  ),
                 ),
-                filled: true,
-                fillColor: Colors.white,
-              ),
+                SizedBox(width: 10),
+                // 🔹 Add Button to save custom amount to cache
+                ElevatedButton.icon(
+                  onPressed: controller.onAddToCache,
+                  icon: Icon(Icons.add, color: Colors.black),
+                  label: Text('Add'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.amber,
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                ),
+              ],
             ),
 
             SizedBox(height: 25),
@@ -218,23 +240,35 @@ class UserAddFunds extends StatelessWidget {
             SizedBox(
               height: 55,
               width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  // Get.toNamed("/nextScreenRouteName");
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.amber,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+              child: Obx(
+                () => ElevatedButton(
+                  onPressed: controller.isLoading.value 
+                    ? null 
+                    : () => controller.onAddFunds(),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.amber,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    disabledBackgroundColor: Colors.amber.withOpacity(0.6),
                   ),
-                ),
-                child: Text(
-                  "Add Fund",
-                  style: getTextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.black,
-                  ),
+                  child: controller.isLoading.value
+                    ? SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
+                        ),
+                      )
+                    : Text(
+                        "Add Fund",
+                        style: getTextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.black,
+                        ),
+                      ),
                 ),
               ),
             ),
