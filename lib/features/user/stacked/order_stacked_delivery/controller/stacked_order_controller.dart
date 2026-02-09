@@ -1,5 +1,7 @@
 import 'package:ZipBee/features/user/bottom_navbar/screen/bottom_navbar_screen.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/cancel_order_service.dart';
+import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/notify_rider.dart';
+import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/promo_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
@@ -14,7 +16,7 @@ class StackedOrderController extends GetxController {
   var orderNumber = '#1233'.obs;
   var isDriverAssigned = false.obs;
   var countdown = 10.obs;
-  
+
   // New properties for Order Confirmation Details
   var totalAmount = 0.0.obs; // Will be set before showing dialog (server value)
   var totalFee = 0.0.obs; // server-side fee (preferred display when available)
@@ -34,33 +36,29 @@ class StackedOrderController extends GetxController {
 
   var isCancelling = false.obs;
 
-  /// রিজন সহ অর্ডার ক্যানসেল করার ফাংশন
   Future<void> handleOrderCancellation(String? reason) async {
-    // যদি lastOrderId না থাকে (অর্ডার ক্রিয়েট হয়নি এমন অবস্থায়)
     if (lastOrderId == null) {
-      cancelAndReset(); // শুধু স্টেট রিসেট করে দিবে
+      cancelAndReset();
       Get.offAll(() => BottomNavbarScreen());
       return;
     }
 
     try {
       isCancelling.value = true;
-      
-      // আপনার বিদ্যমান CancelOrderService কল করা হচ্ছে
-      // রিজন নাল বা খালি হলে সার্ভিস ফাইল "Hamara Mardi" বসিয়ে দেবে
+
       final result = await CancelOrderService.cancelOrder(lastOrderId!, reason);
-      
+
       isCancelling.value = false;
 
       if (result['success'] == true) {
         EasyLoading.showSuccess('Order Cancelled');
 
-        cancelAndReset(); 
+        cancelAndReset();
 
-
-        Get.offAll(() => BottomNavbarScreen()); 
+        Get.offAll(() => BottomNavbarScreen());
       } else {
-        String errorMsg = result['body']?['message'] ?? 'Failed to cancel order';
+        String errorMsg =
+            result['body']?['message'] ?? 'Failed to cancel order';
         EasyLoading.showError(errorMsg);
       }
     } catch (e) {
@@ -74,8 +72,44 @@ class StackedOrderController extends GetxController {
     redeemCoins.value = value;
   }
 
-  void toggleFavoriteRiders(bool value) {
+  Future<void> toggleFavoriteRiders(bool value) async {
+    // UI instantly update
     favoriteRiders.value = value;
+
+    // If order is ASAP → backend does not support notify API
+    if (collectTime.value == 'ASAP') {
+      debugPrint('⚠️ Favourite rider API skipped (ASAP order)');
+      return;
+    }
+
+    if (lastOrderId == null) {
+      EasyLoading.showError('Order not found');
+      return;
+    }
+
+    EasyLoading.show(status: 'Updating...');
+
+    final res = await NotifyRider.notifyRider(
+      orderId: lastOrderId.toString(),
+      notifyRider: value,
+    );
+
+    EasyLoading.dismiss();
+
+    final success = res['success'] ?? false;
+
+    if (success) {
+      final body = res['body'] as Map<String, dynamic>? ?? {};
+      final data = body['data'] as Map<String, dynamic>? ?? {};
+
+      favoriteRiders.value = data['notify_favorite_raider'] ?? value;
+
+      EasyLoading.showSuccess(body['message'] ?? 'Updated successfully');
+    } else {
+      // revert toggle
+      favoriteRiders.value = !value;
+      EasyLoading.showError('Failed to update favourite rider');
+    }
   }
 
   /// Place order by building payload from controllers, call POST endpoint,
@@ -142,7 +176,9 @@ class StackedOrderController extends GetxController {
     }
 
     if (schedCtrl != null && !schedCtrl.isNow.value) {
-      scheduledTime = schedCtrl.selectedDateTime.value.toUtc().toIso8601String();
+      scheduledTime = schedCtrl.selectedDateTime.value
+          .toUtc()
+          .toIso8601String();
       collectTime = 'SCHEDULED';
     }
 
@@ -173,8 +209,10 @@ class StackedOrderController extends GetxController {
       try {
         final orderMap = data['order'] as Map<String, dynamic>?;
         if (orderMap != null && orderMap['total_cost'] != null) {
-          serverTotal = double.tryParse(orderMap['total_cost'].toString()) ?? 0.0;
-        } else if (data['pricingSummary'] != null && data['pricingSummary']['totalCost'] != null) {
+          serverTotal =
+              double.tryParse(orderMap['total_cost'].toString()) ?? 0.0;
+        } else if (data['pricingSummary'] != null &&
+            data['pricingSummary']['totalCost'] != null) {
           serverTotal = (data['pricingSummary']['totalCost'] as num).toDouble();
         }
       } catch (e) {
@@ -202,7 +240,9 @@ class StackedOrderController extends GetxController {
       int? orderId;
       try {
         final orderMap = data['order'] as Map<String, dynamic>?;
-        orderId = orderMap != null && orderMap['id'] != null ? (orderMap['id'] as int) : null;
+        orderId = orderMap != null && orderMap['id'] != null
+            ? (orderMap['id'] as int)
+            : null;
       } catch (_) {
         orderId = null;
       }
@@ -219,7 +259,9 @@ class StackedOrderController extends GetxController {
       totalFee.value = serverFee;
       return true;
     } else {
-      final msg = (res['body'] as Map<String, dynamic>?)?['message'] ?? 'Failed to create order';
+      final msg =
+          (res['body'] as Map<String, dynamic>?)?['message'] ??
+          'Failed to create order';
       debugPrint('PlaceOrder failed: $msg');
       EasyLoading.showError(msg.toString());
       return false;
@@ -238,7 +280,9 @@ class StackedOrderController extends GetxController {
       return false;
     }
 
-    debugPrint('Placing final order - Order ID: $lastOrderId, Payment Method: $paymentMethod, PaymentMethodId: $paymentMethodId, CodCollectFrom: $codCollectFrom');
+    debugPrint(
+      'Placing final order - Order ID: $lastOrderId, Payment Method: $paymentMethod, PaymentMethodId: $paymentMethodId, CodCollectFrom: $codCollectFrom',
+    );
 
     final res = await OrderService.placeOrder(
       orderId: lastOrderId!,
@@ -246,7 +290,7 @@ class StackedOrderController extends GetxController {
       codCollectFrom: codCollectFrom,
       paymentMethodId: paymentMethodId,
     );
-    
+
     debugPrint('Place order full response: $res');
 
     final status = res['statusCode'] as int? ?? 500;
@@ -258,27 +302,28 @@ class StackedOrderController extends GetxController {
       try {
         // Save full response for later use
         placeOrderResponse.value = bodyData;
-        
+
         final data = bodyData['data'] as Map<String, dynamic>? ?? {};
-        
+
         // Extract order ID and update orderNumber
         final orderId = data['id'] as int? ?? lastOrderId;
         orderNumber.value = '#${orderId.toString().padLeft(6, '0')}';
-        
+
         // Extract is_auto_confirmation flag
-        isAutoConfirmation.value = (data['is_auto_confirmation'] as bool?) ?? false;
+        isAutoConfirmation.value =
+            (data['is_auto_confirmation'] as bool?) ?? false;
         debugPrint('Is Auto Confirmation: ${isAutoConfirmation.value}');
-        
+
         // Extract collect_time
         collectTime.value = (data['collect_time'] as String?) ?? 'ASAP';
         debugPrint('Collect Time: ${collectTime.value}');
-        
+
         // Extract sender and receiver info from destinations
         final destinations = data['destinations'] as List<dynamic>? ?? [];
         for (var dest in destinations) {
           final destMap = dest as Map<String, dynamic>? ?? {};
           final type = destMap['type'] as String? ?? '';
-          
+
           if (type == 'SENDER') {
             senderInfo.value = destMap;
             debugPrint('Sender Info: $destMap');
@@ -287,16 +332,24 @@ class StackedOrderController extends GetxController {
             debugPrint('Receiver Info: $destMap');
           }
         }
-        
-        final serverTotal = double.tryParse((data['total_cost'] ?? '').toString()) ?? totalAmount.value;
+
+        final serverTotal =
+            double.tryParse((data['total_cost'] ?? '').toString()) ??
+            totalAmount.value;
         double serverFee = 0.0;
         try {
-          serverFee = double.tryParse((data['total_fee'] ?? '').toString()) ?? serverFee;
+          serverFee =
+              double.tryParse((data['total_fee'] ?? '').toString()) ??
+              serverFee;
         } catch (_) {}
-        debugPrint('Placed order total_cost: $serverTotal total_fee: $serverFee');
+        debugPrint(
+          'Placed order total_cost: $serverTotal total_fee: $serverFee',
+        );
         totalAmount.value = serverTotal;
         totalFee.value = serverFee;
-        EasyLoading.showSuccess('Order placed: S\$${serverTotal.toStringAsFixed(2)}');
+        EasyLoading.showSuccess(
+          'Order placed: S\$${serverTotal.toStringAsFixed(2)}',
+        );
       } catch (e) {
         debugPrint('Error parsing placed order total: $e');
       }
@@ -304,7 +357,9 @@ class StackedOrderController extends GetxController {
       return true;
     } else {
       final msg = bodyData['message'] ?? 'Failed to place order';
-      debugPrint('confirmPlaceOrder failed: $msg (status: $status, success: $success)');
+      debugPrint(
+        'confirmPlaceOrder failed: $msg (status: $status, success: $success)',
+      );
       EasyLoading.showError(msg.toString());
       return false;
     }
@@ -342,7 +397,45 @@ class StackedOrderController extends GetxController {
     totalAmount.value = 0.0;
     totalFee.value = 0.0;
   }
+
+  Future<void> applyPromoCode(String code) async {
+    if (lastOrderId == null) {
+      EasyLoading.showError('Order not created yet');
+      return;
+    }
+
+    if (code.trim().isEmpty) {
+      EasyLoading.showError('Enter promo code');
+      return;
+    }
+
+    EasyLoading.show(status: 'Applying promo...');
+
+    final res = await PromoService.applyPromo(
+      orderId: lastOrderId!,
+      promoCode: code.trim(),
+    );
+
+    EasyLoading.dismiss();
+
+    final success = res['success'] as bool? ?? false;
+
+    if (success) {
+      final body = res['body'] as Map<String, dynamic>? ?? {};
+      final data = body['data'] as Map<String, dynamic>? ?? {};
+
+      /// Update totals from API
+      totalAmount.value =
+          double.tryParse(data['total_cost']?.toString() ?? '0') ?? 0;
+
+      totalFee.value =
+          double.tryParse(data['total_fee']?.toString() ?? '0') ?? 0;
+
+      EasyLoading.showSuccess(body['message'] ?? 'Promo applied');
+
+      Get.back(); // close promo dialog
+    } else {
+      EasyLoading.showError(res['body']?['message'] ?? 'Failed to apply promo');
+    }
+  }
 }
-
-
-

@@ -1,8 +1,12 @@
 import 'package:ZipBee/core/common/styles/global_text_style.dart';
+import 'package:ZipBee/features/user/stacked/order_stacked_delivery/controller/stacked_order_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_instance/src/extension_instance.dart';
 
 class StackedPromoDialogContent extends StatelessWidget {
   final TextEditingController promoController = TextEditingController();
+  final controller = Get.find<StackedOrderController>();
 
   StackedPromoDialogContent({super.key});
 
@@ -22,7 +26,9 @@ class StackedPromoDialogContent extends StatelessWidget {
         ),
         SizedBox(height: 40),
         FilledButton(
-          onPressed: () {},
+          onPressed: () async {
+            await controller.applyPromoCode(promoController.text);
+          },
           style: FilledButton.styleFrom(
             backgroundColor: Colors.amber,
             foregroundColor: Colors.white,
