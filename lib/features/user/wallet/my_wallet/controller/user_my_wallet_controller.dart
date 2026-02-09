@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:ZipBee/core/api_end_point/api_end_point.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
@@ -10,10 +11,7 @@ class UserMyWalletController extends GetxController {
   var selectFundsOrRedeen = 0.obs;
   var isLoading = false.obs;
 
-  /// Stripe wallet balance
   RxDouble currentBalance = 0.0.obs;
-
-  /// Wallet history (NO MODEL)
   var recentTransactionList = <Map<String, dynamic>>[].obs;
 
   String? userId;
@@ -24,7 +22,7 @@ class UserMyWalletController extends GetxController {
     loadProfileAndWallet();
   }
 
-  /// ================= PROFILE =================
+  /// ================= PROFILE + BALANCE =================
   Future<void> loadProfileAndWallet() async {
     try {
       isLoading.value = true;
@@ -42,34 +40,53 @@ class UserMyWalletController extends GetxController {
 
       if (response.statusCode == 200) {
         final body = jsonDecode(response.body);
+        final data = body['data'];
 
-        userId = body['data']['id'].toString();
+        userId = data?['id']?.toString();
 
-        /// ✅ Save userId for global use
-        await SharedPreferencesHelper.saveUserId(userId!);
-
-        /// ✅ Stripe balance only
         currentBalance.value =
-            double.tryParse(body['data']['currentWalletBalance'].toString()) ??
+            double.tryParse(data?['currentWalletBalance']?.toString() ?? '0') ??
             0.0;
 
         await loadWalletHistory();
+      } else {
+        debugPrint("Profile failed: ${response.body}");
       }
     } catch (e) {
-      print("Profile error: $e");
+      debugPrint("Profile error: $e");
     } finally {
       isLoading.value = false;
     }
   }
 
   /// ================= WALLET HISTORY =================
-  Future<void> loadWalletHistory() async {
+  Future<void> loadWalletHistory({
+    int page = 1,
+    int limit = 20,
+    String? type,
+  }) async {
     try {
       final token = await SharedPreferencesHelper.getToken();
       if (token == null || userId == null) return;
 
+      isLoading.value = true;
+
+      /// 🔥 FIXED PART HERE
+      String baseUrl = ApiEndPoint.walletHistory.replaceAll(
+        "{userId}",
+        userId!,
+      );
+
+      String url = "$baseUrl?page=$page&limit=$limit";
+
+      if (type != null) {
+        url += "&type=$type";
+      }
+
+      debugPrint("Wallet URL: $url");
+
       final response = await http.get(
-        Uri.parse("${ApiEndPoint.walletHistory}/$userId"),
+        Uri.parse(url),
         headers: {
           "Authorization": "Bearer $token",
           "Content-Type": "application/json",
@@ -78,19 +95,31 @@ class UserMyWalletController extends GetxController {
 
       if (response.statusCode == 200) {
         final body = jsonDecode(response.body);
+        final List<dynamic> dataList = body['data'] ?? [];
 
         recentTransactionList.clear();
 
-        for (var item in body['data']) {
+        for (var item in dataList) {
+          final isCredit = item['type']?.toString().toLowerCase() == "credit";
+
           recentTransactionList.add({
-            "title": item['type'] ?? "Transaction",
-            "orderId": item['reference'] ?? "",
-            "amount": item['amount'].toString(),
+            "title": item['transactionType'] ?? "Transaction",
+            "orderId": item['transactionId'] ?? "",
+            "amount": "${isCredit ? "+" : "-"} ${item['amount'] ?? "0"}",
+            "isCredit": isCredit,
+            "status": item['status'] ?? "",
+            "createdAt": item['createdAt'] ?? "",
           });
         }
+
+        debugPrint("Transactions loaded: ${recentTransactionList.length}");
+      } else {
+        debugPrint("Wallet history failed: ${response.body}");
       }
     } catch (e) {
-      print("Wallet history error: $e");
+      debugPrint("Wallet history error: $e");
+    } finally {
+      isLoading.value = false;
     }
   }
 }
