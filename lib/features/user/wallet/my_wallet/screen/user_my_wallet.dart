@@ -17,90 +17,116 @@ class UserMyWallet extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.backgroungColor,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            MyWalletUpperSection(controller: controller),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              MyWalletUpperSection(controller: controller),
 
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 30),
-              child: Column(
-                children: [
-                  GestureDetector(
-                    onTap: () => Get.to(ManagePaymentScreen()),
-                    child: rowItem("Manage Payment Methods"),
-                  ),
-                  const Divider(),
-
-                  GestureDetector(
-                    onTap: () => Get.to(LoyaltyAndRewardsScreen()),
-                    child: rowItem("Loyalty & Rewards"),
-                  ),
-
-                  const SizedBox(height: 30),
-
-                  Text(
-                    "Wallet recent transactions",
-                    style: getTextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 30,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    GestureDetector(
+                      onTap: () => Get.to(ManagePaymentScreen()),
+                      child: rowItem("Manage Payment Methods"),
                     ),
-                  ),
-                  const SizedBox(height: 14),
+                    const Divider(),
 
-                  Obx(() {
-                    if (controller.isLoading.value) {
-                      return const CircularProgressIndicator();
-                    }
+                    GestureDetector(
+                      onTap: () => Get.to(LoyaltyAndRewardsScreen()),
+                      child: rowItem("Loyalty & Rewards"),
+                    ),
 
-                    return ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: controller.recentTransactionList.length,
-                      itemBuilder: (_, index) {
-                        final item = controller.recentTransactionList[index];
+                    const SizedBox(height: 30),
 
-                        return Container(
-                          margin: const EdgeInsets.only(bottom: 16),
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.grey),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    item['title'],
-                                    style: getTextStyle(
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  Text(
-                                    item['orderId'],
-                                    style: getTextStyle(fontSize: 12),
-                                  ),
-                                ],
-                              ),
-                              Text(
-                                item['amount'],
-                                style: getTextStyle(
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
+                    Text(
+                      "Wallet Recent Transactions",
+                      style: getTextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+
+                    /// ================= TRANSACTION LIST =================
+                    Obx(() {
+                      if (controller.isLoading.value) {
+                        return const Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(20),
+                            child: CircularProgressIndicator(),
                           ),
                         );
-                      },
-                    );
-                  }),
-                ],
+                      }
+
+                      if (controller.recentTransactionList.isEmpty) {
+                        return const Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(20),
+                            child: Text("No transactions found"),
+                          ),
+                        );
+                      }
+
+                      return ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: controller.recentTransactionList.length,
+                        itemBuilder: (_, index) {
+                          final item = controller.recentTransactionList[index];
+
+                          return Container(
+                            margin: const EdgeInsets.only(bottom: 16),
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(color: Colors.grey.shade300),
+                              color: Colors.white,
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      item['title'] ?? "",
+                                      style: getTextStyle(
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      item['orderId'] ?? "",
+                                      style: getTextStyle(fontSize: 12),
+                                    ),
+                                  ],
+                                ),
+                                Text(
+                                  item['amount'] ?? "",
+                                  style: getTextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    color: item['isCredit'] == true
+                                        ? Colors.green
+                                        : Colors.red,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      );
+                    }),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
