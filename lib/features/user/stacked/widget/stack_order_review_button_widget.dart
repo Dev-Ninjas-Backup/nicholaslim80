@@ -43,7 +43,7 @@ class StackedOrderReviewButtonStatic extends StatelessWidget {
                   ),
                 ),
                 Obx(() {
-                  final oc = Get.find<StackedOrderController>();
+                  final oc = Get.put(StackedOrderController());
                   final amountToShow = oc.totalFee.value > 0
                       ? oc.totalFee.value
                       : (oc.totalAmount.value > 0 ? oc.totalAmount.value : vehicleController.calculateTotal());

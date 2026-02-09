@@ -296,7 +296,7 @@ class StackedBottomSummary extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          "S\$${subtotal.toStringAsFixed(2)}",
+                          "\$${subtotal.toStringAsFixed(2)}",
                           style: getTextStyle(fontSize: 13),
                         ),
                       ],
@@ -313,7 +313,7 @@ class StackedBottomSummary extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          "S\$${gst.toStringAsFixed(2)}",
+                          "\$${gst.toStringAsFixed(2)}",
                           style: getTextStyle(
                             fontSize: 13,
                             color: Colors.orange,
@@ -339,7 +339,7 @@ class StackedBottomSummary extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            "S\$${finalTotal.toStringAsFixed(2)}",
+                            "\$${finalTotal.toStringAsFixed(2)}",
                             style: getTextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,

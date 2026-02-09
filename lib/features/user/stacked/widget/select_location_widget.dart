@@ -1,11 +1,11 @@
 import 'package:ZipBee/core/common/styles/global_text_style.dart';
+import 'package:ZipBee/features/user/stacked/schedule_stacked_ delivey/Schedule_recepent/screen/schedule_recepent_screen1.dart';
+import 'package:ZipBee/features/user/stacked/schedule_stacked_ delivey/Schedule_sender_recepent/screen/schedule_sender_screen.dart';
 import 'package:ZipBee/features/user/stacked/widget/stacked_button.dart';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 import '../stacked_controller/stacked_controller.dart';
-import 'package:ZipBee/features/user/stacked/schedule_stacked_ delivey/Schedule_sender_recepent/screen/schedule_sender_screen.dart';
-import 'package:ZipBee/features/user/stacked/schedule_stacked_ delivey/Schedule_recepent/screen/schedule_recepent_screen1.dart';
 
 class StackedSelectLocationWidget extends StatelessWidget {
   const StackedSelectLocationWidget({super.key, required this.controller});
@@ -71,7 +71,7 @@ class StackedCustomAddButton extends StatelessWidget {
           if (loc.senderData.value != null && loc.receiverData.value == null) {
             Get.to(
               () => StackedSchedulRecepmenteScreen(),
-              arguments: {'addAsStop': false, 'isAdditionalStop': false},
+              arguments: {'addAsStop': true, 'isAdditionalStop': false},
             );
             return;
           }
