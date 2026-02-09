@@ -5,6 +5,7 @@ class ApiEndPoint {
   // static const String baseUrl = 'http://10.10.20.130:3000/api/v1';
 
   static const String login = '$baseUrl/auth/login';
+  static const String upload = '$baseUrl/auth/upload';
   static const String signUp = '$baseUrl/auth/signup';
   static const String verifyOtp = '$baseUrl/auth/verify';
   static const String forgetPass = '$baseUrl/auth/forgot-password';
