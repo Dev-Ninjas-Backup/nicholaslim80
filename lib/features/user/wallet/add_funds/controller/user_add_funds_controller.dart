@@ -255,7 +255,7 @@ class UserAddFundsController extends GetxController {
 
       // Call Add Money API
       debugPrint('➡️ Step 2: Calling Add Money API');
-      final response = await AddFundsPaymentService.addMoneyToWallet(
+      final response = await AddFundsPaymentService.addMoney(
         amount: selectedAmount.value,
         currency: 'sgd', // Using SGD as primary currency
       );

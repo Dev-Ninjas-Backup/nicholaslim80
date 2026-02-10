@@ -7,7 +7,7 @@ import 'package:ZipBee/core/shared_prefference_service/shared_pref.dart';
 /// Service for wallet add funds payment
 class AddFundsPaymentService {
   /// Add money to wallet and get client secret for Stripe
-  static Future<Map<String, dynamic>> addMoneyToWallet({
+  static Future<Map<String, dynamic>> addMoney({
     required double amount,
     required String currency,
   }) async {
@@ -18,6 +18,7 @@ class AddFundsPaymentService {
 
       final body = {
         'amount': amount,
+        // 'amount': 5000,
         'currency': currency,
         'orderId': null, // Optional: can be empty for wallet top-up'',
         'payType': 'ONLINE_PAY',
