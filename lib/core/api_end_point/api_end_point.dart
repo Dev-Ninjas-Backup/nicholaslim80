@@ -26,6 +26,8 @@ class ApiEndPoint {
   static const String vehicleTypes = '$baseUrl/admin/vehicle-types';
   static const String serviceZone = '$baseUrl/service-zone';
   static const String userProfile = '$baseUrl/users/{id}';
+  static const String support =
+      '$baseUrl/additional-services/service-email-number';
   static const String addRider = '$baseUrl/my-raider';
   static const String getDestination = '$baseUrl/destination';
   static const String homePageAd = '$baseUrl/advertise/role-based';
