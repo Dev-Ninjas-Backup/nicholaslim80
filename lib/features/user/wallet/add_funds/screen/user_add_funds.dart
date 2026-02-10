@@ -2,7 +2,6 @@ import 'package:ZipBee/core/common/styles/global_text_style.dart';
 import 'package:ZipBee/core/utils/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import '../controller/user_add_funds_controller.dart';
 
 class UserAddFunds extends StatelessWidget {
@@ -20,7 +19,7 @@ class UserAddFunds extends StatelessWidget {
         backgroundColor: AppColors.backgroungColor,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, size: 18),
+          icon: const Icon(Icons.arrow_back_ios, size: 18),
           onPressed: () => Get.back(),
         ),
         centerTitle: true,
@@ -33,59 +32,59 @@ class UserAddFunds extends StatelessWidget {
           ),
         ),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: media.size.width * 0.06),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
 
+            /// 🔹 Amount Title
             Text(
               'How much do you want to add?',
               style: getTextStyle(fontSize: 16, fontWeight: FontWeight.w500),
             ),
-            SizedBox(height: 15),
+            const SizedBox(height: 15),
 
-            // 🔹 Preset Amount Buttons
+            /// 🔹 Preset Amount Buttons
             Obx(
-              () => Center(
-                child: Wrap(
-                  spacing: 14,
-                  children: List.generate(controller.presetAmounts.length, (
-                    index,
-                  ) {
-                    bool selected = controller.selectedIndex.value == index;
-                    return GestureDetector(
-                      onTap: () => controller.onPresetTap(index),
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 21,
-                          vertical: 10,
-                        ),
-                        decoration: BoxDecoration(
-                          color: selected ? Colors.amber : Colors.white,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: selected ? Colors.transparent : Colors.grey,
-                          ),
-                        ),
-                        child: Text(
-                          "\$${controller.presetAmounts[index].toInt()}",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            color: selected ? Colors.black : Colors.grey[800],
-                          ),
+              () => Wrap(
+                spacing: 14,
+                children: List.generate(controller.presetAmounts.length, (
+                  index,
+                ) {
+                  bool selected = controller.selectedIndex.value == index;
+
+                  return GestureDetector(
+                    onTap: () => controller.onPresetTap(index),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 21,
+                        vertical: 10,
+                      ),
+                      decoration: BoxDecoration(
+                        color: selected ? Colors.amber : Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: selected ? Colors.transparent : Colors.grey,
                         ),
                       ),
-                    );
-                  }),
-                ),
+                      child: Text(
+                        "\$${controller.presetAmounts[index].toInt()}",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: selected ? Colors.black : Colors.grey[800],
+                        ),
+                      ),
+                    ),
+                  );
+                }),
               ),
             ),
 
-            SizedBox(height: 18),
+            const SizedBox(height: 18),
 
-            // 🔹 Custom Amount TextField with Add Button
+            /// 🔹 Custom Amount
             Row(
               children: [
                 Expanded(
@@ -103,15 +102,17 @@ class UserAddFunds extends StatelessWidget {
                     ),
                   ),
                 ),
-                SizedBox(width: 10),
-                // 🔹 Add Button to save custom amount to cache
+                const SizedBox(width: 10),
                 ElevatedButton.icon(
                   onPressed: controller.onAddToCache,
-                  icon: Icon(Icons.add, color: Colors.black),
-                  label: Text('Add'),
+                  icon: const Icon(Icons.add, color: Colors.black),
+                  label: const Text('Add'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.amber,
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 18,
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -120,99 +121,78 @@ class UserAddFunds extends StatelessWidget {
               ],
             ),
 
-            SizedBox(height: 25),
+            const SizedBox(height: 30),
+
+            /// 🔹 Payment Method Title
             Text(
-              'How much do you want to add?',
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+              'Payment Method',
+              style: getTextStyle(fontSize: 15, fontWeight: FontWeight.w600),
             ),
-            SizedBox(height: 10),
-            Divider(thickness: 0.8),
+            const Divider(thickness: 0.8),
 
-            // 🔹 Stripe Payment Method
+            /// 🔹 Saved Card (Dynamic)
             Obx(
-              () => GestureDetector(
-                onTap: controller.onToggleStripe,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 12,
-                  ),
-
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
+              () => controller.hasSavedCard.value
+                  ? GestureDetector(
+                      onTap: controller.onToggleStripe,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 14,
                         ),
-
-                        child: Text(
-                          "stripe",
-                          style: getTextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.blueAccent,
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 8),
-
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        child: Row(
                           children: [
                             Text(
-                              "Card Number",
+                              controller.savedCardBrand.value,
                               style: getTextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.blueAccent,
                               ),
                             ),
-                            SizedBox(height: 3),
-                            Text(
-                              "Mastercard ****456",
-                              style: getTextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w400,
-                                color: Colors.grey,
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                "**** ${controller.savedCardLast4.value}",
+                                style: getTextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                            Container(
+                              width: 22,
+                              height: 22,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: controller.isStripeSelected.value
+                                      ? Colors.amber
+                                      : Colors.grey,
+                                  width: 2,
+                                ),
+                                color: controller.isStripeSelected.value
+                                    ? Colors.amber
+                                    : Colors.transparent,
                               ),
                             ),
                           ],
                         ),
                       ),
-
-                      Container(
-                        width: 22,
-                        height: 22,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: controller.isStripeSelected.value
-                                ? Colors.amber
-                                : Colors.grey,
-                            width: 2,
-                          ),
-                          color: controller.isStripeSelected.value
-                              ? Colors.amber
-                              : Colors.transparent,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+                    )
+                  : const SizedBox.shrink(),
             ),
 
-            Divider(thickness: 0.8),
-            SizedBox(height: 16),
+            const Divider(thickness: 0.8),
 
+            /// 🔹 Add Payment Method Toggle
             InkWell(
               onTap: controller.togglePaymentMethodForm,
               child: Obx(
                 () => Row(
                   children: [
-                    Icon(Icons.add, size: 22),
-                    SizedBox(width: 8),
+                    const Icon(Icons.add, size: 22),
+                    const SizedBox(width: 8),
                     Text(
                       "Add payment method",
                       style: getTextStyle(
@@ -220,152 +200,91 @@ class UserAddFunds extends StatelessWidget {
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    Spacer(),
+                    const Spacer(),
                     Icon(
                       controller.showPaymentMethodForm.value
                           ? Icons.arrow_drop_up
                           : Icons.arrow_forward_ios,
-                      size: 24,
+                      size: 20,
                     ),
                   ],
                 ),
               ),
             ),
 
-            // Payment Method Form - Toggle visibility
+            /// 🔹 Payment Sheet Button
             Obx(
               () => controller.showPaymentMethodForm.value
                   ? Column(
                       children: [
-                        SizedBox(height: 16),
-                        Divider(thickness: 0.8),
-                        SizedBox(height: 16),
-
-                        Text(
-                          'Click the button below to add a new payment method.',
-                          style: getTextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.grey,
-                          ),
-                        ),
-
-                        SizedBox(height: 14),
-
-                        // Open Stripe Payment Sheet Button
-                        Obx(
-                          () => SizedBox(
-                            width: double.infinity,
-                            height: 48,
-                            child: ElevatedButton.icon(
-                              onPressed: controller.isAddingPaymentMethod.value
-                                  ? null
-                                  : controller.addPaymentMethod,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.amber,
-                                disabledBackgroundColor: Colors.grey,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                              ),
-                              icon: Icon(
-                                Icons.credit_card,
-                                color: Colors.black,
-                              ),
-                              label: Text(
-                                controller.isAddingPaymentMethod.value
-                                    ? 'Processing...'
-                                    : 'Add Card via Stripe',
-                                style: getTextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-
-                        SizedBox(height: 12),
-
-                        // Cancel Button
+                        const SizedBox(height: 16),
                         SizedBox(
                           width: double.infinity,
                           height: 48,
-                          child: OutlinedButton(
-                            onPressed:
-                                controller.isAddingPaymentMethod.value
-                                    ? null
-                                    : controller.togglePaymentMethodForm,
-                            style: OutlinedButton.styleFrom(
-                              side: BorderSide(color: Colors.grey),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
+                          child: ElevatedButton.icon(
+                            onPressed: controller.isAddingPaymentMethod.value
+                                ? null
+                                : controller.addPaymentMethod,
+                            icon: const Icon(
+                              Icons.credit_card,
+                              color: Colors.black,
                             ),
-                            child: Text(
-                              'Cancel',
+                            label: Text(
+                              controller.isAddingPaymentMethod.value
+                                  ? "Processing..."
+                                  : "Add Card via Stripe",
                               style: getTextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
+                                color: Colors.black,
                               ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.amber,
                             ),
                           ),
                         ),
-
-                        SizedBox(height: 16),
+                        const SizedBox(height: 16),
                       ],
                     )
-                  : SizedBox.shrink(),
+                  : const SizedBox.shrink(),
             ),
           ],
         ),
       ),
 
-      // 🔹 Bottom "Add Fund" Button
+      /// 🔹 Bottom Add Fund Button
       bottomNavigationBar: Padding(
-        padding: EdgeInsets.all(18),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(
-              height: 55,
-              width: double.infinity,
-              child: Obx(
-                () => ElevatedButton(
-                  onPressed: controller.isLoading.value 
-                    ? null 
-                    : () => controller.onAddFunds(),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.amber,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    disabledBackgroundColor: Colors.amber.withOpacity(0.6),
-                  ),
-                  child: controller.isLoading.value
-                    ? SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
-                        ),
-                      )
-                    : Text(
-                        "Add Fund",
-                        style: getTextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.black,
-                        ),
-                      ),
+        padding: const EdgeInsets.all(18),
+        child: Obx(
+          () => SizedBox(
+            height: 55,
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: controller.isLoading.value
+                  ? null
+                  : controller.onAddFunds,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.amber,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
                 ),
               ),
+              child: controller.isLoading.value
+                  ? const CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.black,
+                    )
+                  : Text(
+                      "Add Fund",
+                      style: getTextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.black,
+                      ),
+                    ),
             ),
-
-            SizedBox(height: 90),
-          ],
+          ),
         ),
       ),
     );
