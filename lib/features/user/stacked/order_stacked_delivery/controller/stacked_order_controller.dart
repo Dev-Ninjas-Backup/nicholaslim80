@@ -1,25 +1,28 @@
 import 'package:ZipBee/features/user/bottom_navbar/screen/bottom_navbar_screen.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/cancel_order_service.dart';
+import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/order_service.dart';
+import 'package:ZipBee/features/user/stacked/order_stacked_delivery/widget/payment_method_widget.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/notify_rider.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/promo_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
-
 import 'package:ZipBee/features/user/stacked/stacked_controller/stacked_controller.dart';
 import 'package:ZipBee/features/user/stacked/vehicle_type/controller/controller.dart';
 import 'package:ZipBee/features/user/stacked/widget/pic_date_time.dart';
-import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/order_service.dart';
-import 'package:ZipBee/features/user/stacked/order_stacked_delivery/widget/payment_method_widget.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:get/get.dart';
 
 class StackedOrderController extends GetxController {
-  var orderNumber = '#1233'.obs;
+  var orderNumber = ''.obs;
   var isDriverAssigned = false.obs;
   var countdown = 10.obs;
 
   // New properties for Order Confirmation Details
   var totalAmount = 0.0.obs; // Will be set before showing dialog (server value)
   var totalFee = 0.0.obs; // server-side fee (preferred display when available)
+  var totalCost = 0.0.obs; // total_cost from API response (direct from server)
   var redeemCoins = false.obs;
   var favoriteRiders = false.obs;
   int userCoinBalance = 0; // User's current coin balance from API
@@ -45,6 +48,7 @@ class StackedOrderController extends GetxController {
 
     try {
       isCancelling.value = true;
+
 
       final result = await CancelOrderService.cancelOrder(lastOrderId!, reason);
 
@@ -251,12 +255,43 @@ class StackedOrderController extends GetxController {
         // save for later 'place' call
         lastOrderId = orderId;
         final getRes = await OrderService.getOrder(orderId);
-        debugPrint('Get order full response: $getRes');
+        debugPrint(
+          '📥 Get order full response received (status: ${getRes['statusCode']})',
+        );
+
+        // Parse the response to show what we got
+        try {
+          final getData =
+              (getRes['body'] as Map<String, dynamic>?)?['data']
+                  as Map<String, dynamic>?;
+          if (getData != null) {
+            final fetchedTotalCost =
+                double.tryParse(getData['total_cost'].toString()) ?? 0.0;
+            print('📥 Order Details Fetched from API:');
+            print('   - total_cost: \$${fetchedTotalCost.toStringAsFixed(2)}');
+            print('   - total_fee: ${getData['total_fee']}');
+            print('   - delivery_type: ${getData['delivery_type']}');
+            print('   - pay_type: ${getData['pay_type']}');
+          }
+        } catch (e) {
+          print('📥 Could not parse fetched order details: $e');
+        }
       }
 
       // Update controller totals to server values and return success
       totalAmount.value = serverTotal;
       totalFee.value = serverFee;
+      totalCost.value = serverTotal; // Store total_cost from API response
+
+      print('\n╔════════════════════════════════════════════╗');
+      print('║  📦 ORDER CREATED - TOTALS SET IN CONTROLLER');
+      print('╠════════════════════════════════════════════╣');
+      print('║  Order ID: $orderId');
+      print('║  Total Cost: \$${totalCost.value.toStringAsFixed(2)}');
+      print('║  Total Amount: \$${totalAmount.value.toStringAsFixed(2)}');
+      print('║  Total Fee: \$${totalFee.value.toStringAsFixed(2)}');
+      print('╚════════════════════════════════════════════╝\n');
+
       return true;
     } else {
       final msg =
@@ -347,6 +382,9 @@ class StackedOrderController extends GetxController {
         );
         totalAmount.value = serverTotal;
         totalFee.value = serverFee;
+
+        totalCost.value = serverTotal; // Store total_cost from API response
+
         EasyLoading.showSuccess(
           'Order placed: S\$${serverTotal.toStringAsFixed(2)}',
         );
@@ -396,8 +434,9 @@ class StackedOrderController extends GetxController {
     lastOrderId = null;
     totalAmount.value = 0.0;
     totalFee.value = 0.0;
+    totalCost.value = 0.0;
   }
-
+  
   Future<void> applyPromoCode(String code) async {
     if (lastOrderId == null) {
       EasyLoading.showError('Order not created yet');
@@ -438,4 +477,5 @@ class StackedOrderController extends GetxController {
       EasyLoading.showError(res['body']?['message'] ?? 'Failed to apply promo');
     }
   }
+
 }

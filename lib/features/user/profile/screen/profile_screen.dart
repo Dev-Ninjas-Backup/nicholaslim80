@@ -5,6 +5,7 @@ import 'package:ZipBee/core/utils/constants/image_path.dart';
 import 'package:ZipBee/features/user/profile/controller/profile_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -38,39 +39,94 @@ class ProfileScreen extends StatelessWidget {
                 Stack(
                   alignment: Alignment.center,
                   children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(60),
-                      child: Image.asset(
-                        ImagePath.profileImage,
-                        height: 100,
-                        width: 100,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
+                    Obx(() {
+                      return ClipRRect(
+                        borderRadius: BorderRadius.circular(60),
+                        child: controller.profileImage.value != null
+                            ? Image.file(
+                                controller.profileImage.value!,
+                                height: 100,
+                                width: 100,
+                                fit: BoxFit.cover,
+                              )
+                            : controller.userModel.value.image.isNotEmpty
+                            ? Image.network(
+                                controller.userModel.value.image,
+                                height: 100,
+                                width: 100,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Image.asset(
+                                    ImagePath.profileImage,
+                                    height: 100,
+                                    width: 100,
+                                    fit: BoxFit.cover,
+                                  );
+                                },
+                              )
+                            : Image.asset(
+                                ImagePath.profileImage,
+                                height: 100,
+                                width: 100,
+                                fit: BoxFit.cover,
+                              ),
+                      );
+                    }),
 
                     /// EDIT ICON OVERLAY
                     Positioned(
                       bottom: 0,
                       right: 0,
-                      child: Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.2),
-                              blurRadius: 4,
-                            ),
-                          ],
-                        ),
-                        child: const Icon(
-                          Icons.camera_alt,
-                          size: 18,
-                          color: Colors.black,
+                      child: GestureDetector(
+                        onTap: () {
+                          _showImagePicker(context, controller);
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.2),
+                                blurRadius: 4,
+                              ),
+                            ],
+                          ),
+                          child: const Icon(
+                            Icons.camera_alt,
+                            size: 18,
+                            color: Colors.black,
+                          ),
                         ),
                       ),
                     ),
+
+                    /// TICK MARK FOR UPLOAD
+                    Obx(() {
+                      if (controller.profileImage.value != null) {
+                        return Positioned(
+                          top: 0,
+                          right: 0,
+                          child: GestureDetector(
+                            onTap: controller.saveProfileImage,
+                            child: Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: const BoxDecoration(
+                                color: Colors.green,
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.check,
+                                size: 18,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    }),
                   ],
                 ),
 
@@ -78,8 +134,6 @@ class ProfileScreen extends StatelessWidget {
 
                 /// 🔽 PROFILE INFO SECTION
                 Obx(() {
-                  final name =
-                      controller.userModel.value.userProfile?.firstName ?? '';
                   if (controller.errorMessage.value.isNotEmpty) {
                     return Center(child: Text(controller.errorMessage.value));
                   } else {
@@ -239,7 +293,6 @@ class ProfileScreen extends StatelessWidget {
                                                               .phoneController
                                                               .text
                                                         : null,
-                                                    // Date of Birth save can be handled in controller later
                                                   );
                                                 },
                                                 child: const Icon(
@@ -276,6 +329,36 @@ class ProfileScreen extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  void _showImagePicker(BuildContext context, ProfileController controller) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return SafeArea(
+          child: Wrap(
+            children: [
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: const Text('Gallery'),
+                onTap: () {
+                  controller.pickImage(ImageSource.gallery);
+                  Navigator.of(context).pop();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text('Camera'),
+                onTap: () {
+                  controller.pickImage(ImageSource.camera);
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

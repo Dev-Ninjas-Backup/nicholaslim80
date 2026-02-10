@@ -19,9 +19,11 @@
 	<key>CFBundleShortVersionString</key>
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Scan your card to add it automatically</string>
-	<key>NSCameraUsageDescription</key>
-	<string>To scan cards</string>
+	<string>This app requires access to the camera to take profile photos.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app requires access to the photo library to select profile photos.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This app requires access to the microphone if you record videos.</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
