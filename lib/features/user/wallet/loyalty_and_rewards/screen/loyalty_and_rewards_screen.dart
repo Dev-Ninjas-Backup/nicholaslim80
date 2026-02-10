@@ -2,7 +2,6 @@ import 'package:ZipBee/core/common/widgets/custom_button.dart';
 import 'package:ZipBee/core/utils/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import '../controller/loyalty_and_rewards_controller.dart';
 
 class LoyaltyAndRewardsScreen extends StatelessWidget {
@@ -10,48 +9,44 @@ class LoyaltyAndRewardsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(LoyaltyAndRewardsController());
+    final controller = Get.put(LoyaltyAndRewardsController(), permanent: false);
 
     return Scaffold(
       backgroundColor: AppColors.backgroungColor,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 18),
+          padding: const EdgeInsets.symmetric(horizontal: 18),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
 
-              /// ======================
-              /// TOP BAR
-              /// ======================
+              /// ================= TOP BAR =================
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   GestureDetector(
                     onTap: controller.onBack,
-                    child: Icon(Icons.arrow_back_ios_new, size: 20),
+                    child: const Icon(Icons.arrow_back_ios_new, size: 20),
                   ),
-                  Text(
+                  const Text(
                     "Loyalty & Rewards",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                   ),
                   GestureDetector(
                     onTap: controller.onInfoTap,
-                    child: Icon(Icons.info_outline, size: 22),
+                    child: const Icon(Icons.info_outline, size: 22),
                   ),
                 ],
               ),
 
-              SizedBox(height: 25),
+              const SizedBox(height: 25),
 
-              /// ======================
-              /// POINTS BALANCE
-              /// ======================
+              /// ================= POINTS BALANCE =================
               Center(
                 child: Column(
                   children: [
-                    Text(
+                    const Text(
                       'Your Points Balance',
                       style: TextStyle(
                         fontSize: 14,
@@ -59,20 +54,20 @@ class LoyaltyAndRewardsScreen extends StatelessWidget {
                       ),
                     ),
 
-                    /// points
+                    /// POINTS
                     Obx(
                       () => Text(
                         controller.points.value.toString(),
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 38,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
 
-                    SizedBox(height: 4),
+                    const SizedBox(height: 4),
 
-                    /// dollar value
+                    /// DOLLAR VALUE
                     Obx(
                       () => Text(
                         "= \$${controller.dollarValue.value.toStringAsFixed(2)}",
@@ -83,12 +78,12 @@ class LoyaltyAndRewardsScreen extends StatelessWidget {
                       ),
                     ),
 
-                    SizedBox(height: 15),
+                    const SizedBox(height: 15),
                   ],
                 ),
               ),
 
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
 
               Center(
                 child: Text(
@@ -101,27 +96,38 @@ class LoyaltyAndRewardsScreen extends StatelessWidget {
                 ),
               ),
 
-              SizedBox(height: 15),
+              const SizedBox(height: 15),
 
-              /// ======================
-              /// HISTORY CARD (ONLY THIS NEEDS Obx)
-              /// ======================
+              /// ================= HISTORY CARD =================
               Container(
                 width: double.infinity,
-                padding: EdgeInsets.symmetric(vertical: 15),
+                padding: const EdgeInsets.symmetric(vertical: 15),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Obx(
-                  () => Column(
-                    children: controller.history.map((item) {
-                      bool isLast = item == controller.history.last;
+                child: Obx(() {
+                  if (controller.history.isEmpty) {
+                    return Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Center(
+                        child: Text(
+                          "No history found",
+                          style: TextStyle(color: Colors.grey.shade600),
+                        ),
+                      ),
+                    );
+                  }
+
+                  return Column(
+                    children: List.generate(controller.history.length, (index) {
+                      final item = controller.history[index];
+                      final isLast = index == controller.history.length - 1;
 
                       return Column(
                         children: [
                           Padding(
-                            padding: EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                               horizontal: 18,
                               vertical: 20,
                             ),
@@ -129,15 +135,15 @@ class LoyaltyAndRewardsScreen extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
                                 Text(
-                                  "Order ${item["orderId"]}",
-                                  style: TextStyle(
+                                  "Order ${item["orderId"] ?? ""}",
+                                  style: const TextStyle(
                                     fontSize: 15,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
-                                SizedBox(height: 3),
+                                const SizedBox(height: 3),
                                 Text(
-                                  "Completed on ${item["date"]}",
+                                  "Completed on ${item["date"] ?? ""}",
                                   style: TextStyle(
                                     fontSize: 13,
                                     color: Colors.grey.shade600,
@@ -150,21 +156,21 @@ class LoyaltyAndRewardsScreen extends StatelessWidget {
                             Divider(color: Colors.grey.shade300, thickness: 1),
                         ],
                       );
-                    }).toList(),
-                  ),
-                ),
+                    }),
+                  );
+                }),
               ),
 
-              SizedBox(height: 25),
+              const SizedBox(height: 25),
 
-              Text(
+              const Text(
                 "How It Works",
                 style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
               ),
 
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
 
-              Row(
+              const Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text("• "),
@@ -177,9 +183,9 @@ class LoyaltyAndRewardsScreen extends StatelessWidget {
                 ],
               ),
 
-              SizedBox(height: 6),
+              const SizedBox(height: 6),
 
-              Row(
+              const Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text("• "),
@@ -192,7 +198,8 @@ class LoyaltyAndRewardsScreen extends StatelessWidget {
                 ],
               ),
 
-              SizedBox(height: 70),
+              const SizedBox(height: 70),
+
               CustomButton(
                 label: 'Convert points',
                 onPressed: controller.showRedeemBottomSheet,
@@ -200,7 +207,7 @@ class LoyaltyAndRewardsScreen extends StatelessWidget {
                 textColor: Colors.black,
               ),
 
-              SizedBox(height: 40),
+              const SizedBox(height: 40),
             ],
           ),
         ),

@@ -75,6 +75,13 @@ class ApiEndPoint {
   static const String placeOrder = '$baseUrl/order/{orderId}/place';
 
   static const String addMoney = '$baseUrl/wallet/add-money/mobile';
+  static const String confirmSetupIntent =
+      '$baseUrl/wallet/confirm-setup-intent';
+
+  static const String createSetupIntent = '$baseUrl/wallet/create-setup-intent';
+
+  static const String saveCard = '$baseUrl/wallet/save-card';
+  static const String getSavedCard = "$baseUrl/wallet/get-saved-card";
 
   //redeem-point
   static const String redeemPoint = '$baseUrl/referloyality/redeem-point';

@@ -2,6 +2,11 @@ import 'package:ZipBee/features/user/bottom_navbar/screen/bottom_navbar_screen.d
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/cancel_order_service.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/order_service.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/widget/payment_method_widget.dart';
+import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/notify_rider.dart';
+import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/promo_service.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:get/get.dart';
 import 'package:ZipBee/features/user/stacked/stacked_controller/stacked_controller.dart';
 import 'package:ZipBee/features/user/stacked/vehicle_type/controller/controller.dart';
 import 'package:ZipBee/features/user/stacked/widget/pic_date_time.dart';
@@ -34,11 +39,9 @@ class StackedOrderController extends GetxController {
 
   var isCancelling = false.obs;
 
-  /// রিজন সহ অর্ডার ক্যানসেল করার ফাংশন
   Future<void> handleOrderCancellation(String? reason) async {
-    // যদি lastOrderId না থাকে (অর্ডার ক্রিয়েট হয়নি এমন অবস্থায়)
     if (lastOrderId == null) {
-      cancelAndReset(); // শুধু স্টেট রিসেট করে দিবে
+      cancelAndReset();
       Get.offAll(() => BottomNavbarScreen());
       return;
     }
@@ -46,8 +49,7 @@ class StackedOrderController extends GetxController {
     try {
       isCancelling.value = true;
 
-      // আপনার বিদ্যমান CancelOrderService কল করা হচ্ছে
-      // রিজন নাল বা খালি হলে সার্ভিস ফাইল "Hamara Mardi" বসিয়ে দেবে
+
       final result = await CancelOrderService.cancelOrder(lastOrderId!, reason);
 
       isCancelling.value = false;
@@ -74,8 +76,44 @@ class StackedOrderController extends GetxController {
     redeemCoins.value = value;
   }
 
-  void toggleFavoriteRiders(bool value) {
+  Future<void> toggleFavoriteRiders(bool value) async {
+    // UI instantly update
     favoriteRiders.value = value;
+
+    // If order is ASAP → backend does not support notify API
+    if (collectTime.value == 'ASAP') {
+      debugPrint('⚠️ Favourite rider API skipped (ASAP order)');
+      return;
+    }
+
+    if (lastOrderId == null) {
+      EasyLoading.showError('Order not found');
+      return;
+    }
+
+    EasyLoading.show(status: 'Updating...');
+
+    final res = await NotifyRider.notifyRider(
+      orderId: lastOrderId.toString(),
+      notifyRider: value,
+    );
+
+    EasyLoading.dismiss();
+
+    final success = res['success'] ?? false;
+
+    if (success) {
+      final body = res['body'] as Map<String, dynamic>? ?? {};
+      final data = body['data'] as Map<String, dynamic>? ?? {};
+
+      favoriteRiders.value = data['notify_favorite_raider'] ?? value;
+
+      EasyLoading.showSuccess(body['message'] ?? 'Updated successfully');
+    } else {
+      // revert toggle
+      favoriteRiders.value = !value;
+      EasyLoading.showError('Failed to update favourite rider');
+    }
   }
 
   /// Place order by building payload from controllers, call POST endpoint,
@@ -344,7 +382,9 @@ class StackedOrderController extends GetxController {
         );
         totalAmount.value = serverTotal;
         totalFee.value = serverFee;
+
         totalCost.value = serverTotal; // Store total_cost from API response
+
         EasyLoading.showSuccess(
           'Order placed: S\$${serverTotal.toStringAsFixed(2)}',
         );
@@ -396,4 +436,46 @@ class StackedOrderController extends GetxController {
     totalFee.value = 0.0;
     totalCost.value = 0.0;
   }
+  
+  Future<void> applyPromoCode(String code) async {
+    if (lastOrderId == null) {
+      EasyLoading.showError('Order not created yet');
+      return;
+    }
+
+    if (code.trim().isEmpty) {
+      EasyLoading.showError('Enter promo code');
+      return;
+    }
+
+    EasyLoading.show(status: 'Applying promo...');
+
+    final res = await PromoService.applyPromo(
+      orderId: lastOrderId!,
+      promoCode: code.trim(),
+    );
+
+    EasyLoading.dismiss();
+
+    final success = res['success'] as bool? ?? false;
+
+    if (success) {
+      final body = res['body'] as Map<String, dynamic>? ?? {};
+      final data = body['data'] as Map<String, dynamic>? ?? {};
+
+      /// Update totals from API
+      totalAmount.value =
+          double.tryParse(data['total_cost']?.toString() ?? '0') ?? 0;
+
+      totalFee.value =
+          double.tryParse(data['total_fee']?.toString() ?? '0') ?? 0;
+
+      EasyLoading.showSuccess(body['message'] ?? 'Promo applied');
+
+      Get.back(); // close promo dialog
+    } else {
+      EasyLoading.showError(res['body']?['message'] ?? 'Failed to apply promo');
+    }
+  }
+
 }

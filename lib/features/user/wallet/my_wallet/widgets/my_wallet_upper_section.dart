@@ -1,3 +1,4 @@
+import 'package:ZipBee/features/user/wallet/loyalty_and_rewards/screen/loyalty_and_rewards_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -53,11 +54,14 @@ class MyWalletUpperSection extends StatelessWidget {
                       Get.toNamed(AppRoutes.getuserAddFund());
                     },
                   ),
-                  const SizedBox(width: 20),
+                  SizedBox(width: 20),
                   walletButton(
                     title: "Redeem Points",
                     selected: controller.selectFundsOrRedeen.value == 1,
-                    onTap: () => controller.selectFundsOrRedeen.value = 1,
+                    onTap: () {
+                      controller.selectFundsOrRedeen.value = 1;
+                      Get.to(LoyaltyAndRewardsScreen());
+                    },
                   ),
                 ],
               ),
