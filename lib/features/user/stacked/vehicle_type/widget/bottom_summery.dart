@@ -1,5 +1,6 @@
 import 'package:ZipBee/core/common/styles/global_text_style.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/controller/stacked_order_controller.dart';
+import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/order_service.dart';
 import 'package:ZipBee/routes/app_routes.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +9,7 @@ import 'package:get/get.dart';
 import '../controller/additional_controller.dart';
 import '../controller/controller.dart';
 
-class StackedBottomSummary extends StatelessWidget {
+class StackedBottomSummary extends StatefulWidget {
   final StackedVehicleController vehicleController;
   final List<String> couriers;
 
@@ -19,8 +20,61 @@ class StackedBottomSummary extends StatelessWidget {
   });
 
   @override
+  State<StackedBottomSummary> createState() => _StackedBottomSummaryState();
+}
+
+class _StackedBottomSummaryState extends State<StackedBottomSummary> {
+  @override
+  void initState() {
+    super.initState();
+    print('\n🎬 [BOTTOM SUMMARY] Widget initState called');
+    print('🎬 [BOTTOM SUMMARY] Attempting to refresh order data from API...\n');
+    // Fetch order details from API whenever this widget is shown
+    _refreshOrderDataFromAPI();
+  }
+
+  Future<void> _refreshOrderDataFromAPI() async {
+    try {
+      final oc = Get.find<StackedOrderController>();
+      if (oc.lastOrderId != null) {
+        print('🔄 [BOTTOM SUMMARY] Refreshing order data (ID: ${oc.lastOrderId})');
+        final response = await OrderService.getOrder(oc.lastOrderId!);
+        
+        print('📥 [BOTTOM SUMMARY] API Response: ${response['statusCode']}');
+        
+        final status = response['statusCode'] as int? ?? 500;
+        if (status == 200) {
+          final data = (response['body'] as Map<String, dynamic>?)?['data'] as Map<String, dynamic>?;
+          if (data != null) {
+            double totalCostFromAPI = double.tryParse(data['total_cost'].toString()) ?? 0.0;
+            print('💰 [BOTTOM SUMMARY] Got total_cost from API: \$${totalCostFromAPI.toStringAsFixed(2)}');
+            print('📋 [BOTTOM SUMMARY] Full order data:');
+            print('   - order_id: ${data['id']}');
+            print('   - vehicle_type_id: ${data['vehicle_type_id']}');
+            print('   - total_cost: \$${totalCostFromAPI.toStringAsFixed(2)}');
+            print('   - total_fee: ${data['total_fee']}');
+            print('   - additional_cost: ${data['additional_cost']}');
+            print('   - total_distance: ${data['total_distance']}');
+            print('   - delivery_type: ${data['delivery_type']}');
+            print('   - pay_type: ${data['pay_type']}');
+            
+            // Update the controller with the latest data
+            oc.totalCost.value = totalCostFromAPI;
+            print('✅ [BOTTOM SUMMARY] Updated totalCost in controller to: \$${oc.totalCost.value.toStringAsFixed(2)}');
+          }
+        }
+      }
+    } catch (e) {
+      print('❌ [BOTTOM SUMMARY] Error refreshing order: $e');
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final additionalServiceController = Get.find<AdditionalServiceController>();
+    
+    print('\n🎨 [BOTTOM SUMMARY] Building widget...');
+    print('🎨 [BOTTOM SUMMARY] AdditionalServiceController found\n');
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 9.0),
@@ -50,32 +104,38 @@ class StackedBottomSummary extends StatelessWidget {
                     ),
                   ),
                   Obx(() {
-                    // Calculate total: vehicle cost + additional services
-                    double vehicleTotal = vehicleController.calculateTotal();
-                    double additionalServicesTotal = additionalServiceController
-                        .getSelectedServicesTotal();
-                    double subtotal = vehicleTotal + additionalServicesTotal;
-
-                    // Prefer server total_fee, then server totalAmount, otherwise local calculation
+                    print('\n═══════════════════════════════════════');
+                    print('🔔 BOTTOM SUMMARY DISPLAY UPDATE');
+                    print('═══════════════════════════════════════');
+                    
+                    // Get ONLY totalCost from API - No local vehicle calculation
                     try {
                       final oc = Get.find<StackedOrderController>();
-                      final amountToShow = oc.totalFee.value > 0
-                          ? oc.totalFee.value
-                          : (oc.totalAmount.value > 0
-                                ? oc.totalAmount.value
-                                : subtotal);
+                      final apiTotalCost = oc.totalCost.value;
+                      
+                      print('✅ StackedOrderController Found');
+                      print('📊 Current totalCost value: \$${apiTotalCost.toStringAsFixed(2)}');
+                      print('🔗 Order ID (lastOrderId): ${oc.lastOrderId}');
+                      print('💳 Payment type (pay_type): ${oc.placeOrderResponse.value?['pay_type'] ?? 'N/A'}');
+                      print('🚗 Delivery type: ${oc.placeOrderResponse.value?['delivery_type'] ?? 'N/A'}');
+                      print('\n💰 DISPLAYING: \$${apiTotalCost.toStringAsFixed(2)}');
+                      print('═══════════════════════════════════════\n');
 
                       return Text(
-                        '\$${amountToShow.toStringAsFixed(2)}',
+                        '\$${apiTotalCost.toStringAsFixed(2)}',
                         style: getTextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Colors.black,
                         ),
                       );
-                    } catch (_) {
+                    } catch (e) {
+                      print('❌ StackedOrderController NOT found: $e');
+                      print('⏳ Waiting for order to be created from API...');
+                      print('💰 DISPLAYING: \$0.00 (NO ORDER YET)');
+                      print('═══════════════════════════════════════\n');
                       return Text(
-                        '\$${subtotal.toStringAsFixed(2)}',
+                        '\$0.00',
                         style: getTextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -89,18 +149,14 @@ class StackedBottomSummary extends StatelessWidget {
             ),
             Obx(
               () => FilledButton(
-                onPressed: vehicleController.selectedVehicle.value != null
+                onPressed: widget.vehicleController.selectedVehicle.value != null
                     ? () {
-                        // Pass server totals if available
-                        double amountToPass = vehicleController
+                        // Use only total_cost from API response
+                        double amountToPass = widget.vehicleController
                             .calculateTotal();
                         try {
                           final oc = Get.find<StackedOrderController>();
-                          amountToPass = oc.totalFee.value > 0
-                              ? oc.totalFee.value
-                              : (oc.totalAmount.value > 0
-                                    ? oc.totalAmount.value
-                                    : amountToPass);
+                          amountToPass = oc.totalCost.value;
                         } catch (_) {}
 
                         Get.toNamed(
@@ -111,7 +167,7 @@ class StackedBottomSummary extends StatelessWidget {
                     : null,
                 style: ButtonStyle(
                   backgroundColor: WidgetStateProperty.resolveWith<Color>(
-                    (states) => vehicleController.selectedVehicle.value != null
+                    (states) => widget.vehicleController.selectedVehicle.value != null
                         ? Colors.amber
                         : Colors.grey.shade400,
                   ),
@@ -196,12 +252,12 @@ class StackedBottomSummary extends StatelessWidget {
                       return ListView.builder(
                         shrinkWrap: true,
                         physics: NeverScrollableScrollPhysics(),
-                        itemCount: vehicleController.calculationHistory.length,
+                        itemCount: widget.vehicleController.calculationHistory.length,
                         itemBuilder: (context, index) {
                           return Padding(
                             padding: EdgeInsets.symmetric(vertical: 4),
                             child: Text(
-                              vehicleController.calculationHistory[index],
+                              widget.vehicleController.calculationHistory[index],
                               style: getTextStyle(fontSize: 12),
                             ),
                           );
@@ -217,8 +273,13 @@ class StackedBottomSummary extends StatelessWidget {
               // Additional services section
               Obx(() {
                 if (additionalServiceController.selectedServiceIds.isEmpty) {
+                  print('==== ADDITIONAL SERVICES DEBUG ====');
+                  print('No additional services selected');
                   return SizedBox.shrink();
                 }
+
+                print('==== ADDITIONAL SERVICES DEBUG ====');
+                print('Selected Service IDs: ${additionalServiceController.selectedServiceIds}');
 
                 return Container(
                   padding: EdgeInsets.all(12),
@@ -244,7 +305,12 @@ class StackedBottomSummary extends StatelessWidget {
                       ) {
                         final service = additionalServiceController.services
                             .firstWhereOrNull((s) => s.id == serviceId);
-                        if (service == null) return SizedBox.shrink();
+                        if (service == null) {
+                          print('Service with ID $serviceId NOT FOUND');
+                          return SizedBox.shrink();
+                        }
+                        
+                        print('Service Found - ID: $serviceId, Name: ${service.serviceName}, Value: \$${service.value}');
 
                         return Padding(
                           padding: EdgeInsets.symmetric(vertical: 4),
@@ -275,12 +341,19 @@ class StackedBottomSummary extends StatelessWidget {
 
               // Total breakdown
               Obx(() {
-                double vehicleTotal = vehicleController.calculateTotal();
+                double vehicleTotal = widget.vehicleController.calculateTotal();
                 double additionalServicesTotal = additionalServiceController
                     .getSelectedServicesTotal();
                 double subtotal = vehicleTotal + additionalServicesTotal;
                 double gst = subtotal * 0.08; // 8% GST
                 double finalTotal = subtotal + gst;
+                
+                print('==== TOTAL BREAKDOWN DEBUG ====');
+                print('Vehicle Total: \$${vehicleTotal.toStringAsFixed(2)}');
+                print('Additional Services Total: \$${additionalServicesTotal.toStringAsFixed(2)}');
+                print('Subtotal: \$${subtotal.toStringAsFixed(2)}');
+                print('GST (8%): \$${gst.toStringAsFixed(2)}');
+                print('Final Total (incl. GST): \$${finalTotal.toStringAsFixed(2)}');
 
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -296,7 +369,7 @@ class StackedBottomSummary extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          "S\$${subtotal.toStringAsFixed(2)}",
+                          "\$${subtotal.toStringAsFixed(2)}",
                           style: getTextStyle(fontSize: 13),
                         ),
                       ],
@@ -313,7 +386,7 @@ class StackedBottomSummary extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          "S\$${gst.toStringAsFixed(2)}",
+                          "\$${gst.toStringAsFixed(2)}",
                           style: getTextStyle(
                             fontSize: 13,
                             color: Colors.orange,
@@ -339,7 +412,7 @@ class StackedBottomSummary extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            "S\$${finalTotal.toStringAsFixed(2)}",
+                            "\$${finalTotal.toStringAsFixed(2)}",
                             style: getTextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,

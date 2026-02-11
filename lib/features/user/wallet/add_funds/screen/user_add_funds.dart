@@ -2,7 +2,6 @@ import 'package:ZipBee/core/common/styles/global_text_style.dart';
 import 'package:ZipBee/core/utils/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import '../controller/user_add_funds_controller.dart';
 import '../controller/add_funds_payment_controller.dart'; // নতুন কন্ট্রোলার ইমপোর্ট
 
@@ -240,6 +239,19 @@ class UserAddFunds extends StatelessWidget {
                       ),
                 ),
               ),
+              child: controller.isLoading.value
+                  ? const CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.black,
+                    )
+                  : Text(
+                      "Add Fund",
+                      style: getTextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.black,
+                      ),
+                    ),
             ),
             const SizedBox(height: 40),
           ],
