@@ -19,31 +19,34 @@ class ManagePaymentScreen extends StatelessWidget {
         elevation: 0,
         leading: GestureDetector(
           onTap: () => Get.back(),
-          child: Icon(Icons.arrow_back, color: Colors.black),
+          child: const Icon(Icons.arrow_back, color: Colors.black),
         ),
-        title: Text(
+        title: const Text(
           "Manage Payment",
           style: TextStyle(color: Colors.black, fontSize: 20),
         ),
         centerTitle: true,
       ),
-
       body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
 
-            paymentTile(
-              icon: IconPath.stripe,
-              title: "Card Card",
-              subtitle: "Default ****456",
-              onTap: controller.onStripeTap,
+            /// 🔥 Stripe Card (Reactive)
+            Obx(
+              () => paymentTile(
+                icon: IconPath.stripe,
+                title: "Card",
+                subtitle: controller.hasCard.value
+                    ? "Default ****${controller.last4.value}"
+                    : "Add your card",
+                onTap: controller.onStripeTap,
+              ),
             ),
-            SizedBox(height: 10),
-            divider(),
 
+            const SizedBox(height: 10),
             divider(),
 
             paymentTile(
@@ -54,13 +57,16 @@ class ManagePaymentScreen extends StatelessWidget {
             ),
 
             divider(),
-            divider(),
 
-            paymentTile(
-              icon: IconPath.dbs,
-              title: "Paylah / Paylah",
-              subtitle: "Link to Paylah / Paynow",
-              onTap: controller.onDbspayTap,
+            Obx(
+              () => paymentTile(
+                icon: IconPath.stripe,
+                title: "Card Card",
+                subtitle: controller.hasCard.value
+                    ? "Default ****${controller.last4.value}"
+                    : "No card added",
+                onTap: controller.onStripeTap,
+              ),
             ),
 
             divider(),
@@ -70,7 +76,7 @@ class ManagePaymentScreen extends StatelessWidget {
             GestureDetector(
               onTap: controller.onAddPayment,
               child: Row(
-                children: [
+                children: const [
                   Icon(Icons.add, size: 26),
                   SizedBox(width: 10),
                   Text(
@@ -83,20 +89,17 @@ class ManagePaymentScreen extends StatelessWidget {
               ),
             ),
 
-            SizedBox(height: 40),
+            const SizedBox(height: 40),
 
-            Text(
+            const Text(
               "More Information",
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
 
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
 
-            Text(
-              "For credit and debit card transactions, there be authorisation "
-              "hold to validate the card and this amount will be deducted "
-              "against the final fare. Any unused amount will be returned to "
-              "you after final payment or when the fare has been made.",
+            const Text(
+              "For credit and debit card transactions, there will be authorisation hold to validate the card and this amount will be deducted against the final fare. Any unused amount will be returned to you after final payment.",
               style: TextStyle(fontSize: 14, height: 1.4),
             ),
           ],
@@ -117,18 +120,21 @@ class ManagePaymentScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Image.asset(icon, width: 40, height: 40),
-          SizedBox(width: 15),
+          const SizedBox(width: 15),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 title,
-                style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+                style: const TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-              SizedBox(height: 4),
+              const SizedBox(height: 4),
               Text(
                 subtitle,
-                style: TextStyle(fontSize: 14, color: Colors.black54),
+                style: const TextStyle(fontSize: 14, color: Colors.black54),
               ),
             ],
           ),

@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:ZipBee/core/api_end_point/api_end_point.dart';
 import 'package:ZipBee/core/shared_prefference_service/shared_pref.dart';
+import 'package:ZipBee/features/user/stacked/order_stacked_delivery/controller/stacked_order_controller.dart';
+import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/order_confirmation_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
@@ -96,6 +98,31 @@ class AdditionalServiceController extends GetxController {
     }
   }
 
+  /// Refresh order cost from API after service change
+  Future<void> _refreshOrderCostAfterServiceChange() async {
+    try {
+      final oc = Get.find<StackedOrderController>();
+      if (oc.lastOrderId == null) return;
+      
+      print('📞 [SERVICE CHANGE] Refreshing order cost from API...');
+      final response = await OrderConfirmationService.getOrder(oc.lastOrderId ?? 0);
+      final data = (response['body'] as Map<String, dynamic>?)?['data'] as Map<String, dynamic>?;
+      
+      if (data != null) {
+        final latestCost = data['total_cost'] is String
+            ? double.tryParse(data['total_cost']) ?? 0.0
+            : (data['total_cost'] as num?)?.toDouble() ?? 0.0;
+        
+        oc.totalCost.value = latestCost;
+        oc.totalAmount.value = latestCost;
+        
+        print('✅ [SERVICE CHANGE] Updated order total_cost to: \$${latestCost.toStringAsFixed(2)}');
+      }
+    } catch (e) {
+      print('❌ [SERVICE CHANGE] Error refreshing order cost: $e');
+    }
+  }
+
   /// ADD SERVICE
   Future<void> _addService(int serviceId, String orderId) async {
     try {
@@ -128,6 +155,8 @@ class AdditionalServiceController extends GetxController {
         debugPrint("Failed to add service $serviceId (Status: ${response.statusCode}, Success: ${body['success']})");
       } else {
         debugPrint("✅ Successfully added service $serviceId");
+        // Refresh order cost immediately after adding service
+        await _refreshOrderCostAfterServiceChange();
       }
     } catch (e) {
       debugPrint("❌ Error adding service $serviceId: $e");
@@ -169,6 +198,8 @@ class AdditionalServiceController extends GetxController {
         debugPrint("Failed to delete service $serviceId (Status: ${response.statusCode}, Success: ${body['success']})");
       } else {
         debugPrint("✅ Successfully deleted service $serviceId");
+        // Refresh order cost immediately after removing service
+        await _refreshOrderCostAfterServiceChange();
       }
     } catch (e) {
       debugPrint("❌ Error deleting service $serviceId: $e");

@@ -58,6 +58,8 @@ dependencies:
   get_storage: ^2.1.1
   carousel_slider: ^5.1.1
   dio: ^5.4.0
+  image_picker: ^1.2.1
+
 
 dev_dependencies:
   flutter_test:
