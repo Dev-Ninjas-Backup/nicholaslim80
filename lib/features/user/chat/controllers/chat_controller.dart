@@ -48,17 +48,18 @@ class UserMessageController extends GetxController {
 
   /// Send message
   void sendMessage(String receiverId, {String? orderId}) {
+    debugPrint("Sending message tofddfddddd receiverId: $receiverId ");
     final text = textController.text.trim();
     if (text.isEmpty) return;
 
     final parsedReceiverId = int.tryParse(receiverId);
-    final parsedOrderId = orderId != null ? int.tryParse(orderId) : null;
+    // final parsedOrderId = orderId != null ? int.tryParse(orderId) : null;
 
     final payload = {
-      "receiverId": parsedReceiverId ?? receiverId,
+      "receiverId": parsedReceiverId,
       "content": text,
       "messageType": "TEXT",
-      if (parsedOrderId != null) "orderId": parsedOrderId else if (orderId != null) "orderId": orderId,
+      // if (parsedOrderId != null) "orderId": parsedOrderId else if (orderId != null) "orderId": orderId,
     };
 
     UserSocketService().emit('send_message', payload);

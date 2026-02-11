@@ -22,17 +22,33 @@ class MessageCallSection extends StatelessWidget {
       children: [
         Expanded(
           child: OutlinedButton(
-            onPressed: () => Get.to(ChatScreen(receiverId: order.orderId, senderName: order.assignRiderName)),
+            onPressed: () => Get.to(
+              ChatScreen(
+                receiverId: (order.assignRiderUserId ?? 0).toString(),
+
+                // null thakle 0 default
+                senderName: order.assignRiderName,
+              ),
+            ),
             style: OutlinedButton.styleFrom(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
               side: const BorderSide(color: Colors.grey),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.message_outlined, size: 20, color: Colors.black),
+                const Icon(
+                  Icons.message_outlined,
+                  size: 20,
+                  color: Colors.black,
+                ),
                 const SizedBox(width: 8),
-                Text("Message", style: getTextStyle(fontWeight: FontWeight.w500)),
+                Text(
+                  "Message",
+                  style: getTextStyle(fontWeight: FontWeight.w500),
+                ),
               ],
             ),
           ),
@@ -42,7 +58,9 @@ class MessageCallSection extends StatelessWidget {
           child: OutlinedButton(
             onPressed: _callRider,
             style: OutlinedButton.styleFrom(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
               side: const BorderSide(color: Colors.grey),
             ),
             child: Row(
