@@ -49,15 +49,13 @@ class ManagePaymentScreen extends StatelessWidget {
             const SizedBox(height: 10),
             divider(),
 
-            paymentTile(
-              icon: IconPath.nets,
-              title: "NETS",
-              subtitle: "Add NETS Bank Card here",
-              onTap: controller.onNetsTap,
-            ),
-
-            divider(),
-
+            // paymentTile(
+            //   icon: IconPath.nets,
+            //   title: "NETS",
+            //   subtitle: "Add NETS Bank Card here",
+            //   onTap: controller.onNetsTap,
+            // ),
+            // divider(),
             Obx(
               () => paymentTile(
                 icon: IconPath.stripe,
@@ -70,6 +68,7 @@ class ManagePaymentScreen extends StatelessWidget {
             ),
 
             divider(),
+            
 
             const SizedBox(height: 20),
 
