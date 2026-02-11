@@ -184,8 +184,9 @@ class UserAddFundsController extends GetxController {
       isLoading.value = true;
       EasyLoading.show(status: "Processing...");
 
-      await AddFundsPaymentService
-              .addMoneyToWallet(
+      // Call Add Money API
+      debugPrint('➡️ Step 2: Calling Add Money API');
+      final response = await AddFundsPaymentService.addMoney(
         amount: selectedAmount.value,
         currency: "sgd",
       );
