@@ -12,23 +12,31 @@ class StackedVehicleSelectionPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // ensure single shared controller for all tabs
     final controller = Get.put(StackedVehicleController());
 
-    // If navigated with initialDistanceKm, assign it after first frame to avoid update during build
     final args = Get.arguments as Map<String, dynamic>?;
-    if (args != null && args['initialDistanceKm'] != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        controller.totalDistanceKm.value = (args['initialDistanceKm'] as num)
-            .toDouble();
-        debugPrint(
-          'Initial distance passed: ${controller.totalDistanceKm.value} km',
-        );
-      });
+
+    int initialIndex = 0;
+
+    if (args != null) {
+      if (args['initialIndex'] != null) {
+        initialIndex = args['initialIndex'];
+      }
+
+      if (args['initialDistanceKm'] != null) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          controller.totalDistanceKm.value =
+              (args['initialDistanceKm'] as num).toDouble();
+
+          debugPrint(
+              'Initial distance: ${controller.totalDistanceKm.value}');
+        });
+      }
     }
 
     return DefaultTabController(
       length: 4,
+      initialIndex: initialIndex, // 🔥 IMPORTANT
       child: Scaffold(
         backgroundColor: AppColors.backgroungColor,
         appBar: AppBar(
@@ -43,12 +51,11 @@ class StackedVehicleSelectionPage extends StatelessWidget {
           ),
           centerTitle: true,
           bottom: PreferredSize(
-            preferredSize: Size.fromHeight(50),
+            preferredSize: const Size.fromHeight(50),
             child: Container(
               color: AppColors.backgroungColor,
-              margin: EdgeInsets.only(top: 5),
+              margin: const EdgeInsets.only(top: 5),
               child: TabBar(
-                isScrollable: false, // evenly spaced
                 indicator: BoxDecoration(
                   color: Colors.yellow,
                   borderRadius: BorderRadius.circular(12),
@@ -59,7 +66,6 @@ class StackedVehicleSelectionPage extends StatelessWidget {
                       IconPath.bike2,
                       height: 60,
                       width: 70,
-                      fit: BoxFit.cover,
                     ),
                   ),
                   Tab(
@@ -67,7 +73,6 @@ class StackedVehicleSelectionPage extends StatelessWidget {
                       IconPath.car2,
                       height: 60,
                       width: 70,
-                      fit: BoxFit.cover,
                     ),
                   ),
                   Tab(
@@ -75,7 +80,6 @@ class StackedVehicleSelectionPage extends StatelessWidget {
                       IconPath.shipment,
                       height: 60,
                       width: 70,
-                      fit: BoxFit.cover,
                     ),
                   ),
                   Tab(
@@ -83,7 +87,6 @@ class StackedVehicleSelectionPage extends StatelessWidget {
                       IconPath.shopcar,
                       height: 60,
                       width: 70,
-                      fit: BoxFit.cover,
                     ),
                   ),
                 ],
@@ -91,7 +94,7 @@ class StackedVehicleSelectionPage extends StatelessWidget {
             ),
           ),
         ),
-        body: TabBarView(
+        body: const TabBarView(
           children: [
             StackedVehicleTabPage(vehicleType: 'Courier'),
             StackedVehicleTabPage(vehicleType: 'Car'),
