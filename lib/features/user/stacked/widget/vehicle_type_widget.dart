@@ -1,5 +1,6 @@
+import 'package:ZipBee/features/user/stacked/vehicle_type/screen/screen.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
+import 'package:get/get.dart';
 import '../stacked_controller/stacked_controller.dart';
 
 class StackedVehicleTypeWidget extends StatelessWidget {
@@ -15,12 +16,26 @@ class StackedVehicleTypeWidget extends StatelessWidget {
       () => SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
-          children: controller.vehicleList.map((vehicle) {
+          children: controller.vehicleList.asMap().entries.map((entry) {
+            final index = entry.key;
+            final vehicle = entry.value;
+
             bool isSelected = controller.selectedVehicle.value == vehicle;
+
             return Row(
               children: [
                 GestureDetector(
-                  onTap: () => controller.selectVehicle(vehicle),
+                  onTap: () {
+                    controller.selectVehicle(vehicle);
+
+                    Get.to(
+                      () => const StackedVehicleSelectionPage(),
+                      arguments: {
+                        'initialIndex': index,
+                        'initialDistanceKm': 2.0,
+                      },
+                    );
+                  },
                   child: Container(
                     decoration: BoxDecoration(
                       border: Border.all(
@@ -42,7 +57,7 @@ class StackedVehicleTypeWidget extends StatelessWidget {
                     ),
                   ),
                 ),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
               ],
             );
           }).toList(),
