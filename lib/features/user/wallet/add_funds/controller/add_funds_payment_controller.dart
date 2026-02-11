@@ -8,7 +8,6 @@ import 'package:ZipBee/features/user/wallet/add_funds/service/add_funds_stripe_p
 class AddFundsPaymentController extends GetxController {
   final RxBool isLoading = false.obs;
 
-  /// মূল পেমেন্ট প্রসেস হ্যান্ডেল করার ফাংশন
   Future<void> processWalletTopUp({
     required double amount,
     required Function onPaymentSuccess,
@@ -22,10 +21,11 @@ class AddFundsPaymentController extends GetxController {
 
     try {
       EasyLoading.show(status: 'Processing payment...');
-      debugPrint('➡️ Initiating add funds for amount: \$${amount}');
+      debugPrint('➡️ Initiating wallet top-up: \$${amount}');
 
-      // Step 1: Add Money API কল করা (with type: 'ADD_MONEY')
-      final response = await AddFundsPaymentService.addMoney(
+      // ✅ FIXED METHOD NAME
+      final response =
+          await AddFundsPaymentService.addMoneyToWallet(
         amount: amount,
         currency: 'sgd',
       );
@@ -36,47 +36,56 @@ class AddFundsPaymentController extends GetxController {
         return;
       }
 
-      final clientSecret = response['body']['data']?['clientSecret'];
+      // ✅ SAFE NULL CHECK
+      final clientSecret =
+          response['body']?['data']?['clientSecret'];
 
-      if (clientSecret == null || clientSecret.isEmpty) {
+      if (clientSecret == null ||
+          clientSecret.isEmpty) {
         EasyLoading.dismiss();
-        EasyLoading.showError('Invalid payment response');
+        EasyLoading.showError(
+            'Invalid payment response');
         return;
       }
 
-      debugPrint('✅ Client Secret obtained');
+      debugPrint('✅ Client Secret received');
       EasyLoading.dismiss();
 
-      // Step 2: Initialize Stripe for Add Funds
-      debugPrint('➡️ Initializing Stripe for Add Funds');
-      final initialized = await AddFundsStripePaymentHandler.initializeStripe();
+      // Initialize Stripe
+      final initialized =
+          await AddFundsStripePaymentHandler
+              .initializeStripe();
 
       if (!initialized) {
-        EasyLoading.showError('Failed to initialize payment');
+        EasyLoading.showError(
+            'Failed to initialize payment');
         return;
       }
 
-      // Step 3: Present Payment Sheet using the clientSecret from Step 1
+      // Present Payment Sheet
       final paymentSuccess =
-          await AddFundsStripePaymentHandler.presentPaymentSheet(
-            clientSecret: clientSecret,
-            amount: amount,
-          );
+          await AddFundsStripePaymentHandler
+              .presentPaymentSheet(
+        clientSecret: clientSecret,
+        amount: amount,
+      );
 
       if (paymentSuccess) {
         debugPrint('✅ Payment successful');
 
-        // সফল হলে ক্যাশে সেভ করা
-        await PresetAmountsCacheService.addAmount(amount);
+        await PresetAmountsCacheService
+            .addAmount(amount);
 
-        // Callback কল করা (UI আপডেট বা নেভিগেশনের জন্য)
         onPaymentSuccess();
       } else {
-        debugPrint('❌ Payment cancelled or failed');
+        debugPrint(
+            '❌ Payment cancelled or failed');
       }
     } catch (e) {
-      debugPrint('❌ Error in processWalletTopUp: $e');
-      EasyLoading.showError('Payment failed: $e');
+      debugPrint(
+          '❌ processWalletTopUp error: $e');
+      EasyLoading.showError(
+          'Payment failed: $e');
     } finally {
       isLoading.value = false;
       EasyLoading.dismiss();

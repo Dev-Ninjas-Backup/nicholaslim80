@@ -6,13 +6,11 @@ import 'package:ZipBee/core/constants/stripe_keys.dart';
 import 'package:ZipBee/features/user/wallet/add_funds/service/preset_amounts_cache_service.dart';
 import 'package:ZipBee/features/user/wallet/add_funds/service/add_funds_payment_service.dart';
 import 'package:ZipBee/features/user/wallet/add_payment_method/service/wallet_payment_service.dart';
-import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/stripe_payment_sheet_handler.dart';
 
 class UserAddFundsController extends GetxController {
-  final RxList<double> presetAmounts =
-      RxList<double>([10.0, 20.0, 40.0, 100.0]);
-
+  final RxList<double> presetAmounts = <double>[10, 20, 40, 100].obs;
   final RxInt selectedIndex = 0.obs;
+
   final TextEditingController customAmountController =
       TextEditingController();
   final RxDouble selectedAmount = 10.0.obs;
@@ -22,10 +20,10 @@ class UserAddFundsController extends GetxController {
   final RxBool isAddingPaymentMethod = false.obs;
   final RxBool showPaymentMethodForm = false.obs;
 
-  /// 🔥 NEW VARIABLES
-  final RxString savedCardBrand = ''.obs;
-  final RxString savedCardLast4 = ''.obs;
+  /// 🔹 Saved Card State
   final RxBool hasSavedCard = false.obs;
+  final RxString savedCardLast4 = ''.obs;
+  final RxString savedCardBrand = ''.obs;
 
   bool get isAddButtonEnabled =>
       selectedAmount.value > 0 && isStripeSelected.value;
@@ -37,15 +35,20 @@ class UserAddFundsController extends GetxController {
     _loadCachedPresetAmounts();
   }
 
+  // ================= LOAD CACHE =================
+
   Future<void> _loadCachedPresetAmounts() async {
-    final cached = await PresetAmountsCacheService.getCachedAmounts();
+    final cached =
+        await PresetAmountsCacheService.getCachedAmounts();
     presetAmounts.assignAll(cached);
 
     if (cached.isNotEmpty) {
-      selectedAmount.value = cached[0];
+      selectedAmount.value = cached.first;
       selectedIndex.value = 0;
     }
   }
+
+  // ================= PRESET =================
 
   void onPresetTap(int index) {
     selectedIndex.value = index;
@@ -58,54 +61,55 @@ class UserAddFundsController extends GetxController {
     selectedAmount.value = double.tryParse(value) ?? 0;
   }
 
-  void onToggleStripe() {
-    isStripeSelected.toggle();
-  }
+  // ================= ADD TO CACHE =================
 
   Future<void> onAddToCache() async {
     final amount =
         double.tryParse(customAmountController.text) ?? 0;
 
     if (amount <= 0) {
-      EasyLoading.showError('Enter valid amount');
+      EasyLoading.showError("Enter valid amount");
       return;
     }
 
     await PresetAmountsCacheService.addAmount(amount);
     await _loadCachedPresetAmounts();
+
     customAmountController.clear();
-    EasyLoading.showSuccess('Added to preset');
+    selectedIndex.value = presetAmounts.indexOf(amount);
+    selectedAmount.value = amount;
+
+    EasyLoading.showSuccess("Amount added");
+  }
+
+  // ================= STRIPE =================
+
+  void onToggleStripe() {
+    isStripeSelected.toggle();
   }
 
   void togglePaymentMethodForm() {
     showPaymentMethodForm.toggle();
   }
 
-  // ==========================================================
-  // 🔥 ADD PAYMENT METHOD
-  // ==========================================================
+  // ================= ADD PAYMENT METHOD =================
 
   Future<void> addPaymentMethod() async {
     try {
       isAddingPaymentMethod.value = true;
-      EasyLoading.show(status: "Creating setup intent...");
+      EasyLoading.show(status: 'Opening Stripe...');
 
       final setupResult =
           await WalletPaymentService.createSetupIntent();
 
-      if (!setupResult['success']) {
+      final clientSecret =
+          setupResult['body']?['clientSecret'];
+
+      if (clientSecret == null || clientSecret.isEmpty) {
         EasyLoading.dismiss();
-        EasyLoading.showError(
-            setupResult['body']['message'] ??
-                "Failed to create setup intent");
+        EasyLoading.showError("Invalid setup intent");
         return;
       }
-
-      final clientSecret =
-          setupResult['body']['clientSecret'];
-
-      EasyLoading.dismiss();
-      EasyLoading.show(status: "Opening Stripe...");
 
       await Stripe.instance.initPaymentSheet(
         paymentSheetParameters: SetupPaymentSheetParameters(
@@ -116,18 +120,28 @@ class UserAddFundsController extends GetxController {
         ),
       );
 
+      EasyLoading.dismiss();
+
+      /// 🔥 Show Stripe bottom sheet
       await Stripe.instance.presentPaymentSheet();
 
+      /// 🔥 Get SetupIntent result
       final setupIntent =
           await Stripe.instance.retrieveSetupIntent(
-              clientSecret);
+        clientSecret,
+      );
 
       final paymentMethodId =
           setupIntent.paymentMethodId;
 
-      EasyLoading.dismiss();
-      EasyLoading.show(status: "Saving card...");
+      if (paymentMethodId == null ||
+          paymentMethodId.isEmpty) {
+        EasyLoading.showError(
+            "Failed to get payment method");
+        return;
+      }
 
+      /// 🔥 Save card to backend
       final saveResult =
           await WalletPaymentService.saveCard(
         paymentMethodId: paymentMethodId,
@@ -136,92 +150,77 @@ class UserAddFundsController extends GetxController {
         cardBrand: null,
       );
 
-      EasyLoading.dismiss();
-
       if (!saveResult['success']) {
-        EasyLoading.showError(
-            saveResult['body']['message'] ??
-                "Failed to save card");
+        EasyLoading.showError("Failed to save card");
         return;
       }
 
-      /// 🔥 UPDATE UI DYNAMICALLY
-      final data = saveResult['body'];
-
-      savedCardBrand.value =
-          data['type'] ?? 'CARD';
-
-      savedCardLast4.value =
-          data['last4'] ?? '';
-
+      /// ✅ UPDATE UI STATE
       hasSavedCard.value = true;
-      isStripeSelected.value = true;
+      savedCardBrand.value =
+          saveResult['body']?['data']?['brand'] ?? 'Visa';
+      savedCardLast4.value =
+          saveResult['body']?['data']?['last4'] ?? '4242';
 
       showPaymentMethodForm.value = false;
 
-      EasyLoading.showSuccess(
-          "Payment method added successfully");
+      EasyLoading.showSuccess("Card added successfully");
     } catch (e) {
-      EasyLoading.dismiss();
-      EasyLoading.showError("Failed: $e");
+      EasyLoading.showError("Stripe error: $e");
     } finally {
       isAddingPaymentMethod.value = false;
     }
   }
 
-  // ==========================================================
-  // 💰 ADD FUNDS
-  // ==========================================================
+  // ================= ADD FUNDS =================
 
   Future<void> onAddFunds() async {
     if (!isAddButtonEnabled) {
-      EasyLoading.showError(
-          "Please select valid amount");
+      EasyLoading.showError("Select valid amount");
       return;
     }
 
     try {
       isLoading.value = true;
-      EasyLoading.show(status: "Processing...");
+      EasyLoading.show(status: "Processing payment...");
 
-      // Call Add Money API
-      debugPrint('➡️ Step 2: Calling Add Money API');
-      final response = await AddFundsPaymentService.addMoney(
+      final response =
+          await AddFundsPaymentService.addMoneyToWallet(
         amount: selectedAmount.value,
-        currency: "sgd",
+        currency: 'sgd',
       );
 
+      final clientSecret =
+          response['body']?['data']?['clientSecret'];
 
-      EasyLoading.dismiss();
-      EasyLoading.show(
-          status: "Opening payment sheet...");
-
-      final result =
-          await StripePaymentSheetHandler
-              .initiatePayment(
-        amount: selectedAmount.value,
-        orderId: 0,
-      );
-
-      EasyLoading.dismiss();
-
-      if (result != null) {
-        EasyLoading.showSuccess(
-            "Funds added successfully");
-
-        await PresetAmountsCacheService
-            .addAmount(selectedAmount.value);
-
-        await _loadCachedPresetAmounts();
-
-        await Future.delayed(
-            const Duration(seconds: 1));
-
-        Get.back();
+      if (clientSecret == null) {
+        EasyLoading.dismiss();
+        EasyLoading.showError("Payment init failed");
+        return;
       }
+
+      await Stripe.instance.initPaymentSheet(
+        paymentSheetParameters: SetupPaymentSheetParameters(
+          paymentIntentClientSecret: clientSecret,
+          merchantDisplayName:
+              StripeKeys.merchantDisplayName,
+          style: ThemeMode.light,
+        ),
+      );
+
+      await Stripe.instance.presentPaymentSheet();
+
+      EasyLoading.dismiss();
+      EasyLoading.showSuccess("Funds added!");
+
+      await PresetAmountsCacheService.addAmount(
+          selectedAmount.value);
+      await _loadCachedPresetAmounts();
+
+      Get.back();
     } catch (e) {
       EasyLoading.dismiss();
-      EasyLoading.showError("Payment failed: $e");
+      EasyLoading.showError("Payment failed");
     } finally {
       isLoading.value = false;
     }
