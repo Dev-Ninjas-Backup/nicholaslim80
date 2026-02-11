@@ -16,16 +16,14 @@ class OrderModel {
   final double assignRiderRating;
   final int assignRiderReviews;
   final int? riderId;
-
+  final int? assignRiderUserId;
   final String scheduledTime;
 
-  // Coordinates
   final double? pickupLat;
   final double? pickupLong;
   final double? dropOffLat;
   final double? dropOffLong;
 
-  // ✅ rawOrderStops field added to handle multiple stops in controller
   final List? rawOrderStops;
 
   OrderModel({
@@ -46,6 +44,7 @@ class OrderModel {
     this.assignRiderRating = 0.0,
     this.assignRiderReviews = 0,
     this.riderId,
+    this.assignRiderUserId,
     required this.scheduledTime,
     this.pickupLat,
     this.pickupLong,
@@ -56,29 +55,38 @@ class OrderModel {
 
   factory OrderModel.fromJson(Map<String, dynamic> json) {
     final collectTime = (json['collect_time'] ?? '').toString();
-    final orderStops = json['orderStops'] as List? ?? [];
+    final orderStops = json['orderStops'] is List ? json['orderStops'] : [];
 
     Map<String, dynamic>? pickupStop;
     Map<String, dynamic>? dropStop;
 
     for (var stop in orderStops) {
-      if (stop['type'] == 'PICKUP') {
-        pickupStop = stop;
-      } else if (stop['type'] == 'DROP') {
-        dropStop = stop;
+      if (stop is Map<String, dynamic>) {
+        if (stop['type'] == 'PICKUP') pickupStop = stop;
+        if (stop['type'] == 'DROP') dropStop = stop;
       }
     }
 
-    final vehicle = json['vehicle'] as Map<String, dynamic>?;
-    final rider = json['assign_rider'] as Map<String, dynamic>?;
-    final riderRegistrations = rider?['registrations'] as List? ?? [];
+    // Vehicle safe
+    final vehicle = json['vehicle'];
+    final vehicleMap = vehicle is Map<String, dynamic> ? vehicle : null;
+
+    // Rider safe
+    final rider = json['assign_rider'];
+    final riderMap = rider is Map<String, dynamic> ? rider : null;
+
+    final riderRegistrations = riderMap?['registrations'] is List
+        ? riderMap!['registrations']
+        : [];
+
     final riderData = riderRegistrations.isNotEmpty
-        ? riderRegistrations[0]
+        ? riderRegistrations.first
         : null;
 
-    // ✅ Logic updated: use created_at if scheduled_time is null
-    final String timeValue = (json['scheduled_time'] != null && json['scheduled_time'].toString() != "null") 
-        ? json['scheduled_time'].toString() 
+    final String timeValue =
+        (json['scheduled_time'] != null &&
+            json['scheduled_time'].toString() != "null")
+        ? json['scheduled_time'].toString()
         : (json['created_at'] ?? '').toString();
 
     return OrderModel(
@@ -100,7 +108,7 @@ class OrderModel {
       dropOffAddress: (dropStop?['address'] ?? json['drop_off_address'] ?? "")
           .toString(),
       deliveryLocation: (json['delivery_location'] ?? "").toString(),
-      vehicleType: (vehicle?['vehicle_type'] ?? "").toString(),
+      vehicleType: (vehicleMap?['vehicle_type'] ?? "").toString(),
       total: double.tryParse((json['total_cost'] ?? '0').toString()) ?? 0,
       showReceipt:
           (json['order_status'] ?? json['status'] ?? '').toString() ==
@@ -108,7 +116,7 @@ class OrderModel {
       riderId: json['assign_rider_id'] is int
           ? json['assign_rider_id']
           : int.tryParse((json['assign_rider_id'] ?? '').toString()),
-      scheduledTime: timeValue, // ✅ now holds created_at if scheduled is null
+      scheduledTime: timeValue,
       pickupLat: double.tryParse(
         pickupStop?['latitude']?.toString() ??
             json['pickup_lat']?.toString() ??
@@ -132,10 +140,13 @@ class OrderModel {
       assignRiderName: (riderData?['raider_name'] ?? "").toString(),
       assignRiderPhone: (riderData?['contact_number'] ?? "").toString(),
       assignRiderRating:
-          double.tryParse(rider?['rankScore']?.toString() ?? '0') ?? 0.0,
+          double.tryParse(riderMap?['rankScore']?.toString() ?? '0') ?? 0.0,
       assignRiderReviews:
-          int.tryParse(rider?['reviews_count']?.toString() ?? '0') ?? 0,
-      rawOrderStops: orderStops, // ✅ mapping raw list for controller
+          int.tryParse(riderMap?['reviews_count']?.toString() ?? '0') ?? 0,
+      assignRiderUserId: riderMap?['userId'] is int
+          ? riderMap!['userId']
+          : int.tryParse(riderMap?['userId']?.toString() ?? ''),
+      rawOrderStops: orderStops,
     );
   }
 
@@ -145,6 +156,7 @@ class OrderModel {
     String? assignRiderImage,
     double? assignRiderRating,
     int? assignRiderReviews,
+    int? assignRiderUserId,
     double? pickupLat,
     double? pickupLong,
     double? dropOffLat,
@@ -170,6 +182,7 @@ class OrderModel {
       assignRiderRating: assignRiderRating ?? this.assignRiderRating,
       assignRiderReviews: assignRiderReviews ?? this.assignRiderReviews,
       riderId: riderId,
+      assignRiderUserId: assignRiderUserId ?? this.assignRiderUserId,
       scheduledTime: scheduledTime,
       pickupLat: pickupLat ?? this.pickupLat,
       pickupLong: pickupLong ?? this.pickupLong,
