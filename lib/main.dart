@@ -1,4 +1,6 @@
 import 'package:ZipBee/app.dart';
+import 'package:ZipBee/core/service/socket_service.dart';
+import 'package:ZipBee/core/shared_prefference_service/shared_pref.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -58,8 +60,12 @@ Future<void> main() async {
 
   _configEasyLoading();
 
-  // GetStorage ইনিশিয়ালাইজেশন
+  // GetStorage
   await GetStorage.init();
+
+ // SharedPreferencesHelper prefs = SharedPreferencesHelper();
+    // SocketService().connect(await SharedPreferencesHelper.getAccessToken() ?? '');
+
 
   runApp(const Nicholaslim());
 }
