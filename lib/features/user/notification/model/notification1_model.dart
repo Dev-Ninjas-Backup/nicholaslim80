@@ -1,12 +1,14 @@
 import 'package:intl/intl.dart';
 
 class Notification1Model {
+  final String id; // ✅ REQUIRED for delete
   final String title;
   final String subTitle;
   final String date;
   final String time;
 
   Notification1Model({
+    required this.id,
     required this.title,
     required this.subTitle,
     required this.date,
@@ -20,6 +22,7 @@ class Notification1Model {
         : DateTime.now();
 
     return Notification1Model(
+      id: json['id']?.toString() ?? json['_id']?.toString() ?? '',
       title: json['title'] ?? '',
       subTitle: json['message'] ?? '',
       date: DateFormat('dd-MM-yyyy').format(createdAt),
@@ -28,6 +31,7 @@ class Notification1Model {
   }
 
   Map<String, dynamic> toJson() => {
+    "id": id,
     "title": title,
     "subTitle": subTitle,
     "date": date,

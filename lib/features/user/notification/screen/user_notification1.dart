@@ -3,6 +3,7 @@ import 'package:ZipBee/core/common/widgets/custom_app_bar_user.dart';
 import 'package:ZipBee/core/utils/constants/app_colors.dart';
 import 'package:ZipBee/features/user/notification/controller/user_notification_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
 
 class UserNotification extends StatelessWidget {
@@ -14,15 +15,16 @@ class UserNotification extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.backgroungColor,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            CustomAppBarUser(title: "Notifications", style: getTextStyle()),
-            Padding(
-              padding:  EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+      body: Column(
+        children: [
+          CustomAppBarUser(title: "Notifications", style: getTextStyle()),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
               child: Obx(
                 () => Column(
                   children: [
+                    /// ------------------- Tabs -------------------
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Row(
@@ -32,11 +34,12 @@ class UserNotification extends StatelessWidget {
                             final isSelected =
                                 controller.selectNotificationListIndex.value ==
                                 index;
+
                             return GestureDetector(
                               onTap: () => controller.changeTab(index),
                               child: Container(
-                                margin:  EdgeInsets.only(right: 10),
-                                padding:  EdgeInsets.symmetric(
+                                margin: const EdgeInsets.only(right: 10),
+                                padding: const EdgeInsets.symmetric(
                                   horizontal: 10,
                                   vertical: 5,
                                 ),
@@ -49,98 +52,133 @@ class UserNotification extends StatelessWidget {
                                       ? AppColors.onboardingIndicatorActive
                                       : Colors.transparent,
                                 ),
-                                child: Text(controller.notificationTabs[index]),
+                                child: Text(
+                                  controller.notificationTabs[index],
+                                  style: getTextStyle(),
+                                ),
                               ),
                             );
                           },
                         ),
                       ),
                     ),
-                     SizedBox(height: 40),
 
-                    controller.isLoading.value &&
-                            controller.notificationList.isEmpty
-                        ?  Center(child: CircularProgressIndicator())
-                        : ListView.builder(
-                            padding: EdgeInsets.zero,
-                            shrinkWrap: true,
-                            physics:  NeverScrollableScrollPhysics(),
-                            itemCount: controller.notificationList.length,
-                            itemBuilder: (_, index) {
-                              final item = controller.notificationList[index];
-                              return Padding(
-                                padding: EdgeInsets.only(bottom: 14),
-                                child: Container(
-                                  padding: EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color: AppColors.subtitleFontColor,
-                                      width: 0.5,
-                                    ),
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        children: [
-                                           Icon(
-                                            Icons.circle,
-                                            size: 12,
-                                            color: AppColors
-                                                .onboardingIndicatorActive,
+                    const SizedBox(height: 20),
+
+                    /// ------------------- Notification List -------------------
+                    Expanded(
+                      child:
+                          controller.isLoading.value &&
+                              controller.notificationList.isEmpty
+                          ? const Center(child: CircularProgressIndicator())
+                          : ListView.builder(
+                              itemCount: controller.notificationList.length,
+                              itemBuilder: (_, index) {
+                                final item = controller.notificationList[index];
+
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 14),
+                                  child: Slidable(
+                                    key: ValueKey(item.id),
+
+                                    /// only small reveal
+                                    endActionPane: ActionPane(
+                                      motion: const DrawerMotion(),
+                                      extentRatio: 0.25,
+                                      children: [
+                                        SlidableAction(
+                                          onPressed: (_) {
+                                            controller.confirmDelete(item.id);
+                                          },
+                                          backgroundColor: Colors.red,
+                                          foregroundColor: Colors.white,
+                                          icon: Icons.delete,
+                                          borderRadius: BorderRadius.circular(
+                                            10,
                                           ),
-                                           SizedBox(width: 8),
-                                          Text(
-                                            item.title,
-                                            style: getTextStyle(
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                       SizedBox(height: 12),
-                                      Text(
-                                        item.subTitle,
-                                        style: getTextStyle(
-                                          fontSize: 12,
-                                          color:  Color(0xFF6B6B6B),
                                         ),
+                                      ],
+                                    ),
+
+                                    child: Container(
+                                      padding: const EdgeInsets.all(10),
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color: AppColors.subtitleFontColor,
+                                          width: 0.5,
+                                        ),
+                                        borderRadius: BorderRadius.circular(10),
                                       ),
-                                       SizedBox(height: 12),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                Icons.circle,
+                                                size: 12,
+                                                color: AppColors
+                                                    .onboardingIndicatorActive,
+                                              ),
+                                              const SizedBox(width: 8),
+                                              Expanded(
+                                                child: Text(
+                                                  item.title ?? "",
+                                                  style: getTextStyle(
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 12),
                                           Text(
-                                            item.date,
+                                            item.subTitle ?? "",
                                             style: getTextStyle(
                                               fontSize: 12,
-                                              color:  Color(0xFF6B6B6B),
+                                              color: const Color(0xFF6B6B6B),
                                             ),
                                           ),
-                                          Text(
-                                            item.time,
-                                            style: getTextStyle(
-                                              fontSize: 12,
-                                              color:  Color(0xFF6B6B6B),
-                                            ),
+                                          const SizedBox(height: 12),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                item.date ?? "",
+                                                style: getTextStyle(
+                                                  fontSize: 12,
+                                                  color: const Color(
+                                                    0xFF6B6B6B,
+                                                  ),
+                                                ),
+                                              ),
+                                              Text(
+                                                item.time ?? "",
+                                                style: getTextStyle(
+                                                  fontSize: 12,
+                                                  color: const Color(
+                                                    0xFF6B6B6B,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ],
                                       ),
-                                    ],
+                                    ),
                                   ),
-                                ),
-                              );
-                            },
-                          ),
+                                );
+                              },
+                            ),
+                    ),
                   ],
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
