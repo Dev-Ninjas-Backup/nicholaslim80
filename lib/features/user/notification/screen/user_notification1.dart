@@ -86,15 +86,21 @@ class UserNotification extends StatelessWidget {
                                       motion: const DrawerMotion(),
                                       extentRatio: 0.25,
                                       children: [
-                                        SlidableAction(
+                                        CustomSlidableAction(
                                           onPressed: (_) {
                                             controller.confirmDelete(item.id);
                                           },
-                                          backgroundColor: Colors.red,
-                                          foregroundColor: Colors.white,
-                                          icon: Icons.delete,
+                                          backgroundColor:
+                                              AppColors.backgroungColor,
                                           borderRadius: BorderRadius.circular(
                                             10,
+                                          ),
+                                          child: const Center(
+                                            child: Icon(
+                                              Icons.delete_forever_outlined,
+                                              size: 32, // 👈 increase size here
+                                              color: Colors.black,
+                                            ),
                                           ),
                                         ),
                                       ],
