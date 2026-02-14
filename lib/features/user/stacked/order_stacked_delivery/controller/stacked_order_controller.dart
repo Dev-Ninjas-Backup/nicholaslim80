@@ -10,9 +10,6 @@ import 'package:get/get.dart';
 import 'package:ZipBee/features/user/stacked/stacked_controller/stacked_controller.dart';
 import 'package:ZipBee/features/user/stacked/vehicle_type/controller/controller.dart';
 import 'package:ZipBee/features/user/stacked/widget/pic_date_time.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:get/get.dart';
 
 class StackedOrderController extends GetxController {
   var orderNumber = ''.obs;

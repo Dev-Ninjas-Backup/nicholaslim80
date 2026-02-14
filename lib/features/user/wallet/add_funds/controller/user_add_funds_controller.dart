@@ -134,8 +134,7 @@ class UserAddFundsController extends GetxController {
       final paymentMethodId =
           setupIntent.paymentMethodId;
 
-      if (paymentMethodId == null ||
-          paymentMethodId.isEmpty) {
+      if (paymentMethodId.isEmpty) {
         EasyLoading.showError(
             "Failed to get payment method");
         return;

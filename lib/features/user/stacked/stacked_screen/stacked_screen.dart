@@ -9,7 +9,6 @@ import 'package:ZipBee/features/user/home/controller/home_controller.dart';
 
 import '../stacked_controller/stacked_controller.dart';
 import '../vehicle_type/controller/controller.dart';
-import '../vehicle_type/screen/screen.dart';
 import '../widget/collect_time_widget.dart';
 import '../widget/select_location_widget.dart';
 import '../widget/stack_order_review_button_widget.dart';

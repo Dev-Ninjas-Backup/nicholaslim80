@@ -37,29 +37,32 @@ Drawer drawer(HomeController controller) {
                     var item = controller.drawerItem[index];
                     return Padding(
                       padding: EdgeInsets.only(bottom: 38),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              Image.asset(item.iconUrl, height: 24, width: 24),
-                              SizedBox(width: 10),
-                              Text(
-                                item.iconname,
-                                style: getTextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
+                      child: GestureDetector(
+                        onTap: controller.drawerItem[index].ontap,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Image.asset(item.iconUrl, height: 24, width: 24),
+                                SizedBox(width: 10),
+                                Text(
+                                  item.iconname,
+                                  style: getTextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-
-                          GestureDetector(
-                            onTap: controller.drawerItem[index].ontap,
-
-                            child: Icon(Icons.arrow_forward_ios, size: 24),
-                          ),
-                        ],
+                              ],
+                            ),
+                        
+                            GestureDetector(
+                              onTap: controller.drawerItem[index].ontap,
+                        
+                              child: Icon(Icons.arrow_forward_ios, size: 24),
+                            ),
+                          ],
+                        ),
                       ),
                     );
                   },

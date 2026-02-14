@@ -15,16 +15,15 @@ import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 
 class HomeController extends GetxController {
-
   final userName = 'Good Morning!'.obs;
   final parcelStatus = 'Live delivery status'.obs;
 
-  final walletBalance = 0.0.obs; 
-  final availablePoints = 0.obs; 
+  final walletBalance = 0.0.obs;
+  final availablePoints = 0.obs;
 
   final selectedService = 'Standard'.obs;
-  final selectedVehicleId = RxnString();  
-  
+  final selectedVehicleId = RxnString();
+
   // পরিবর্তন এখানে: স্ট্যাটিক ডাটা রিমুভ করে খালি লিস্ট রাখা হয়েছে
   final vehicles = <Map<String, dynamic>>[].obs;
 
@@ -36,6 +35,7 @@ class HomeController extends GetxController {
     if (deliveryType.value == 'stacked') return 'Stacked Delivery';
     return 'Standard Delivery';
   }
+
   void selectDeliveryType(String type) {
     deliveryType.value = type;
   }
@@ -82,6 +82,7 @@ class HomeController extends GetxController {
       debugPrint(" PROFILE ERROR: $e");
     }
   }
+
   void showLogoutDialog() {
     Get.dialog(
       LogoutDialog(
@@ -125,12 +126,12 @@ class HomeController extends GetxController {
   }
 
   // Popup Handling
-Future<void> checkAndShowPopup(BuildContext context) async {
+  Future<void> checkAndShowPopup(BuildContext context) async {
     final response = await DashboardPopupService.fetchPopups();
-    
+
     if (response['success'] == true && response['data'] != null) {
       List popups = response['data'];
-      
+
       // শুধুমাত্র Active পপআপগুলো ফিল্টার করা
       List activePopups = popups.where((p) => p['isActive'] == true).toList();
 
@@ -138,7 +139,7 @@ Future<void> checkAndShowPopup(BuildContext context) async {
         // র‍্যান্ডমলি একটি অবজেক্ট সিলেক্ট করা
         final random = Random();
         final selectedPopup = activePopups[random.nextInt(activePopups.length)];
-        
+
         _showPopupDialog(context, selectedPopup);
       }
     }
@@ -146,32 +147,102 @@ Future<void> checkAndShowPopup(BuildContext context) async {
 
   void _showPopupDialog(BuildContext context, Map<String, dynamic> data) {
     Get.dialog(
-      AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-        title: Text(data['title'] ?? "Announcement"),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (data['image_link'] != null)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: Image.network(data['image_link'], errorBuilder: (c,e,s) => SizedBox.shrink()),
-              ),
-            Text(data['desc'] ?? ""),
-            const SizedBox(height: 15),
-            GestureDetector(
-              onTap: () => _launchURL(data['redirect_link']),
-              child: Text(
-                "Click here to learn more",
-                style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline, fontWeight: FontWeight.bold),
-              ),
+      Dialog(
+        backgroundColor:
+            Colors.transparent, // ব্যাকগ্রাউন্ড ট্রান্সপারেন্ট রাখা হয়েছে
+        insetPadding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: const Color(
+              0xFFFFF9E3,
+            ), // আপনার ইমেজের হালকা হলুদ ব্যাকগ্রাউন্ড
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: const Color(0xFFFFD700),
+              width: 1,
+            ), // গোল্ডেন বর্ডার
+          ),
+          child: GestureDetector(
+            onTap: () => _launchURL(data['redirect_link']),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Title & Description Section
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+
+                          // Title
+                          Text(
+                            data['title'] ?? "Always here for you!",
+                            style: const TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+
+                          // Description
+                          GestureDetector(
+                            onTap: () => _launchURL(data['redirect_link']),
+                            child: Text(
+                              data['desc'] ??
+                                  "600k points to share! Click here to register now!",
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.black.withOpacity(0.6),
+                                height: 1.4,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+
+                    // Image Section
+                    SizedBox(
+                    width: 70,
+                    height: 70,
+                    child: data['image_link'] != null && data['image_link'].toString().isNotEmpty
+                        ? Image.network(
+                            data['image_link'],
+                            fit: BoxFit.contain,
+                            errorBuilder: (context, error, stackTrace) => Image.asset(
+                              IconPath.gift_Ad, 
+                              fit: BoxFit.contain,
+                            ),
+                          )
+                        : Image.asset(
+                            IconPath.gift_Ad, 
+                            fit: BoxFit.contain,
+                          ),
+                  ),
+                  
+                  ],
+                ),
+                const SizedBox(height: 10),
+                // close button
+                Align(
+                  alignment: Alignment.bottomRight,
+                  child: TextButton(
+                    onPressed: () => Get.back(),
+                    child: const Text(
+                      "Close",
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
-        actions: [
-          TextButton(onPressed: () => Get.back(), child: const Text("Close")),
-        ],
       ),
     );
   }
@@ -193,7 +264,9 @@ Future<void> checkAndShowPopup(BuildContext context) async {
     // 🔄 Listen for profile changes from app controller
     final appController = Get.find<AppController>();
     ever(appController.appRebuildTrigger, (_) {
-      debugPrint('🔄 Profile changed detected in HomeController, refreshing data...');
+      debugPrint(
+        '🔄 Profile changed detected in HomeController, refreshing data...',
+      );
       fetchUserProfile();
     });
 
