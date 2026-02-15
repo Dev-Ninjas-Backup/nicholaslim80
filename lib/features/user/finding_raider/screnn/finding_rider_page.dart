@@ -2,6 +2,7 @@ import 'package:ZipBee/core/common/styles/global_text_style.dart';
 import 'package:ZipBee/core/utils/constants/icon_path.dart';
 import 'package:ZipBee/features/user/bottom_navbar/screen/bottom_navbar_screen.dart';
 import 'package:ZipBee/features/user/finding_raider/controller/rider_controller.dart';
+import 'package:ZipBee/features/user/finding_raider/screnn/raider_details.dart';
 import 'package:ZipBee/features/user/finding_raider/widget/button.dart';
 import 'package:ZipBee/features/user/finding_raider/widget/cancel_order_dialog.dart';
 import 'package:ZipBee/features/user/finding_raider/widget/order_location_info_widget.dart';
@@ -24,7 +25,7 @@ class FindingRiderPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // API কল করার লজিক
+    // API কল করার লজিক এবং সকেট পোলিং শুরু করুন
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final rawOrderNumber = orderController.orderNumber.value;
       debugPrint('🔍 Finding Rider Page Initialized');
@@ -43,6 +44,8 @@ class FindingRiderPage extends StatelessWidget {
       if (id != null && id != 0) {
         debugPrint('📡 Calling fetchOrderData with orderId: $id');
         controller.fetchOrderData(id);
+        // শুরু করুন রাইডার এসাইনমেন্ট পোলিং
+        _startPollingAndHandleRiderAssignment();
       } else {
         debugPrint('⚠️ Error: Order ID is null or zero. API not called.');
         debugPrint('⚠️ OrderNumber value: "$rawOrderNumber"');
@@ -56,6 +59,7 @@ class FindingRiderPage extends StatelessWidget {
         elevation: 0,
         leading: GestureDetector(
           onTap: () {
+            controller.stopPollingAssignRider();
             Get.offAll(() => BottomNavbarScreen());
           },
           child: Padding(
@@ -303,6 +307,16 @@ class FindingRiderPage extends StatelessWidget {
           );
         }),
       );
+    });
+  }
+
+  // রাইডার এসাইনমেন্টের জন্য পোলিং শুরু করুন এবং হ্যান্ডেল করুন
+  void _startPollingAndHandleRiderAssignment() {
+    controller.startPollingAssignRider(() {
+      debugPrint('✅ Rider assigned, navigating to raider details screen');
+      controller.stopPollingAssignRider();
+      // রাইডার এসাইন হওয়ার পর পরবর্তী স্ক্রিনে নেভিগেট করুন
+      Get.to(() => RaiderDetails());
     });
   }
 }
