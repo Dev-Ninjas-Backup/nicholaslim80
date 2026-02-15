@@ -196,7 +196,7 @@ class HomeController extends GetxController {
                                   "600k points to share! Click here to register now!",
                               style: TextStyle(
                                 fontSize: 16,
-                                color: Colors.black.withOpacity(0.6),
+                                color: Colors.black.withAlpha(60),
                                 height: 1.4,
                               ),
                             ),
