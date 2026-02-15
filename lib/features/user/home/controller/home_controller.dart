@@ -235,7 +235,7 @@ class HomeController extends GetxController {
                     onPressed: () => Get.back(),
                     child: const Text(
                       "Close",
-                      style: TextStyle(color: Colors.grey),
+                      style: TextStyle(color: Color.fromARGB(255, 216, 213, 213)),
                     ),
                   ),
                 ),
