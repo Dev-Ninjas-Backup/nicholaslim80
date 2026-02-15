@@ -45,6 +45,7 @@ class RiderController extends GetxController {
   RxString paymentType = ''.obs; // COD, WALLET, ONLINE_PAY
   RxBool assignRiderNull = true.obs;
   Rx<dynamic> assignRiderData = Rx<dynamic>(null);
+  RxnInt riderUserId = RxnInt();
   RxString orderCreatedAt = ''.obs;
   
   Timer? _pollTimer;
@@ -109,6 +110,21 @@ class RiderController extends GetxController {
         // Check assign_rider status
         assignRiderData.value = data['assign_rider'];
         assignRiderNull.value = data['assign_rider'] == null;
+        riderUserId.value = null;
+
+        // Capture rider ids for chat / call
+        final assignRider = data['assign_rider'];
+        if (assignRider != null) {
+          final parsedUserId = assignRider['userId'];
+          riderUserId.value = parsedUserId is int
+              ? parsedUserId
+              : int.tryParse(parsedUserId?.toString() ?? '');
+
+          debugPrint('🚴 Assign Rider ID: ${assignRider['id']}');
+          debugPrint('👤 Assign Rider UserID: ${riderUserId.value}');
+        } else {
+          debugPrint('❌ No Assign Rider Found');
+        }
         
         debugPrint('✅ Order Fetched Successfully:');
         debugPrint('   - Order ID: $id');
