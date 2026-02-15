@@ -13,14 +13,9 @@ class StackedOrderReviewButtonStatic extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Ensure the vehicle controller is available.
-    final StackedVehicleController vehicleController =
-        Get.find<StackedVehicleController>();
-
-    // Ensure the order controller is available.
-    final StackedOrderController orderController = Get.put(
-      StackedOrderController(),
-    );
+    // ✅ Use Get.find() NOT Get.put() inside build
+    final vehicleController = Get.find<StackedVehicleController>();
+    final orderController = Get.find<StackedOrderController>();
 
     return Container(
       margin: const EdgeInsets.only(bottom: 70),
@@ -30,7 +25,7 @@ class StackedOrderReviewButtonStatic extends StatelessWidget {
         children: [
           const SizedBox(width: 8),
 
-          // Total Amount Display
+          /// ================= TOTAL DISPLAY =================
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -44,69 +39,34 @@ class StackedOrderReviewButtonStatic extends StatelessWidget {
                   ),
                 ),
                 Obx(() {
-                  // Watch totalCost with loading state
-                  final apiTotalCost = orderController.totalCost.value;
-                  final isFetching = orderController.isFetchingTotal.value;
-                  
-                  print('\n════════════════════════════════════════');
-                  print('🔔 TOTAL DISPLAY UPDATE');
-                  print('════════════════════════════════════════');
-                  
-                  print('✅ StackedOrderController Found');
-                  print('📊 API totalCost: \$${apiTotalCost.toStringAsFixed(2)}');
-                  print('⏳ Is Fetching: $isFetching');
-                  print('🔗 Order ID: ${orderController.lastOrderId}');
-                  
-                  // Show loading indicator if fetching
-                  if (isFetching) {
-                    print('⏳ SHOWING LOADING STATE (Fetching in progress)');
-                    print('════════════════════════════════════════\n');
+                  final total = orderController.totalCost.value;
+                  final isLoading = orderController.isFetchingTotal.value;
+
+                  if (isLoading) {
                     return Row(
-                      children: [
-                        const SizedBox(
+                      children: const [
+                        SizedBox(
                           width: 16,
                           height: 16,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.amber),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.amber,
+                            ),
                           ),
                         ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Loading...',
-                          style: getTextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.amber,
-                          ),
-                        ),
+                        SizedBox(width: 8),
+                        Text("Loading..."),
                       ],
                     );
                   }
-                  
-                  // Show total if we have a valid value
-                  if (apiTotalCost > 0) {
-                    print('💰 SHOWING: \$${apiTotalCost.toStringAsFixed(2)} (FROM API)');
-                    print('════════════════════════════════════════\n');
-                    return Text(
-                      '\$${apiTotalCost.toStringAsFixed(2)}',
-                      style: getTextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    );
-                  }
-                  
-                  // Show placeholder if value is 0 and not fetching
-                  print('❓ SHOWING PLACEHOLDER (Zero value and not fetching)');
-                  print('════════════════════════════════════════\n');
+
                   return Text(
-                    '--',
+                    '\$${total.toStringAsFixed(2)}',
                     style: getTextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Colors.grey,
+                      color: total > 0 ? Colors.black : Colors.grey,
                     ),
                   );
                 }),
@@ -114,115 +74,98 @@ class StackedOrderReviewButtonStatic extends StatelessWidget {
             ),
           ),
 
+          /// ================= REVIEW BUTTON =================
           Obx(() {
             final isReady = vehicleController.selectedVehicle.value != null;
 
             return FilledButton(
               onPressed: isReady
                   ? () async {
-                      print('\n🔄 [REVIEW BUTTON] Review Order clicked - Refreshing from API...');
-                      
-                      // Refresh order data from API before proceeding
+                      final savedTotal = orderController.totalCost.value;
+
+                      orderController.isFetchingTotal.value = true;
+
                       try {
-                        final oc = Get.find<StackedOrderController>();
-                        if (oc.lastOrderId != null) {
-                          print('📥 Fetching latest order details (ID: ${oc.lastOrderId})');
-                          final latestOrderRes = await OrderConfirmationService.getOrder(
-                            oc.lastOrderId ?? 0,
+                        /// ---------- REFRESH ORDER ----------
+                        if (orderController.lastOrderId != null) {
+                          final res = await OrderConfirmationService.getOrder(
+                            orderController.lastOrderId!,
                           );
-                          
-                          final latestData = (latestOrderRes['body'] as Map<String, dynamic>?)?['data'] as Map<String, dynamic>?;
-                          if (latestData != null) {
-                            final latestTotalCost = latestData['total_cost'] is String
-                                ? double.tryParse(latestData['total_cost']) ?? 0.0
-                                : (latestData['total_cost'] as num?)?.toDouble() ?? 0.0;
-                            
-                            oc.totalCost.value = latestTotalCost;
-                            oc.totalAmount.value = latestTotalCost;
-                            
-                            print('✅ Updated totalCost from API: \$${latestTotalCost.toStringAsFixed(2)}');
+
+                          final data =
+                              (res['body']?['data'] as Map<String, dynamic>?) ??
+                              {};
+
+                          final raw = data['total_cost'];
+
+                          final latestTotal = raw is String
+                              ? double.tryParse(raw)
+                              : (raw as num?)?.toDouble();
+
+                          // ✅ Only update if valid
+                          if (latestTotal != null && latestTotal > 0) {
+                            orderController.totalCost.value = latestTotal;
                           }
                         }
+
+                        /// ---------- PLACE ORDER ----------
+                        await orderController.placeOrder(
+                          locationController: Get.find(),
+                          vehicleController: vehicleController,
+                        );
+
+                        EasyLoading.show(status: 'Loading order details...');
+
+                        /// ---------- GET ORDER DETAILS ----------
+                        final orderRes =
+                            await OrderConfirmationService.getOrder(
+                              orderController.lastOrderId ?? 0,
+                            );
+
+                        final orderData =
+                            orderRes['body']?['data']
+                                as Map<String, dynamic>? ??
+                            {};
+
+                        final rawTotal = orderData['total_cost'];
+
+                        final confirmedTotal = rawTotal is String
+                            ? double.tryParse(rawTotal) ?? savedTotal
+                            : (rawTotal as num?)?.toDouble() ?? savedTotal;
+
+                        orderController.totalCost.value = confirmedTotal;
+                        orderController.totalAmount.value = confirmedTotal;
+
+                        /// ---------- GET USER PROFILE ----------
+                        final userRes =
+                            await OrderConfirmationService.getUserProfile();
+
+                        final userData =
+                            userRes['body']?['data'] as Map<String, dynamic>? ??
+                            {};
+
+                        final walletBalance =
+                            (userData['currentWalletBalance'] as num?)
+                                ?.toDouble() ??
+                            0.0;
+
+                        EasyLoading.dismiss();
+
+                        showStackedOrderConfirmationDialog(orderController);
                       } catch (e) {
-                        print('⚠️ Could not refresh from API: $e');
-                      }
-                      
-                      // Place order
-                      await orderController.placeOrder(
-                        locationController: Get.find(),
-                        vehicleController: vehicleController,
-                      );
-
-                      // Proceed to fetch order details regardless of POST status
-                      EasyLoading.show(status: 'Loading order details...');
-
-                      // 1️⃣ GET Order details
-                      final orderRes = await OrderConfirmationService.getOrder(
-                        orderController.lastOrderId ?? 0,
-                      );
-                      final orderSuccess =
-                          orderRes['success'] as bool? ?? false;
-                      final orderStatus = orderRes['statusCode'] as int? ?? 500;
-
-                      if (!orderSuccess ||
-                          (orderStatus != 200 && orderStatus != 201)) {
                         EasyLoading.dismiss();
-                        EasyLoading.showError('Failed to load order details');
-                        return;
+
+                        // ✅ Restore previous total safely
+                        orderController.totalCost.value = savedTotal;
+                        orderController.totalAmount.value = savedTotal;
+                      } finally {
+                        orderController.isFetchingTotal.value = false;
                       }
-
-                      final orderData =
-                          orderRes['body'] as Map<String, dynamic>? ?? {};
-                      final orderActualData =
-                          orderData['data'] as Map<String, dynamic>? ?? {};
-                      final totalCostRaw = orderActualData['total_cost'];
-                      final totalCost = totalCostRaw is String
-                          ? double.tryParse(totalCostRaw) ?? 0.0
-                          : (totalCostRaw as num?)?.toDouble() ?? 0.0;
-                      debugPrint('💰 Order Total Cost: \$${totalCost}');
-
-                      // 2️⃣ GET User profile
-                      final userRes =
-                          await OrderConfirmationService.getUserProfile();
-                      final userSuccess = userRes['success'] as bool? ?? false;
-                      final userStatus = userRes['statusCode'] as int? ?? 500;
-
-                      if (!userSuccess ||
-                          (userStatus != 200 && userStatus != 201)) {
-                        EasyLoading.dismiss();
-                        EasyLoading.showError('Failed to load user profile');
-                        return;
-                      }
-
-                      final userData =
-                          userRes['body'] as Map<String, dynamic>? ?? {};
-                      final userActualData =
-                          userData['data'] as Map<String, dynamic>? ?? {};
-                      final coinBalance =
-                          userActualData['current_coin_balance'] as num? ?? 0;
-                      debugPrint('🪙 Current Coin Balance: $coinBalance');
-
-                      // Update controller with fetched data
-                      orderController.totalAmount.value = totalCost.toDouble();
-                      orderController.userCoinBalance = coinBalance.toInt();
-
-                      EasyLoading.dismiss();
-
-                      // Show the server-backed confirmation dialog with server total and coin balance
-                      showStackedOrderConfirmationDialog(orderController);
                     }
                   : null,
               style: ButtonStyle(
                 backgroundColor: WidgetStateProperty.all(
                   isReady ? Colors.amber : Colors.grey.shade300,
-                ),
-                padding: WidgetStateProperty.all(
-                  const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
-                ),
-                shape: WidgetStateProperty.all(
-                  RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(6),
-                  ),
                 ),
               ),
               child: Text(
