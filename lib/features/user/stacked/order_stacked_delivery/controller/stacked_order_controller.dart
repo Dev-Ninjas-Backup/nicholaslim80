@@ -32,6 +32,9 @@ class StackedOrderController extends GetxController {
   var originalCost = 0.0.obs; // Original cost before discount
   var coinsRedeemed = 0.obs; // Coins redeemed for discount
 
+  // Loading states
+  var isFetchingTotal = false.obs; // Track if currently fetching total
+
   // Route options
   var isFixed = false.obs; // Fixed route toggle
 
@@ -518,32 +521,73 @@ class StackedOrderController extends GetxController {
       return;
     }
 
+    if (isFetchingTotal.value) {
+      debugPrint('⏳ Already fetching total, skipping duplicate request');
+      return;
+    }
+
+    isFetchingTotal.value = true;
+    final previousTotalCost = totalCost.value; // Save in case fetch fails
+    final previousTotalAmount = totalAmount.value;
+
     try {
+      debugPrint('\n🔄 FETCHING ORDER TOTAL FOR ORDER ID: $lastOrderId');
+      
       final orderRes = await OrderConfirmationService.getOrder(lastOrderId ?? 0);
+      
+      debugPrint('📡 API Response Status: ${orderRes['statusCode']}');
+      debugPrint('📡 API Response Success: ${orderRes['success']}');
+      
       final orderSuccess = orderRes['success'] as bool? ?? false;
       final orderStatus = orderRes['statusCode'] as int? ?? 500;
 
       if (!orderSuccess || (orderStatus != 200 && orderStatus != 201)) {
-        debugPrint('⚠️ Failed to fetch order details: Status $orderStatus');
+        debugPrint('❌ Failed to fetch order details: Status $orderStatus');
+        debugPrint('❌ Response: ${orderRes['body']}');
+        // Restore previous values if fetch failed
+        totalCost.value = previousTotalCost;
+        totalAmount.value = previousTotalAmount;
         return;
       }
 
       final orderData = orderRes['body'] as Map<String, dynamic>? ?? {};
       final orderActualData = orderData['data'] as Map<String, dynamic>? ?? {};
+      
+      debugPrint('📦 Order Data Keys: ${orderActualData.keys.toList()}');
+      
       final totalCostRaw = orderActualData['total_cost'];
+      debugPrint('💰 Raw Total Cost: $totalCostRaw (Type: ${totalCostRaw.runtimeType})');
+      
       final fetchedTotalCost = totalCostRaw is String
           ? double.tryParse(totalCostRaw) ?? 0.0
           : (totalCostRaw as num?)?.toDouble() ?? 0.0;
 
-      // Update both totalAmount and totalCost to keep them in sync
-      totalAmount.value = fetchedTotalCost;
-      totalCost.value = fetchedTotalCost;
-
-      debugPrint('\n✅ ORDER TOTAL UPDATED');
-      debugPrint('💰 Total Cost: \$${fetchedTotalCost.toStringAsFixed(2)}');
+      debugPrint('✅ Parsed Total Cost: \$${fetchedTotalCost.toStringAsFixed(2)}');
+      
+      // Only update if we have a valid non-zero cost
+      if (fetchedTotalCost > 0) {
+        totalAmount.value = fetchedTotalCost;
+        totalCost.value = fetchedTotalCost;
+        debugPrint('✅ VALUES UPDATED');
+        debugPrint('   totalAmount: \$${totalAmount.value.toStringAsFixed(2)}');
+        debugPrint('   totalCost: \$${totalCost.value.toStringAsFixed(2)}');
+      } else {
+        debugPrint('⚠️ Total cost is 0 or invalid, keeping previous values');
+        debugPrint('   Keeping totalAmount: \$${totalAmount.value.toStringAsFixed(2)}');
+        debugPrint('   Keeping totalCost: \$${totalCost.value.toStringAsFixed(2)}');
+        totalCost.value = previousTotalCost;
+        totalAmount.value = previousTotalAmount;
+      }
+      
       debugPrint('════════════════════════════════════════════════════════════\n');
-    } catch (e) {
+    } catch (e, stack) {
       debugPrint('❌ Error fetching order total: $e');
+      debugPrint('Stack: $stack');
+      // Restore previous values on error
+      totalCost.value = previousTotalCost;
+      totalAmount.value = previousTotalAmount;
+    } finally {
+      isFetchingTotal.value = false;
     }
   }
 }
