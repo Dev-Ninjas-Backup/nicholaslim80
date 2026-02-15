@@ -6,10 +6,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-
 class OrderReviewWidget extends StatelessWidget {
   final StackedVehicleController vehicleController;
-  final StackedOrderController orderController = Get.put(StackedOrderController());
+  final StackedOrderController orderController = Get.put(
+    StackedOrderController(),
+  );
   final double total;
   final List<String> calculationHistory;
 
@@ -70,7 +71,7 @@ class OrderReviewWidget extends StatelessWidget {
         ),
         SizedBox(height: 4),
         Text(
-          'S\$${total.toStringAsFixed(2)}',
+          '\$${total.toStringAsFixed(2)}',
           style: getTextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
@@ -144,11 +145,11 @@ class OrderReviewWidget extends StatelessWidget {
             ),
             SizedBox(height: 12),
             Text(
-              "Total Amount:",
+              "SubTotal:",
               style: getTextStyle(fontSize: 16, fontWeight: FontWeight.w500),
             ),
             Text(
-              "S\$${total.toStringAsFixed(2)}",
+              "\$${total.toStringAsFixed(2)}",
               style: getTextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 20),
