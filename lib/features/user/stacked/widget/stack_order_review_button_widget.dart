@@ -44,8 +44,9 @@ class StackedOrderReviewButtonStatic extends StatelessWidget {
                   ),
                 ),
                 Obx(() {
-                  // Watch totalCost - updates when vehicle changes OR services are added/removed
+                  // Watch totalCost with loading state
                   final apiTotalCost = orderController.totalCost.value;
+                  final isFetching = orderController.isFetchingTotal.value;
                   
                   print('\n════════════════════════════════════════');
                   print('🔔 TOTAL DISPLAY UPDATE');
@@ -53,16 +54,59 @@ class StackedOrderReviewButtonStatic extends StatelessWidget {
                   
                   print('✅ StackedOrderController Found');
                   print('📊 API totalCost: \$${apiTotalCost.toStringAsFixed(2)}');
+                  print('⏳ Is Fetching: $isFetching');
                   print('🔗 Order ID: ${orderController.lastOrderId}');
-                  print('💰 SHOWING: \$${apiTotalCost.toStringAsFixed(2)} (FROM API ONLY)');
-                  print('════════════════════════════════════════\n');
                   
+                  // Show loading indicator if fetching
+                  if (isFetching) {
+                    print('⏳ SHOWING LOADING STATE (Fetching in progress)');
+                    print('════════════════════════════════════════\n');
+                    return Row(
+                      children: [
+                        const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.amber),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Loading...',
+                          style: getTextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.amber,
+                          ),
+                        ),
+                      ],
+                    );
+                  }
+                  
+                  // Show total if we have a valid value
+                  if (apiTotalCost > 0) {
+                    print('💰 SHOWING: \$${apiTotalCost.toStringAsFixed(2)} (FROM API)');
+                    print('════════════════════════════════════════\n');
+                    return Text(
+                      '\$${apiTotalCost.toStringAsFixed(2)}',
+                      style: getTextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    );
+                  }
+                  
+                  // Show placeholder if value is 0 and not fetching
+                  print('❓ SHOWING PLACEHOLDER (Zero value and not fetching)');
+                  print('════════════════════════════════════════\n');
                   return Text(
-                    '\$${apiTotalCost.toStringAsFixed(2)}',
+                    '--',
                     style: getTextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: Colors.grey,
                     ),
                   );
                 }),
