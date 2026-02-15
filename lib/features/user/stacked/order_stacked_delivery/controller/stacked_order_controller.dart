@@ -1,6 +1,7 @@
 import 'package:ZipBee/features/user/bottom_navbar/screen/bottom_navbar_screen.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/cancel_order_service.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/order_service.dart';
+import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/order_confirmation_service.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/widget/payment_method_widget.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/notify_rider.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/promo_service.dart';
@@ -508,5 +509,41 @@ class StackedOrderController extends GetxController {
     coinsRedeemed.value = 0;
     // Optionally reset totalAmount to originalCost if needed
     debugPrint('🗑️ Promo code removed');
+  }
+
+  /// Fetch and update order total cost from API after address saved
+  Future<void> fetchOrderTotalCost() async {
+    if (lastOrderId == null) {
+      debugPrint('⚠️ Order ID is null, cannot fetch total cost');
+      return;
+    }
+
+    try {
+      final orderRes = await OrderConfirmationService.getOrder(lastOrderId ?? 0);
+      final orderSuccess = orderRes['success'] as bool? ?? false;
+      final orderStatus = orderRes['statusCode'] as int? ?? 500;
+
+      if (!orderSuccess || (orderStatus != 200 && orderStatus != 201)) {
+        debugPrint('⚠️ Failed to fetch order details: Status $orderStatus');
+        return;
+      }
+
+      final orderData = orderRes['body'] as Map<String, dynamic>? ?? {};
+      final orderActualData = orderData['data'] as Map<String, dynamic>? ?? {};
+      final totalCostRaw = orderActualData['total_cost'];
+      final fetchedTotalCost = totalCostRaw is String
+          ? double.tryParse(totalCostRaw) ?? 0.0
+          : (totalCostRaw as num?)?.toDouble() ?? 0.0;
+
+      // Update both totalAmount and totalCost to keep them in sync
+      totalAmount.value = fetchedTotalCost;
+      totalCost.value = fetchedTotalCost;
+
+      debugPrint('\n✅ ORDER TOTAL UPDATED');
+      debugPrint('💰 Total Cost: \$${fetchedTotalCost.toStringAsFixed(2)}');
+      debugPrint('════════════════════════════════════════════════════════════\n');
+    } catch (e) {
+      debugPrint('❌ Error fetching order total: $e');
+    }
   }
 }
