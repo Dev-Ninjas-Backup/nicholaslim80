@@ -3,19 +3,21 @@ import 'package:ZipBee/core/utils/constants/icon_path.dart';
 import 'package:ZipBee/features/user/bottom_navbar/screen/bottom_navbar_screen.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/controller/stacked_order_controller.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/cancel_order_service.dart';
+import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/order_confirmation_service.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/stripe_payment_sheet_handler.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/widget/custom_toggle_switch_widget.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/widget/order_confirmation_dialog.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/widget/order_success_widget.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/widget/payment_method_widget.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/widget/promo_dialog_widget.dart';
-import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/order_confirmation_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 
 /// Show order confirmation dialog
-void showStackedOrderConfirmationDialog(StackedOrderController controller) async {
+void showStackedOrderConfirmationDialog(
+  StackedOrderController controller,
+) async {
   /// Ensure payment controller exists
   StackedPaymentController paymentCtrl;
   try {
@@ -34,7 +36,9 @@ void showStackedOrderConfirmationDialog(StackedOrderController controller) async
     final userData = userRes['body'] as Map<String, dynamic>? ?? {};
     final userActualData = userData['data'] as Map<String, dynamic>? ?? {};
     final balanceRaw = userActualData['currentWalletBalance'];
-    walletBalance = balanceRaw is String ? double.tryParse(balanceRaw) ?? 0.0 : (balanceRaw as num?)?.toDouble() ?? 0.0;
+    walletBalance = balanceRaw is String
+        ? double.tryParse(balanceRaw) ?? 0.0
+        : (balanceRaw as num?)?.toDouble() ?? 0.0;
     paymentCtrl.walletBalance.value = walletBalance;
     debugPrint('💰 Wallet Balance: \$${walletBalance}');
   }
@@ -61,81 +65,132 @@ void showStackedOrderConfirmationDialog(StackedOrderController controller) async
               ),
               const SizedBox(height: 22),
 
-              /// Promo Code
-              Row(
-                children: [
-                  Image.asset(IconPath.promo, height: 24, width: 24),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Promo Code',
-                    style: getTextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
+              /// Promo Code Section
+              Obx(
+                () => Row(
+                  children: [
+                    Image.asset(IconPath.promo, height: 24, width: 24),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Promo Code',
+                      style: getTextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
-                  ),
-                  const Spacer(),
-                  GestureDetector(
-                    onTap: () {
-                      Get.dialog(
-                        AlertDialog(
-                          insetPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            side: const BorderSide(
-                              color: Colors.amber,
-                              width: 2,
-                            ),
-                          ),
-                          title: Row(
+                    const Spacer(),
+                    // Show applied code or Enter code button
+                    controller.promoCode.value.isNotEmpty
+                        ? Row(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text(
-                                "Promo Code",
-                                style: getTextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: Colors.green,
+                                    width: 2,
+                                  ),
+                                  borderRadius: BorderRadius.circular(4),
+                                  color: Colors.green.withOpacity(0.1),
+                                ),
+                                child: Text(
+                                  controller.promoCode.value.toUpperCase(),
+                                  style: getTextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.green,
+                                  ),
                                 ),
                               ),
-                              const Spacer(),
-                              InkWell(
-                                onTap: Get.back,
+                              const SizedBox(width: 8),
+                              GestureDetector(
+                                onTap: () {
+                                  controller.removePromoCode();
+                                  debugPrint(
+                                    '🔄 Promo removed, dialog should refresh',
+                                  );
+                                },
                                 child: const Icon(
-                                  Icons.cancel_outlined,
-                                  color: Colors.grey,
+                                  Icons.close,
+                                  color: Colors.red,
+                                  size: 18,
                                 ),
                               ),
                             ],
-                          ),
-                          content: Builder(
-                            builder: (context) {
-                              final width =
-                                  MediaQuery.of(context).size.width * 0.8;
-                              return SizedBox(
-                                width: width,
-                                child: StackedPromoDialogContent(),
+                          )
+                        : GestureDetector(
+                            onTap: () {
+                              Get.dialog(
+                                AlertDialog(
+                                  insetPadding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    side: const BorderSide(
+                                      color: Colors.amber,
+                                      width: 2,
+                                    ),
+                                  ),
+                                  title: Row(
+                                    children: [
+                                      Text(
+                                        "Promo Code",
+                                        style: getTextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const Spacer(),
+                                      InkWell(
+                                        onTap: Get.back,
+                                        child: const Icon(
+                                          Icons.cancel_outlined,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  content: Builder(
+                                    builder: (context) {
+                                      final width =
+                                          MediaQuery.of(context).size.width *
+                                          0.8;
+                                      return SizedBox(
+                                        width: width,
+                                        child: StackedPromoDialogContent(),
+                                      );
+                                    },
+                                  ),
+                                ),
                               );
                             },
+                            child: Container(
+                              width: 130,
+                              height: 27,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                              ),
+                              alignment: Alignment.centerLeft,
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Colors.grey),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                "Enter code",
+                                style: getTextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                    child: Container(
-                      width: 130,
-                      height: 27,
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      alignment: Alignment.centerLeft,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Text(
-                        "Enter code",
-                        style: getTextStyle(color: Colors.grey, fontSize: 13),
-                      ),
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
 
               const SizedBox(height: 14),
@@ -184,35 +239,64 @@ void showStackedOrderConfirmationDialog(StackedOrderController controller) async
 
               const SizedBox(height: 30),
 
-              /// Subtotal
+              /// Payment Summary Section
+              Text(
+                'Payment Summary',
+                style: getTextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
+
+              const SizedBox(height: 12),
+
+              /// Subtotal (Original Cost)
               Obx(
                 () => buildDetailRow(
-                  "Subtotal:",
-                  "\$${controller.totalFee.value > 0 ? controller.totalFee.value.toStringAsFixed(2) : controller.totalAmount.value.toStringAsFixed(2)}",
+                  "Total Cost:",
+                  "\$${controller.originalCost.value > 0 ? controller.originalCost.value.toStringAsFixed(2) : controller.totalAmount.value.toStringAsFixed(2)}",
                 ),
               ),
 
               const SizedBox(height: 10),
-              buildDetailRow("Coin/s redeemed:", "\$0.00"),
 
-              const SizedBox(height: 24),
-              const Divider(),
-              const SizedBox(height: 24),
-
-              buildDetailRow("Saved:", "\$0.00"),
+              /// Promo Discount
+              Obx(
+                () => controller.discountAmount.value > 0
+                    ? buildDetailRow(
+                        "Promo (${controller.promoCode.value}):",
+                        "-\$${controller.discountAmount.value.toStringAsFixed(2)}",
+                        isDiscount: true,
+                      )
+                    : const SizedBox.shrink(),
+              ),
 
               const SizedBox(height: 10),
 
-              /// Total Amount
+              /// Saved Amount (Total discount including coins)
+              Obx(
+                () =>
+                    (controller.discountAmount.value > 0 ||
+                        controller.coinsRedeemed.value > 0)
+                    ? buildDetailRow(
+                        "Total Saved:",
+                        "-\$${(controller.discountAmount.value + (controller.coinsRedeemed.value > 0 ? 0.0 : 0.0)).toStringAsFixed(2)}",
+                        isDiscount: true,
+                      )
+                    : const SizedBox.shrink(),
+              ),
+
+              const SizedBox(height: 20),
+              const Divider(),
+              const SizedBox(height: 20),
+
+              /// Total Cost
               Obx(
                 () => buildDetailRow(
-                  "Total Amount:",
-                  "\$${controller.totalFee.value > 0 ? controller.totalFee.value.toStringAsFixed(2) : controller.totalAmount.value.toStringAsFixed(2)}",
+                  "SubTotal:",
+                  "\$${controller.totalAmount.value.toStringAsFixed(2)}",
                   isTotal: true,
                 ),
               ),
 
-              const SizedBox(height: 30),
+              const SizedBox(height: 24),
 
               /// Payment Method
               Row(
@@ -236,7 +320,8 @@ void showStackedOrderConfirmationDialog(StackedOrderController controller) async
                       ),
                       StackedPaymentOption(
                         title: "Wallet",
-                        subtitle: "\$${paymentCtrl.walletBalance.value.toStringAsFixed(2)}",
+                        subtitle:
+                            "\$${paymentCtrl.walletBalance.value.toStringAsFixed(2)}",
                         imageAsset: IconPath.wallet,
                       ),
                       StackedPaymentOption(
@@ -296,26 +381,35 @@ void showStackedOrderConfirmationDialog(StackedOrderController controller) async
                 children: [
                   FilledButton(
                     onPressed: () async {
-
-                      final orderId = controller.lastOrderId; 
+                      final orderId = controller.lastOrderId;
 
                       if (orderId == null) {
-                        EasyLoading.showError('Order ID not found. Please try again.');
-                        Get.off( () => BottomNavbarScreen());
+                        EasyLoading.showError(
+                          'Order ID not found. Please try again.',
+                        );
+                        Get.off(() => BottomNavbarScreen());
                         // return;
                       } else {
-                        EasyLoading.show(status: 'Cancelling order .......'); 
-                        final res = await CancelOrderService.cancelOrder(orderId, "Hamara Marzee"); 
+                        EasyLoading.show(status: 'Cancelling order .......');
+                        final res = await CancelOrderService.cancelOrder(
+                          orderId,
+                          "Hamara Marzee",
+                        );
                         EasyLoading.dismiss();
-                        
+
                         if (res['success'] == true) {
-                          EasyLoading.showSuccess('Order cancelled successfully.');
+                          EasyLoading.showSuccess(
+                            'Order cancelled successfully.',
+                          );
                           Get.off(() => BottomNavbarScreen());
                         } else {
-                          final msg = (res['body'] as Map<String, dynamic>?)?['message'] ?? 'Failed to cancel order';
+                          final msg =
+                              (res['body']
+                                  as Map<String, dynamic>?)?['message'] ??
+                              'Failed to cancel order';
                           EasyLoading.showError(msg.toString());
                         }
-                      } 
+                      }
                       // Get.back();
                       // controller.cancelAndReset();
                       Get.off(() => BottomNavbarScreen());
@@ -350,20 +444,26 @@ void showStackedOrderConfirmationDialog(StackedOrderController controller) async
                   /// Place Order
                   FilledButton(
                     onPressed: () async {
-                      final selected = paymentCtrl.selectedTitle.value.toLowerCase();
+                      final selected = paymentCtrl.selectedTitle.value
+                          .toLowerCase();
 
-                      debugPrint('➡️ Place Order clicked - Payment method: $selected');
+                      debugPrint(
+                        '➡️ Place Order clicked - Payment method: $selected',
+                      );
 
                       // Handle STRIPE separately
                       if (selected.contains('stripe')) {
                         debugPrint('➡️ Stripe payment flow initiated');
-                        
+
                         // Step 1: Call addMoney API and show payment sheet
-                        debugPrint('➡️ Step 1: Calling addMoney API and initiating payment');
-                        final paymentResult = await StripePaymentSheetHandler.initiatePayment(
-                          amount: controller.totalAmount.value,
-                          orderId: controller.lastOrderId ?? 0,
+                        debugPrint(
+                          '➡️ Step 1: Calling addMoney API and initiating payment',
                         );
+                        final paymentResult =
+                            await StripePaymentSheetHandler.initiatePayment(
+                              amount: controller.totalAmount.value,
+                              orderId: controller.lastOrderId ?? 0,
+                            );
 
                         if (paymentResult == null) {
                           debugPrint('❌ Stripe payment failed or cancelled');
@@ -371,19 +471,28 @@ void showStackedOrderConfirmationDialog(StackedOrderController controller) async
                           return;
                         }
 
-                        debugPrint('✅ Stripe payment successful: $paymentResult');
-                        debugPrint('✅ Stripe payment already processed - no need to call placeOrder API');
+                        debugPrint(
+                          '✅ Stripe payment successful: $paymentResult',
+                        );
+                        debugPrint(
+                          '✅ Stripe payment already processed - no need to call placeOrder API',
+                        );
 
                         // Ensure orderNumber is properly set for FindingRiderPage
                         final orderId = controller.lastOrderId;
                         if (orderId != null && orderId != 0) {
-                          controller.orderNumber.value = '#${orderId.toString().padLeft(6, '0')}';
+                          controller.orderNumber.value =
+                              '#${orderId.toString().padLeft(6, '0')}';
                           controller.isAutoConfirmation.value = true;
                           controller.collectTime.value = 'ASAP';
-                          
-                          debugPrint('✅ OrderId: $orderId, OrderNumber: ${controller.orderNumber.value}');
+
+                          debugPrint(
+                            '✅ OrderId: $orderId, OrderNumber: ${controller.orderNumber.value}',
+                          );
                         } else {
-                          debugPrint('❌ OrderId is null or zero - cannot proceed');
+                          debugPrint(
+                            '❌ OrderId is null or zero - cannot proceed',
+                          );
                           EasyLoading.showError('Order ID not found');
                           return;
                         }
@@ -391,7 +500,7 @@ void showStackedOrderConfirmationDialog(StackedOrderController controller) async
                         // Show confirmation dialog
                         StackedOrderConfirmationDialog.show();
                         await Future.delayed(const Duration(seconds: 2));
-                        
+
                         // Show success dialog
                         StackedOrderSuccessDialog.show();
                       } else {
@@ -408,7 +517,9 @@ void showStackedOrderConfirmationDialog(StackedOrderController controller) async
                           paymentMethodApi = 'WALLET';
                           codCollect = null;
                         } else {
-                          EasyLoading.showError('Please select a payment method');
+                          EasyLoading.showError(
+                            'Please select a payment method',
+                          );
                           return;
                         }
 
@@ -423,12 +534,14 @@ void showStackedOrderConfirmationDialog(StackedOrderController controller) async
                         EasyLoading.dismiss();
 
                         if (ok) {
-                          debugPrint('Final placed total: ${controller.totalAmount.value}');
+                          debugPrint(
+                            'Final placed total: ${controller.totalAmount.value}',
+                          );
 
                           // Show confirmation dialog
                           StackedOrderConfirmationDialog.show();
                           await Future.delayed(const Duration(seconds: 2));
-                          
+
                           // Show success dialog
                           StackedOrderSuccessDialog.show();
                         } else {
@@ -464,8 +577,13 @@ void showStackedOrderConfirmationDialog(StackedOrderController controller) async
   );
 }
 
-/// Helper
-Widget buildDetailRow(String title, String value, {bool isTotal = false}) {
+/// Helper - with discount styling for red text
+Widget buildDetailRow(
+  String title,
+  String value, {
+  bool isTotal = false,
+  bool isDiscount = false,
+}) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
@@ -481,6 +599,9 @@ Widget buildDetailRow(String title, String value, {bool isTotal = false}) {
         style: getTextStyle(
           fontSize: isTotal ? 16 : 12,
           fontWeight: isTotal ? FontWeight.bold : FontWeight.w500,
+          color: isDiscount
+              ? Colors.green
+              : (isTotal ? Colors.amber : Colors.black),
         ),
       ),
     ],

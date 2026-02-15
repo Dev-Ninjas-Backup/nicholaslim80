@@ -16,7 +16,10 @@ void showOrderConfirmationDialog(
   int orderId = 0,
 }) {
   final String formattedTotal =
-      "S\$${controller.totalAmount.toStringAsFixed(2)}";
+      "\$${controller.totalAmount.toStringAsFixed(2)}";
+
+  final String savedAmount =
+      "\$${controller.discountAmount.toStringAsFixed(2)}";
 
   Get.dialog(
     AlertDialog(
@@ -186,7 +189,7 @@ void showOrderConfirmationDialog(
               SizedBox(height: 24),
               Divider(),
               SizedBox(height: 24),
-              buildDetailRow("Saved:", "\$00", isTotal: false),
+              buildDetailRow("Saved:", savedAmount, isTotal: true),
               SizedBox(height: 10),
               buildDetailRow("Total Amount:", formattedTotal, isTotal: true),
               SizedBox(height: 30),

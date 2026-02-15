@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:ZipBee/core/shared_prefference_service/shared_pref.dart';
 import 'package:ZipBee/core/utils/constants/icon_path.dart';
 import 'package:ZipBee/features/user/express_delivery_1/order_express_delivery/screen/order_alertdialog_screen.dart';
@@ -78,6 +79,7 @@ class ExpressDeliveryMain extends GetxController {
   final RxBool redeemCoins = false.obs;
   final RxBool favoriteRiders = false.obs;
   final Rx<double> totalAmount = 0.0.obs;
+  final Rx<double> discountAmount = 0.0.obs;
   final RxBool isLoading = false.obs;
 
   final Logger _logger = Logger(

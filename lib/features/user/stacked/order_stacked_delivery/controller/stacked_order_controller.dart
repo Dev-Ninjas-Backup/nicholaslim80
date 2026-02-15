@@ -24,6 +24,13 @@ class StackedOrderController extends GetxController {
   var favoriteRiders = false.obs;
   int userCoinBalance = 0; // User's current coin balance from API
 
+  // Promo code and discount fields
+  var promoCode = ''.obs; // Applied promo code
+  var discountAmount = 0.0.obs; // Discount amount from promo
+  var promoDiscount = 0.0.obs; // Promo discount percentage/value
+  var originalCost = 0.0.obs; // Original cost before discount
+  var coinsRedeemed = 0.obs; // Coins redeemed for discount
+
   // Route options
   var isFixed = false.obs; // Fixed route toggle
 
@@ -432,6 +439,11 @@ class StackedOrderController extends GetxController {
     totalAmount.value = 0.0;
     totalFee.value = 0.0;
     totalCost.value = 0.0;
+    promoCode.value = '';
+    discountAmount.value = 0.0;
+    promoDiscount.value = 0.0;
+    originalCost.value = 0.0;
+    coinsRedeemed.value = 0;
   }
   
   Future<void> applyPromoCode(String code) async {
@@ -460,19 +472,41 @@ class StackedOrderController extends GetxController {
       final body = res['body'] as Map<String, dynamic>? ?? {};
       final data = body['data'] as Map<String, dynamic>? ?? {};
 
-      /// Update totals from API
+      /// Update totals and discount information from API
       totalAmount.value =
           double.tryParse(data['total_cost']?.toString() ?? '0') ?? 0;
 
       totalFee.value =
           double.tryParse(data['total_fee']?.toString() ?? '0') ?? 0;
 
-      EasyLoading.showSuccess(body['message'] ?? 'Promo applied');
+      // Store promo code details
+      promoCode.value = data['promoCode']?.toString() ?? code.trim();
+      discountAmount.value =
+          double.tryParse(data['discountAmount']?.toString() ?? '0') ?? 0;
+      promoDiscount.value =
+          double.tryParse(data['promoDiscount']?.toString() ?? '0') ?? 0;
+      originalCost.value =
+          double.tryParse(data['originalCost']?.toString() ?? '0') ?? 0;
+      coinsRedeemed.value =
+          int.tryParse(data['coinsRedeemed']?.toString() ?? '0') ?? 0;
 
-      Get.back(); // close promo dialog
+      debugPrint('✅ Promo Applied: $promoCode');
+      debugPrint('💰 Original: \$${originalCost.value}, Discount: \$${discountAmount.value}, Total: \$${totalAmount.value}');
+      debugPrint('🪙 Coins Redeemed: ${coinsRedeemed.value}');
+
+      EasyLoading.showSuccess(body['message'] ?? 'Promo applied successfully!');
     } else {
       EasyLoading.showError(res['body']?['message'] ?? 'Failed to apply promo');
     }
   }
 
+  /// Remove applied promo code and reset to original values
+  void removePromoCode() {
+    promoCode.value = '';
+    discountAmount.value = 0.0;
+    promoDiscount.value = 0.0;
+    coinsRedeemed.value = 0;
+    // Optionally reset totalAmount to originalCost if needed
+    debugPrint('🗑️ Promo code removed');
+  }
 }
