@@ -66,6 +66,9 @@ class StackedSchedulRecepmenteScreen extends StatelessWidget {
                     if (res != null) {
                       final data = res;
 
+                      // 🔥 Fetch updated total cost from API after address saved
+                      await orderController.fetchOrderTotalCost();
+
                       // Update total cost in order controller
                       if (controller.totalCost.value > 0) {
                         orderController.totalAmount.value = controller.totalCost.value;
