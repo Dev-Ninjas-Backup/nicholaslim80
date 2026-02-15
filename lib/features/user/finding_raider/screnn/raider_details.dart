@@ -2,12 +2,12 @@ import 'package:ZipBee/core/common/styles/global_text_style.dart';
 import 'package:ZipBee/core/utils/constants/app_colors.dart';
 import 'package:ZipBee/core/utils/constants/icon_path.dart';
 import 'package:ZipBee/features/user/bottom_navbar/screen/bottom_navbar_screen.dart';
+import 'package:ZipBee/features/user/chat/screen/chat_screen.dart';
 import 'package:ZipBee/features/user/finding_raider/controller/rider_controller.dart';
 import 'package:ZipBee/features/user/finding_raider/widget/button.dart';
 import 'package:ZipBee/features/user/finding_raider/widget/custom_icon_text_button.dart';
 import 'package:ZipBee/features/user/finding_raider/widget/order_location_info_widget.dart';
 import 'package:ZipBee/features/user/finding_raider/widget/raider_info.dart';
-import 'package:ZipBee/features/user/chat/screen/chat_screen.dart';
 import 'package:ZipBee/features/user/google_map/widget/google_map_widget.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/controller/stacked_order_controller.dart';
 import 'package:flutter/material.dart';
@@ -87,39 +87,23 @@ class RaiderDetails extends StatelessWidget {
                                 borderColor: Colors.black,
                                 textColor: Colors.black,
                                 backgroundColor: Colors.white,
-                                onPressed: () {
-                                  final riderUserId =
-                                      controller.riderUserId.value;
-                                  final assignRider =
-                                      controller.assignRiderData.value;
+                                onPressed: () => Get.to(
+                                  ChatScreen(
+                                    receiverId:
+                                        (controller
+                                                    .assignRiderData
+                                                    .value?['userId'] ??
+                                                0)
+                                            .toString(),
 
-                                  if (assignRider == null || riderUserId == null) {
-                                    Get.snackbar(
-                                      'No rider assigned',
-                                      'Please wait until a rider is assigned.',
-                                    );
-                                    return;
-                                  }
-
-                                  final registration =
-                                      assignRider['registrations'] != null &&
-                                              (assignRider['registrations']
-                                                      as List)
-                                                  .isNotEmpty
-                                          ? assignRider['registrations'][0]
-                                          : null;
-
-                                  final riderName =
-                                      registration?['raider_name'] ??
-                                      'Rider';
-
-                                  Get.to(
-                                    () => ChatScreen(
-                                      receiverId: riderUserId.toString(),
-                                      senderName: riderName,
-                                    ),
-                                  );
-                                },
+                                    // null thakle 0 default
+                                    senderName:
+                                        controller
+                                            .assignRiderData
+                                            .value?['name'] ??
+                                        '',
+                                  ),
+                                ),
                               ),
                               CustomIconTextButton(
                                 text: 'Call',
@@ -216,6 +200,7 @@ class RaiderDetails extends StatelessWidget {
 🐝 *ZipBee | Ride Details*
 --------------------------------------
 🆔 *Order ID:* $orderId
+👤 *Assign Rider ID:* ${controller.assignRiderData.value?['id'] ?? 'N/A'}
 👤 *Rider:* $riderName
 💰 *Total Fare:* \$$totalCost ($paymentMethod)
 

@@ -45,9 +45,8 @@ class RiderController extends GetxController {
   RxString paymentType = ''.obs; // COD, WALLET, ONLINE_PAY
   RxBool assignRiderNull = true.obs;
   Rx<dynamic> assignRiderData = Rx<dynamic>(null);
-  RxnInt riderUserId = RxnInt();
   RxString orderCreatedAt = ''.obs;
-  
+
   Timer? _pollTimer;
 
   // fareOptions এখন রিয়েল-টাইম আপডেট হবে এবং ক্যাশ থেকে ডাটা নিবে
@@ -71,9 +70,9 @@ class RiderController extends GetxController {
   // নতুন অ্যামাউন্ট অ্যাড এবং ক্যাশ সেভ করার মেথড (ইউনিক ৪টি)
   void addNewAmount(double amount) {
     debugPrint('🚀 Adding new amount to cache: $amount');
-    
+
     List<double> currentList = List<double>.from(fareOptions);
-    
+
     // যদি অ্যামাউন্টটি আগে থেকেই থাকে, তবে সেটি রিমুভ করে শুরুতে নিয়ে আসবো (ইউনিক রাখতে)
     currentList.remove(amount);
     currentList.insert(0, amount);
@@ -97,55 +96,64 @@ class RiderController extends GetxController {
     try {
       final result = await GetOrderApiService.fetchOrderDetails(id);
 
-      debugPrint('📊 API Response: Success=${result['success']}, HasData=${result['data'] != null}');
+      debugPrint(
+        '📊 API Response: Success=${result['success']}, HasData=${result['data'] != null}',
+      );
 
       if (result['success'] == true && result['data'] != null) {
         final data = result['data'];
-        
+
+        // =========================
         // Payment Information
-        totalCost.value = double.tryParse(data['total_cost']?.toString() ?? '0') ?? 0.0;
+        // =========================
+        totalCost.value =
+            double.tryParse(data['total_cost']?.toString() ?? '0') ?? 0.0;
         paymentType.value = data['pay_type'] ?? '';
         orderCreatedAt.value = data['created_at'] ?? '';
-        
-        // Check assign_rider status
+
+        // =========================
+        // Assign Rider Info
+        // =========================
         assignRiderData.value = data['assign_rider'];
         assignRiderNull.value = data['assign_rider'] == null;
-        riderUserId.value = null;
 
-        // Capture rider ids for chat / call
+        // ✅ এই জায়গা থেকে আমরা assign_rider এর id এবং userId fetch করছি
         final assignRider = data['assign_rider'];
-        if (assignRider != null) {
-          final parsedUserId = assignRider['userId'];
-          riderUserId.value = parsedUserId is int
-              ? parsedUserId
-              : int.tryParse(parsedUserId?.toString() ?? '');
 
-          debugPrint('🚴 Assign Rider ID: ${assignRider['id']}');
-          debugPrint('👤 Assign Rider UserID: ${riderUserId.value}');
+        if (assignRider != null) {
+          // 🚴 Assign Rider ID
+          final riderId = assignRider['id'];
+
+          // 👤 Assign Rider UserID
+          final riderUserId = assignRider['userId'];
+
+          debugPrint('🚴 Assign Rider ID: $riderId'); // <-- এখানে
+          debugPrint('👤 Assign Rider UserID: $riderUserId'); // <-- এখানে
         } else {
           debugPrint('❌ No Assign Rider Found');
         }
-        
+
         debugPrint('✅ Order Fetched Successfully:');
         debugPrint('   - Order ID: $id');
         debugPrint('   - Total Cost: ${totalCost.value}');
         debugPrint('   - Payment Type: ${paymentType.value}');
-        debugPrint('   - Assign Rider: ${data['assign_rider']}');
         debugPrint('   - Created At: ${orderCreatedAt.value}');
-        
+
+        // =========================
+        // Order Stops
+        // =========================
         final List orderStops = data['orderStops'] ?? [];
 
-        // Clear lists before adding new data
         pickupStops.clear();
         dropStops.clear();
 
         for (var stop in orderStops) {
           final destination = stop['destination'];
+
           if (destination != null) {
             final String type = destination['type'] ?? '';
 
             if (type == 'SENDER') {
-              // Add to list for Multiple Stops
               pickupStops.add({
                 'name': destination['contact_name'] ?? '',
                 'address': destination['address'] ?? '',
@@ -153,9 +161,9 @@ class RiderController extends GetxController {
 
               pickupName.value = destination['contact_name'] ?? '';
               pickupAddress.value = destination['address'] ?? '';
+
               debugPrint('✅ Pickup Set: ${pickupName.value}');
             } else if (type == 'RECEIVER') {
-              // Add to list for Multiple Stops
               dropStops.add({
                 'name': destination['contact_name'] ?? '',
                 'address': destination['address'] ?? '',
@@ -163,11 +171,15 @@ class RiderController extends GetxController {
 
               dropName.value = destination['contact_name'] ?? '';
               dropAddress.value = destination['address'] ?? '';
+
               debugPrint('✅ Drop Set: ${dropName.value}');
             }
           }
         }
-        debugPrint('📦 Total Pickups: ${pickupStops.length}, Total Drops: ${dropStops.length}');
+
+        debugPrint(
+          '📦 Total Pickups: ${pickupStops.length}, Total Drops: ${dropStops.length}',
+        );
       } else {
         debugPrint('❌ API Success was false or data was null');
         debugPrint('❌ Response: $result');
@@ -182,8 +194,12 @@ class RiderController extends GetxController {
   // Poll order to check assign_rider status
   Future<void> startPollingAssignRider(VoidCallback? onAssignedRider) async {
     // Get order ID from StackedOrderController
-    final StackedOrderController orderController = Get.find<StackedOrderController>();
-    String rawId = orderController.orderNumber.value.replaceAll(RegExp(r'[^0-9]'), '');
+    final StackedOrderController orderController =
+        Get.find<StackedOrderController>();
+    String rawId = orderController.orderNumber.value.replaceAll(
+      RegExp(r'[^0-9]'),
+      '',
+    );
     int? id = int.tryParse(rawId);
 
     if (id == null || id == 0) {
@@ -192,19 +208,19 @@ class RiderController extends GetxController {
     }
 
     _pollTimer?.cancel();
-    
+
     // Initial fetch
     await fetchOrderData(id);
-    
+
     if (!assignRiderNull.value) {
       onAssignedRider?.call();
       return;
     }
-    
+
     _pollTimer = Timer.periodic(Duration(seconds: 3), (timer) async {
       debugPrint('🔄 Polling order $id...');
       await fetchOrderData(id);
-      
+
       if (!assignRiderNull.value) {
         debugPrint('✅ Rider assigned! Stopping poll.');
         timer.cancel();
@@ -326,8 +342,12 @@ class RiderController extends GetxController {
     double selectedAmount = fareOptions[selectedFare.value];
 
     // ২. অর্ডার আইডি গেট করা (আপনার স্ট্যাকড অর্ডার কন্ট্রোলার থেকে)
-    final StackedOrderController orderController = Get.find<StackedOrderController>();
-    String rawId = orderController.orderNumber.value.replaceAll(RegExp(r'[^0-9]'), '');
+    final StackedOrderController orderController =
+        Get.find<StackedOrderController>();
+    String rawId = orderController.orderNumber.value.replaceAll(
+      RegExp(r'[^0-9]'),
+      '',
+    );
     int? id = int.tryParse(rawId);
 
     if (id == null || id == 0) {
@@ -345,7 +365,7 @@ class RiderController extends GetxController {
 
       if (res['success'] == true) {
         EasyLoading.showSuccess('Priority Order Activated!');
-        
+
         // Success হলে পরবর্তী স্ক্রিনে যাওয়া
         firstActive.value = false;
         secondActive.value = true;
