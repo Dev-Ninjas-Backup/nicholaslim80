@@ -2,6 +2,7 @@ import 'package:ZipBee/core/common/styles/global_text_style.dart';
 import 'package:ZipBee/core/utils/constants/app_colors.dart';
 import 'package:ZipBee/core/utils/constants/icon_path.dart';
 import 'package:ZipBee/features/user/bottom_navbar/screen/bottom_navbar_screen.dart';
+import 'package:ZipBee/features/user/chat/screen/chat_screen.dart';
 import 'package:ZipBee/features/user/finding_raider/controller/rider_controller.dart';
 import 'package:ZipBee/features/user/finding_raider/widget/button.dart';
 import 'package:ZipBee/features/user/finding_raider/widget/custom_icon_text_button.dart';
@@ -13,29 +14,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
 
-class RaiderDetails extends StatefulWidget {
-  const RaiderDetails({super.key});
+class RaiderDetails extends StatelessWidget {
+  RaiderDetails({super.key});
 
-  @override
-  State<RaiderDetails> createState() => _RaiderDetailsState();
-}
-
-class _RaiderDetailsState extends State<RaiderDetails> {
-  late RiderController controller;
-  late StackedOrderController orderController;
-
-  @override
-  void initState() {
-    super.initState();
-    controller = Get.find<RiderController>();
-    orderController = Get.find<StackedOrderController>();
-
-    // Fetch order data when this screen opens
-    _fetchOrderDataOnInit();
-  }
+  final RiderController controller = Get.find<RiderController>();
+  final StackedOrderController orderController =
+      Get.find<StackedOrderController>();
 
   void _fetchOrderDataOnInit() {
-    // Get order ID from StackedOrderController
     String rawId = orderController.orderNumber.value.replaceAll(
       RegExp(r'[^0-9]'),
       '',
@@ -49,6 +35,9 @@ class _RaiderDetailsState extends State<RaiderDetails> {
 
   @override
   Widget build(BuildContext context) {
+    // This will run when widget builds
+    _fetchOrderDataOnInit();
+
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -67,7 +56,6 @@ class _RaiderDetailsState extends State<RaiderDetails> {
       body: Stack(
         children: [
           SizedBox.expand(child: GoogleMapWidget()),
-
           DraggableScrollableSheet(
             initialChildSize: 0.5,
             minChildSize: 0.4,
@@ -88,10 +76,7 @@ class _RaiderDetailsState extends State<RaiderDetails> {
                         children: [
                           dragHandle(),
                           SizedBox(height: 24),
-
-                          // Display rider info from API
                           RaiderInfoWidget(),
-
                           SizedBox(height: 16),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -102,7 +87,23 @@ class _RaiderDetailsState extends State<RaiderDetails> {
                                 borderColor: Colors.black,
                                 textColor: Colors.black,
                                 backgroundColor: Colors.white,
-                                onPressed: () {},
+                                onPressed: () => Get.to(
+                                  ChatScreen(
+                                    receiverId:
+                                        (controller
+                                                    .assignRiderData
+                                                    .value?['userId'] ??
+                                                0)
+                                            .toString(),
+
+                                    // null thakle 0 default
+                                    senderName:
+                                        controller
+                                            .assignRiderData
+                                            .value?['name'] ??
+                                        '',
+                                  ),
+                                ),
                               ),
                               CustomIconTextButton(
                                 text: 'Call',
@@ -114,10 +115,8 @@ class _RaiderDetailsState extends State<RaiderDetails> {
                               ),
                             ],
                           ),
-
                           SizedBox(height: 20),
                           Divider(),
-
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -140,10 +139,8 @@ class _RaiderDetailsState extends State<RaiderDetails> {
                               _buildPaymentDisplay(),
                             ],
                           ),
-
                           Divider(),
                           SizedBox(height: 10),
-
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -155,22 +152,18 @@ class _RaiderDetailsState extends State<RaiderDetails> {
                               ),
                             ],
                           ),
-
                           SizedBox(height: 24),
                           OrderLocationInfoWidget(
                             pickupStops: controller.pickupStops,
                             dropStops: controller.dropStops,
                           ),
-
                           SizedBox(height: 20),
-
                           Button(
                             buttonText: 'Share Ride Information',
                             backgroundColor:
                                 AppColors.onboardingIndicatorActive,
                             textColor: Colors.black,
                             onPressed: () {
-                              // Extracting data safely
                               final assignRider =
                                   controller.assignRiderData.value;
                               final registration =
@@ -196,19 +189,18 @@ class _RaiderDetailsState extends State<RaiderDetails> {
                               final totalCost = controller.totalCost.value
                                   .toStringAsFixed(2);
 
-                              // Formatting Payment Type
                               String paymentMethod = 'Online Payment';
                               if (controller.paymentType.value == 'COD')
                                 paymentMethod = 'Cash on Delivery';
                               if (controller.paymentType.value == 'WALLET')
                                 paymentMethod = 'Wallet';
 
-                              // Professional English Share Message
                               final String shareMessage =
                                   '''
 🐝 *ZipBee | Ride Details*
 --------------------------------------
 🆔 *Order ID:* $orderId
+👤 *Assign Rider ID:* ${controller.assignRiderData.value?['id'] ?? 'N/A'}
 👤 *Rider:* $riderName
 💰 *Total Fare:* \$$totalCost ($paymentMethod)
 
@@ -249,7 +241,6 @@ Track your ride live on the ZipBee app.
     ),
   );
 
-  // Build payment display based on payment type
   Widget _buildPaymentDisplay() {
     return Obx(() {
       final payType = controller.paymentType.value;
@@ -289,7 +280,6 @@ Track your ride live on the ZipBee app.
     });
   }
 
-  // Format datetime from ISO string
   String _formatDateTime(String isoString) {
     if (isoString.isEmpty) return 'N/A';
     try {
