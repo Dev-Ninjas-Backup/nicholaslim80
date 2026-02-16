@@ -3,11 +3,7 @@ class MessageModel {
   final bool isMe;
   final String time;
 
-  MessageModel({
-    required this.text,
-    required this.isMe,
-    required this.time,
-  });
+  MessageModel({required this.text, required this.isMe, required this.time});
 
   factory MessageModel.fromSocket({
     required Map<String, dynamic> data,
