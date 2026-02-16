@@ -88,4 +88,6 @@ class ApiEndPoint {
   //make favorite
   static const String makeFavorite = '$baseUrl/my-raider/makefav/{id}';
   static const String impression = '$baseUrl/advertise/{id}/impression';
+  //
+  static const String supportChat = '$baseUrl/users/admin';
 }
