@@ -133,6 +133,11 @@ class RiderController extends GetxController {
           debugPrint('❌ No Assign Rider Found');
         }
 
+        // =========================
+        // Save orderId to controller
+        // =========================
+        orderId.value = id;
+
         debugPrint('✅ Order Fetched Successfully:');
         debugPrint('   - Order ID: $id');
         debugPrint('   - Total Cost: ${totalCost.value}');

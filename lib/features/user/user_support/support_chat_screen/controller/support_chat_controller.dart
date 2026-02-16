@@ -1,4 +1,4 @@
-import 'package:ZipBee/features/user/user_support/chat_screen/model/support_chat_model.dart';
+import 'package:ZipBee/features/user/user_support/support_chat_screen/model/support_chat_model.dart';
 import 'package:get/get.dart';
 
 class ChatController extends GetxController {

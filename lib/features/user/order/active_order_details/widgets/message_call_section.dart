@@ -28,6 +28,9 @@ class MessageCallSection extends StatelessWidget {
 
                 // null thakle 0 default
                 senderName: order.assignRiderName,
+                orderId: order.orderId,
+                totalCost: order.total.toStringAsFixed(2),
+                vehicleType: order.vehicleType,
               ),
             ),
             style: OutlinedButton.styleFrom(

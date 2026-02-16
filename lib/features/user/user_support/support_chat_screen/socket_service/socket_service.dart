@@ -3,11 +3,12 @@ import 'package:get/get.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:ZipBee/core/shared_prefference_service/shared_pref.dart';
 
-class UserSocketService {
+class SuppertSocketService {
   // Singleton
-  static final UserSocketService _instance = UserSocketService._internal();
-  factory UserSocketService() => _instance;
-  UserSocketService._internal();
+  static final SuppertSocketService _instance =
+      SuppertSocketService._internal();
+  factory SuppertSocketService() => _instance;
+  SuppertSocketService._internal();
 
   IO.Socket? socket;
   var token = ''.obs;

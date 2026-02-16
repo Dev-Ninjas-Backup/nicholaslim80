@@ -95,16 +95,20 @@ class RaiderDetails extends StatelessWidget {
                                                     .value?['userId'] ??
                                                 0)
                                             .toString(),
-
-                                    // null thakle 0 default
                                     senderName:
                                         controller
                                             .assignRiderData
                                             .value?['name'] ??
                                         '',
+                                    orderId: controller.orderId.value
+                                        .toString(),
+                                    totalCost: controller.totalCost.value
+                                        .toStringAsFixed(2),
+                                    vehicleType: controller.vehicleType.value,
                                   ),
                                 ),
                               ),
+
                               CustomIconTextButton(
                                 text: 'Call',
                                 iconPath: IconPath.call,
