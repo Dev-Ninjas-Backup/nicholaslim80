@@ -1,6 +1,7 @@
 import 'package:ZipBee/features/user/bottom_navbar/screen/bottom_navbar_screen.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/cancel_order_service.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/order_service.dart';
+import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/order_confirmation_service.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/widget/payment_method_widget.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/notify_rider.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/promo_service.dart';
@@ -23,6 +24,16 @@ class StackedOrderController extends GetxController {
   var redeemCoins = false.obs;
   var favoriteRiders = false.obs;
   int userCoinBalance = 0; // User's current coin balance from API
+
+  // Promo code and discount fields
+  var promoCode = ''.obs; // Applied promo code
+  var discountAmount = 0.0.obs; // Discount amount from promo
+  var promoDiscount = 0.0.obs; // Promo discount percentage/value
+  var originalCost = 0.0.obs; // Original cost before discount
+  var coinsRedeemed = 0.obs; // Coins redeemed for discount
+
+  // Loading states
+  var isFetchingTotal = false.obs; // Track if currently fetching total
 
   // Route options
   var isFixed = false.obs; // Fixed route toggle
@@ -432,6 +443,11 @@ class StackedOrderController extends GetxController {
     totalAmount.value = 0.0;
     totalFee.value = 0.0;
     totalCost.value = 0.0;
+    promoCode.value = '';
+    discountAmount.value = 0.0;
+    promoDiscount.value = 0.0;
+    originalCost.value = 0.0;
+    coinsRedeemed.value = 0;
   }
   
   Future<void> applyPromoCode(String code) async {
@@ -460,19 +476,118 @@ class StackedOrderController extends GetxController {
       final body = res['body'] as Map<String, dynamic>? ?? {};
       final data = body['data'] as Map<String, dynamic>? ?? {};
 
-      /// Update totals from API
+      /// Update totals and discount information from API
       totalAmount.value =
           double.tryParse(data['total_cost']?.toString() ?? '0') ?? 0;
 
       totalFee.value =
           double.tryParse(data['total_fee']?.toString() ?? '0') ?? 0;
 
-      EasyLoading.showSuccess(body['message'] ?? 'Promo applied');
+      // Store promo code details
+      promoCode.value = data['promoCode']?.toString() ?? code.trim();
+      discountAmount.value =
+          double.tryParse(data['discountAmount']?.toString() ?? '0') ?? 0;
+      promoDiscount.value =
+          double.tryParse(data['promoDiscount']?.toString() ?? '0') ?? 0;
+      originalCost.value =
+          double.tryParse(data['originalCost']?.toString() ?? '0') ?? 0;
+      coinsRedeemed.value =
+          int.tryParse(data['coinsRedeemed']?.toString() ?? '0') ?? 0;
 
-      Get.back(); // close promo dialog
+      debugPrint('✅ Promo Applied: $promoCode');
+      debugPrint('💰 Original: \$${originalCost.value}, Discount: \$${discountAmount.value}, Total: \$${totalAmount.value}');
+      debugPrint('🪙 Coins Redeemed: ${coinsRedeemed.value}');
+
+      EasyLoading.showSuccess(body['message'] ?? 'Promo applied successfully!');
     } else {
       EasyLoading.showError(res['body']?['message'] ?? 'Failed to apply promo');
     }
   }
 
+  /// Remove applied promo code and reset to original values
+  void removePromoCode() {
+    promoCode.value = '';
+    discountAmount.value = 0.0;
+    promoDiscount.value = 0.0;
+    coinsRedeemed.value = 0;
+    // Optionally reset totalAmount to originalCost if needed
+    debugPrint('🗑️ Promo code removed');
+  }
+
+  /// Fetch and update order total cost from API after address saved
+  Future<void> fetchOrderTotalCost() async {
+    if (lastOrderId == null) {
+      debugPrint('⚠️ Order ID is null, cannot fetch total cost');
+      return;
+    }
+
+    if (isFetchingTotal.value) {
+      debugPrint('⏳ Already fetching total, skipping duplicate request');
+      return;
+    }
+
+    isFetchingTotal.value = true;
+    final previousTotalCost = totalCost.value; // Save in case fetch fails
+    final previousTotalAmount = totalAmount.value;
+
+    try {
+      debugPrint('\n🔄 FETCHING ORDER TOTAL FOR ORDER ID: $lastOrderId');
+      
+      final orderRes = await OrderConfirmationService.getOrder(lastOrderId ?? 0);
+      
+      debugPrint('📡 API Response Status: ${orderRes['statusCode']}');
+      debugPrint('📡 API Response Success: ${orderRes['success']}');
+      
+      final orderSuccess = orderRes['success'] as bool? ?? false;
+      final orderStatus = orderRes['statusCode'] as int? ?? 500;
+
+      if (!orderSuccess || (orderStatus != 200 && orderStatus != 201)) {
+        debugPrint('❌ Failed to fetch order details: Status $orderStatus');
+        debugPrint('❌ Response: ${orderRes['body']}');
+        // Restore previous values if fetch failed
+        totalCost.value = previousTotalCost;
+        totalAmount.value = previousTotalAmount;
+        return;
+      }
+
+      final orderData = orderRes['body'] as Map<String, dynamic>? ?? {};
+      final orderActualData = orderData['data'] as Map<String, dynamic>? ?? {};
+      
+      debugPrint('📦 Order Data Keys: ${orderActualData.keys.toList()}');
+      
+      final totalCostRaw = orderActualData['total_cost'];
+      debugPrint('💰 Raw Total Cost: $totalCostRaw (Type: ${totalCostRaw.runtimeType})');
+      
+      final fetchedTotalCost = totalCostRaw is String
+          ? double.tryParse(totalCostRaw) ?? 0.0
+          : (totalCostRaw as num?)?.toDouble() ?? 0.0;
+
+      debugPrint('✅ Parsed Total Cost: \$${fetchedTotalCost.toStringAsFixed(2)}');
+      
+      // Only update if we have a valid non-zero cost
+      if (fetchedTotalCost > 0) {
+        totalAmount.value = fetchedTotalCost;
+        totalCost.value = fetchedTotalCost;
+        debugPrint('✅ VALUES UPDATED');
+        debugPrint('   totalAmount: \$${totalAmount.value.toStringAsFixed(2)}');
+        debugPrint('   totalCost: \$${totalCost.value.toStringAsFixed(2)}');
+      } else {
+        debugPrint('⚠️ Total cost is 0 or invalid, keeping previous values');
+        debugPrint('   Keeping totalAmount: \$${totalAmount.value.toStringAsFixed(2)}');
+        debugPrint('   Keeping totalCost: \$${totalCost.value.toStringAsFixed(2)}');
+        totalCost.value = previousTotalCost;
+        totalAmount.value = previousTotalAmount;
+      }
+      
+      debugPrint('════════════════════════════════════════════════════════════\n');
+    } catch (e, stack) {
+      debugPrint('❌ Error fetching order total: $e');
+      debugPrint('Stack: $stack');
+      // Restore previous values on error
+      totalCost.value = previousTotalCost;
+      totalAmount.value = previousTotalAmount;
+    } finally {
+      isFetchingTotal.value = false;
+    }
+  }
 }
