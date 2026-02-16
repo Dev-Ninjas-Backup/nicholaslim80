@@ -1,3 +1,4 @@
+import 'package:ZipBee/core/service/external_launcher_service.dart';
 import 'package:ZipBee/features/user/chat/controllers/chat_controller.dart';
 import 'package:ZipBee/features/user/chat/widget/chat_bubble.dart';
 import 'package:ZipBee/features/user/chat/widget/order_info_card.dart';
@@ -10,6 +11,7 @@ class ChatScreen extends StatelessWidget {
   final String orderId;
   final String vehicleType;
   final String totalCost;
+  final String assignRiderPhone;
   ChatScreen({
     required this.receiverId,
     Key? key,
@@ -17,6 +19,7 @@ class ChatScreen extends StatelessWidget {
     required this.orderId,
     required this.vehicleType,
     required this.totalCost,
+    required this.assignRiderPhone,
   }) : super(key: key);
 
   final UserMessageController controller = Get.put(UserMessageController());
@@ -54,7 +57,9 @@ class ChatScreen extends StatelessWidget {
               Icons.phone_forwarded_outlined,
               color: Colors.amber,
             ),
-            onPressed: () {},
+            onPressed: () {
+              ExternalLauncherService.openDialer(assignRiderPhone);
+            },
           ),
         ],
       ),

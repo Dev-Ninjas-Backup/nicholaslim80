@@ -105,6 +105,11 @@ class RaiderDetails extends StatelessWidget {
                                     totalCost: controller.totalCost.value
                                         .toStringAsFixed(2),
                                     vehicleType: controller.vehicleType.value,
+                                    assignRiderPhone:
+                                        controller
+                                            .assignRiderData
+                                            .value?['phone'] ??
+                                        '',
                                   ),
                                 ),
                               ),

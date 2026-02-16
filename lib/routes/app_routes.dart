@@ -249,6 +249,7 @@ class AppRoutes {
         orderId: '',
         vehicleType: '',
         totalCost: '',
+        assignRiderPhone: '',
       ),
     ),
 
