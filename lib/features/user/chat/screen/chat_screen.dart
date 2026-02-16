@@ -7,8 +7,17 @@ import 'package:get/get.dart';
 class ChatScreen extends StatelessWidget {
   final String receiverId;
   final String senderName;
-  ChatScreen({required this.receiverId, Key? key, required this.senderName})
-    : super(key: key);
+  final String orderId;
+  final String vehicleType;
+  final String totalCost;
+  ChatScreen({
+    required this.receiverId,
+    Key? key,
+    required this.senderName,
+    required this.orderId,
+    required this.vehicleType,
+    required this.totalCost,
+  }) : super(key: key);
 
   final UserMessageController controller = Get.put(UserMessageController());
 
@@ -51,7 +60,15 @@ class ChatScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
-          OrderInfoCard(),
+          OrderInfoCard(
+            orderId: orderId,
+
+            vehicleType: vehicleType,
+            // totalCost: totalCost.isNotEmpty ? double.parse(totalCost) : 0.0,
+            fromName: '',
+            toName: '',
+            totalCost: 0.0,
+          ),
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 20),
             child: Text(

@@ -170,10 +170,10 @@ class AppRoutes {
       transition: Transition.fadeIn,
     ),
     GetPage(
-  name: '/ProofOfDeliveryScreen2',
-  page: () =>  ProofOfDeliveryScreen2(),
-  binding: ProofOfDeliveryBinding(),
-),
+      name: '/ProofOfDeliveryScreen2',
+      page: () => ProofOfDeliveryScreen2(),
+      binding: ProofOfDeliveryBinding(),
+    ),
 
     GetPage(
       name: accountScreen,
@@ -243,7 +243,13 @@ class AppRoutes {
     GetPage(name: googleMapScreen, page: () => GoogleMapScreen()),
     GetPage(
       name: chatScreen,
-      page: () => ChatScreen(receiverId: '', senderName: ''),
+      page: () => ChatScreen(
+        receiverId: '',
+        senderName: '',
+        orderId: '',
+        vehicleType: '',
+        totalCost: '',
+      ),
     ),
 
     GetPage(
