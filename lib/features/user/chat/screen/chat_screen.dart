@@ -64,10 +64,10 @@ class ChatScreen extends StatelessWidget {
             orderId: orderId,
 
             vehicleType: vehicleType,
-            // totalCost: totalCost.isNotEmpty ? double.parse(totalCost) : 0.0,
+            totalCost: totalCost.isNotEmpty ? double.parse(totalCost) : 0.0,
             fromName: '',
             toName: '',
-            totalCost: 0.0,
+            // totalCost: 0.0,
           ),
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 20),
