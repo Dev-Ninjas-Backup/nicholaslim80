@@ -7,8 +7,6 @@ import 'package:get/get.dart';
 
 class ChatScreen extends StatelessWidget {
   final ChatController controller = Get.put(ChatController());
-  final TextEditingController textController = TextEditingController();
-
   ChatScreen({super.key});
 
   @override
@@ -33,12 +31,16 @@ class ChatScreen extends StatelessWidget {
               height: 24,
               fit: BoxFit.cover,
             ),
-            Text(
-              "Sandy",
-              style: getTextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
+            Obx(
+              () => Text(
+                controller.supportUsername.value.isNotEmpty
+                    ? controller.supportUsername.value
+                    : 'Sandy',
+                style: getTextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
               ),
             ),
           ],
@@ -49,6 +51,7 @@ class ChatScreen extends StatelessWidget {
           Expanded(
             child: Obx(
               () => ListView.builder(
+                controller: controller.scrollController,
                 padding: EdgeInsets.all(16),
                 itemCount: controller.messages.length,
                 itemBuilder: (context, index) {
@@ -90,14 +93,13 @@ class ChatScreen extends StatelessWidget {
               children: [
                 Expanded(
                   child: TextField(
-                    controller: textController,
+                    controller: controller.textController,
                     decoration: InputDecoration(
                       suffixIcon: IconButton(
                         onPressed: () {
-                          final text = textController.text.trim();
+                          final text = controller.textController.text.trim();
                           if (text.isEmpty) return;
                           controller.sendMessage(text);
-                          textController.clear();
                         },
                         padding: EdgeInsets.all(8),
                         splashRadius: 20,
