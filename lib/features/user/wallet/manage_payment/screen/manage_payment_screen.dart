@@ -2,13 +2,13 @@ import 'package:ZipBee/core/utils/constants/app_colors.dart';
 import 'package:ZipBee/core/utils/constants/icon_path.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import '../controller/manage_payment_controller.dart';
 
 class ManagePaymentScreen extends StatelessWidget {
   ManagePaymentScreen({super.key});
 
-  final controller = Get.put(ManagePaymentController());
+  final ManagePaymentController controller =
+      Get.put(ManagePaymentController());
 
   @override
   Widget build(BuildContext context) {
@@ -27,113 +27,91 @@ class ManagePaymentScreen extends StatelessWidget {
         ),
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 20),
+      body: Obx(() {
+        return SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
 
-            /// 🔥 Stripe Card (Reactive)
-            Obx(
-              () => paymentTile(
-                icon: IconPath.stripe,
-                title: "Card",
-                subtitle: controller.hasCard.value
-                    ? "Default ****${controller.last4.value}"
-                    : "Add your card",
-                onTap: controller.onStripeTap,
+              const SizedBox(height: 25),
+
+              /// ===============================
+              /// CARD SECTION (Show only if exists)
+              /// ===============================
+              if (controller.hasCard.value) ...[
+                _cardTile(),
+                const SizedBox(height: 15),
+                _divider(),
+              ],
+
+              /// ===============================
+              /// ADD PAYMENT (ALWAYS SHOW)
+              /// ===============================
+              _addPaymentButton(),
+              const SizedBox(height: 15),
+              _divider(),
+
+              const SizedBox(height: 25),
+
+              /// ===============================
+              /// MORE INFORMATION
+              /// ===============================
+              const Text(
+                "More Information",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
 
-            const SizedBox(height: 10),
-            divider(),
+              const SizedBox(height: 12),
 
-            // paymentTile(
-            //   icon: IconPath.nets,
-            //   title: "NETS",
-            //   subtitle: "Add NETS Bank Card here",
-            //   onTap: controller.onNetsTap,
-            // ),
-            // divider(),
-            Obx(
-              () => paymentTile(
-                icon: IconPath.stripe,
-                title: "Card Card",
-                subtitle: controller.hasCard.value
-                    ? "Default ****${controller.last4.value}"
-                    : "No card added",
-                onTap: controller.onStripeTap,
+              const Text(
+                "For credit and debit card transactions, there will be authorisation hold to validate the card and this amount will be deducted against the final fare. Any unused amount will be returned after final payment.",
+                style: TextStyle(
+                  fontSize: 14,
+                  height: 1.5,
+                  color: Colors.black87,
+                ),
               ),
-            ),
 
-            divider(),
-            
-
-            const SizedBox(height: 20),
-
-            GestureDetector(
-              onTap: controller.onAddPayment,
-              child: Row(
-                children: const [
-                  Icon(Icons.add, size: 26),
-                  SizedBox(width: 10),
-                  Text(
-                    "Add payment method",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-                  ),
-                  Spacer(),
-                  Icon(Icons.arrow_forward_ios, size: 18),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 40),
-
-            const Text(
-              "More Information",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-
-            const SizedBox(height: 10),
-
-            const Text(
-              "For credit and debit card transactions, there will be authorisation hold to validate the card and this amount will be deducted against the final fare. Any unused amount will be returned to you after final payment.",
-              style: TextStyle(fontSize: 14, height: 1.4),
-            ),
-          ],
-        ),
-      ),
+              const SizedBox(height: 40),
+            ],
+          ),
+        );
+      }),
     );
   }
 
-  Widget paymentTile({
-    required String icon,
-    required String title,
-    required String subtitle,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
+  /// ===============================
+  /// CARD TILE
+  /// ===============================
+  Widget _cardTile() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 15),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Image.asset(icon, width: 40, height: 40),
+          Image.asset(IconPath.stripe, width: 40, height: 40),
           const SizedBox(width: 15),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                title,
-                style: const TextStyle(
+              const Text(
+                "Card",
+                style: TextStyle(
                   fontSize: 17,
                   fontWeight: FontWeight.w600,
                 ),
               ),
               const SizedBox(height: 4),
               Text(
-                subtitle,
-                style: const TextStyle(fontSize: 14, color: Colors.black54),
+                "Default ****${controller.last4.value}",
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: Colors.black54,
+                ),
               ),
             ],
           ),
@@ -142,10 +120,42 @@ class ManagePaymentScreen extends StatelessWidget {
     );
   }
 
-  Widget divider() {
-    return const Padding(
-      padding: EdgeInsets.symmetric(vertical: 20),
-      child: Divider(thickness: .8, color: Colors.black26),
+  /// ===============================
+  /// ADD PAYMENT BUTTON
+  /// ===============================
+  Widget _addPaymentButton() {
+    return GestureDetector(
+      onTap: controller.onAddPayment,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 15),
+        child: Row(
+          children: [
+            const Icon(Icons.add, size: 26),
+            const SizedBox(width: 10),
+            Text(
+              controller.hasCard.value
+                  ? "Add another payment method"
+                  : "Add payment method",
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const Spacer(),
+            const Icon(Icons.arrow_forward_ios, size: 18),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// ===============================
+  /// DIVIDER
+  /// ===============================
+  Widget _divider() {
+    return const Divider(
+      thickness: 0.8,
+      color: Colors.black26,
     );
   }
 }
