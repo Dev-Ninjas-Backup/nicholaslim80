@@ -62,8 +62,8 @@ class StackedLocationController extends GetxController {
   // Load initial vehicles
   void loadVehicleData() {
     vehicleList.value = [
-      StackedVehicleModel(IconPath.car2),
       StackedVehicleModel(IconPath.bike2),
+      StackedVehicleModel(IconPath.car2),
       StackedVehicleModel(IconPath.shopcar),
       StackedVehicleModel(IconPath.shipment),
     ];
