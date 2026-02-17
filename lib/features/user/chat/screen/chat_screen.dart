@@ -1,3 +1,4 @@
+import 'package:ZipBee/core/service/external_launcher_service.dart';
 import 'package:ZipBee/features/user/chat/controllers/chat_controller.dart';
 import 'package:ZipBee/features/user/chat/widget/chat_bubble.dart';
 import 'package:ZipBee/features/user/chat/widget/order_info_card.dart';
@@ -10,6 +11,7 @@ class ChatScreen extends StatelessWidget {
   final String orderId;
   final String vehicleType;
   final String totalCost;
+  final String assignRiderPhone;
   ChatScreen({
     required this.receiverId,
     Key? key,
@@ -17,12 +19,15 @@ class ChatScreen extends StatelessWidget {
     required this.orderId,
     required this.vehicleType,
     required this.totalCost,
+    required this.assignRiderPhone,
   }) : super(key: key);
 
   final UserMessageController controller = Get.put(UserMessageController());
 
   @override
   Widget build(BuildContext context) {
+    // ensure controller knows current orderId (comes from previous screen)
+    controller.orderId = orderId;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -41,10 +46,10 @@ class ChatScreen extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            Text(
-              "Active 2 min ago",
-              style: TextStyle(color: Colors.grey, fontSize: 12),
-            ),
+            // Text(
+            //   "Active 2 min ago",
+            //   style: TextStyle(color: Colors.grey, fontSize: 12),
+            // ),
           ],
         ),
         centerTitle: true,
@@ -54,7 +59,9 @@ class ChatScreen extends StatelessWidget {
               Icons.phone_forwarded_outlined,
               color: Colors.amber,
             ),
-            onPressed: () {},
+            onPressed: () {
+              ExternalLauncherService.openDialer(assignRiderPhone);
+            },
           ),
         ],
       ),

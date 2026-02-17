@@ -129,6 +129,40 @@ class ChatScreen extends StatelessWidget {
                   ),
                 ),
                 SizedBox(width: 8),
+                // Attach button
+                IconButton(
+                  icon: Icon(Icons.attach_file, color: Colors.black),
+                  onPressed: () {
+                    showModalBottomSheet(
+                      context: context,
+                      builder: (_) {
+                        return SafeArea(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              ListTile(
+                                leading: Icon(Icons.image),
+                                title: Text('Send Image'),
+                                onTap: () {
+                                  Navigator.of(context).pop();
+                                  controller.pickImageAndSend();
+                                },
+                              ),
+                              ListTile(
+                                leading: Icon(Icons.insert_drive_file),
+                                title: Text('Send File'),
+                                onTap: () {
+                                  Navigator.of(context).pop();
+                                  controller.pickFileAndSend();
+                                },
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
               ],
             ),
           ),

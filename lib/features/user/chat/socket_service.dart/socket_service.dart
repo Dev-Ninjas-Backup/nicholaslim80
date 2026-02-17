@@ -21,6 +21,7 @@ class UserSocketService {
     }
   }
 
+  // final String baseUrl = 'http://10.10.20.130:3000/api/v1/messages';
   final String baseUrl = 'https://api.zipbee.sg/api/v1/messages';
 
   /// CONNECT SOCKET
