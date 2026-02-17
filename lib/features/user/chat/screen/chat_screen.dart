@@ -26,6 +26,8 @@ class ChatScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // ensure controller knows current orderId (comes from previous screen)
+    controller.orderId = orderId;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -44,10 +46,10 @@ class ChatScreen extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            Text(
-              "Active 2 min ago",
-              style: TextStyle(color: Colors.grey, fontSize: 12),
-            ),
+            // Text(
+            //   "Active 2 min ago",
+            //   style: TextStyle(color: Colors.grey, fontSize: 12),
+            // ),
           ],
         ),
         centerTitle: true,

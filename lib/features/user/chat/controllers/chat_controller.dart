@@ -10,6 +10,7 @@ class UserMessageController extends GetxController {
 
   final textController = TextEditingController();
   final scrollController = ScrollController();
+  String? orderId;
 
   @override
   void onInit() {
@@ -48,8 +49,9 @@ class UserMessageController extends GetxController {
   }
 
   /// Send message
-  void sendMessage(String receiverId, {String? orderId}) {
+  void sendMessage(String receiverId) {
     debugPrint("Sending message tofddfddddd receiverId: $receiverId ");
+    debugPrint("Initializing socket connection...  $orderId");
     final text = textController.text.trim();
     if (text.isEmpty) return;
 
@@ -58,6 +60,7 @@ class UserMessageController extends GetxController {
 
     final payload = {
       "receiverId": parsedReceiverId,
+      "orderId": orderId,
       "content": text,
       "messageType": "TEXT",
       // if (parsedOrderId != null) "orderId": parsedOrderId else if (orderId != null) "orderId": orderId,

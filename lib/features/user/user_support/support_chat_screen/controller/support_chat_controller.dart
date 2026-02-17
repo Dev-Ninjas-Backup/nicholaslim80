@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:ZipBee/core/api_end_point/api_end_point.dart';
 import 'package:ZipBee/features/user/user_support/support_chat_screen/model/support_chat_model.dart';
@@ -7,6 +8,10 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:ZipBee/features/user/user_support/support_chat_screen/socket_service/socket_service.dart';
 import 'package:flutter/material.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:path/path.dart' as path;
 
 class ChatController extends GetxController {
   var messages = <Message>[].obs;
@@ -14,6 +19,7 @@ class ChatController extends GetxController {
   var supportUsername = ''.obs; // store fetched admin username
   final textController = TextEditingController();
   final scrollController = ScrollController();
+  final isUploading = false.obs;
 
   @override
   void onInit() {
@@ -124,6 +130,90 @@ class ChatController extends GetxController {
     // clear input and scroll
     textController.clear();
     _scrollToBottom();
+  }
+
+  /// Pick image from gallery and send to support
+  Future<void> pickImageAndSend() async {
+    try {
+      final XFile? picked = await ImagePicker().pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 80,
+      );
+      if (picked == null) return;
+
+      isUploading.value = true;
+      final file = File(picked.path);
+      final url = await _uploadFile(file);
+      if (url == null) return;
+
+      messages.add(Message(sender: 'You', text: url, isUser: true));
+
+      final parsedReceiverId = int.tryParse(supportId.value);
+      final payload = {
+        'receiverId': parsedReceiverId,
+        'content': url,
+        'messageType': 'IMAGE',
+        'fileName': path.basename(file.path),
+      };
+
+      SuppertSocketService().emit('send_message', payload);
+      _scrollToBottom();
+    } catch (e) {
+      debugPrint('Support image send error: $e');
+    } finally {
+      isUploading.value = false;
+    }
+  }
+
+  /// Pick any file and send to support
+  Future<void> pickFileAndSend() async {
+    try {
+      final result = await FilePicker.platform.pickFiles();
+      if (result == null || result.files.isEmpty) return;
+
+      final picked = result.files.first;
+      if (picked.path == null) return;
+
+      isUploading.value = true;
+      final file = File(picked.path!);
+      final url = await _uploadFile(file);
+      if (url == null) return;
+
+      messages.add(Message(sender: 'You', text: url, isUser: true));
+
+      final parsedReceiverId = int.tryParse(supportId.value);
+      final payload = {
+        'receiverId': parsedReceiverId,
+        'content': url,
+        'messageType': 'FILE',
+        'fileName': picked.name,
+      };
+
+      SuppertSocketService().emit('send_message', payload);
+      _scrollToBottom();
+    } catch (e) {
+      debugPrint('Support file send error: $e');
+    } finally {
+      isUploading.value = false;
+    }
+  }
+
+  Future<String?> _uploadFile(File file) async {
+    try {
+      final fileName =
+          '${DateTime.now().millisecondsSinceEpoch}_${path.basename(file.path)}';
+      final ref = FirebaseStorage.instance
+          .ref()
+          .child('support_chat')
+          .child(fileName);
+      final uploadTask = ref.putFile(file);
+      final snapshot = await uploadTask.whenComplete(() {});
+      final url = await snapshot.ref.getDownloadURL();
+      return url;
+    } catch (e) {
+      debugPrint('Support upload error: $e');
+      return null;
+    }
   }
 
   void _scrollToBottom() {
