@@ -1,4 +1,5 @@
 import 'package:ZipBee/core/common/styles/global_text_style.dart';
+import 'package:ZipBee/core/service/external_launcher_service.dart';
 import 'package:ZipBee/core/utils/constants/app_colors.dart';
 import 'package:ZipBee/core/utils/constants/icon_path.dart';
 import 'package:ZipBee/features/user/bottom_navbar/screen/bottom_navbar_screen.dart';
@@ -116,13 +117,28 @@ class RaiderDetails extends StatelessWidget {
                               ),
 
                               CustomIconTextButton(
-                                text: 'Call',
-                                iconPath: IconPath.call,
-                                borderColor: Colors.black,
-                                textColor: Colors.black,
-                                backgroundColor: Colors.white,
-                                onPressed: () {},
-                              ),
+  text: 'Call',
+  iconPath: IconPath.call,
+  borderColor: Colors.black,
+  textColor: Colors.black,
+  backgroundColor: Colors.white,
+  onPressed: () {
+    // debugPrint("Call button pressed{$(phoneNumber)}");
+    String phoneNumber = controller.assignRiderData.value?['phone'] ?? '';
+    if (phoneNumber.isNotEmpty) {
+      ExternalLauncherService.openDialer(phoneNumber);
+    } else {
+      // Optional: show a message if phone number is empty
+      Get.snackbar(
+        "Error",
+        "Phone number not available",
+        backgroundColor: Colors.redAccent,
+        colorText: Colors.white,
+      );
+    }
+  },
+),
+
                             ],
                           ),
                           SizedBox(height: 20),
