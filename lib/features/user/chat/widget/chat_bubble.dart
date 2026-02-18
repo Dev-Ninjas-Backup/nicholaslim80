@@ -1,30 +1,94 @@
+import 'package:ZipBee/core/utils/constants/app_colors.dart';
 import 'package:ZipBee/features/user/chat/models/message_model.dart';
 import 'package:flutter/material.dart';
 
 class ChatBubble extends StatelessWidget {
   final MessageModel message;
 
-  const ChatBubble({required this.message});
+  const ChatBubble({required this.message, super.key});
 
   @override
   Widget build(BuildContext context) {
+    final bool isMe = message.isMe; // ✅ sender বা receiver detect
+
     return Container(
-      margin: EdgeInsets.only(top: 10),
-      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-      constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.7),
-      decoration: BoxDecoration(
-        color: message.isMe ? Color(0xFFFFCC00) : Color(0xFFEFEFEF),
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-          bottomLeft: message.isMe ? Radius.circular(20) : Radius.circular(0),
-          bottomRight: message.isMe ? Radius.circular(0) : Radius.circular(20),
-        ),
-      ),
-      child: Text(
-        message.text,
-        style: TextStyle(color: Colors.black, fontSize: 15),
+      margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+      child: Row(
+        mainAxisAlignment: isMe
+            ? MainAxisAlignment.end
+            : MainAxisAlignment.start, // right/left
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          if (!isMe) _buildTail(isMe), // receiver tail left
+          Flexible(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              decoration: BoxDecoration(
+                color: isMe
+                    ? AppColors
+                          .onboardingIndicatorActive // sender color
+                    : Colors.grey[200], // receiver color
+                borderRadius: BorderRadius.only(
+                  topLeft: const Radius.circular(20),
+                  topRight: const Radius.circular(20),
+                  bottomLeft: isMe
+                      ? const Radius.circular(20)
+                      : const Radius.circular(0),
+                  bottomRight: isMe
+                      ? const Radius.circular(0)
+                      : const Radius.circular(20),
+                ),
+              ),
+              child: Text(
+                message.text,
+                style: TextStyle(
+                  fontSize: 15,
+                  color: isMe ? Colors.white : Colors.black, // text color logic
+                ),
+              ),
+            ),
+          ),
+          if (isMe) _buildTail(isMe), // sender tail right
+        ],
       ),
     );
   }
+
+  /// Tail for bubble
+  Widget _buildTail(bool isMe) {
+    return CustomPaint(
+      painter: BubbleTailPainter(isMe),
+      size: const Size(10, 20),
+    );
+  }
+}
+
+/// Custom Painter for bubble tail
+class BubbleTailPainter extends CustomPainter {
+  final bool isMe;
+  BubbleTailPainter(this.isMe);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = isMe ? AppColors.onboardingIndicatorActive : Colors.grey[200]!;
+
+    final path = Path();
+    if (isMe) {
+      // sender tail right
+      path.moveTo(0, 0);
+      path.lineTo(size.width, size.height / 2);
+      path.lineTo(0, size.height);
+    } else {
+      // receiver tail left
+      path.moveTo(size.width, 0);
+      path.lineTo(0, size.height / 2);
+      path.lineTo(size.width, size.height);
+    }
+    path.close();
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

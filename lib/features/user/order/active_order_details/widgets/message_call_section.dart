@@ -23,17 +23,17 @@ class MessageCallSection extends StatelessWidget {
         Expanded(
           child: OutlinedButton(
             onPressed: () => Get.to(
-              ChatScreen(
-                receiverId: (order.assignRiderUserId ?? 0).toString(),
-
-                // null thakle 0 default
-                senderName: order.assignRiderName,
-                orderId: order.orderId,
-                totalCost: order.total.toStringAsFixed(2),
-                vehicleType: order.vehicleType,
-                assignRiderPhone: order.assignRiderPhone,
-              ),
+              () => const ChatScreen(),
+              arguments: {
+                "receiverId": (order.assignRiderUserId ?? 0).toString(),
+                "senderName": order.assignRiderName,
+                "orderId": order.orderId,
+                "totalCost": order.total.toStringAsFixed(2),
+                "vehicleType": order.vehicleType,
+                "assignRiderPhone": order.assignRiderPhone,
+              },
             ),
+
             style: OutlinedButton.styleFrom(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
