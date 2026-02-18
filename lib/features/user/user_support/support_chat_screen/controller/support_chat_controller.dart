@@ -72,7 +72,7 @@ class ChatController extends GetxController {
   /// Initialize socket for support chat
   Future<void> initSocket() async {
     final token = await SharedPreferencesHelper.getAccessToken();
-    final userId = (await SharedPreferencesHelper.getUserId())?.toString();
+    final userId = await SharedPreferencesHelper.getOrExtractUserId();
     if (token == null) {
       debugPrint("Token missing, cannot init support socket");
       return;

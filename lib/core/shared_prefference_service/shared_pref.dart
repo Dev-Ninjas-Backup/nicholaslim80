@@ -87,6 +87,73 @@ class SharedPreferencesHelper {
     return prefs.getString(_userIdKey);
   }
 
+  /// Returns stored userId; if missing, tries to decode it from access token
+  /// and persists it for future reads.
+  static Future<String?> getOrExtractUserId() async {
+    final stored = await getUserId();
+    if (stored != null && stored.isNotEmpty) return stored;
+
+    final token = await getAccessToken();
+    final extracted = extractUserIdFromToken(token);
+    if (extracted != null && extracted.isNotEmpty) {
+      await saveUserId(extracted);
+    }
+    return extracted;
+  }
+
+  /// Tries common JWT/user payload claim names and nested shapes.
+  static String? extractUserIdFromToken(String? token) {
+    if (token == null || token.isEmpty) return null;
+
+    final parts = token.split('.');
+    if (parts.length < 2) return null;
+
+    try {
+      final payload = _decodeJwtPart(parts[1]);
+
+      final directCandidates = [
+        payload['userId'],
+        payload['user_id'],
+        payload['id'],
+        payload['sub'],
+      ];
+      for (final candidate in directCandidates) {
+        final value = _valueToString(candidate);
+        if (value != null) return value;
+      }
+
+      final user = payload['user'];
+      if (user is Map) {
+        final nestedCandidates = [
+          user['id'],
+          user['userId'],
+          user['user_id'],
+          user['sub'],
+        ];
+        for (final candidate in nestedCandidates) {
+          final value = _valueToString(candidate);
+          if (value != null) return value;
+        }
+      }
+    } catch (_) {
+      return null;
+    }
+
+    return null;
+  }
+
+  static Map<String, dynamic> _decodeJwtPart(String part) {
+    final normalized = base64Url.normalize(part);
+    final payloadMap = jsonDecode(utf8.decode(base64Url.decode(normalized)));
+    return Map<String, dynamic>.from(payloadMap as Map);
+  }
+
+  static String? _valueToString(dynamic value) {
+    if (value == null) return null;
+    final text = value.toString().trim();
+    return text.isEmpty ? null : text;
+  }
+
   // ================= ROLE =================
 
   static Future<void> saveSelectedRole(String role) async {
