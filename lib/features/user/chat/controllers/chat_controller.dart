@@ -1,4 +1,5 @@
 import 'package:ZipBee/core/shared_prefference_service/shared_pref.dart';
+import 'package:ZipBee/features/user/chat/auth_sevice/history.dart';
 import 'package:ZipBee/features/user/chat/models/message_model.dart';
 import 'package:ZipBee/features/user/chat/socket_service.dart/socket_service.dart';
 import 'package:flutter/foundation.dart';
@@ -10,14 +11,51 @@ class UserMessageController extends GetxController {
 
   final textController = TextEditingController();
   final scrollController = ScrollController();
+
   String? orderId;
+  String? receiverId;
+  String? currentUserId;
 
   @override
-  void onInit() {
+  // void onInit() {
+  //   super.onInit();
+  //   final args = Get.arguments as Map<String, dynamic>?;
+  //   orderId = args?['orderId']?.toString();
+  //   receiverId = args?['receiverId']?.toString();
+  //   initSocket();
+  //   /// auto scroll when message list updates
+  //   ever(messages, (_) => _scrollToBottom());
+  // }
+  @override
+  // void onInit() {
+  //   super.onInit();
+  //   final args = Get.arguments as Map<String, dynamic>?;
+  //   orderId = args?['orderId']?.toString();
+  //   receiverId = args?['receiverId']?.toString();
+  //   initSocket();
+  //   loadChatHistory(); //
+  //   ever(messages, (_) => _scrollToBottom());
+  // }
+  @override
+  @override
+  void onInit() async {
     super.onInit();
-    initSocket();
 
-    /// auto scroll when message list updates
+    final args = Get.arguments as Map<String, dynamic>?;
+
+    orderId = args?['orderId']?.toString();
+    receiverId = args?['receiverId']?.toString();
+
+    debugPrint("orderId: $orderId");
+    debugPrint("receiverId: $receiverId");
+
+    // ✅ fetch userId once
+    //  final currentUserId =
+    //   (await SharedPreferencesHelper.getUserId())?.toString().trim();
+
+    // await loadChatHistory();
+    await initSocket();
+
     ever(messages, (_) => _scrollToBottom());
   }
 
@@ -27,9 +65,10 @@ class UserMessageController extends GetxController {
 
     final token = await SharedPreferencesHelper.getAccessToken();
     final userId = (await SharedPreferencesHelper.getUserId())?.toString();
-    //|| userId == null
+    debugPrint("Current---- UserId: $userId");
+
     if (token == null) {
-      debugPrint("Token or UserId missing");
+      debugPrint("Token missing");
       return;
     }
 
@@ -50,20 +89,17 @@ class UserMessageController extends GetxController {
 
   /// Send message
   void sendMessage(String receiverId) {
-    debugPrint("Sending message tofddfddddd receiverId: $receiverId ");
-    debugPrint("Initializing socket connection...  $orderId");
+    debugPrint("Sending message to receiverId: $receiverId");
+    debugPrint("OrderId: $orderId");
+
     final text = textController.text.trim();
     if (text.isEmpty) return;
 
-    final parsedReceiverId = int.tryParse(receiverId);
-    // final parsedOrderId = orderId != null ? int.tryParse(orderId) : null;
-
     final payload = {
-      "receiverId": parsedReceiverId,
+      "receiverId": receiverId,
       "orderId": orderId,
       "content": text,
       "messageType": "TEXT",
-      // if (parsedOrderId != null) "orderId": parsedOrderId else if (orderId != null) "orderId": orderId,
     };
 
     UserSocketService().emit('send_message', payload);
@@ -72,6 +108,51 @@ class UserMessageController extends GetxController {
 
     textController.clear();
   }
+
+  // ─── Load Chat History ─────────────────────────────────────────────
+
+  // Future<void> loadChatHistory() async {
+  //   if (receiverId == null || orderId == null) return;
+
+  //   try {
+  //     // final currentUserId = (await SharedPreferencesHelper.getUserId())
+  //     //     ?.toString()
+  //     //     .trim();
+  //     // debugPrint("currentUserId: $currentUserId");
+  //     // final currentUserId =
+  //     //     (await SharedPreferencesHelper.getUserId())?.toString().trim() ??
+  //     //     "2";
+
+  //     final List<dynamic>? rawMessages = await ChatApiService.getChatHistory(
+  //       receiverId: receiverId!,
+  //       orderId: orderId!,
+  //     );
+
+  //     if (rawMessages == null || rawMessages.isEmpty) return;
+
+  //     final List<MessageModel> history = rawMessages.map((msg) {
+  //       final senderIdDynamic = msg['senderId'] ?? msg['sender']?['id'];
+  //       final senderId = senderIdDynamic?.toString().trim() ?? '';
+
+  //       final isMe = senderId == currentUserId;
+
+  //       final createdAt = msg['createdAt'] ?? msg['created_at'];
+
+  //       return MessageModel(
+  //         text: msg['content'] ?? '',
+  //         isMe: isMe,
+  //         time: createdAt != null ? _formatTime(createdAt.toString()) : _now(),
+  //       );
+  //     }).toList();
+
+  //     messages.assignAll(history);
+
+  //     debugPrint("📜 Loaded ${history.length} messages from history");
+  //     debugPrint("ownId: ${currentUserId}");
+  //   } catch (e) {
+  //     debugPrint("loadChatHistory error: $e");
+  //   }
+  // }
 
   void _scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -83,6 +164,15 @@ class UserMessageController extends GetxController {
         );
       }
     });
+  }
+
+  String _formatTime(String isoString) {
+    try {
+      final dt = DateTime.parse(isoString).toLocal();
+      return "${dt.hour}:${dt.minute.toString().padLeft(2, '0')}";
+    } catch (_) {
+      return _now();
+    }
   }
 
   String _now() {

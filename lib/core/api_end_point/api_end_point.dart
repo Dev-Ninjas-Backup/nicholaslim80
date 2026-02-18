@@ -91,4 +91,5 @@ class ApiEndPoint {
   static const String impression = '$baseUrl/advertise/{id}/impression';
   //
   static const String supportChat = '$baseUrl/users/admin';
+  static const String chatHistory = '$baseUrl/chat/messages';
 }

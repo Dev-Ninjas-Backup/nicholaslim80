@@ -88,29 +88,30 @@ class RaiderDetails extends StatelessWidget {
                                 textColor: Colors.black,
                                 backgroundColor: Colors.white,
                                 onPressed: () => Get.to(
-                                  ChatScreen(
-                                    receiverId:
+                                  () => const ChatScreen(),
+                                  arguments: {
+                                    "receiverId":
                                         (controller
                                                     .assignRiderData
                                                     .value?['userId'] ??
                                                 0)
                                             .toString(),
-                                    senderName:
+                                    "senderName":
                                         controller
                                             .assignRiderData
                                             .value?['name'] ??
                                         '',
-                                    orderId: controller.orderId.value
+                                    "orderId": controller.orderId.value
                                         .toString(),
-                                    totalCost: controller.totalCost.value
+                                    "totalCost": controller.totalCost.value
                                         .toStringAsFixed(2),
-                                    vehicleType: controller.vehicleType.value,
-                                    assignRiderPhone:
+                                    "vehicleType": controller.vehicleType.value,
+                                    "assignRiderPhone":
                                         controller
                                             .assignRiderData
                                             .value?['phone'] ??
                                         '',
-                                  ),
+                                  },
                                 ),
                               ),
 

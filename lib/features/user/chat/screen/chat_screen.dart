@@ -6,28 +6,30 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ChatScreen extends StatelessWidget {
-  final String receiverId;
-  final String senderName;
-  final String orderId;
-  final String vehicleType;
-  final String totalCost;
-  final String assignRiderPhone;
-  ChatScreen({
-    required this.receiverId,
-    Key? key,
-    required this.senderName,
-    required this.orderId,
-    required this.vehicleType,
-    required this.totalCost,
-    required this.assignRiderPhone,
-  }) : super(key: key);
-
-  final UserMessageController controller = Get.put(UserMessageController());
+  const ChatScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    // ensure controller knows current orderId (comes from previous screen)
+    /// Receive arguments
+    final args = Get.arguments as Map<String, dynamic>? ?? {};
+
+    final String receiverId = args["receiverId"]?.toString() ?? "";
+    final String senderName = args["senderName"]?.toString() ?? "";
+    final String orderId = args["orderId"]?.toString() ?? "";
+    final String vehicleType = args["vehicleType"]?.toString() ?? "";
+    final String totalCost = args["totalCost"]?.toString() ?? "";
+    final String assignRiderPhone = args["assignRiderPhone"]?.toString() ?? "";
+
+    /// Inject controller
+    final controller = Get.put(UserMessageController());
+
+    /// Pass arguments to controller
+    controller.receiverId = receiverId;
     controller.orderId = orderId;
+
+    /// Load history manually (controller onInit may also do this)
+    // controller.loadChatHistory();---any time again
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -37,51 +39,40 @@ class ChatScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Get.back(),
         ),
-        title: Column(
-          children: [
-            Text(
-              senderName.isNotEmpty ? senderName : "Rider Name",
-              style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            // Text(
-            //   "Active 2 min ago",
-            //   style: TextStyle(color: Colors.grey, fontSize: 12),
-            // ),
-          ],
+        title: Text(
+          senderName.isNotEmpty ? senderName : "Rider Name",
+          style: const TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         centerTitle: true,
         actions: [
-          IconButton(
-            icon: const Icon(
-              Icons.phone_forwarded_outlined,
-              color: Colors.amber,
+          if (assignRiderPhone.isNotEmpty)
+            IconButton(
+              icon: const Icon(
+                Icons.phone_forwarded_outlined,
+                color: Colors.amber,
+              ),
+              onPressed: () {
+                ExternalLauncherService.openDialer(assignRiderPhone);
+              },
             ),
-            onPressed: () {
-              ExternalLauncherService.openDialer(assignRiderPhone);
-            },
-          ),
         ],
       ),
       body: Column(
         children: [
           OrderInfoCard(
             orderId: orderId,
-
             vehicleType: vehicleType,
             totalCost: totalCost.isNotEmpty ? double.parse(totalCost) : 0.0,
             fromName: '',
             toName: '',
-            // totalCost: 0.0,
           ),
+
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 20),
-            child: Text(
-              "24 Aug, 10.10 AM",
-              style: TextStyle(color: Colors.grey),
-            ),
+            child: Text("Today", style: TextStyle(color: Colors.grey)),
           ),
 
           /// Messages
@@ -92,20 +83,20 @@ class ChatScreen extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 15),
                 itemCount: controller.messages.length,
                 itemBuilder: (context, index) {
-                  return ChatBubble(message: controller.messages[index]);
+                  final message = controller.messages[index];
+                  return ChatBubble(message: message);
                 },
               );
             }),
           ),
 
-          /// Input area
-          _buildInputArea(),
+          _buildInputArea(controller, receiverId),
         ],
       ),
     );
   }
 
-  Widget _buildInputArea() {
+  Widget _buildInputArea(UserMessageController controller, String receiverId) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(color: Colors.grey[200]),
