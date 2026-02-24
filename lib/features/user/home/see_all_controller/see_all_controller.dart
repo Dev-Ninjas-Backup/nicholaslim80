@@ -2,7 +2,6 @@ import 'package:ZipBee/features/user/home/controller/home_controller.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/order_service.dart';
 import 'package:ZipBee/features/user/stacked/vehicle_type/controller/controller.dart';
 import 'package:ZipBee/features/user/stacked/vehicle_type/screen/screen.dart';
-import 'package:ZipBee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
@@ -102,11 +101,12 @@ class SeeAllOrderController extends GetxController {
         final orderData = body['data'] as Map<String, dynamic>?;
         // EasyLoading.showSuccess(body['message']?.toString() ?? "Order Created");
         debugPrint(body['message']?.toString() ?? "Order Created");
+        debugPrint("Created order data: $orderData");
 
-        // Navigate to stacked screen
+        // Navigate to StackedVehicleSelectionPage
         if (orderData != null) {
           Get.to(
-            StackedVehicleSelectionPage(),
+            () => const StackedVehicleSelectionPage(),
             arguments: {'order': orderData},
           );
         }

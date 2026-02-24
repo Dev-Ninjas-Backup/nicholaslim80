@@ -33,6 +33,15 @@ class StackedVehicleTabPage extends StatelessWidget {
                     vehicleType,
                   );
 
+                  if (vehicles.isEmpty) {
+                    return const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(20.0),
+                        child: Text("No vehicles available"),
+                      ),
+                    );
+                  }
+
                   return Column(
                     children: vehicles
                         .map(
@@ -57,47 +66,73 @@ class StackedVehicleTabPage extends StatelessWidget {
 
                 /// ADDITIONAL SERVICES
                 Obx(() {
-                  final orderId = orderController.lastOrderId?.toString();
-                  if (orderId == null) return const SizedBox.shrink();
-
+                  final String? orderId = orderController.lastOrderId
+                      ?.toString();
                   final services = serviceController.services;
+
+                  debugPrint("Order ID for services: $orderId");
+                  debugPrint("Available services: ${services.length}");
+
+                  if (orderId == null) {
+                    return const Center(
+                      child: Text("Please select a vehicle to see services"),
+                    );
+                  }
+
+                  if (services.isEmpty) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
 
                   return Column(
                     children: services.map((service) {
-                      final selected = serviceController.isServiceSelected(
-                        service.id,
-                      );
+                      final bool isSelected = serviceController
+                          .selectedServiceIds
+                          .contains(service.id);
 
                       return GestureDetector(
-                        onTap: () async {
-                          await serviceController.toggleService(
-                            service.id,
-                            orderId,
-                          );
-                        },
+                        onTap: () => serviceController.toggleService(
+                          service.id,
+                          orderId,
+                        ),
                         child: Container(
                           height: 72,
                           margin: const EdgeInsets.only(bottom: 12),
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
                             color: Colors.white,
+                            borderRadius: BorderRadius.circular(8),
                             border: Border.all(
-                              color: selected
+                              color: isSelected
                                   ? AppColors.primaryButtonColor
                                   : AppColors.backgroungColor,
                               width: 2,
                             ),
+                            boxShadow: [
+                              if (isSelected)
+                                BoxShadow(
+                                  color: AppColors.primaryButtonColor
+                                      .withOpacity(0.1),
+                                  blurRadius: 4,
+                                  spreadRadius: 1,
+                                ),
+                            ],
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                service.serviceName,
-                                style: TextStyle(fontSize: 20),
+                              Expanded(
+                                child: Text(
+                                  service.serviceName,
+                                  style: const TextStyle(fontSize: 18),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
                               Text(
                                 "\$${service.value}",
-                                style: TextStyle(fontSize: 20),
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ],
                           ),

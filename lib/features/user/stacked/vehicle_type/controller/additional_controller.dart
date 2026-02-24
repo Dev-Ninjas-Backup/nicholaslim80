@@ -72,6 +72,8 @@ class AdditionalServiceController extends GetxController {
 
       final body = jsonDecode(response.body);
 
+      debugPrint("Additional Services Fetch response: $body");
+
       if (response.statusCode == 200 && body['success'] == true) {
         services.value = (body['data'] as List)
             .map((e) => AdditionalServiceModel.fromJson(e))
@@ -103,20 +105,26 @@ class AdditionalServiceController extends GetxController {
     try {
       final oc = Get.find<StackedOrderController>();
       if (oc.lastOrderId == null) return;
-      
+
       print('📞 [SERVICE CHANGE] Refreshing order cost from API...');
-      final response = await OrderConfirmationService.getOrder(oc.lastOrderId ?? 0);
-      final data = (response['body'] as Map<String, dynamic>?)?['data'] as Map<String, dynamic>?;
-      
+      final response = await OrderConfirmationService.getOrder(
+        oc.lastOrderId ?? 0,
+      );
+      final data =
+          (response['body'] as Map<String, dynamic>?)?['data']
+              as Map<String, dynamic>?;
+
       if (data != null) {
         final latestCost = data['total_cost'] is String
             ? double.tryParse(data['total_cost']) ?? 0.0
             : (data['total_cost'] as num?)?.toDouble() ?? 0.0;
-        
+
         oc.totalCost.value = latestCost;
         oc.totalAmount.value = latestCost;
-        
-        print('✅ [SERVICE CHANGE] Updated order total_cost to: \$${latestCost.toStringAsFixed(2)}');
+
+        print(
+          '✅ [SERVICE CHANGE] Updated order total_cost to: \$${latestCost.toStringAsFixed(2)}',
+        );
       }
     } catch (e) {
       print('❌ [SERVICE CHANGE] Error refreshing order cost: $e');
@@ -152,7 +160,9 @@ class AdditionalServiceController extends GetxController {
       final isSuccess = response.statusCode >= 200 && response.statusCode < 300;
       if (!isSuccess || body['success'] != true) {
         selectedServiceIds.remove(serviceId);
-        debugPrint("Failed to add service $serviceId (Status: ${response.statusCode}, Success: ${body['success']})");
+        debugPrint(
+          "Failed to add service $serviceId (Status: ${response.statusCode}, Success: ${body['success']})",
+        );
       } else {
         debugPrint("✅ Successfully added service $serviceId");
         // Refresh order cost immediately after adding service
@@ -195,7 +205,9 @@ class AdditionalServiceController extends GetxController {
       final isSuccess = response.statusCode >= 200 && response.statusCode < 300;
       if (!isSuccess || body['success'] != true) {
         selectedServiceIds.add(serviceId);
-        debugPrint("Failed to delete service $serviceId (Status: ${response.statusCode}, Success: ${body['success']})");
+        debugPrint(
+          "Failed to delete service $serviceId (Status: ${response.statusCode}, Success: ${body['success']})",
+        );
       } else {
         debugPrint("✅ Successfully deleted service $serviceId");
         // Refresh order cost immediately after removing service

@@ -57,7 +57,6 @@ class StackedOrderController extends GetxController {
     try {
       isCancelling.value = true;
 
-
       final result = await CancelOrderService.cancelOrder(lastOrderId!, reason);
 
       isCancelling.value = false;
@@ -266,6 +265,7 @@ class StackedOrderController extends GetxController {
         debugPrint(
           '📥 Get order full response received (status: ${getRes['statusCode']})',
         );
+        debugPrint("Order ID for GET request: $orderId");
 
         // Parse the response to show what we got
         try {
@@ -449,7 +449,7 @@ class StackedOrderController extends GetxController {
     originalCost.value = 0.0;
     coinsRedeemed.value = 0;
   }
-  
+
   Future<void> applyPromoCode(String code) async {
     if (lastOrderId == null) {
       EasyLoading.showError('Order not created yet');
@@ -495,7 +495,9 @@ class StackedOrderController extends GetxController {
           int.tryParse(data['coinsRedeemed']?.toString() ?? '0') ?? 0;
 
       debugPrint('✅ Promo Applied: $promoCode');
-      debugPrint('💰 Original: \$${originalCost.value}, Discount: \$${discountAmount.value}, Total: \$${totalAmount.value}');
+      debugPrint(
+        '💰 Original: \$${originalCost.value}, Discount: \$${discountAmount.value}, Total: \$${totalAmount.value}',
+      );
       debugPrint('🪙 Coins Redeemed: ${coinsRedeemed.value}');
 
       EasyLoading.showSuccess(body['message'] ?? 'Promo applied successfully!');
@@ -532,12 +534,14 @@ class StackedOrderController extends GetxController {
 
     try {
       debugPrint('\n🔄 FETCHING ORDER TOTAL FOR ORDER ID: $lastOrderId');
-      
-      final orderRes = await OrderConfirmationService.getOrder(lastOrderId ?? 0);
-      
+
+      final orderRes = await OrderConfirmationService.getOrder(
+        lastOrderId ?? 0,
+      );
+
       debugPrint('📡 API Response Status: ${orderRes['statusCode']}');
       debugPrint('📡 API Response Success: ${orderRes['success']}');
-      
+
       final orderSuccess = orderRes['success'] as bool? ?? false;
       final orderStatus = orderRes['statusCode'] as int? ?? 500;
 
@@ -552,18 +556,22 @@ class StackedOrderController extends GetxController {
 
       final orderData = orderRes['body'] as Map<String, dynamic>? ?? {};
       final orderActualData = orderData['data'] as Map<String, dynamic>? ?? {};
-      
+
       debugPrint('📦 Order Data Keys: ${orderActualData.keys.toList()}');
-      
+
       final totalCostRaw = orderActualData['total_cost'];
-      debugPrint('💰 Raw Total Cost: $totalCostRaw (Type: ${totalCostRaw.runtimeType})');
-      
+      debugPrint(
+        '💰 Raw Total Cost: $totalCostRaw (Type: ${totalCostRaw.runtimeType})',
+      );
+
       final fetchedTotalCost = totalCostRaw is String
           ? double.tryParse(totalCostRaw) ?? 0.0
           : (totalCostRaw as num?)?.toDouble() ?? 0.0;
 
-      debugPrint('✅ Parsed Total Cost: \$${fetchedTotalCost.toStringAsFixed(2)}');
-      
+      debugPrint(
+        '✅ Parsed Total Cost: \$${fetchedTotalCost.toStringAsFixed(2)}',
+      );
+
       // Only update if we have a valid non-zero cost
       if (fetchedTotalCost > 0) {
         totalAmount.value = fetchedTotalCost;
@@ -573,13 +581,19 @@ class StackedOrderController extends GetxController {
         debugPrint('   totalCost: \$${totalCost.value.toStringAsFixed(2)}');
       } else {
         debugPrint('⚠️ Total cost is 0 or invalid, keeping previous values');
-        debugPrint('   Keeping totalAmount: \$${totalAmount.value.toStringAsFixed(2)}');
-        debugPrint('   Keeping totalCost: \$${totalCost.value.toStringAsFixed(2)}');
+        debugPrint(
+          '   Keeping totalAmount: \$${totalAmount.value.toStringAsFixed(2)}',
+        );
+        debugPrint(
+          '   Keeping totalCost: \$${totalCost.value.toStringAsFixed(2)}',
+        );
         totalCost.value = previousTotalCost;
         totalAmount.value = previousTotalAmount;
       }
-      
-      debugPrint('════════════════════════════════════════════════════════════\n');
+
+      debugPrint(
+        '════════════════════════════════════════════════════════════\n',
+      );
     } catch (e, stack) {
       debugPrint('❌ Error fetching order total: $e');
       debugPrint('Stack: $stack');

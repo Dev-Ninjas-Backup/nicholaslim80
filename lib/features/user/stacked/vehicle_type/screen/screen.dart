@@ -4,6 +4,7 @@ import 'package:ZipBee/core/utils/constants/icon_path.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../order_stacked_delivery/controller/stacked_order_controller.dart';
 import '../controller/controller.dart';
 import '../widget/vihicle_tab_page.dart';
 
@@ -25,11 +26,48 @@ class StackedVehicleSelectionPage extends StatelessWidget {
 
       if (args['initialDistanceKm'] != null) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          controller.totalDistanceKm.value =
-              (args['initialDistanceKm'] as num).toDouble();
+          controller.totalDistanceKm.value = (args['initialDistanceKm'] as num)
+              .toDouble();
 
-          debugPrint(
-              'Initial distance: ${controller.totalDistanceKm.value}');
+          debugPrint('Initial distance: ${controller.totalDistanceKm.value}');
+        });
+      }
+
+      // Extract order data and set in StackedOrderController
+      if (args['order'] != null) {
+        final orderData = args['order'] as Map<String, dynamic>;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          try {
+            final orderCtrl = Get.find<StackedOrderController>();
+            final orderId = orderData['id'] as int?;
+            orderCtrl.lastOrderId = orderId;
+
+            final totalCost =
+                double.tryParse(orderData['total_cost']?.toString() ?? '') ??
+                0.0;
+            orderCtrl.totalAmount.value = totalCost;
+            orderCtrl.totalCost.value = totalCost;
+
+            debugPrint('✅ Order initialized: ID=$orderId, Total=$totalCost');
+          } catch (_) {
+            try {
+              final orderCtrl = Get.put(StackedOrderController());
+              final orderId = orderData['id'] as int?;
+              orderCtrl.lastOrderId = orderId;
+
+              final totalCost =
+                  double.tryParse(orderData['total_cost']?.toString() ?? '') ??
+                  0.0;
+              orderCtrl.totalAmount.value = totalCost;
+              orderCtrl.totalCost.value = totalCost;
+
+              debugPrint(
+                '✅ Order initialized (new controller): ID=$orderId, Total=$totalCost',
+              );
+            } catch (e) {
+              debugPrint('❌ Error setting order data: $e');
+            }
+          }
         });
       }
     }
@@ -61,33 +99,13 @@ class StackedVehicleSelectionPage extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 tabs: [
+                  Tab(icon: Image.asset(IconPath.bike2, height: 60, width: 70)),
+                  Tab(icon: Image.asset(IconPath.car2, height: 60, width: 70)),
                   Tab(
-                    icon: Image.asset(
-                      IconPath.bike2,
-                      height: 60,
-                      width: 70,
-                    ),
+                    icon: Image.asset(IconPath.shipment, height: 60, width: 70),
                   ),
                   Tab(
-                    icon: Image.asset(
-                      IconPath.car2,
-                      height: 60,
-                      width: 70,
-                    ),
-                  ),
-                  Tab(
-                    icon: Image.asset(
-                      IconPath.shipment,
-                      height: 60,
-                      width: 70,
-                    ),
-                  ),
-                  Tab(
-                    icon: Image.asset(
-                      IconPath.shopcar,
-                      height: 60,
-                      width: 70,
-                    ),
+                    icon: Image.asset(IconPath.shopcar, height: 60, width: 70),
                   ),
                 ],
               ),
