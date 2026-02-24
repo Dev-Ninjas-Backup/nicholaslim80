@@ -65,8 +65,11 @@ class VehicleCards extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.directions_car_filled_outlined, 
-                     size: 50, color: Colors.grey),
+                Icon(
+                  Icons.directions_car_filled_outlined,
+                  size: 50,
+                  color: Colors.grey,
+                ),
                 SizedBox(height: 10),
                 Text(
                   "No vehicle available at the moment",
@@ -276,7 +279,7 @@ class VehicleCards extends StatelessWidget {
                             debugPrint('CreateOrder Request payload: $payload');
 
                             try {
-                              EasyLoading.show(status: 'Placing order...');
+                              EasyLoading.show(status: 'Creating order...');
                             } catch (_) {}
                             final res = await OrderService.createOrder(payload);
                             debugPrint('CreateOrder Response: $res');
@@ -329,7 +332,8 @@ class VehicleCards extends StatelessWidget {
 
                               if (orderMap != null) {
                                 try {
-                                  EasyLoading.showSuccess(
+                                  // EasyLoading.showSuccess(body['message']?.toString() ??'Order created',);
+                                  debugPrint(
                                     body['message']?.toString() ??
                                         'Order created',
                                   );

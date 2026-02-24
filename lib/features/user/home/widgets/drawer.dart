@@ -5,7 +5,6 @@ import 'package:ZipBee/features/user/home/controller/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-
 Drawer drawer(HomeController controller) {
   return Drawer(
     backgroundColor: Color(0xFFFFEA96),
@@ -38,13 +37,18 @@ Drawer drawer(HomeController controller) {
                     return Padding(
                       padding: EdgeInsets.only(bottom: 38),
                       child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
                         onTap: controller.drawerItem[index].ontap,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Row(
                               children: [
-                                Image.asset(item.iconUrl, height: 24, width: 24),
+                                Image.asset(
+                                  item.iconUrl,
+                                  height: 24,
+                                  width: 24,
+                                ),
                                 SizedBox(width: 10),
                                 Text(
                                   item.iconname,
@@ -55,10 +59,10 @@ Drawer drawer(HomeController controller) {
                                 ),
                               ],
                             ),
-                        
+
                             GestureDetector(
                               onTap: controller.drawerItem[index].ontap,
-                        
+
                               child: Icon(Icons.arrow_forward_ios, size: 24),
                             ),
                           ],
@@ -74,9 +78,7 @@ Drawer drawer(HomeController controller) {
 
         Spacer(),
         GestureDetector(
-          onTap: () {
-            
-          },
+          onTap: () {},
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
             decoration: BoxDecoration(

@@ -24,7 +24,6 @@ class HomeController extends GetxController {
   final selectedService = 'Standard'.obs;
   final selectedVehicleId = RxnString();
 
-  // পরিবর্তন এখানে: স্ট্যাটিক ডাটা রিমুভ করে খালি লিস্ট রাখা হয়েছে
   final vehicles = <Map<String, dynamic>>[].obs;
 
   final deliveryType = 'standard'.obs;
@@ -41,6 +40,20 @@ class HomeController extends GetxController {
   }
 
   var drawerItem = <DrawerModel>[].obs;
+
+  String _getGreeting() {
+    final hour = DateTime.now().hour;
+
+    if (hour >= 5 && hour < 12) {
+      return "Good Morning";
+    } else if (hour >= 12 && hour < 17) {
+      return "Good Afternoon";
+    } else if (hour >= 17 && hour < 22) {
+      return "Good Evening";
+    } else {
+      return "Good Night";
+    }
+  }
 
   Future<void> fetchUserProfile() async {
     try {
@@ -60,8 +73,9 @@ class HomeController extends GetxController {
         final body = jsonDecode(response.body);
         if (body['success'] == true && body['data'] != null) {
           final data = body['data'];
-          userName.value =
-              "Good Morning, ${data['username']?.toString().trim() ?? ''}";
+          String greeting = _getGreeting();
+          String name = data['username']?.toString().trim() ?? '';
+          userName.value = "$greeting, $name";
           walletBalance.value = (data['currentWalletBalance'] != null)
               ? double.tryParse(data['currentWalletBalance'].toString()) ?? 0
               : 0;
@@ -132,11 +146,9 @@ class HomeController extends GetxController {
     if (response['success'] == true && response['data'] != null) {
       List popups = response['data'];
 
-      // শুধুমাত্র Active পপআপগুলো ফিল্টার করা
       List activePopups = popups.where((p) => p['isActive'] == true).toList();
 
       if (activePopups.isNotEmpty) {
-        // র‍্যান্ডমলি একটি অবজেক্ট সিলেক্ট করা
         final random = Random();
         final selectedPopup = activePopups[random.nextInt(activePopups.length)];
 
@@ -148,20 +160,14 @@ class HomeController extends GetxController {
   void _showPopupDialog(BuildContext context, Map<String, dynamic> data) {
     Get.dialog(
       Dialog(
-        backgroundColor:
-            Colors.transparent, // ব্যাকগ্রাউন্ড ট্রান্সপারেন্ট রাখা হয়েছে
+        backgroundColor: Colors.transparent,
         insetPadding: const EdgeInsets.symmetric(horizontal: 20),
         child: Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: const Color(
-              0xFFFFF9E3,
-            ), // আপনার ইমেজের হালকা হলুদ ব্যাকগ্রাউন্ড
+            color: const Color(0xFFFFF9E3),
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: const Color(0xFFFFD700),
-              width: 1,
-            ), // গোল্ডেন বর্ডার
+            border: Border.all(color: const Color(0xFFFFD700), width: 1),
           ),
           child: GestureDetector(
             onTap: () => _launchURL(data['redirect_link']),
@@ -176,7 +182,6 @@ class HomeController extends GetxController {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-
                           // Title
                           Text(
                             data['title'] ?? "Always here for you!",
@@ -208,23 +213,22 @@ class HomeController extends GetxController {
 
                     // Image Section
                     SizedBox(
-                    width: 70,
-                    height: 70,
-                    child: data['image_link'] != null && data['image_link'].toString().isNotEmpty
-                        ? Image.network(
-                            data['image_link'],
-                            fit: BoxFit.contain,
-                            errorBuilder: (context, error, stackTrace) => Image.asset(
-                              IconPath.gift_Ad, 
+                      width: 70,
+                      height: 70,
+                      child:
+                          data['image_link'] != null &&
+                              data['image_link'].toString().isNotEmpty
+                          ? Image.network(
+                              data['image_link'],
                               fit: BoxFit.contain,
-                            ),
-                          )
-                        : Image.asset(
-                            IconPath.gift_Ad, 
-                            fit: BoxFit.contain,
-                          ),
-                  ),
-                  
+                              errorBuilder: (context, error, stackTrace) =>
+                                  Image.asset(
+                                    IconPath.gift_Ad,
+                                    fit: BoxFit.contain,
+                                  ),
+                            )
+                          : Image.asset(IconPath.gift_Ad, fit: BoxFit.contain),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 10),
@@ -235,7 +239,9 @@ class HomeController extends GetxController {
                     onPressed: () => Get.back(),
                     child: const Text(
                       "Close",
-                      style: TextStyle(color: Color.fromARGB(255, 216, 213, 213)),
+                      style: TextStyle(
+                        color: Color.fromARGB(255, 216, 213, 213),
+                      ),
                     ),
                   ),
                 ),
