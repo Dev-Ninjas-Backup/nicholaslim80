@@ -29,4 +29,45 @@ class VehicleTypeService {
       return {'statusCode': 500, 'body': {}};
     }
   }
+
+  /// Update vehicle type for an order
+  static Future<Map<String, dynamic>> updateVehicleType({
+    required int orderId,
+    required int vehicleTypeId,
+  }) async {
+    try {
+      final token = await SharedPreferencesHelper.getAccessToken();
+
+      final url = ApiEndPoint.orderUpdateDetails.replaceAll(
+        '{id}',
+        orderId.toString(),
+      );
+
+      final body = {'vehicle_type_id': vehicleTypeId};
+
+      debugPrint('➡️ UPDATE VEHICLE URL: $url');
+      debugPrint('➡️ UPDATE VEHICLE REQUEST BODY: ${jsonEncode(body)}');
+
+      final response = await http.patch(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+          if (token != null) 'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode(body),
+      );
+
+      debugPrint(
+        '⬅️ UPDATE VEHICLE RESPONSE: ${response.statusCode} ${response.body}',
+      );
+
+      return {
+        'statusCode': response.statusCode,
+        'body': jsonDecode(response.body),
+      };
+    } catch (e) {
+      debugPrint('❌ updateVehicleType error: $e');
+      return {'statusCode': 500, 'body': {}};
+    }
+  }
 }

@@ -1,8 +1,10 @@
-
 import 'package:ZipBee/features/user/stacked/vehicle_type/model/model.dart';
 import 'package:ZipBee/features/user/stacked/vehicle_type/service/vehicle_type_service.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 
+import '../../order_stacked_delivery/controller/stacked_order_controller.dart';
 
 class StackedVehicleController extends GetxController {
   final selectedVehicle = Rxn<StackVehicle>();
@@ -18,7 +20,6 @@ class StackedVehicleController extends GetxController {
   // total route distance (km) used in fare estimation. Default placeholder 1.0
   // Replace this by real routing API calculation using pickup/destination coords.
   final totalDistanceKm = 1.0.obs;
-
 
   // keep default additional services as before but note: API does not provide them
   final List<StackedAdditionalService> _allServices = [
@@ -37,9 +38,21 @@ class StackedVehicleController extends GetxController {
       price: 20.0,
       applicableTo: ['Courier'],
     ),
-    StackedAdditionalService(name: 'Door-to-door', price: 30.0, applicableTo: ['Van']),
-    StackedAdditionalService(name: 'Tailboard', price: 20.0, applicableTo: ['Truck']),
-    StackedAdditionalService(name: 'Open/Box', price: 20.0, applicableTo: ['Truck']),
+    StackedAdditionalService(
+      name: 'Door-to-door',
+      price: 30.0,
+      applicableTo: ['Van'],
+    ),
+    StackedAdditionalService(
+      name: 'Tailboard',
+      price: 20.0,
+      applicableTo: ['Truck'],
+    ),
+    StackedAdditionalService(
+      name: 'Open/Box',
+      price: 20.0,
+      applicableTo: ['Truck'],
+    ),
   ];
 
   @override
@@ -119,6 +132,67 @@ class StackedVehicleController extends GetxController {
     }
   }
 
+  /// Toggle vehicle for order update (with API call)
+  Future<void> toggleVehicle(StackVehicle vehicle, int orderId) async {
+    if (vehicle.id == null) {
+      debugPrint("❌ Vehicle ID is null, cannot update");
+      EasyLoading.showError("Invalid vehicle");
+      return;
+    }
+
+    try {
+      // Optimistically update UI first
+      selectedVehicle.value = vehicle;
+      selectedServices.clear();
+      _updateHistory();
+
+      EasyLoading.show(status: "Updating vehicle...");
+
+      // Call API
+      final res = await VehicleTypeService.updateVehicleType(
+        orderId: orderId,
+        vehicleTypeId: vehicle.id!,
+      );
+
+      final status = res['statusCode'] as int? ?? 500;
+      final body = res['body'] as Map<String, dynamic>? ?? {};
+
+      if (status >= 200 && status < 300 && body['success'] == true) {
+        debugPrint("✅ Successfully updated vehicle to: ${vehicle.name}");
+
+        // Update order controller if available
+        try {
+          final orderCtrl = Get.find<StackedOrderController>();
+          final updatedTotal = body['data']?['total_cost'];
+          if (updatedTotal != null) {
+            final totalCost = double.tryParse(updatedTotal.toString()) ?? 0.0;
+            orderCtrl.totalCost.value = totalCost;
+            orderCtrl.totalAmount.value = totalCost;
+          }
+        } catch (_) {}
+      } else {
+        debugPrint("❌ Failed to update vehicle (Status: $status)");
+        // Revert UI on failure
+        selectedVehicle.value = null;
+        selectedServices.clear();
+        calculationHistory.clear();
+
+        final msgRaw = body['message'] ?? 'Failed to update vehicle';
+        final msg = msgRaw is List ? msgRaw.join('\n') : msgRaw.toString();
+        EasyLoading.showError(msg);
+      }
+    } catch (e) {
+      debugPrint("❌ Error toggling vehicle: $e");
+      // Revert UI on error
+      selectedVehicle.value = null;
+      selectedServices.clear();
+      calculationHistory.clear();
+      EasyLoading.showError("Error updating vehicle");
+    } finally {
+      EasyLoading.dismiss();
+    }
+  }
+
   double calculateTotal() {
     // price calculation = basePrice + (perKmPrice * totalDistanceKm) + selected services
     final vehicle = selectedVehicle.value;
@@ -157,6 +231,4 @@ class StackedVehicleController extends GetxController {
       calculationHistory.add("${s.name}: S\$${s.price.toStringAsFixed(2)}");
     }
   }
-
-
 }

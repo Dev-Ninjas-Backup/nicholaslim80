@@ -88,7 +88,7 @@ class VerificationScreen extends StatelessWidget {
                       ),
                       SizedBox(height: media.size.height * 0.01),
                       Text(
-                        'Please input your OTP sent to your phone number',
+                        'Please input your OTP sent to your Email',
                         style: getTextStyle(
                           fontSize: media.size.width * 0.029,
                           color: AppColors.primaryFontColor,

@@ -49,7 +49,16 @@ class StackedVehicleTabPage extends StatelessWidget {
                             vehicle: v,
                             isSelected:
                                 vehicleController.selectedVehicle.value == v,
-                            onTap: () => vehicleController.selectVehicle(v),
+                            onTap: () {
+                              final orderId = orderController.lastOrderId;
+                              if (orderId != null) {
+                                vehicleController.toggleVehicle(v, orderId);
+                              } else {
+                                debugPrint(
+                                  '❌ Order ID is null, cannot update vehicle',
+                                );
+                              }
+                            },
                           ),
                         )
                         .toList(),
@@ -90,10 +99,12 @@ class StackedVehicleTabPage extends StatelessWidget {
                           .contains(service.id);
 
                       return GestureDetector(
-                        onTap: () => serviceController.toggleService(
-                          service.id,
-                          orderId,
-                        ),
+                        onTap: () async {
+                          await serviceController.toggleService(
+                            service.id,
+                            orderId,
+                          );
+                        },
                         child: Container(
                           height: 72,
                           margin: const EdgeInsets.only(bottom: 12),
