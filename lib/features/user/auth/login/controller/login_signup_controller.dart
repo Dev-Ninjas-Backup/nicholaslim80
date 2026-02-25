@@ -9,7 +9,7 @@ class LoginSignupController extends GetxController {
   // ---------------- TEXT CONTROLLERS ----------------
   final nameController = TextEditingController();
   final emailController = TextEditingController();
-  final phoneController = TextEditingController();
+  final phoneController = TextEditingController(text: '+65');
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
 
@@ -31,20 +31,36 @@ class LoginSignupController extends GetxController {
   }
 
   // ---------------- LOGIN ----------------
+  // Login with dynamic identifier (email/phone/username)
   Future<void> login() async {
-    final email = emailController.text.trim();
+    final identifier = emailController.text.trim(); // email/phone/username
     final password = passwordController.text.trim();
 
-    if (email.isEmpty || password.isEmpty) {
-      EasyLoading.showError("Email & Password required");
+    if (identifier.isEmpty) {
+      EasyLoading.showError("Email, phone or username is required");
       return;
+    }
+    if (password.isEmpty) {
+      EasyLoading.showError("Password is required");
+      return;
+    }
+
+    Map<String, dynamic> requestBody = {"password": password};
+
+    if (GetUtils.isEmail(identifier)) {
+      requestBody["email"] = identifier;
+    } else if (RegExp(r'^[0-9+]+$').hasMatch(identifier)) {
+      requestBody["phone"] = identifier;
+    } else {
+      requestBody["username"] = identifier;
     }
 
     isLoading.value = true;
     EasyLoading.show(status: "Logging in...");
 
     try {
-      final result = await AuthService.login(email: email, password: password);
+      // call login API service with dynamic identifier
+      final result = await AuthService.login(requestBody);
 
       debugPrint('📡 Login Response: ${result}');
       debugPrint('➡️ Login result: $result');
@@ -54,19 +70,13 @@ class LoginSignupController extends GetxController {
         final refreshToken = result['body']['refresh_token'];
         final expiresIn = result['body']['expires_in'];
 
-        if (token == null || token.isEmpty) {
-          EasyLoading.showError("Invalid token received");
-          return;
-        }
-
-        // Save token
+        // Save in access token
         await SharedPreferencesHelper.saveToken(token);
 
         // Optional: Save refresh token
         if (refreshToken != null) {
           await SharedPreferencesHelper.saveRefreshToken(refreshToken);
         }
-
         debugPrint('💾 Saved Access Token: $token');
         debugPrint('💾 Saved Refresh Token: $refreshToken');
         debugPrint('💾 Expires In: $expiresIn');
@@ -80,7 +90,6 @@ class LoginSignupController extends GetxController {
         EasyLoading.showError(result['body']['message'] ?? "Login failed");
       }
     } catch (e) {
-      debugPrint('❌ Login Exception: $e');
       EasyLoading.showError("Login error");
     } finally {
       isLoading.value = false;
@@ -95,12 +104,28 @@ class LoginSignupController extends GetxController {
     final password = passwordController.text.trim();
     final confirm = confirmPasswordController.text.trim();
 
-    if (name.isEmpty ||
-        email.isEmpty ||
-        phone.isEmpty ||
-        password.isEmpty ||
-        confirm.isEmpty) {
-      EasyLoading.showError("All fields are required");
+    if (name.isEmpty) {
+      EasyLoading.showError("User Name is required");
+      return;
+    }
+
+    if (email.isEmpty) {
+      EasyLoading.showError("Email is required");
+      return;
+    }
+
+    if (phone.isEmpty) {
+      EasyLoading.showError("Phone is required");
+      return;
+    }
+
+    if (password.isEmpty) {
+      EasyLoading.showError("Password is required");
+      return;
+    }
+
+    if (confirm.isEmpty) {
+      EasyLoading.showError("Confirm password is required");
       return;
     }
 

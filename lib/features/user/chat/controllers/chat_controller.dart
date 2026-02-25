@@ -1,8 +1,6 @@
 import 'package:ZipBee/core/shared_prefference_service/shared_pref.dart';
-import 'package:ZipBee/features/user/chat/auth_sevice/history.dart';
 import 'package:ZipBee/features/user/chat/models/message_model.dart';
 import 'package:ZipBee/features/user/chat/socket_service.dart/socket_service.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

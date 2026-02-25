@@ -5,7 +5,6 @@ import 'package:ZipBee/features/user/auth/forgotPassword/controller/forgot_passw
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-
 class ForgotPasswordScreen extends StatelessWidget {
   const ForgotPasswordScreen({super.key});
 
@@ -58,7 +57,7 @@ class ForgotPasswordScreen extends StatelessWidget {
             SizedBox(height: 15),
 
             Text(
-              "Enter your mobile number or email",
+              "Enter your email",
               style: getTextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
@@ -72,7 +71,7 @@ class ForgotPasswordScreen extends StatelessWidget {
               keyboardType: TextInputType.text,
               onChanged: controller.onInputChanged,
               decoration: InputDecoration(
-                hintText: "Enter your phone or email",
+                hintText: "Enter your email",
                 hintStyle: getTextStyle(
                   color: Colors.grey,
                   fontSize: 16,

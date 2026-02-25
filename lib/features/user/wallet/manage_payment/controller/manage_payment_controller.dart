@@ -66,8 +66,7 @@ class ManagePaymentController extends GetxController {
       EasyLoading.show(status: "Preparing payment method...");
 
       /// 1️⃣ Create SetupIntent
-      final setupResult =
-          await WalletPaymentMethodService.createSetupIntent();
+      final setupResult = await WalletPaymentMethodService.createSetupIntent();
 
       if (setupResult['success'] != true) {
         EasyLoading.dismiss();
@@ -97,12 +96,13 @@ class ManagePaymentController extends GetxController {
       await Stripe.instance.presentPaymentSheet();
 
       /// 4️⃣ Retrieve SetupIntent
-      final setupIntent =
-          await Stripe.instance.retrieveSetupIntent(clientSecret);
+      final setupIntent = await Stripe.instance.retrieveSetupIntent(
+        clientSecret,
+      );
 
       final paymentMethodId = setupIntent.paymentMethodId;
 
-      if (paymentMethodId == null || paymentMethodId.isEmpty) {
+      if (paymentMethodId.isEmpty) {
         EasyLoading.showError("Payment method not found");
         return;
       }
@@ -114,7 +114,8 @@ class ManagePaymentController extends GetxController {
 
       if (result['success'] != true) {
         EasyLoading.showError(
-            result['body']?['message'] ?? "Failed to save card");
+          result['body']?['message'] ?? "Failed to save card",
+        );
         return;
       }
 
@@ -125,12 +126,9 @@ class ManagePaymentController extends GetxController {
       last4.value = responseData?['last4']?.toString() ?? "";
 
       EasyLoading.showSuccess("Card added successfully");
-
     } on StripeException catch (e) {
       EasyLoading.dismiss();
-      EasyLoading.showError(
-        e.error.localizedMessage ?? "Payment cancelled",
-      );
+      EasyLoading.showError(e.error.localizedMessage ?? "Payment cancelled");
     } catch (e) {
       EasyLoading.dismiss();
       EasyLoading.showError("Something went wrong");

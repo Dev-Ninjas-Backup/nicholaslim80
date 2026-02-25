@@ -6,7 +6,6 @@ import 'package:ZipBee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-
 class LoginSignupScreen extends StatelessWidget {
   const LoginSignupScreen({super.key});
 
@@ -206,13 +205,30 @@ class LoginSignupScreen extends StatelessWidget {
       key: const ValueKey('loginFields'),
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 10),
+        Text(
+          "Enter Email, Phone or Username",
+          style: getTextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+            color: AppColors.subtitleFontColor,
+          ),
+        ),
+        const SizedBox(height: 5),
         buildTextField(
           controller.emailController,
-          'Enter your email',
-          keyboardType: TextInputType.emailAddress,
+          'Email, Phone or Username',
+          keyboardType: TextInputType.text,
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 10),
+        Text(
+          "Enter your password",
+          style: getTextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+            color: AppColors.subtitleFontColor,
+          ),
+        ),
+        const SizedBox(height: 5),
         buildPasswordField(
           controller.passwordController,
           controller.isLoginPasswordVisible,
@@ -242,28 +258,78 @@ class LoginSignupScreen extends StatelessWidget {
   // -------------------- Signup Fields --------------------
   Widget buildSignupFields(LoginSignupController controller) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       key: const ValueKey('signupFields'),
       children: [
-        buildTextField(controller.nameController, 'Your Name'),
-        const SizedBox(height: 20),
+        Text(
+          "Enter your user name",
+          style: getTextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+            color: AppColors.subtitleFontColor,
+          ),
+        ),
+        const SizedBox(height: 5),
+        buildTextField(controller.nameController, 'User Name'),
+        const SizedBox(height: 10),
+
+        Text(
+          "Enter your email address",
+          style: getTextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+            color: AppColors.subtitleFontColor,
+          ),
+        ),
+        const SizedBox(height: 5),
         buildTextField(
           controller.emailController,
-          'Your e-mail address',
+          'Email address',
           keyboardType: TextInputType.emailAddress,
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 10),
+
+        Text(
+          "Enter your phone number",
+          style: getTextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+            color: AppColors.subtitleFontColor,
+          ),
+        ),
+        SizedBox(height: 5),
         buildTextField(
           controller.phoneController,
           'Phone Number',
           keyboardType: TextInputType.phone,
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 10),
+
+        Text(
+          "Create a password",
+          style: getTextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+            color: AppColors.subtitleFontColor,
+          ),
+        ),
+        SizedBox(height: 5),
         buildPasswordField(
           controller.passwordController,
           controller.isSignUpPasswordVisible,
           'Enter your password',
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 10),
+
+        Text(
+          "Confirm your password",
+          style: getTextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+            color: AppColors.subtitleFontColor,
+          ),
+        ),
+        SizedBox(height: 5),
         buildPasswordField(
           controller.confirmPasswordController,
           controller.isConfirmPasswordVisible,

@@ -69,25 +69,26 @@ class AuthService {
   }
 
   // ------------------- LOGIN -------------------
-  static Future<Map<String, dynamic>> login({
-    required String email,
-    required String password,
-  }) async {
+  static Future<Map<String, dynamic>> login(
+    Map<String, dynamic> loginData,
+  ) async {
     try {
       final response = await http.post(
         Uri.parse(ApiEndPoint.login),
         headers: {"Content-Type": "application/json"},
-        body: jsonEncode({"email": email, "password": password}),
+        body: jsonEncode(loginData),
       );
+
+      debugPrint("📡 Login Request Data: ${jsonEncode(loginData)}");
       debugPrint(
         '📡 Login Response: ${response.statusCode} | ${response.body}',
       );
+
       return {
         "statusCode": response.statusCode,
         "body": jsonDecode(response.body),
       };
     } catch (e) {
-      debugPrint('❌ Login Error: $e');
       return {
         "statusCode": 500,
         "body": {"message": e.toString()},
