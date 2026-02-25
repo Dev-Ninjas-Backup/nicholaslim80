@@ -65,6 +65,11 @@ class ApiEndPoint {
   static const String tip = '$baseUrl/tips/{order_id}/tip';
   static const String faqRole = '$baseUrl/faq/faqs-by-role';
 
+  // Help Center endpoints
+  static const String aboutUs = '$baseUrl/aboutus';
+  static const String helpArticles = '$baseUrl/article';
+  static const String contentManagement = '$baseUrl/content-management';
+
   // Order discount & promo endpoints
   static const String applyDiscount = '$baseUrl/order/{orderId}/apply-discount';
   static const String notifyRider = '$baseUrl/order/{orderId}/notify-rider';

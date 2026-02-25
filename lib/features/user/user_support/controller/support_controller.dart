@@ -1,6 +1,6 @@
 import 'dart:convert';
-
 import 'package:ZipBee/core/utils/constants/icon_path.dart';
+import 'package:ZipBee/features/user/user_support/help_center/screen/help_centr_screen.dart';
 import 'package:ZipBee/features/user/user_support/support_chat_screen/screen/support_chat_screen.dart';
 import 'package:ZipBee/features/user/user_support/model/support_option_model.dart';
 import 'package:ZipBee/features/user/user_support/widget/faq/faq_screen.dart';
@@ -8,7 +8,6 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
-
 import '../../../../core/shared_prefference_service/shared_pref.dart';
 
 class SupportController extends GetxController {
@@ -128,11 +127,17 @@ class SupportController extends GetxController {
           }
         },
       ),
+      // SupportOption(
+      //   title: 'FAQ',
+      //   description: 'Get quick help from our frequently asked questions',
+      //   icon: IconPath.faq,
+      //   onTap: () => Get.to(() => const FaqScreen()),
+      // ),
       SupportOption(
-        title: 'FAQ',
-        description: 'Get quick help from our frequently asked questions',
+        title: 'Help Center',
+        description: "Here you can get all information about us",
         icon: IconPath.faq,
-        onTap: () => Get.to(() => const FaqScreen()),
+        onTap: () => Get.to(() => const HelpCentrScreen()),
       ),
     ]);
   }
