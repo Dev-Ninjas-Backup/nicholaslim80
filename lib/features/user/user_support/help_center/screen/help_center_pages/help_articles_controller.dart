@@ -31,4 +31,9 @@ class HelpArticlesController extends GetxController {
       isLoading.value = false;
     }
   }
+
+  /// Refresh data
+  Future<void> refresh() async {
+    await fetchArticles();
+  }
 }

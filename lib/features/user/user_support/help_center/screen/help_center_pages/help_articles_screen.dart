@@ -9,6 +9,8 @@ class HelpArticlesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Delete previous controller instance and create new one
+    Get.delete<HelpArticlesController>(force: true);
     final controller = Get.put(HelpArticlesController());
 
     return Scaffold(
@@ -30,7 +32,7 @@ class HelpArticlesScreen extends StatelessWidget {
         centerTitle: true,
       ),
       body: Obx(() {
-        if (controller.isLoading.value) {
+        if (controller.isLoading.value && controller.articles.isEmpty) {
           return Center(child: CircularProgressIndicator());
         }
 
@@ -43,46 +45,50 @@ class HelpArticlesScreen extends StatelessWidget {
           );
         }
 
-        return SingleChildScrollView(
-          padding: EdgeInsets.all(16.0),
-          child: Column(
-            children: controller.articles.map((article) {
-              return Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                margin: EdgeInsets.only(bottom: 12),
-                padding: EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(Icons.article, color: Colors.black, size: 20),
-                        SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            article.title,
-                            style: getTextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
+        return RefreshIndicator(
+          onRefresh: () => controller.refresh(),
+          child: SingleChildScrollView(
+            padding: EdgeInsets.all(16.0),
+            physics: AlwaysScrollableScrollPhysics(),
+            child: Column(
+              children: controller.articles.map((article) {
+                return Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  margin: EdgeInsets.only(bottom: 12),
+                  padding: EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.article, color: Colors.black, size: 20),
+                          SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              article.title,
+                              style: getTextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 12),
-                    Text(
-                      article.content,
-                      style: getTextStyle(fontSize: 12),
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-              );
-            }).toList(),
+                        ],
+                      ),
+                      SizedBox(height: 12),
+                      Text(
+                        article.content,
+                        style: getTextStyle(fontSize: 12),
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
+            ),
           ),
         );
       }),

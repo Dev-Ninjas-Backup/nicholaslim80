@@ -9,6 +9,8 @@ class PrivacyPolicyScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Delete previous controller instance and create new one
+    Get.delete<ContentManagementController>(force: true);
     final controller = Get.put(ContentManagementController());
 
     return Scaffold(
@@ -45,28 +47,32 @@ class PrivacyPolicyScreen extends StatelessWidget {
           );
         }
 
-        return SingleChildScrollView(
-          padding: EdgeInsets.all(16.0),
-          child: Container(
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-            ),
+        return RefreshIndicator(
+          onRefresh: () => controller.refresh(),
+          child: SingleChildScrollView(
             padding: EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Privacy Policy',
-                  style: getTextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
+            physics: AlwaysScrollableScrollPhysics(),
+            child: Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              padding: EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Privacy Policy',
+                    style: getTextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
                   ),
-                ),
-                SizedBox(height: 16),
-                Text(content, style: getTextStyle(fontSize: 14)),
-              ],
+                  SizedBox(height: 16),
+                  Text(content, style: getTextStyle(fontSize: 14)),
+                ],
+              ),
             ),
           ),
         );

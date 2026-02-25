@@ -43,4 +43,9 @@ class ContentManagementController extends GetxController {
       return null;
     }
   }
+
+  /// Refresh data
+  Future<void> refresh() async {
+    await fetchContentManagement();
+  }
 }

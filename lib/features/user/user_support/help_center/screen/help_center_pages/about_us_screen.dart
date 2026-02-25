@@ -9,6 +9,8 @@ class AboutUsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Delete previous controller instance and create new one
+    Get.delete<AboutUsController>(force: true);
     final controller = Get.put(AboutUsController());
 
     return Scaffold(
@@ -30,7 +32,7 @@ class AboutUsScreen extends StatelessWidget {
         centerTitle: true,
       ),
       body: Obx(() {
-        if (controller.isLoading.value) {
+        if (controller.isLoading.value && controller.aboutUsData.isEmpty) {
           return Center(child: CircularProgressIndicator());
         }
 
@@ -40,34 +42,38 @@ class AboutUsScreen extends StatelessWidget {
           );
         }
 
-        return SingleChildScrollView(
-          padding: EdgeInsets.all(16.0),
-          child: Column(
-            children: controller.aboutUsData.map((item) {
-              return Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                margin: EdgeInsets.only(bottom: 12),
-                padding: EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      item.title,
-                      style: getTextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
+        return RefreshIndicator(
+          onRefresh: () => controller.refresh(),
+          child: SingleChildScrollView(
+            padding: EdgeInsets.all(16.0),
+            physics: AlwaysScrollableScrollPhysics(),
+            child: Column(
+              children: controller.aboutUsData.map((item) {
+                return Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  margin: EdgeInsets.only(bottom: 12),
+                  padding: EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        item.title,
+                        style: getTextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 12),
-                    Text(item.content, style: getTextStyle(fontSize: 14)),
-                  ],
-                ),
-              );
-            }).toList(),
+                      SizedBox(height: 12),
+                      Text(item.content, style: getTextStyle(fontSize: 14)),
+                    ],
+                  ),
+                );
+              }).toList(),
+            ),
           ),
         );
       }),
