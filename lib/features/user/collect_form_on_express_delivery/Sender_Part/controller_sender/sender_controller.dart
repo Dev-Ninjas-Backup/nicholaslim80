@@ -47,7 +47,10 @@ class SenderController extends GetxController {
   }
 
   /// Creates a destination record on the server and links it to order. Returns destination data on success, otherwise null.
-  Future<Map<String, dynamic>?> saveDestination({String type = 'RECEIVER', required int orderId}) async {
+  Future<Map<String, dynamic>?> saveDestination({
+    String type = 'RECEIVER',
+    required int orderId,
+  }) async {
     if (!isFormValid.value) return null;
     isLoading.value = true;
     EasyLoading.show(status: 'Saving...');
@@ -73,7 +76,9 @@ class SenderController extends GetxController {
     if (!destSuccess) {
       isLoading.value = false;
       EasyLoading.dismiss();
-      final msg = (destRes['body'] as Map<String, dynamic>?)?['message'] ?? 'Failed to create destination';
+      final msg =
+          (destRes['body'] as Map<String, dynamic>?)?['message'] ??
+          'Failed to create destination';
       EasyLoading.showError(msg.toString());
       return null;
     }
@@ -81,14 +86,15 @@ class SenderController extends GetxController {
     // Extract destination ID from nested response
     final destData = destRes['body'] as Map<String, dynamic>? ?? {};
     final dataWrapper = destData['data'] as Map<String, dynamic>? ?? {};
-    
+
     // Try to extract ID from either 'result' or nested 'data'
-    var actualDestData = (dataWrapper['result'] as Map<String, dynamic>?) ?? 
-                         (dataWrapper['data'] as Map<String, dynamic>?) ?? 
-                         {};
-    
+    var actualDestData =
+        (dataWrapper['result'] as Map<String, dynamic>?) ??
+        (dataWrapper['data'] as Map<String, dynamic>?) ??
+        {};
+
     debugPrint('✅ DESTINATION CREATED: ${jsonEncode(actualDestData)}');
-    
+
     final destinationId = actualDestData['id'] as int? ?? 0;
     debugPrint('📋 Destination ID: $destinationId');
 
@@ -113,14 +119,19 @@ class SenderController extends GetxController {
     if (!patchSuccess) {
       isLoading.value = false;
       EasyLoading.dismiss();
-      final msg = (patchRes['body'] as Map<String, dynamic>?)?['message'] ?? 'Failed to link destination';
+      // final msg = (patchRes['body'] as Map<String, dynamic>?)?['message'] ?? 'Failed to link destination';
+      final msg =
+          (patchRes['body'] as Map<String, dynamic>?)?['error']?['message'] ??
+          (patchRes['body'] as Map<String, dynamic>?)?['message'] ??
+          'Failed to link destination';
+      // final msg = "Go to Sleep with master oil";
       EasyLoading.showError(msg.toString());
       return null;
     }
 
     final patchData = patchRes['body'] as Map<String, dynamic>? ?? {};
     debugPrint('✅ DESTINATION LINKED: ${jsonEncode(patchData)}');
-    
+
     final patchTotalCost = patchData['totalCost'] as num? ?? 0;
     totalCost.value = patchTotalCost.toDouble();
     debugPrint('💰 Total Cost Updated: \$${totalCost.value}');

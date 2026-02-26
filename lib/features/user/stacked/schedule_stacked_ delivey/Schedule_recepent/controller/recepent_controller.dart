@@ -146,9 +146,12 @@ class RecipientController extends GetxController {
     if (!patchSuccess) {
       isLoading.value = false;
       EasyLoading.dismiss();
+      // final msg = (patchRes['body'] as Map<String, dynamic>?)?['message'] ?? 'Failed to link destination';
       final msg =
+          (patchRes['body'] as Map<String, dynamic>?)?['error']?['message'] ??
           (patchRes['body'] as Map<String, dynamic>?)?['message'] ??
           'Failed to link destination';
+      // final msg = "Go to Sleep with master oil";
       EasyLoading.showError(msg.toString());
       return null;
     }
