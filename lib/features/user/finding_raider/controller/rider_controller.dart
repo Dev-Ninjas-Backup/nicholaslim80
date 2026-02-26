@@ -89,8 +89,10 @@ class RiderController extends GetxController {
   }
 
   // --- নতুন ডাটা ফেচিং মেথড ---
-  Future<void> fetchOrderData(int id) async {
-    isLoading.value = true;
+  Future<void> fetchOrderData(int id, {bool showLoader = true}) async {
+    if (showLoader) {
+      isLoading.value = true;
+    }
     debugPrint('🚀 fetchOrderData started for ID: $id');
 
     try {
@@ -192,7 +194,9 @@ class RiderController extends GetxController {
     } catch (e) {
       debugPrint('❌ Controller Error: $e');
     } finally {
-      isLoading.value = false;
+      if (showLoader) {
+        isLoading.value = false;
+      }
     }
   }
 
@@ -224,7 +228,7 @@ class RiderController extends GetxController {
 
     _pollTimer = Timer.periodic(Duration(seconds: 3), (timer) async {
       debugPrint('🔄 Polling order $id...');
-      await fetchOrderData(id);
+      await fetchOrderData(id, showLoader: false);
 
       if (!assignRiderNull.value) {
         debugPrint('✅ Rider assigned! Stopping poll.');
