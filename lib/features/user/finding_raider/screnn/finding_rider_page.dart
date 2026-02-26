@@ -42,9 +42,8 @@ class FindingRiderPage extends StatelessWidget {
       );
 
       if (id != null && id != 0) {
-        debugPrint('📡 Calling fetchOrderData with orderId: $id');
-        controller.fetchOrderData(id);
-        // শুরু করুন রাইডার এসাইনমেন্ট পোলিং
+        debugPrint('📡 Starting rider assignment polling for orderId: $id');
+        // শুরু করুন রাইডার এসাইনমেন্ট পোলিং (এখানেই initial fetch হবে)
         _startPollingAndHandleRiderAssignment();
       } else {
         debugPrint('⚠️ Error: Order ID is null or zero. API not called.');
@@ -72,140 +71,138 @@ class FindingRiderPage extends StatelessWidget {
         children: [
           const SizedBox.expand(child: GoogleMapWidget()),
 
-          Obx(
-            () => controller.isLoading.value
-                ? const Center(
-                    child: CircularProgressIndicator(color: Colors.amber),
-                  )
-                : DraggableScrollableSheet(
-                    initialChildSize: 0.4,
-                    minChildSize: 0.3,
-                    maxChildSize: 0.7,
-                    builder: (_, scrollController) {
-                      return Container(
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.vertical(
-                            top: Radius.circular(20),
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black26,
-                              blurRadius: 10,
-                              spreadRadius: 2,
+          DraggableScrollableSheet(
+            initialChildSize: 0.4,
+            minChildSize: 0.3,
+            maxChildSize: 0.7,
+            builder: (_, scrollController) {
+              return Container(
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.vertical(
+                    top: Radius.circular(20),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 10,
+                      spreadRadius: 2,
+                    ),
+                  ],
+                ),
+                child: SingleChildScrollView(
+                  controller: scrollController,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        dragHandle(),
+                        const SizedBox(height: 16),
+                        Center(
+                          child: Text(
+                            'Finding your rider',
+                            style: getTextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600,
                             ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            stepBar(active: true),
+                            stepBar(active: false),
                           ],
                         ),
-                        child: SingleChildScrollView(
-                          controller: scrollController,
-                          child: Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                        const SizedBox(height: 10),
+                        Center(
+                          child: Obx(
+                            () => Text(
+                              'Order ${orderController.orderNumber.value}',
+                              style: getTextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+
+                        OrderLocationInfoWidget(
+                          pickupStops: controller.pickupStops,
+                          dropStops: controller.dropStops,
+                        ),
+
+                        const SizedBox(height: 20),
+                        buildFareOptions(),
+                        const SizedBox(height: 20),
+                        Center(child: addAmountButton(context)),
+                        const SizedBox(height: 20),
+
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Button(
+                            buttonText: 'Priority order',
+                            backgroundColor: Colors.amber,
+                            textColor: Colors.black,
+                            onPressed: controller.priorityOrder,
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+
+                        Center(
+                          child: FilledButton(
+                            onPressed: () => showCancelOrderDialog(context),
+                            style: FilledButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 8,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(6),
+                                side: const BorderSide(
+                                  color: Colors.red,
+                                  width: 1.5,
+                                ),
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
                               children: [
-                                dragHandle(),
-                                const SizedBox(height: 16),
-                                Center(
-                                  child: Text(
-                                    'Finding your rider',
-                                    style: getTextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w600,
-                                    ),
+                                Text(
+                                  'Cancel order',
+                                  style: getTextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.red,
                                   ),
                                 ),
-                                const SizedBox(height: 20),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    stepBar(active: true),
-                                    stepBar(active: false),
-                                  ],
-                                ),
-                                const SizedBox(height: 10),
-                                Center(
-                                  child: Obx(
-                                    () => Text(
-                                      'Order ${orderController.orderNumber.value}',
-                                      style: getTextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 20),
-
-                                OrderLocationInfoWidget(
-                                  pickupStops: controller.pickupStops,
-                                  dropStops: controller.dropStops,
-                                ),
-
-                                const SizedBox(height: 20),
-                                buildFareOptions(),
-                                const SizedBox(height: 20),
-                                Center(child: addAmountButton(context)),
-                                const SizedBox(height: 20),
-
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                  ),
-                                  child: Button(
-                                    buttonText: 'Priority order',
-                                    backgroundColor: Colors.amber,
-                                    textColor: Colors.black,
-                                    onPressed: controller.priorityOrder,
-                                  ),
-                                ),
-                                const SizedBox(height: 24),
-
-                                Center(
-                                  child: FilledButton(
-                                    onPressed: () =>
-                                        showCancelOrderDialog(context),
-                                    style: FilledButton.styleFrom(
-                                      backgroundColor: Colors.white,
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 16,
-                                        vertical: 8,
-                                      ),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(6),
-                                        side: const BorderSide(
-                                          color: Colors.red,
-                                          width: 1.5,
-                                        ),
-                                      ),
-                                    ),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                          'Cancel order',
-                                          style: getTextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w500,
-                                            color: Colors.red,
-                                          ),
-                                        ),
-                                        const SizedBox(width: 3),
-                                        Image.asset(
-                                          IconPath.cancel,
-                                          height: 14,
-                                          width: 14,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
+                                const SizedBox(width: 3),
+                                Image.asset(
+                                  IconPath.cancel,
+                                  height: 14,
+                                  width: 14,
                                 ),
                               ],
                             ),
                           ),
                         ),
-                      );
-                    },
+                      ],
+                    ),
                   ),
+                ),
+              );
+            },
+          ),
+          Obx(
+            () => controller.isLoading.value
+                ? const Center(
+                    child: CircularProgressIndicator(color: Colors.amber),
+                  )
+                : const SizedBox.shrink(),
           ),
         ],
       ),

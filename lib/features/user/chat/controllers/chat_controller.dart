@@ -51,7 +51,7 @@ class UserMessageController extends GetxController {
     //  final currentUserId =
     //   (await SharedPreferencesHelper.getUserId())?.toString().trim();
 
-    // await loadChatHistory();
+    await loadChatHistory();
     await initSocket();
 
     ever(messages, (_) => _scrollToBottom());
@@ -62,7 +62,7 @@ class UserMessageController extends GetxController {
     debugPrint("Initializing socket connection...");
 
     final token = await SharedPreferencesHelper.getAccessToken();
-    final userId = (await SharedPreferencesHelper.getUserId())?.toString();
+    final userId = await SharedPreferencesHelper.getOrExtractUserId();
     debugPrint("Current---- UserId: $userId");
 
     if (token == null) {
@@ -107,50 +107,50 @@ class UserMessageController extends GetxController {
     textController.clear();
   }
 
-  // ─── Load Chat History ─────────────────────────────────────────────
+  //  ─── Load Chat History ─────────────────────────────────────────────
 
-  // Future<void> loadChatHistory() async {
-  //   if (receiverId == null || orderId == null) return;
+  Future<void> loadChatHistory() async {
+    if (receiverId == null || orderId == null) return;
 
-  //   try {
-  //     // final currentUserId = (await SharedPreferencesHelper.getUserId())
-  //     //     ?.toString()
-  //     //     .trim();
-  //     // debugPrint("currentUserId: $currentUserId");
-  //     // final currentUserId =
-  //     //     (await SharedPreferencesHelper.getUserId())?.toString().trim() ??
-  //     //     "2";
+    try {
+      // final currentUserId = (await SharedPreferencesHelper.getUserId())
+      //     ?.toString()
+      //     .trim();
+      // debugPrint("currentUserId: $currentUserId");
+      final currentUserId = (await SharedPreferencesHelper.getUserId())
+          ?.toString()
+          .trim();
 
-  //     final List<dynamic>? rawMessages = await ChatApiService.getChatHistory(
-  //       receiverId: receiverId!,
-  //       orderId: orderId!,
-  //     );
+      final List<dynamic>? rawMessages = await ChatApiService.getChatHistory(
+        receiverId: receiverId!,
+        orderId: orderId!,
+      );
 
-  //     if (rawMessages == null || rawMessages.isEmpty) return;
+      if (rawMessages == null || rawMessages.isEmpty) return;
 
-  //     final List<MessageModel> history = rawMessages.map((msg) {
-  //       final senderIdDynamic = msg['senderId'] ?? msg['sender']?['id'];
-  //       final senderId = senderIdDynamic?.toString().trim() ?? '';
+      final List<MessageModel> history = rawMessages.map((msg) {
+        final senderIdDynamic = msg['senderId'] ?? msg['sender']?['id'];
+        final senderId = senderIdDynamic?.toString().trim() ?? '';
 
-  //       final isMe = senderId == currentUserId;
+        final isMe = senderId == currentUserId;
 
-  //       final createdAt = msg['createdAt'] ?? msg['created_at'];
+        final createdAt = msg['createdAt'] ?? msg['created_at'];
 
-  //       return MessageModel(
-  //         text: msg['content'] ?? '',
-  //         isMe: isMe,
-  //         time: createdAt != null ? _formatTime(createdAt.toString()) : _now(),
-  //       );
-  //     }).toList();
+        return MessageModel(
+          text: msg['content'] ?? '',
+          isMe: isMe,
+          time: createdAt != null ? _formatTime(createdAt.toString()) : _now(),
+        );
+      }).toList();
 
-  //     messages.assignAll(history);
+      messages.assignAll(history);
 
-  //     debugPrint("📜 Loaded ${history.length} messages from history");
-  //     debugPrint("ownId: ${currentUserId}");
-  //   } catch (e) {
-  //     debugPrint("loadChatHistory error: $e");
-  //   }
-  // }
+      debugPrint("📜 Loaded ${history.length} messages from history");
+      debugPrint("ownId: ${currentUserId}");
+    } catch (e) {
+      debugPrint("loadChatHistory error: $e");
+    }
+  }
 
   void _scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {

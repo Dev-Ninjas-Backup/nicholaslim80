@@ -73,6 +73,15 @@ class LoginSignupController extends GetxController {
         // Save in access token
         await SharedPreferencesHelper.saveToken(token);
 
+        final userIdFromBody = _extractUserIdFromLoginBody(result['body']);
+        final userId =
+            userIdFromBody ??
+            SharedPreferencesHelper.extractUserIdFromToken(token);
+        if (userId != null && userId.isNotEmpty) {
+          await SharedPreferencesHelper.saveUserId(userId);
+          debugPrint('💾 Saved User ID: $userId');
+        }
+
         // Optional: Save refresh token
         if (refreshToken != null) {
           await SharedPreferencesHelper.saveRefreshToken(refreshToken);
@@ -179,5 +188,40 @@ class LoginSignupController extends GetxController {
     passwordController.dispose();
     confirmPasswordController.dispose();
     super.onClose();
+  }
+
+  String? _extractUserIdFromLoginBody(dynamic body) {
+    if (body is! Map) return null;
+
+    final root = Map<String, dynamic>.from(body);
+    final directCandidates = [
+      root['userId'],
+      root['user_id'],
+      root['id'],
+    ];
+    for (final candidate in directCandidates) {
+      final value = candidate?.toString().trim();
+      if (value != null && value.isNotEmpty) return value;
+    }
+
+    final user = root['user'];
+    if (user is Map) {
+      final nestedCandidates = [user['id'], user['userId'], user['user_id']];
+      for (final candidate in nestedCandidates) {
+        final value = candidate?.toString().trim();
+        if (value != null && value.isNotEmpty) return value;
+      }
+    }
+
+    final data = root['data'];
+    if (data is Map) {
+      final nestedCandidates = [data['id'], data['userId'], data['user_id']];
+      for (final candidate in nestedCandidates) {
+        final value = candidate?.toString().trim();
+        if (value != null && value.isNotEmpty) return value;
+      }
+    }
+
+    return null;
   }
 }
