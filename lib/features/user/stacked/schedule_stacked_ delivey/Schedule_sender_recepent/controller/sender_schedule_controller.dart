@@ -11,7 +11,7 @@ class SenderScheduleController extends GetxController {
   final addressController = TextEditingController();
   final floorController = TextEditingController();
   final nameController = TextEditingController();
-  final numberController = TextEditingController();
+  final numberController = TextEditingController(text: "+65");
   final noteController = TextEditingController();
 
   final isFormValid = false.obs;
@@ -24,7 +24,7 @@ class SenderScheduleController extends GetxController {
     super.onInit();
     postalCodeController.addListener(() {
       onPostalCodeChanged(postalCodeController.text);
-      validateForm(); // সাথে ভ্যালিডেশনও চেক করবে
+      validateForm();
     });
     addressController.addListener(validateForm);
     floorController.addListener(validateForm);
@@ -43,7 +43,6 @@ class SenderScheduleController extends GetxController {
   }
 
   void onPostalCodeChanged(String value) async {
-    // সাধারণত ৫ বা ৬ ডিজিট হলে রিকোয়েস্ট পাঠানো ভালো (আপনার দেশের ফরম্যাট অনুযায়ী)
     if (value.length >= 5) {
       try {
         final String url =
@@ -56,7 +55,6 @@ class SenderScheduleController extends GetxController {
           if (data['status'] == 'OK') {
             String formattedAddress = data['results'][0]['formatted_address'];
 
-            // শুধু তখনই আপডেট করবে যদি এড্রেস ফিল্ড আগে থেকে এক না থাকে
             if (addressController.text != formattedAddress) {
               addressController.text = formattedAddress;
             }

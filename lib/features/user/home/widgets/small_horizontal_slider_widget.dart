@@ -1,12 +1,8 @@
-import 'dart:convert';
-
-import 'package:ZipBee/core/api_end_point/api_end_point.dart';
 import 'package:ZipBee/core/common/styles/global_text_style.dart';
-import 'package:ZipBee/core/shared_prefference_service/shared_pref.dart';
 import 'package:ZipBee/core/utils/constants/icon_path.dart';
+import 'package:ZipBee/features/user/home/service/ads_service.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 
 import 'ad_dialogue.dart';
 
@@ -15,34 +11,13 @@ class SmallHorizontalSlider extends StatelessWidget {
 
   final double width;
 
-  /// ---------------- API ----------------
-  Future<List<Map<String, dynamic>>> fetchAds() async {
-    final token = await SharedPreferencesHelper.getAccessToken();
-
-    final response = await http.get(
-      Uri.parse(ApiEndPoint.homePageAd),
-      headers: {
-        "Authorization": "Bearer $token",
-        "Content-Type": "application/json",
-      },
-    );
-
-    if (response.statusCode == 200) {
-      final decoded = json.decode(response.body);
-      final List list = decoded['data']['data'];
-      return List<Map<String, dynamic>>.from(list);
-    } else {
-      throw Exception("Failed to load ads");
-    }
-  }
-
   /// ---------------- UI ----------------
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: 125,
       child: FutureBuilder<List<Map<String, dynamic>>>(
-        future: fetchAds(),
+        future: AdsService.fetchAds(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());

@@ -11,7 +11,7 @@ class RecipientController extends GetxController {
   final addressController = TextEditingController();
   final floorController = TextEditingController();
   final nameController = TextEditingController();
-  final numberController = TextEditingController();
+  final numberController = TextEditingController(text: "+65");
   final noteController = TextEditingController();
 
   final isFormValid = false.obs;

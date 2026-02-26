@@ -15,7 +15,7 @@ class GoogleMapWidget extends StatelessWidget {
       future: initializeMap(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return  Center(child: CircularProgressIndicator());
+          return Center(child: CircularProgressIndicator());
         }
 
         if (snapshot.hasError) {
@@ -24,7 +24,7 @@ class GoogleMapWidget extends StatelessWidget {
 
         final data = snapshot.data;
         if (data == null) {
-          return  Center(child: CircularProgressIndicator());
+          return Center(child: CircularProgressIndicator());
         }
 
         return GoogleMapContent(data: data);
@@ -39,7 +39,7 @@ class GoogleMapWidget extends StatelessWidget {
         : Get.put(RiderController());
 
     final zoneCenter = await ServiceZoneService.getFirstZoneCenter();
-    final initialFocus = zoneCenter ?? const LatLng(23.8022478, 90.3799354);
+    final initialFocus = zoneCenter ?? const LatLng(1.2805125, 103.8425995);
 
     LatLng? currentPosition;
     if (await location.serviceEnabled() &&
@@ -78,7 +78,7 @@ class MapData {
 class GoogleMapContent extends StatefulWidget {
   final MapData data;
 
-   GoogleMapContent({required this.data});
+  GoogleMapContent({required this.data});
 
   @override
   State<GoogleMapContent> createState() => GoogleMapContentState();
@@ -105,7 +105,8 @@ class GoogleMapContentState extends State<GoogleMapContent> {
 
     if (await widget.data.location.hasPermission() == PermissionStatus.denied) {
       if (await widget.data.location.requestPermission() !=
-          PermissionStatus.granted) return;
+          PermissionStatus.granted)
+        return;
     }
 
     locSub = widget.data.location.onLocationChanged.listen((loc) {
@@ -155,7 +156,7 @@ class GoogleMapContentState extends State<GoogleMapContent> {
       onTap: (latLng) {
         setState(() {
           selectedMarker = Marker(
-            markerId:  MarkerId('selected'),
+            markerId: MarkerId('selected'),
             position: latLng,
           );
         });
@@ -165,9 +166,7 @@ class GoogleMapContentState extends State<GoogleMapContent> {
           latLng.longitude,
         );
 
-        debugPrint(
-          '📍 Pickup set: ${latLng.latitude}, ${latLng.longitude}',
-        );
+        debugPrint('📍 Pickup set: ${latLng.latitude}, ${latLng.longitude}');
       },
     );
   }

@@ -2,6 +2,7 @@ import 'package:ZipBee/core/common/styles/global_text_style.dart';
 import 'package:ZipBee/core/utils/constants/app_colors.dart';
 import 'package:ZipBee/core/utils/constants/icon_path.dart';
 import 'package:ZipBee/features/user/home/controller/home_controller.dart';
+import 'package:ZipBee/features/user/home/service/ads_service.dart';
 import 'package:ZipBee/features/user/home/widgets/drawer.dart';
 import 'package:ZipBee/features/user/home/widgets/small_horizontal_slider_widget.dart';
 import 'package:ZipBee/features/user/home/widgets/vehicle_cards_widget.dart';
@@ -220,10 +221,22 @@ class HomeScreen extends StatelessWidget {
             SizedBox(height: 8),
             VehicleCards(ctrl: ctrl),
 
-            SizedBox(height: 30),
-            SmallHorizontalSlider(width: width),
-
-            SizedBox(height: 30),
+            SizedBox(height: 15),
+            FutureBuilder<List<Map<String, dynamic>>>(
+              future: AdsService.fetchAds(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+                  return Column(
+                    children: [
+                      SmallHorizontalSlider(width: width),
+                      const SizedBox(height: 10),
+                    ],
+                  );
+                } else {
+                  return const SizedBox.shrink();
+                }
+              },
+            ),
           ],
         ),
       ),
