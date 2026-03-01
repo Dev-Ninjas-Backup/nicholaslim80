@@ -6,7 +6,6 @@ import 'package:ZipBee/core/common/styles/global_text_style.dart';
 import 'package:ZipBee/core/utils/constants/app_colors.dart';
 
 class AddPlaceScreen extends StatelessWidget {
-  // কন্ট্রোলারটিকে মেমোরিতে ইনজেক্ট করা
   // final AddPlaceController controller = Get.put(AddPlaceController());
   final controller = Get.put(AddPlaceController());
 
@@ -26,7 +25,6 @@ class AddPlaceScreen extends StatelessWidget {
         child: Column(
           children: [
             TextField(
-              // searchAddress কল করা হচ্ছে
               onChanged: (value) => controller.searchAddress(value),
               decoration: InputDecoration(
                 hintText: 'Search an address',
@@ -42,11 +40,10 @@ class AddPlaceScreen extends StatelessWidget {
             SizedBox(height: 10),
             Expanded(
               child: Obx(() {
-                // isLoading এবং suggestions এখন controller থেকে আসবে
                 if (controller.isLoading.value) {
                   return Center(child: CircularProgressIndicator());
                 }
-                
+
                 if (controller.suggestions.isEmpty) {
                   return Center(child: Text("No results found"));
                 }
@@ -56,14 +53,14 @@ class AddPlaceScreen extends StatelessWidget {
                   itemBuilder: (context, index) {
                     final suggestion = controller.suggestions[index];
                     return InkWell(
-                      // onLocationSelected কল করা হচ্ছে
                       onTap: () => controller.onLocationSelected(suggestion),
                       child: Card(
                         color: Color(0XFFFFFDF5),
                         margin: EdgeInsets.symmetric(vertical: 6),
                         child: ListTile(
                           title: Text(
-                            suggestion['structured_formatting']?['main_text'] ?? "Unknown",
+                            suggestion['structured_formatting']?['main_text'] ??
+                                "Unknown",
                             style: getTextStyle(
                               fontWeight: FontWeight.w600,
                               fontSize: 16,
@@ -80,7 +77,7 @@ class AddPlaceScreen extends StatelessWidget {
                 );
               }),
             ),
-            // Use current location পার্ট...
+            // Use current location
           ],
         ),
       ),
