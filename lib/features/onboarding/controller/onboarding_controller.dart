@@ -37,7 +37,7 @@ class OnboardingController extends GetxController {
 
   // Function to start automatic sliding
   void _startAutoSlide() {
-    _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
+    _timer = Timer.periodic(const Duration(milliseconds: 1500), (timer) {
       if (currentIndex.value < onboardingData.length - 1) {
         // If not the last page, go to the next page
         currentIndex.value++;
