@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:ZipBee/core/api_end_point/api_end_point.dart';
 import 'package:ZipBee/features/user/home/controller/home_controller.dart';
+import 'package:ZipBee/features/user/home/controller/profile_controller.dart';
 import 'package:ZipBee/features/user/user_support/support_chat_screen/model/support_chat_model.dart';
 import 'package:ZipBee/core/shared_prefference_service/shared_pref.dart';
 import 'package:get/get.dart';
@@ -22,7 +23,10 @@ class ChatController extends GetxController {
   final scrollController = ScrollController();
   final isUploading = false.obs;
   final HomeController ctrl = Get.put(HomeController());
-  String get userName => ctrl.userName.value;
+  final UserProfileController profileCtrl = Get.put(UserProfileController());
+  String get userName => profileCtrl.userName.value.split(',').length > 1
+      ? profileCtrl.userName.value.split(',')[1].trim()
+      : profileCtrl.userName.value;
 
   @override
   void onInit() {

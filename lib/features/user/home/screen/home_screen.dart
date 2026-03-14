@@ -1,11 +1,14 @@
 import 'package:ZipBee/core/common/styles/global_text_style.dart';
 import 'package:ZipBee/core/utils/constants/app_colors.dart';
 import 'package:ZipBee/core/utils/constants/icon_path.dart';
+import 'package:ZipBee/features/user/home/controller/auth_controller.dart';
 import 'package:ZipBee/features/user/home/controller/home_controller.dart';
+import 'package:ZipBee/features/user/home/controller/popup_controller.dart';
 import 'package:ZipBee/features/user/home/service/ads_service.dart';
 import 'package:ZipBee/features/user/home/widgets/drawer.dart';
 import 'package:ZipBee/features/user/home/widgets/small_horizontal_slider_widget.dart';
 import 'package:ZipBee/features/user/home/widgets/vehicle_cards_widget.dart';
+import 'package:ZipBee/features/user/home/controller/profile_controller.dart';
 import 'package:ZipBee/features/user/wallet/loyalty_and_rewards/screen/loyalty_and_rewards_screen.dart';
 import 'package:ZipBee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
@@ -16,25 +19,29 @@ import '../see_all_controller/see_all_controller.dart';
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final HomeController ctrl = Get.put(HomeController());
+  final HomeController ctrl = Get.put(HomeController()); 
+  final PopupController popupCtrl = Get.put(PopupController());
+  final AuthController authCtrl = Get.put(AuthController());
+  final UserProfileController profileCtrl = Get.put(UserProfileController());
+  
 
   @override
   Widget build(BuildContext context) {
-    print("jsdhdff ${ctrl.availablePoints.value}");
+    print("Available Points: ${profileCtrl.availablePoints.value}");
     const padding = 16.0;
     final media = MediaQuery.of(context);
     final width = media.size.width;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ctrl.checkAndShowPopup(context);
+      popupCtrl.checkAndShowPopup(context);
     });
 
     return Scaffold(
       key: _scaffoldKey,
 
-      backgroundColor: AppColors.backgroungColor,
+      backgroundColor: AppColors.white,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: AppColors.backgroungColor,
+        backgroundColor: AppColors.primaryButtonColor,
         centerTitle: false,
 
         leading: IconButton(
@@ -46,7 +53,7 @@ class HomeScreen extends StatelessWidget {
 
         title: Obx(
           () => Text(
-            ctrl.userName.value,
+            profileCtrl.userName.value,
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w700,
@@ -66,38 +73,6 @@ class HomeScreen extends StatelessWidget {
             },
           ),
         ],
-
-        bottom: PreferredSize(
-          preferredSize: Size.fromHeight(30),
-          child: Padding(
-            padding: EdgeInsets.only(bottom: 8.0),
-            child: Center(
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Image.asset(
-                    IconPath.parcel,
-                    color: Colors.blue,
-                    height: 26,
-                    width: 26,
-                  ),
-                  SizedBox(width: 6),
-
-                  Obx(
-                    () => Text(
-                      ctrl.parcelStatusText,
-                      style: getTextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.blue,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
       ),
 
       drawer: drawer(ctrl),
@@ -117,7 +92,7 @@ class HomeScreen extends StatelessWidget {
                       child: borderedInfoCard(
                         title: 'Wallet Balance',
                         valueBuilder: () =>
-                            '\$${ctrl.walletBalance.value.toStringAsFixed(2)}',
+                            '\$${profileCtrl.walletBalance.value.toStringAsFixed(2)}',
                         iconPath: IconPath.wallet,
                       ),
                     ),
@@ -128,7 +103,7 @@ class HomeScreen extends StatelessWidget {
                       onTap: () => Get.to(LoyaltyAndRewardsScreen()),
                       child: borderedInfoCard(
                         title: 'Available Points',
-                        valueBuilder: () => '${ctrl.availablePoints.value}',
+                        valueBuilder: () => '${profileCtrl.availablePoints.value}',
                         iconPath: IconPath.points,
                       ),
                     ),
@@ -145,52 +120,44 @@ class HomeScreen extends StatelessWidget {
             SizedBox(height: 14),
             Row(
               children: [
+                // 1. Express Card
                 Expanded(
                   child: Obx(
-                    () => serviceCardCompact(
+                    () => buildServiceOptionCard(
                       title: 'Express',
-                      subtitle:
-                          'Courier takes only your package and delivers instantly',
-                      iconPath: IconPath.parcel,
+                      subtitle: 'Delivery within 1 hour of collection',
                       selected: ctrl.deliveryType.value == 'express',
-                      onTap: () {
-                        ctrl.selectDeliveryType('express');
-                      },
+                      onTap: () => ctrl.selectDeliveryType('express'),
                     ),
                   ),
                 ),
+                const SizedBox(width: 8),
 
-                SizedBox(width: 16),
+                // 2. Standard Card
                 Expanded(
                   child: Obx(
-                    () => serviceCardCompact(
+                    () => buildServiceOptionCard(
                       title: 'Standard',
-                      subtitle:
-                          'Choose available time with flexible delivery charges',
-                      iconPath: IconPath.select,
+                      subtitle: 'Delivery within 3 hours of collection',
                       selected: ctrl.deliveryType.value == 'standard',
-                      onTap: () {
-                        ctrl.selectDeliveryType('standard');
-                      },
+                      onTap: () => ctrl.selectDeliveryType('standard'),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+
+                // 3. Saver Card
+                Expanded(
+                  child: Obx(
+                    () => buildServiceOptionCard(
+                      title: 'Saver',
+                      subtitle: 'Delivery within 6 hours of collection',
+                      selected: ctrl.deliveryType.value == 'saver',
+                      onTap: () => ctrl.selectDeliveryType('saver'),
                     ),
                   ),
                 ),
               ],
-            ),
-
-            SizedBox(height: 14),
-
-            Obx(
-              () => serviceCardStacked(
-                title: 'Stacked',
-                subtitle:
-                    'Courier takes all bundle packages and delivers together',
-                iconPath: IconPath.stacked,
-                selected: ctrl.deliveryType.value == 'stacked',
-                onTap: () {
-                  ctrl.selectDeliveryType('stacked');
-                },
-              ),
             ),
 
             SizedBox(height: 22),
@@ -291,103 +258,39 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget serviceCardCompact({
+  Widget buildServiceOptionCard({
     required String title,
     required String subtitle,
-    IconData? icon,
-    String? iconPath,
     required bool selected,
     required VoidCallback onTap,
-    double iconSize = 24,
   }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 18, horizontal: 14),
+        padding: EdgeInsets.symmetric(vertical: 12, horizontal: 8),
         decoration: BoxDecoration(
           color: selected
-              // ignore: deprecated_member_use
-              ? AppColors.primaryButtonColor.withOpacity(0.15)
-              : AppColors.onboardingIndicatorActive,
+              ? Colors.orange.shade100
+              : Color(0xFFFFEEBB), 
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: selected
-                ? AppColors.primaryButtonColor
-                // ignore: deprecated_member_use
-                : AppColors.subtitleFontColor.withOpacity(0.4),
+            color: selected ? Colors.orange : Colors.transparent,
+            width: 2,
           ),
         ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (iconPath != null)
-              Image.asset(iconPath, height: iconSize, width: iconSize)
-            else if (icon != null)
-              SizedBox(height: 8),
             Text(
               title,
-              style: getTextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+              style: getTextStyle(fontSize: 20, fontWeight: FontWeight.w700),
             ),
-            SizedBox(height: 6),
+            SizedBox(height: 8),
             Text(
               subtitle,
-              style: getTextStyle(fontSize: 12, fontWeight: FontWeight.w400),
-              textAlign: TextAlign.start,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget serviceCardStacked({
-    required String title,
-    required String subtitle,
-    IconData? icon,
-    String? iconPath,
-    required bool selected,
-    required VoidCallback onTap,
-    double iconSize = 24,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.all(12),
-        margin: EdgeInsets.symmetric(vertical: 10),
-        decoration: BoxDecoration(
-          color: selected
-              // ignore: deprecated_member_use
-              ? AppColors.primaryButtonColor.withOpacity(0.15)
-              : AppColors.onboardingIndicatorActive,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: selected
-                ? AppColors.primaryButtonColor
-                : AppColors.onboardingIndicatorActive,
-          ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (iconPath != null)
-              Image.asset(iconPath, height: iconSize, width: iconSize)
-            else if (icon != null)
-              Icon(icon, size: iconSize),
-
-            SizedBox(height: 12),
-
-            Text(
-              title,
-              style: getTextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-            ),
-            SizedBox(height: 6),
-            Text(
-              subtitle,
-              style: getTextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w400,
-                color: AppColors.primaryFontColor,
-              ),
+              style: getTextStyle(fontSize: 13, fontWeight: FontWeight.w400),
+              textAlign: TextAlign.center,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),
