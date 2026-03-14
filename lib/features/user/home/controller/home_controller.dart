@@ -13,7 +13,7 @@ class HomeController extends GetxController {
   final authCtrl = Get.put(AuthController());
 
   // UI States
-  final deliveryType = 'standard'.obs;
+  final deliveryType = ''.obs;
   final selectedVehicleId = RxnString();
   var drawerItem = <DrawerModel>[].obs;
 

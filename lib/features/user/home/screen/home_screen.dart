@@ -7,27 +7,25 @@ import 'package:ZipBee/features/user/home/controller/popup_controller.dart';
 import 'package:ZipBee/features/user/home/service/ads_service.dart';
 import 'package:ZipBee/features/user/home/widgets/drawer.dart';
 import 'package:ZipBee/features/user/home/widgets/small_horizontal_slider_widget.dart';
-import 'package:ZipBee/features/user/home/widgets/vehicle_cards_widget.dart';
+// import 'package:ZipBee/features/user/home/widgets/vehicle_cards_widget.dart';
 import 'package:ZipBee/features/user/home/controller/profile_controller.dart';
 import 'package:ZipBee/features/user/wallet/loyalty_and_rewards/screen/loyalty_and_rewards_screen.dart';
 import 'package:ZipBee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../see_all_controller/see_all_controller.dart';
+// import '../see_all_controller/see_all_controller.dart';
 
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final HomeController ctrl = Get.put(HomeController()); 
+  final HomeController ctrl = Get.put(HomeController());
   final PopupController popupCtrl = Get.put(PopupController());
   final AuthController authCtrl = Get.put(AuthController());
   final UserProfileController profileCtrl = Get.put(UserProfileController());
-  
 
   @override
   Widget build(BuildContext context) {
-    print("Available Points: ${profileCtrl.availablePoints.value}");
     const padding = 16.0;
     final media = MediaQuery.of(context);
     final width = media.size.width;
@@ -82,7 +80,8 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 16),
+            const SizedBox(height: 30),
+            // Info Cards (Wallet & Points)
             Obx(
               () => Row(
                 children: [
@@ -97,13 +96,14 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  SizedBox(width: 16),
+                  const SizedBox(width: 16),
                   Expanded(
                     child: GestureDetector(
-                      onTap: () => Get.to(LoyaltyAndRewardsScreen()),
+                      onTap: () => Get.to(const LoyaltyAndRewardsScreen()),
                       child: borderedInfoCard(
                         title: 'Available Points',
-                        valueBuilder: () => '${profileCtrl.availablePoints.value}',
+                        valueBuilder: () =>
+                            '${profileCtrl.availablePoints.value}',
                         iconPath: IconPath.points,
                       ),
                     ),
@@ -112,15 +112,29 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
 
-            SizedBox(height: 30),
-            Text(
-              'Service Options',
-              style: getTextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-            ),
-            SizedBox(height: 14),
+            const SizedBox(height: 50),
             Row(
               children: [
-                // 1. Express Card
+                Text(
+                  'Service Options',
+                  style: getTextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(width: 15),
+                Image.asset(
+                  IconPath.trunk1,
+                  height: 30,
+                  width: 30,
+                )
+              ],
+            ),
+            const SizedBox(height: 14),
+
+            // Service Options Row
+            Row(
+              children: [
                 Expanded(
                   child: Obx(
                     () => buildServiceOptionCard(
@@ -132,8 +146,6 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 8),
-
-                // 2. Standard Card
                 Expanded(
                   child: Obx(
                     () => buildServiceOptionCard(
@@ -145,8 +157,6 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 8),
-
-                // 3. Saver Card
                 Expanded(
                   child: Obx(
                     () => buildServiceOptionCard(
@@ -160,35 +170,34 @@ class HomeScreen extends StatelessWidget {
               ],
             ),
 
-            SizedBox(height: 22),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Available Vehicles',
-                  style: getTextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                TextButton(
-                  onPressed: () {
-                    final seeAllCtrl = Get.isRegistered<SeeAllOrderController>()
-                        ? Get.find<SeeAllOrderController>()
-                        : Get.put(SeeAllOrderController());
+            // SizedBox(height: 22),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //   children: [
+            //     Text(
+            //       'Available Vehicles',
+            //       style: getTextStyle(
+            //         fontSize: 20,
+            //         fontWeight: FontWeight.w600,
+            //       ),
+            //     ),
+            //     TextButton(
+            //       onPressed: () {
+            //         final seeAllCtrl = Get.isRegistered<SeeAllOrderController>()
+            //             ? Get.find<SeeAllOrderController>()
+            //             : Get.put(SeeAllOrderController());
 
-                    // Automatically select first vehicle and create order
-                    seeAllCtrl.createOrderAuto();
-                  },
-                  child: Text('See All'),
-                ),
-              ],
-            ),
+            //         // Automatically select first vehicle and create order
+            //         seeAllCtrl.createOrderAuto();
+            //       },
+            //       child: Text('See All'),
+            //     ),
+            //   ],
+            // ),
 
-            SizedBox(height: 8),
-            VehicleCards(ctrl: ctrl),
-
-            SizedBox(height: 15),
+            // SizedBox(height: 8),
+            // VehicleCards(ctrl: ctrl),
+            SizedBox(height: 35),
             FutureBuilder<List<Map<String, dynamic>>>(
               future: AdsService.fetchAds(),
               builder: (context, snapshot) {
@@ -269,9 +278,7 @@ class HomeScreen extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 12, horizontal: 8),
         decoration: BoxDecoration(
-          color: selected
-              ? Colors.orange.shade100
-              : Color(0xFFFFEEBB), 
+          color: selected ? Colors.orange.shade100 : Color(0xFFFFEEBB),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: selected ? Colors.orange : Colors.transparent,
