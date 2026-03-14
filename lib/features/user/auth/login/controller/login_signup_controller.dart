@@ -9,7 +9,7 @@ class LoginSignupController extends GetxController {
   // ---------------- TEXT CONTROLLERS ----------------
   final nameController = TextEditingController();
   final emailController = TextEditingController();
-  final phoneController = TextEditingController(text: '+65');
+  final phoneController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
 
@@ -21,6 +21,12 @@ class LoginSignupController extends GetxController {
   RxBool isSignUpPasswordVisible = false.obs;
   RxBool isConfirmPasswordVisible = false.obs;
 
+  var selectedCountryCode = '+65'.obs;
+
+  void clearPhone() {
+    phoneController.clear();
+  }
+
   // ---------------- SUBMIT ----------------
   Future<void> submit() async {
     if (isLogin.value) {
@@ -28,6 +34,26 @@ class LoginSignupController extends GetxController {
     } else {
       await signup();
     }
+  }
+
+  @override
+  void onInit() {
+    super.onInit();
+    clearFields();
+  }
+
+  void clearFields() {
+    nameController.clear();
+    emailController.clear();
+    // phoneController.text = '+65'; 
+    passwordController.clear();
+    confirmPasswordController.clear();
+    
+    // UI test reset
+    isLogin.value = true;
+    isLoginPasswordVisible.value = false;
+    isSignUpPasswordVisible.value = false;
+    isConfirmPasswordVisible.value = false;
   }
 
   // ---------------- LOGIN ----------------
@@ -113,6 +139,8 @@ class LoginSignupController extends GetxController {
     final password = passwordController.text.trim();
     final confirm = confirmPasswordController.text.trim();
 
+    final fullPhoneNumber = "${selectedCountryCode.value}${phoneController.text.trim()}";
+
     if (name.isEmpty) {
       EasyLoading.showError("User Name is required");
       return;
@@ -150,7 +178,7 @@ class LoginSignupController extends GetxController {
       final result = await AuthService.signup(
         username: name,
         email: email,
-        phone: phone,
+        phone: fullPhoneNumber,
         password: password,
       );
 
@@ -182,6 +210,7 @@ class LoginSignupController extends GetxController {
 
   @override
   void onClose() {
+    clearFields();  
     nameController.dispose();
     emailController.dispose();
     phoneController.dispose();

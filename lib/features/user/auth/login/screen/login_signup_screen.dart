@@ -2,6 +2,7 @@ import 'package:ZipBee/core/common/styles/global_text_style.dart';
 import 'package:ZipBee/core/utils/constants/app_colors.dart';
 import 'package:ZipBee/core/utils/constants/image_path.dart';
 import 'package:ZipBee/features/user/auth/login/controller/login_signup_controller.dart';
+import 'package:ZipBee/features/user/auth/login/screen/phone_field_widget.dart';
 import 'package:ZipBee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -12,6 +13,8 @@ class LoginSignupScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(LoginSignupController(), permanent: true);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => controller.clearFields());
 
     return Scaffold(
       body: Stack(
@@ -298,11 +301,12 @@ class LoginSignupScreen extends StatelessWidget {
           ),
         ),
         SizedBox(height: 5),
-        buildTextField(
-          controller.phoneController,
-          'Phone Number',
-          keyboardType: TextInputType.phone,
-        ),
+        PhoneField(controller: controller),
+        // buildTextField(
+        //   controller.phoneController,
+        //   'Phone Number',
+        //   keyboardType: TextInputType.phone,
+        // ),
         const SizedBox(height: 10),
 
         Text(

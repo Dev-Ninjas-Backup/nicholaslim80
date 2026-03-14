@@ -209,11 +209,11 @@ class AppRoutes {
       page: () => SupportScreen(),
       transition: Transition.fadeIn,
     ),
-    GetPage(
-      name: expressDelivery1,
-      page: () => ExpressDelivery1(),
-      transition: Transition.fadeIn,
-    ),
+    // GetPage(
+    //   name: expressDelivery1,
+    //   page: () => ExpressDelivery1(),
+    //   transition: Transition.fadeIn,
+    // ),
 
     //user notification
     GetPage(name: userNotification, page: () => UserNotification()),

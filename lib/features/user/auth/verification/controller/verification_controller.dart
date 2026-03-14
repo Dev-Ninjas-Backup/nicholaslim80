@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:ZipBee/features/user/auth/login/auth_service/auth_service.dart';
+import 'package:ZipBee/features/user/auth/login/controller/login_signup_controller.dart';
 import 'package:ZipBee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -114,9 +115,13 @@ class VerificationController extends GetxController {
           );
           EasyLoading.showSuccess('OTP Verified. Please reset your password.');
         } else {
-          // Default to login screen after signup verification as per flow
+          EasyLoading.showSuccess('Signup Successful! Please login.');
+          
+          if (Get.isRegistered<LoginSignupController>()) {
+            Get.find<LoginSignupController>().isLogin.value = true;
+          }
+
           Get.offAllNamed(AppRoutes.loginScreen);
-          EasyLoading.showSuccess('Signup OTP Verified. Please login.');
         }
       } else {
         EasyLoading.showError(result['body']['message'] ?? 'Error');
