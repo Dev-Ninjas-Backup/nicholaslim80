@@ -64,7 +64,7 @@ class HomeController extends GetxController {
 
           Get.toNamed(
             AppRoutes.stackedScreen,
-            arguments: {'orderId': currentOrderId.value},
+            arguments: {'orderId': currentOrderId.value, 'deliveryType': type.toUpperCase()},
           );
         } else {
           EasyLoading.showError(orderResponse.message ?? "Could not create order");

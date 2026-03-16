@@ -19,23 +19,35 @@ class UpdateDetailsController extends GetxController {
 
       // parse cost
       if (data.containsKey('total_cost')) {
-        parsedCost = double.tryParse(data['total_cost']?.toString() ?? '') ?? 0.0;
-      } else if (data.containsKey('order') && data['order'] != null && data['order']['total_cost'] != null) {
-        parsedCost = double.tryParse(data['order']['total_cost']?.toString() ?? '') ?? 0.0;
+        parsedCost =
+            double.tryParse(data['total_cost']?.toString() ?? '') ?? 0.0;
+      } else if (data.containsKey('order') &&
+          data['order'] != null &&
+          data['order']['total_cost'] != null) {
+        parsedCost =
+            double.tryParse(data['order']['total_cost']?.toString() ?? '') ??
+            0.0;
       } else if (body.containsKey('total_cost')) {
-        parsedCost = double.tryParse(body['total_cost']?.toString() ?? '') ?? 0.0;
+        parsedCost =
+            double.tryParse(body['total_cost']?.toString() ?? '') ?? 0.0;
       }
 
       // parse fee
       if (data.containsKey('total_fee')) {
         parsedFee = double.tryParse(data['total_fee']?.toString() ?? '') ?? 0.0;
-      } else if (data.containsKey('order') && data['order'] != null && data['order']['total_fee'] != null) {
-        parsedFee = double.tryParse(data['order']['total_fee']?.toString() ?? '') ?? 0.0;
+      } else if (data.containsKey('order') &&
+          data['order'] != null &&
+          data['order']['total_fee'] != null) {
+        parsedFee =
+            double.tryParse(data['order']['total_fee']?.toString() ?? '') ??
+            0.0;
       } else if (body.containsKey('total_fee')) {
         parsedFee = double.tryParse(body['total_fee']?.toString() ?? '') ?? 0.0;
       }
 
-      debugPrint('UpdateDetailsController parsed total_cost: $parsedCost total_fee: $parsedFee');
+      debugPrint(
+        'UpdateDetailsController parsed total_cost: $parsedCost total_fee: $parsedFee',
+      );
 
       if (parsedFee > 0) {
         totalCost.value = parsedFee;
@@ -57,13 +69,23 @@ class UpdateDetailsController extends GetxController {
       try {
         String? ct;
         String? st;
-        if (data.containsKey('collect_time')) ct = data['collect_time']?.toString();
-        else if (data.containsKey('order') && data['order'] != null && data['order']['collect_time'] != null) ct = data['order']['collect_time']?.toString();
-        else if (body.containsKey('collect_time')) ct = body['collect_time']?.toString();
+        if (data.containsKey('collect_time'))
+          ct = data['collect_time']?.toString();
+        else if (data.containsKey('order') &&
+            data['order'] != null &&
+            data['order']['collect_time'] != null)
+          ct = data['order']['collect_time']?.toString();
+        else if (body.containsKey('collect_time'))
+          ct = body['collect_time']?.toString();
 
-        if (data.containsKey('scheduled_time')) st = data['scheduled_time']?.toString();
-        else if (data.containsKey('order') && data['order'] != null && data['order']['scheduled_time'] != null) st = data['order']['scheduled_time']?.toString();
-        else if (body.containsKey('scheduled_time')) st = body['scheduled_time']?.toString();
+        if (data.containsKey('scheduled_time'))
+          st = data['scheduled_time']?.toString();
+        else if (data.containsKey('order') &&
+            data['order'] != null &&
+            data['order']['scheduled_time'] != null)
+          st = data['order']['scheduled_time']?.toString();
+        else if (body.containsKey('scheduled_time'))
+          st = body['scheduled_time']?.toString();
 
         if (ct != null) {
           final loc = Get.find<StackedLocationController>();
@@ -91,13 +113,16 @@ class UpdateDetailsController extends GetxController {
 
   Future<bool> patchRouteType(int orderId, String routeType) async {
     isLoading.value = true;
-    final res = await OrderService.updateOrderDetails(orderId, {'route_type': routeType});
+    final res = await OrderService.updateOrderDetails(orderId, {
+      'route_type': routeType,
+    });
     isLoading.value = false;
 
     debugPrint('patchRouteType response: ${res['body']}');
     try {
       final bodyMap = res['body'] as Map<String, dynamic>? ?? {};
-      if (bodyMap.containsKey('message')) debugPrint('patchRouteType message: ${bodyMap['message']}');
+      if (bodyMap.containsKey('message'))
+        debugPrint('patchRouteType message: ${bodyMap['message']}');
     } catch (_) {}
 
     final status = res['statusCode'] as int? ?? 500;
@@ -108,9 +133,16 @@ class UpdateDetailsController extends GetxController {
       try {
         final b = res['body'] as Map<String, dynamic>;
         double fee = 0.0;
-        if (b['data'] != null && b['data']['total_fee'] != null) fee = double.tryParse(b['data']['total_fee'].toString()) ?? 0.0;
-        else if (b['data'] != null && b['data']['order'] != null && b['data']['order']['total_fee'] != null) fee = double.tryParse(b['data']['order']['total_fee'].toString()) ?? 0.0;
-        else if (b['total_fee'] != null) fee = double.tryParse(b['total_fee'].toString()) ?? 0.0;
+        if (b['data'] != null && b['data']['total_fee'] != null)
+          fee = double.tryParse(b['data']['total_fee'].toString()) ?? 0.0;
+        else if (b['data'] != null &&
+            b['data']['order'] != null &&
+            b['data']['order']['total_fee'] != null)
+          fee =
+              double.tryParse(b['data']['order']['total_fee'].toString()) ??
+              0.0;
+        else if (b['total_fee'] != null)
+          fee = double.tryParse(b['total_fee'].toString()) ?? 0.0;
         debugPrint('patchRouteType total_fee: $fee');
       } catch (_) {}
 
@@ -122,13 +154,16 @@ class UpdateDetailsController extends GetxController {
 
   Future<bool> patchIsFixed(int orderId, bool isFixed) async {
     isLoading.value = true;
-    final res = await OrderService.updateOrderDetails(orderId, {'isFixed': isFixed});
+    final res = await OrderService.updateOrderDetails(orderId, {
+      'isFixed': isFixed,
+    });
     isLoading.value = false;
 
     debugPrint('patchIsFixed response: ${res['body']}');
     try {
       final bodyMap = res['body'] as Map<String, dynamic>? ?? {};
-      if (bodyMap.containsKey('message')) debugPrint('patchIsFixed message: ${bodyMap['message']}');
+      if (bodyMap.containsKey('message'))
+        debugPrint('patchIsFixed message: ${bodyMap['message']}');
     } catch (_) {}
 
     final status = res['statusCode'] as int? ?? 500;
@@ -138,9 +173,16 @@ class UpdateDetailsController extends GetxController {
       try {
         final b = res['body'] as Map<String, dynamic>;
         double fee = 0.0;
-        if (b['data'] != null && b['data']['total_fee'] != null) fee = double.tryParse(b['data']['total_fee'].toString()) ?? 0.0;
-        else if (b['data'] != null && b['data']['order'] != null && b['data']['order']['total_fee'] != null) fee = double.tryParse(b['data']['order']['total_fee'].toString()) ?? 0.0;
-        else if (b['total_fee'] != null) fee = double.tryParse(b['total_fee'].toString()) ?? 0.0;
+        if (b['data'] != null && b['data']['total_fee'] != null)
+          fee = double.tryParse(b['data']['total_fee'].toString()) ?? 0.0;
+        else if (b['data'] != null &&
+            b['data']['order'] != null &&
+            b['data']['order']['total_fee'] != null)
+          fee =
+              double.tryParse(b['data']['order']['total_fee'].toString()) ??
+              0.0;
+        else if (b['total_fee'] != null)
+          fee = double.tryParse(b['total_fee'].toString()) ?? 0.0;
         debugPrint('patchIsFixed total_fee: $fee');
       } catch (_) {}
 
@@ -155,7 +197,11 @@ class UpdateDetailsController extends GetxController {
     return false;
   }
 
-  Future<bool> patchCollectTime(int orderId, String collectTime, {String? scheduledTime}) async {
+  Future<bool> patchCollectTime(
+    int orderId,
+    String collectTime, {
+    String? scheduledTime,
+  }) async {
     isLoading.value = true;
 
     final body = <String, dynamic>{'collect_time': collectTime};
@@ -167,7 +213,8 @@ class UpdateDetailsController extends GetxController {
     debugPrint('patchCollectTime response: ${res['body']}');
     try {
       final bodyMap = res['body'] as Map<String, dynamic>? ?? {};
-      if (bodyMap.containsKey('message')) debugPrint('patchCollectTime message: ${bodyMap['message']}');
+      if (bodyMap.containsKey('message'))
+        debugPrint('patchCollectTime message: ${bodyMap['message']}');
     } catch (_) {}
 
     final status = res['statusCode'] as int? ?? 500;
@@ -181,13 +228,19 @@ class UpdateDetailsController extends GetxController {
         double fee = 0.0;
         if (b['data'] != null) {
           final d = b['data'];
-          if (d['total_cost'] != null) cost = double.tryParse(d['total_cost'].toString()) ?? 0.0;
-          else if (d['order'] != null && d['order']['total_cost'] != null) cost = double.tryParse(d['order']['total_cost'].toString()) ?? 0.0;
-          if (d['total_fee'] != null) fee = double.tryParse(d['total_fee'].toString()) ?? 0.0;
-          else if (d['order'] != null && d['order']['total_fee'] != null) fee = double.tryParse(d['order']['total_fee'].toString()) ?? 0.0;
+          if (d['total_cost'] != null)
+            cost = double.tryParse(d['total_cost'].toString()) ?? 0.0;
+          else if (d['order'] != null && d['order']['total_cost'] != null)
+            cost = double.tryParse(d['order']['total_cost'].toString()) ?? 0.0;
+          if (d['total_fee'] != null)
+            fee = double.tryParse(d['total_fee'].toString()) ?? 0.0;
+          else if (d['order'] != null && d['order']['total_fee'] != null)
+            fee = double.tryParse(d['order']['total_fee'].toString()) ?? 0.0;
         }
-        if (b['total_cost'] != null) cost = double.tryParse(b['total_cost'].toString()) ?? cost;
-        if (b['total_fee'] != null) fee = double.tryParse(b['total_fee'].toString()) ?? fee;
+        if (b['total_cost'] != null)
+          cost = double.tryParse(b['total_cost'].toString()) ?? cost;
+        if (b['total_fee'] != null)
+          fee = double.tryParse(b['total_fee'].toString()) ?? fee;
         debugPrint('patchCollectTime parsed total_cost: $cost total_fee: $fee');
       } catch (_) {}
 
@@ -200,13 +253,16 @@ class UpdateDetailsController extends GetxController {
   /// Update vehicle type for an existing order
   Future<bool> patchVehicleType(int orderId, int vehicleTypeId) async {
     isLoading.value = true;
-    final res = await OrderService.updateOrderDetails(orderId, {'vehicle_type_id': vehicleTypeId});
+    final res = await OrderService.updateOrderDetails(orderId, {
+      'vehicle_type_id': vehicleTypeId,
+    });
     isLoading.value = false;
 
     debugPrint('patchVehicleType response: ${res['body']}');
     try {
       final bodyMap = res['body'] as Map<String, dynamic>? ?? {};
-      if (bodyMap.containsKey('message')) debugPrint('patchVehicleType message: ${bodyMap['message']}');
+      if (bodyMap.containsKey('message'))
+        debugPrint('patchVehicleType message: ${bodyMap['message']}');
     } catch (_) {}
 
     final status = res['statusCode'] as int? ?? 500;
@@ -217,9 +273,16 @@ class UpdateDetailsController extends GetxController {
       try {
         final b = res['body'] as Map<String, dynamic>;
         double cost = 0.0;
-        if (b['data'] != null && b['data']['total_cost'] != null) cost = double.tryParse(b['data']['total_cost'].toString()) ?? 0.0;
-        else if (b['data'] != null && b['data']['order'] != null && b['data']['order']['total_cost'] != null) cost = double.tryParse(b['data']['order']['total_cost'].toString()) ?? 0.0;
-        else if (b['total_cost'] != null) cost = double.tryParse(b['total_cost'].toString()) ?? 0.0;
+        if (b['data'] != null && b['data']['total_cost'] != null)
+          cost = double.tryParse(b['data']['total_cost'].toString()) ?? 0.0;
+        else if (b['data'] != null &&
+            b['data']['order'] != null &&
+            b['data']['order']['total_cost'] != null)
+          cost =
+              double.tryParse(b['data']['order']['total_cost'].toString()) ??
+              0.0;
+        else if (b['total_cost'] != null)
+          cost = double.tryParse(b['total_cost'].toString()) ?? 0.0;
 
         debugPrint('patchVehicleType total_cost: $cost');
       } catch (_) {}
@@ -228,5 +291,27 @@ class UpdateDetailsController extends GetxController {
     }
 
     return false;
+  }
+
+  // Update delivery type
+  Future<bool> patchDeliveryType(int orderId, String deliveryType) async {
+    isLoading.value = true;
+
+    final res = await OrderService.updateOrderDetails(orderId, {
+      'delivery_type': deliveryType.toUpperCase(),
+    });
+
+    isLoading.value = false;
+
+    debugPrint('patchDeliveryType response: ${res['body']}');
+
+    final status = res['statusCode'] as int? ?? 500;
+    if (status == 200) {
+      _applyServerTotal(res['body'] as Map<String, dynamic>);
+      return true;
+    } else {
+      debugPrint('Failed to patch Delivery Type: ${res['body']}');
+      return false;
+    }
   }
 }

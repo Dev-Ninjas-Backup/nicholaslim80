@@ -47,20 +47,20 @@ class StackedPickDateTimeDialog extends StatelessWidget {
                 ),
               ],
             ),
-            Obx(
-                  () => ListTile(
-                leading: Icon(Icons.access_time),
-                title: Text('Now'),
-                trailing: Radio(
-                  value: true,
-                  // ignore: deprecated_member_use
-                  groupValue: controller.isNow.value,
-                  // ignore: deprecated_member_use
-                  onChanged: (value) => controller.setNow(true),
-                ),
-                onTap: () => controller.setNow(true),
-              ),
-            ),
+            // Obx(
+            //       () => ListTile(
+            //     leading: Icon(Icons.access_time),
+            //     title: Text('Now'),
+            //     trailing: Radio(
+            //       value: true,
+            //       // ignore: deprecated_member_use
+            //       groupValue: controller.isNow.value,
+            //       // ignore: deprecated_member_use
+            //       onChanged: (value) => controller.setNow(true),
+            //     ),
+            //     onTap: () => controller.setNow(true),
+            //   ),
+            // ),
             Obx(
                   () => ListTile(
                 leading: Icon(Icons.calendar_today, color: Colors.green),

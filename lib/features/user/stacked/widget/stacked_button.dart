@@ -4,6 +4,7 @@ import 'package:ZipBee/core/utils/constants/icon_path.dart';
 import 'package:ZipBee/features/user/stacked/stacked_collect_from/screen/collect_from.dart';
 import 'package:ZipBee/features/user/stacked/stacked_collect_from/controller/controller.dart';
 import 'package:ZipBee/features/user/stacked/stacked_controller/stacked_controller.dart';
+import 'package:ZipBee/features/user/stacked/widget/delivery_type_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/controller/stacked_order_controller.dart';
@@ -17,344 +18,395 @@ class StackedButtonWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      return Column(
-        children: [
-          /// =================== TOP TOGGLE (ONE WAY + ROUND) ===================
-          Card(
-            child: Row(
-              children: [
-                Expanded(
-                  child: GestureDetector(
-                    onTap: () async {
-                      final previous = controller.isRoundTrip.value;
-                      controller.toggleTripType(false);
-
-                      try {
-                        final upd = Get.put(UpdateDetailsController());
-                        final oc = Get.find<StackedOrderController>();
-                        if (oc.lastOrderId != null) {
-                          final ok = await upd.patchRouteType(
-                            oc.lastOrderId!,
-                            'ONE_WAY',
-                          );
-                          if (!ok) controller.toggleTripType(previous);
-                        }
-                      } catch (_) {
-                        controller.toggleTripType(previous);
-                      }
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: !controller.isRoundTrip.value
-                            ? AppColors.primaryButtonColor
-                            : Colors.transparent,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Text(
-                        "One way",
-                        style: getTextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: GestureDetector(
-                    onTap: () async {
-                      final previous = controller.isRoundTrip.value;
-                      controller.toggleTripType(true);
-
-                      try {
-                        final upd = Get.put(UpdateDetailsController());
-                        final oc = Get.find<StackedOrderController>();
-                        if (oc.lastOrderId != null) {
-                          final ok = await upd.patchRouteType(
-                            oc.lastOrderId!,
-                            'ROUND',
-                          );
-                          if (!ok) controller.toggleTripType(previous);
-                        }
-                      } catch (_) {
-                        controller.toggleTripType(previous);
-                      }
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: controller.isRoundTrip.value
-                            ? AppColors.primaryButtonColor
-                            : Colors.transparent,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Text(
-                        "Round",
-                        style: getTextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+      return Container(
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: controller.isRoundTrip.value
+                ? AppColors.primaryButtonColor
+                : Colors.transparent,
+            width: 5,
           ),
+        ),
+        child: Column(
+          children: [
+            /// =================== TOP TOGGLE (ONE WAY + ROUND) ===================
+            Card(
+              child: Row(
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () async {
+                        final previous = controller.isRoundTrip.value;
+                        controller.toggleTripType(false);
 
-          const SizedBox(height: 16),
-
-          /// =================== MAIN CONTAINER ===================
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.grey[100],
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                /// ================= FIXED ROUTE =================
-                Obx(() {
-                  final orderController = Get.put(StackedOrderController());
-                  final isSelected = orderController.isFixed.value;
-
-                  return GestureDetector(
-                    onTap: () async {
-                      final newVal = !isSelected;
-                      orderController.isFixed.value = newVal;
-
-                      try {
-                        final upd = Get.put(UpdateDetailsController());
-                        if (orderController.lastOrderId != null) {
-                          await upd.patchIsFixed(
-                            orderController.lastOrderId!,
-                            newVal,
-                          );
+                        try {
+                          final upd = Get.put(UpdateDetailsController());
+                          final oc = Get.find<StackedOrderController>();
+                          if (oc.lastOrderId != null) {
+                            final ok = await upd.patchRouteType(
+                              oc.lastOrderId!,
+                              'ONE_WAY',
+                            );
+                            if (!ok) controller.toggleTripType(previous);
+                          }
+                        } catch (_) {
+                          controller.toggleTripType(previous);
                         }
-                      } catch (_) {
-                        orderController.isFixed.value = isSelected;
-                      }
-                    },
-                    child: Container(
-                      margin: const EdgeInsets.only(bottom: 16),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isSelected ? Colors.amber : Colors.grey.shade200,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: isSelected ? Colors.amber : Colors.grey,
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: !controller.isRoundTrip.value
+                              ? AppColors.white
+                              : Colors.grey,
+                          // borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(
+                          "One way",
+                          style: getTextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Image.asset(IconPath.exparess, width: 24, height: 24),
-                          const SizedBox(width: 6),
-                          Text(
-                            "Fixed route",
-                            style: getTextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: isSelected ? Colors.white : Colors.black,
+                    ),
+                  ),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () async {
+                        final previous = controller.isRoundTrip.value;
+                        controller.toggleTripType(true);
+
+                        try {
+                          final upd = Get.put(UpdateDetailsController());
+                          final oc = Get.find<StackedOrderController>();
+                          if (oc.lastOrderId != null) {
+                            final ok = await upd.patchRouteType(
+                              oc.lastOrderId!,
+                              'ROUND',
+                            );
+                            if (!ok) controller.toggleTripType(previous);
+                          }
+                        } catch (_) {
+                          controller.toggleTripType(previous);
+                        }
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: controller.isRoundTrip.value
+                              ? AppColors.white
+                              : Colors.grey,
+                          // borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(
+                          "Round",
+                          style: getTextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
+            /// =================== MAIN CONTAINER ===================
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: AppColors.white,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  /// ================= FIXED ROUTE =================
+                  Obx(() {
+                    final orderController = Get.put(StackedOrderController());
+                    final isSelected = orderController.isFixed.value;
+
+                    return GestureDetector(
+                      onTap: () async {
+                        final newVal = !isSelected;
+                        orderController.isFixed.value = newVal;
+
+                        try {
+                          final upd = Get.put(UpdateDetailsController());
+                          if (orderController.lastOrderId != null) {
+                            await upd.patchIsFixed(
+                              orderController.lastOrderId!,
+                              newVal,
+                            );
+                          }
+                        } catch (_) {
+                          orderController.isFixed.value = isSelected;
+                        }
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.only(bottom: 16),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? Colors.amber
+                              : Colors.grey.shade200,
+                          borderRadius: BorderRadius.circular(8),
+                          // border: Border.all(
+                          //   color: isSelected ? Colors.amber : Colors.grey,
+                          // ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Image.asset(
+                              IconPath.exparess,
+                              width: 24,
+                              height: 24,
                             ),
-                          ),
-                        ],
+                            const SizedBox(width: 6),
+                            Text(
+                              "Fixed route",
+                              style: getTextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: isSelected ? Colors.white : Colors.black,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }),
+
+                  // SizedBox(height: 8),
+                  Obx(
+                    () => GestureDetector(
+                      onTap: () => Get.dialog(const DeliveryTypeDialog()),
+                      child: Container(
+                        width: double.infinity,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade100,
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(color: Colors.grey.shade300),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'Delivery Type: ${Get.find<StackedOrderController>().deliveryType.value.capitalizeFirst}',
+                              style: getTextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black87,
+                              ),
+                            ),
+                            SizedBox(width: 5),
+                            // Icon(Icons.keyboard_arrow_down, size: 16),
+                          ],
+                        ),
                       ),
                     ),
-                  );
-                }),
+                  ),
+                  SizedBox(height: 16),
 
-                /// =================== SENDER LIST ===================
-                Obx(() {
-                  final count = controller.collectedStops.isNotEmpty
-                      ? controller.collectedStops.length
-                      : 1;
+                  /// =================== SENDER LIST ===================
+                  Obx(() {
+                    final count = controller.collectedStops.isNotEmpty
+                        ? controller.collectedStops.length
+                        : 1;
 
-                  return ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: count,
-                    itemBuilder: (context, index) {
-                      final hasData =
-                          controller.collectedStops.isNotEmpty &&
-                          index < controller.collectedStops.length;
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: count,
+                      itemBuilder: (context, index) {
+                        final hasData =
+                            controller.collectedStops.isNotEmpty &&
+                            index < controller.collectedStops.length;
 
-                      final name = hasData
-                          ? controller.collectedStops[index].contactName
-                          : controller.senderDisplayName;
+                        final name = hasData
+                            ? controller.collectedStops[index].contactName
+                            : controller.senderDisplayName;
 
-                      final addr = hasData
-                          ? controller.collectedStops[index].addressFromApr
-                          : controller.senderDisplayAddress;
+                        final addr = hasData
+                            ? controller.collectedStops[index].addressFromApr
+                            : controller.senderDisplayAddress;
 
-                      return Column(
-                        children: [
-                          Row(
-                            children: [
-                              Image.asset(
-                                IconPath.collectIcon,
-                                width: 24,
-                                height: 24,
-                              ),
-                              const SizedBox(width: 8),
-
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Collected from (Sender: $name)',
-                                      style: getTextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    Text(
-                                      addr,
-                                      style: getTextStyle(
-                                        fontSize: 12,
-                                        color: Colors.grey,
-                                      ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ],
+                        return Column(
+                          children: [
+                            Row(
+                              children: [
+                                Image.asset(
+                                  IconPath.collectIcon,
+                                  width: 24,
+                                  height: 24,
                                 ),
-                              ),
+                                const SizedBox(width: 8),
 
-                              /// ✅ SENDER TICK
-                              if (controller.senderData.value != null)
-                                const Icon(
-                                  Icons.check_circle,
-                                  color: Colors.green,
-                                  size: 18,
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Pick Up $name',
+                                        style: getTextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      Text(
+                                        addr,
+                                        style: getTextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ],
+                                  ),
                                 ),
 
-                              IconButton(
-                                icon: const Icon(Icons.edit, size: 18),
-                                onPressed: () {
-                                  Get.to(
-                                    () => StackedCollectFormScreen(
-                                      controller: Get.put(
-                                        StackedCollectFormController(),
+                                /// ✅ SENDER TICK
+                                // if (controller.senderData.value != null)
+                                //   const Icon(
+                                //     Icons.check_circle,
+                                //     color: Colors.green,
+                                //     size: 18,
+                                //   ),
+                                IconButton(
+                                  icon: const Icon(Icons.edit, size: 18),
+                                  onPressed: () {
+                                    Get.to(
+                                      () => StackedCollectFormScreen(
+                                        controller: Get.put(
+                                          StackedCollectFormController(),
+                                        ),
+                                        addressType: 'SENDER',
                                       ),
-                                      addressType: 'SENDER',
-                                    ),
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                        ],
-                      );
-                    },
-                  );
-                }),
-
-                /// =================== RECEIVER LIST ===================
-                Obx(() {
-                  final count = controller.recipientStops.isNotEmpty
-                      ? controller.recipientStops.length
-                      : 1;
-
-                  return ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: count,
-                    itemBuilder: (context, index) {
-                      final hasData =
-                          controller.recipientStops.isNotEmpty &&
-                          index < controller.recipientStops.length;
-
-                      final name = hasData
-                          ? controller.recipientStops[index].contactName
-                          : controller.receiverDisplayName;
-
-                      final addr = hasData
-                          ? controller.recipientStops[index].addressFromApr
-                          : controller.receiverDisplayAddress;
-
-                      return Column(
-                        children: [
-                          Row(
-                            children: [
-                              Image.asset(
-                                IconPath.deliveredIcon,
-                                width: 24,
-                                height: 24,
-                              ),
-                              const SizedBox(width: 8),
-
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Delivered to (Recipient: $name)',
-                                      style: getTextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    Text(
-                                      addr,
-                                      style: getTextStyle(
-                                        fontSize: 12,
-                                        color: Colors.grey,
-                                      ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ],
+                                    );
+                                  },
                                 ),
-                              ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                          ],
+                        );
+                      },
+                    );
+                  }),
 
-                              /// ✅ RECEIVER TICK
-                              if (controller.receiverData.value != null)
-                                const Icon(
-                                  Icons.check_circle,
-                                  color: Colors.green,
-                                  size: 18,
+                  /// =================== RECEIVER LIST ===================
+                  Obx(() {
+                    final count = controller.recipientStops.isNotEmpty
+                        ? controller.recipientStops.length
+                        : 1;
+
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: count,
+                      itemBuilder: (context, index) {
+                        final hasData =
+                            controller.recipientStops.isNotEmpty &&
+                            index < controller.recipientStops.length;
+
+                        final name = hasData
+                            ? controller.recipientStops[index].contactName
+                            : controller.receiverDisplayName;
+
+                        final addr = hasData
+                            ? controller.recipientStops[index].addressFromApr
+                            : controller.receiverDisplayAddress;
+
+                        return Column(
+                          children: [
+                            Row(
+                              children: [
+                                Image.asset(
+                                  IconPath.deliveredIcon,
+                                  width: 24,
+                                  height: 24,
+                                ),
+                                const SizedBox(width: 8),
+
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Drop Off $name',
+                                        style: getTextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      Text(
+                                        addr,
+                                        style: getTextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ],
+                                  ),
                                 ),
 
-                              IconButton(
-                                icon: const Icon(Icons.edit, size: 18),
-                                onPressed: () {
-                                  Get.to(
-                                    () => StackedCollectFormScreen(
-                                      controller: Get.put(
-                                        StackedCollectFormController(),
+                                /// ✅ RECEIVER TICK
+                                // if (controller.receiverData.value != null)
+                                //   const Icon(
+                                //     Icons.check_circle,
+                                //     color: Colors.green,
+                                //     size: 18,
+                                //   ),
+                                IconButton(
+                                  icon: const Icon(Icons.edit, size: 18),
+                                  onPressed: () {
+                                    Get.to(
+                                      () => StackedCollectFormScreen(
+                                        controller: Get.put(
+                                          StackedCollectFormController(),
+                                        ),
+                                        addressType: 'RECEIVER',
                                       ),
-                                      addressType: 'RECEIVER',
-                                    ),
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                        ],
-                      );
-                    },
-                  );
-                }),
-              ],
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                          ],
+                        );
+                      },
+                    );
+                  }),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       );
     });
   }

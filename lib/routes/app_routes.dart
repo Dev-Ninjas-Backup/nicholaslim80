@@ -208,11 +208,6 @@ class AppRoutes {
       page: () => SupportScreen(),
       transition: Transition.fadeIn,
     ),
-    // GetPage(
-    //   name: expressDelivery1,
-    //   page: () => ExpressDelivery1(),
-    //   transition: Transition.fadeIn,
-    // ),
 
     //user notification
     GetPage(name: userNotification, page: () => UserNotification()),
@@ -232,31 +227,10 @@ class AppRoutes {
       page: () => SavedPlaceScreen(),
       transition: Transition.fadeIn,
     ),
-    // GetPage(
-    //   name: scheduledelivery,
-    //   page: () => ScheduleDelivery(),
-    //   transition: Transition.fadeIn,
-    // ),
 
     // google map screen (practice file)
     GetPage(name: googleMapScreen, page: () => GoogleMapScreen()),
     GetPage(name: chatScreen, page: () => ChatScreen()),
-
-    // GetPage(
-    //   name: stackedFAQScreen,
-    //   page: () => StackedFAQScreen(),
-    //   transition: Transition.fadeIn,
-    // ),
-    // GetPage(
-    //   name: expressFaq,
-    //   page: () => ExpressFaq(),
-    //   transition: Transition.fadeIn,
-    // ),
-    // GetPage(
-    //   name: standardFAQ,
-    //   page: () => StandardFaqScreen(),
-    //   transition: Transition.fadeIn,
-    // ),
 
     // Schedule Recipient Screen
     GetPage(

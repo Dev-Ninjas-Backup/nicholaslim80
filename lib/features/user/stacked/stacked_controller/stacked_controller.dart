@@ -35,6 +35,20 @@ class StackedLocationController extends GetxController {
   // trip/time state
   var isRoundTrip = false.obs;
   var isNowSelected = true.obs;
+  var collectTimeSubtitle = "Pick Date and Time".obs;
+
+  void selectNow() {
+    isNowSelected.value = true;
+    collectTimeSubtitle.value = "Pick Date and Time"; // রিসেট
+  }
+
+  void selectSchedule() {
+    isNowSelected.value = false;
+  }
+
+  void updateSubtitle(String newTime) {
+    collectTimeSubtitle.value = newTime;
+  }
 
   // editing state used by widgets that allow inline title edit
   var isEditing = false.obs;
@@ -69,8 +83,8 @@ class StackedLocationController extends GetxController {
     ];
   }
 
-  void selectNow() => isNowSelected.value = true;
-  void selectSchedule() => isNowSelected.value = false;
+  // void selectNow() => isNowSelected.value = true;
+  // void selectSchedule() => isNowSelected.value = false;
   void toggleTripType(bool isRound) => isRoundTrip.value = isRound;
 
   void selectVehicle(StackedVehicleModel vehicle) {
@@ -110,10 +124,10 @@ class StackedLocationController extends GetxController {
   }
 
   /// Get sender display text (name + address)
-  String get senderDisplayName => senderData.value?.contactName ?? 'Sender Name';
+  String get senderDisplayName => senderData.value?.contactName ?? '';
   String get senderDisplayAddress => senderData.value?.addressFromApr ?? 'Sender Address';
 
   /// Get receiver display text (name + address)
-  String get receiverDisplayName => receiverData.value?.contactName ?? 'Recipient Name';
+  String get receiverDisplayName => receiverData.value?.contactName ?? '';
   String get receiverDisplayAddress => receiverData.value?.addressFromApr ?? 'Delivered Address';
 }

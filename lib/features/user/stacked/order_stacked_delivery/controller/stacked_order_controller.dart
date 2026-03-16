@@ -13,6 +13,35 @@ import 'package:ZipBee/features/user/stacked/vehicle_type/controller/controller.
 import 'package:ZipBee/features/user/stacked/widget/pic_date_time.dart';
 
 class StackedOrderController extends GetxController {
+
+  @override
+  void onInit() {
+    super.onInit();
+    _handleArguments();
+  }
+
+  // Last Oder ID & Delivery type
+  int? lastOrderId; 
+  final deliveryType = ''.obs;
+  // Get arguments from create order in Home controller
+  void _handleArguments() {
+    if (Get.arguments != null) {
+      final args = Get.arguments as Map<String, dynamic>;
+      
+      // Order ID set
+      if (args.containsKey('orderId')) {
+        lastOrderId = args['orderId'];
+      }
+
+      // Set delivery type 
+      if (args.containsKey('deliveryType')) {
+        deliveryType.value = args['deliveryType'];
+      }
+
+      debugPrint('StackedOrderController initialized with Order ID: $lastOrderId and Delivery Type: $deliveryType');
+    }
+  }
+
   var orderNumber = ''.obs;
   var isDriverAssigned = false.obs;
   var countdown = 10.obs;
@@ -126,7 +155,7 @@ class StackedOrderController extends GetxController {
   /// Place order by building payload from controllers, call POST endpoint,
   /// then GET the created order, debugPrint responses, update `totalAmount`
   /// and return true on success. Returns false on validation or server error.
-  int? lastOrderId;
+  // int? lastOrderId;
 
   Future<bool> placeOrder({
     required StackedLocationController locationController,
