@@ -1,4 +1,4 @@
-import 'package:ZipBee/features/user/home/my_riders/controller/my_riders_controller.dart';
+import 'package:ZipBee/features/user/my_riders/controller/my_riders_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

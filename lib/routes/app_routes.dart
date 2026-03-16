@@ -1,4 +1,4 @@
-import 'package:ZipBee/features/kamrul_express/screen/kamrul_express_screen.dart';
+// import 'package:ZipBee/features/kamrul_express/screen/kamrul_express_screen.dart';
 import 'package:ZipBee/features/onboarding/screen/onboarding_screen.dart';
 import 'package:ZipBee/features/orders/completed_order_details/proof_of_delivery/binding/proof_of_delivery_binding.dart';
 import 'package:ZipBee/features/orders/completed_order_details/proof_of_delivery/screen/proof_of_delivery_screen2.dart';
@@ -15,15 +15,15 @@ import 'package:ZipBee/features/user/finding_raider/screnn/connecting_rider_page
 import 'package:ZipBee/features/user/finding_raider/screnn/finding_rider_page.dart';
 import 'package:ZipBee/features/user/google_map/screen/google_map_screen.dart';
 import 'package:ZipBee/features/user/home/controller/home_controller.dart';
-import 'package:ZipBee/features/user/home/my_riders/screen/my_riders.dart';
+import 'package:ZipBee/features/user//my_riders/screen/my_riders.dart';
 import 'package:ZipBee/features/user/home/screen/home_screen.dart';
 import 'package:ZipBee/features/user/notification/screen/user_notification1.dart';
 import 'package:ZipBee/features/user/profile/screen/profile_screen.dart';
 import 'package:ZipBee/features/user/refer_and_earn/screen/refer_and_earn_screen.dart';
 import 'package:ZipBee/features/user/saved_places/screen/saved_place_screenn.dart';
-import 'package:ZipBee/features/user/stacked/FAQ/express_faq.dart';
-import 'package:ZipBee/features/user/stacked/FAQ/stacked_faq.dart';
-import 'package:ZipBee/features/user/stacked/FAQ/standard_faq.dart';
+// import 'package:ZipBee/features/user/stacked/FAQ/express_faq.dart';
+// import 'package:ZipBee/features/user/stacked/FAQ/stacked_faq.dart';
+// import 'package:ZipBee/features/user/stacked/FAQ/standard_faq.dart';
 import 'package:ZipBee/features/user/stacked/schedule_stacked_%20delivey/Schedule_recepent/screen/schedule_recepent_screen1.dart';
 import 'package:ZipBee/features/user/user_support/screen/support_screen.dart';
 import 'package:ZipBee/features/user/wallet/add_funds/screen/user_add_funds.dart';
@@ -134,7 +134,7 @@ class AppRoutes {
   // static String scheduledelivery() => scheduledelivery;
 
   static List<GetPage> routes = [
-    GetPage(name: kamrulExpressScreen, page: () => KamrulExpressScreen()),
+    // GetPage(name: kamrulExpressScreen, page: () => KamrulExpressScreen()),
 
     GetPage(name: splashScreen, page: () => SplashScreen()),
     GetPage(name: onboardingScreen, page: () => OnboardingScreen()),
@@ -242,21 +242,21 @@ class AppRoutes {
     GetPage(name: googleMapScreen, page: () => GoogleMapScreen()),
     GetPage(name: chatScreen, page: () => ChatScreen()),
 
-    GetPage(
-      name: stackedFAQScreen,
-      page: () => StackedFAQScreen(),
-      transition: Transition.fadeIn,
-    ),
-    GetPage(
-      name: expressFaq,
-      page: () => ExpressFaq(),
-      transition: Transition.fadeIn,
-    ),
-    GetPage(
-      name: standardFAQ,
-      page: () => StandardFaqScreen(),
-      transition: Transition.fadeIn,
-    ),
+    // GetPage(
+    //   name: stackedFAQScreen,
+    //   page: () => StackedFAQScreen(),
+    //   transition: Transition.fadeIn,
+    // ),
+    // GetPage(
+    //   name: expressFaq,
+    //   page: () => ExpressFaq(),
+    //   transition: Transition.fadeIn,
+    // ),
+    // GetPage(
+    //   name: standardFAQ,
+    //   page: () => StandardFaqScreen(),
+    //   transition: Transition.fadeIn,
+    // ),
 
     // Schedule Recipient Screen
     GetPage(
