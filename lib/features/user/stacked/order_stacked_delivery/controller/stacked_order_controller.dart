@@ -204,7 +204,7 @@ class StackedOrderController extends GetxController {
 
     debugPrint('Placing order payload: $payload');
 
-    final res = await OrderService.createOrder(payload);
+    final res = await OrderService.createOrder(payload, deliveryType: 'STACKED');
 
     // Debug print full response
     debugPrint('CreateOrder full response: ${res}');

@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 
 class OrderService {
   /// Create an individual order.
-  static Future<Map<String, dynamic>> createOrder(Map<String, dynamic> body) async {
+  static Future<Map<String, dynamic>> createOrder(Map<String, dynamic> body, {required String deliveryType}) async {
     try {
       final token = await SharedPreferencesHelper.getAccessToken();
       final url = ApiEndPoint.orderCreate;
