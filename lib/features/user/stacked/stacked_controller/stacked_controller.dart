@@ -2,8 +2,9 @@ import 'package:ZipBee/core/utils/constants/icon_path.dart';
 import 'package:get/get.dart';
 
 class StackedVehicleModel {
+  final String vehicleType;
   final String iconPath;
-  StackedVehicleModel(this.iconPath);
+  StackedVehicleModel(this.vehicleType, this.iconPath);
 }
 
 /// Model to store address data returned from destination API
@@ -76,10 +77,10 @@ class StackedLocationController extends GetxController {
   // Load initial vehicles
   void loadVehicleData() {
     vehicleList.value = [
-      StackedVehicleModel(IconPath.bike2),
-      StackedVehicleModel(IconPath.car2),
-      StackedVehicleModel(IconPath.shopcar),
-      StackedVehicleModel(IconPath.shipment),
+      StackedVehicleModel('Bike', IconPath.bike2),
+      StackedVehicleModel('Car', IconPath.car2),
+      StackedVehicleModel('Van', IconPath.shopcar),
+      StackedVehicleModel('Truck', IconPath.shipment),
     ];
   }
 

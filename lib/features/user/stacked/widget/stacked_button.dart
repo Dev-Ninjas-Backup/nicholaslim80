@@ -26,6 +26,7 @@ class StackedButtonWidget extends StatelessWidget {
                 : Colors.transparent,
             width: 5,
           ),
+          borderRadius: BorderRadius.circular(10),
         ),
         child: Column(
           children: [
@@ -133,23 +134,31 @@ class StackedButtonWidget extends StatelessWidget {
                     final orderController = Get.put(StackedOrderController());
                     final isSelected = orderController.isFixed.value;
 
+                    final isDataValid =
+                        controller.senderDisplayName.isNotEmpty &&
+                        controller.receiverDisplayName.isNotEmpty;
+                    final textColor = isDataValid
+                        ? Colors.black
+                        : Colors.grey.shade400;
                     return GestureDetector(
-                      onTap: () async {
-                        final newVal = !isSelected;
-                        orderController.isFixed.value = newVal;
+                      onTap: isDataValid
+                          ? () async {
+                              final newVal = !isSelected;
+                              orderController.isFixed.value = newVal;
 
-                        try {
-                          final upd = Get.put(UpdateDetailsController());
-                          if (orderController.lastOrderId != null) {
-                            await upd.patchIsFixed(
-                              orderController.lastOrderId!,
-                              newVal,
-                            );
-                          }
-                        } catch (_) {
-                          orderController.isFixed.value = isSelected;
-                        }
-                      },
+                              try {
+                                final upd = Get.put(UpdateDetailsController());
+                                if (orderController.lastOrderId != null) {
+                                  await upd.patchIsFixed(
+                                    orderController.lastOrderId!,
+                                    newVal,
+                                  );
+                                }
+                              } catch (_) {
+                                orderController.isFixed.value = isSelected;
+                              }
+                            }
+                          : null,
                       child: Container(
                         margin: const EdgeInsets.only(bottom: 16),
                         padding: const EdgeInsets.symmetric(
@@ -158,8 +167,8 @@ class StackedButtonWidget extends StatelessWidget {
                         ),
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? Colors.amber
-                              : Colors.grey.shade200,
+                              ? AppColors.primaryButtonColor
+                              : AppColors.white,
                           borderRadius: BorderRadius.circular(8),
                           // border: Border.all(
                           //   color: isSelected ? Colors.amber : Colors.grey,
@@ -179,8 +188,32 @@ class StackedButtonWidget extends StatelessWidget {
                               style: getTextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
-                                color: isSelected ? Colors.white : Colors.black,
+                                color: isSelected ? AppColors.white : textColor,
                               ),
+                            ),
+                            SizedBox(width: 8),
+
+                            // Checkbos
+                            Container(
+                              height: 18,
+                              width: 18,
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? Colors.white
+                                    : Colors.transparent,
+                                borderRadius: BorderRadius.circular(4),
+                                border: Border.all(
+                                  color: isSelected ? Colors.white : textColor,
+                                  width: 2,
+                                ),
+                              ),
+                              child: isSelected
+                                  ? Icon(
+                                      Icons.check,
+                                      size: 14,
+                                      color: Colors.amber,
+                                    )
+                                  : null,
                             ),
                           ],
                         ),
@@ -206,16 +239,20 @@ class StackedButtonWidget extends StatelessWidget {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text(
-                              'Delivery Type: ${Get.find<StackedOrderController>().deliveryType.value.capitalizeFirst}',
-                              style: getTextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.black87,
-                              ),
+                            Column(
+                              children: [
+                                Text(
+                                  'Delivery Type: ${Get.find<StackedOrderController>().deliveryType.value.capitalizeFirst}',
+                                  style: getTextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                              ],
                             ),
-                            SizedBox(width: 5),
-                            // Icon(Icons.keyboard_arrow_down, size: 16),
+                            Spacer(),
+                            Icon(Icons.keyboard_arrow_right, size: 16),
                           ],
                         ),
                       ),

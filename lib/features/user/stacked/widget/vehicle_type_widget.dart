@@ -1,3 +1,4 @@
+import 'package:ZipBee/core/common/styles/global_text_style.dart';
 import 'package:ZipBee/features/user/stacked/vehicle_type/screen/screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -41,19 +42,31 @@ class StackedVehicleTypeWidget extends StatelessWidget {
                       border: Border.all(
                         color: isSelected
                             ? Colors.amber.shade600
-                            : Colors.transparent,
+                            : Colors.grey.shade300,
                         width: 2,
                       ),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.asset(
-                        vehicle.iconPath,
-                        fit: BoxFit.cover,
-                        width: screenWidth * 0.25,
-                        height: screenWidth * 0.18,
-                      ),
+                    child: Column(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.asset(
+                            vehicle.iconPath,
+                            fit: BoxFit.cover,
+                            width: screenWidth * 0.25,
+                            height: screenWidth * 0.18,
+                          ),
+                        ),
+                        Text(
+                          vehicle.vehicleType,
+                          style: getTextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black87,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),

@@ -1,4 +1,5 @@
 import 'package:ZipBee/core/common/styles/global_text_style.dart';
+import 'package:ZipBee/core/utils/constants/app_colors.dart';
 import 'package:ZipBee/features/user/stacked/schedule_stacked_ delivey/Schedule_recepent/screen/schedule_recepent_screen1.dart';
 import 'package:ZipBee/features/user/stacked/schedule_stacked_ delivey/Schedule_sender_recepent/screen/schedule_sender_screen.dart';
 import 'package:ZipBee/features/user/stacked/widget/stacked_button.dart';
@@ -15,6 +16,7 @@ class StackedSelectLocationWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      color: AppColors.white,
       child: Column(
         children: [
           StackedButtonWidget(controller: controller),
