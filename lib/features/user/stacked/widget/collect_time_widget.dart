@@ -23,20 +23,20 @@ class StackedCollectTimeOption extends StatelessWidget {
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
           decoration: BoxDecoration(
-            color: selected ? Colors.amber.shade50 : Colors.white,
+            // color: selected ? Colors.amber.shade50 : Colors.white,
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
               color: selected ? Colors.amber.shade600 : Colors.grey.shade300,
               width: 2,
             ),
-            boxShadow: selected
-                ? [
-              BoxShadow(
-                color: Colors.amber.withAlpha((0.25 * 255).round()),
-                blurRadius: 6,
-              ),
-            ]
-                : [],
+            // boxShadow: selected
+            //     ? [
+            //   BoxShadow(
+            //     color: Colors.amber.withAlpha((0.25 * 255).round()),
+            //     blurRadius: 6,
+            //   ),
+            // ]
+            //     : [],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
