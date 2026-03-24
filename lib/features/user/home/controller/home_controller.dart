@@ -3,8 +3,10 @@ import 'package:ZipBee/core/utils/constants/icon_path.dart';
 import 'package:ZipBee/features/user/home/controller/auth_controller.dart';
 import 'package:ZipBee/features/user/home/controller/popup_controller.dart';
 import 'package:ZipBee/features/user/home/controller/profile_controller.dart';
+import 'package:ZipBee/features/user/home/model/delivery_type_model.dart';
 import 'package:ZipBee/features/user/home/model/drawer_model.dart';
 import 'package:ZipBee/features/user/home/model/order_response_model.dart';
+import 'package:ZipBee/features/user/home/service/delivery_type_service.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/order_service.dart';
 import 'package:ZipBee/routes/app_routes.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -20,10 +22,15 @@ class HomeController extends GetxController {
   final selectedVehicleId = RxnString();
   var drawerItem = <DrawerModel>[].obs;
 
+  // Delivery types 
+  final deliveryTypes = <DeliveryTypeModel>[].obs;
+  final isDeliveryLoading = false.obs;
+
   @override
   void onInit() {
     _initDrawer();
     _listenToProfileChanges();
+    fetchDeliveryTypes();
     super.onInit();
   }
 
@@ -78,6 +85,23 @@ class HomeController extends GetxController {
     } finally {
       EasyLoading.dismiss();
       isLoading.value = false;
+    }
+  }
+  
+  // Fetch delivery types
+  Future<void> fetchDeliveryTypes() async {
+    try {
+      isDeliveryLoading.value = true;
+      final response = await DeliveryTypeService.getDeliveryTypes();
+
+      if (response['statusCode'] == 200 && response['body'] != null) {
+        final List rawData = response['body']['data']['data'];
+        deliveryTypes.assignAll(
+          rawData.map((json) => DeliveryTypeModel.fromJson(json)).toList()
+        );
+      }
+    } finally {
+      isDeliveryLoading.value = false;
     }
   }
 

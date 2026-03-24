@@ -51,8 +51,7 @@ class ApiEndPoint {
 
   // Destination endpoints
   static const String createDestination = '$baseUrl/destination';
-  static const String addDestinationToOrder =
-      '$baseUrl/order/{orderId}/destinations/add';
+  static const String addDestinationToOrder = '$baseUrl/order/{orderId}/destinations/add';
 
   // Order GET endpoints
   static const String getOrder = '$baseUrl/order/{orderId}';
@@ -103,4 +102,7 @@ class ApiEndPoint {
   //
   static const String supportChat = '$baseUrl/users/admin';
   static const String chatHistory = '$baseUrl/chat/messages';
+
+  // Delivery types
+  static String deliveryTypes = '$baseUrl/delivery-types';
 }

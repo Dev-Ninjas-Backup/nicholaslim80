@@ -7,15 +7,11 @@ import 'package:ZipBee/features/user/home/controller/popup_controller.dart';
 import 'package:ZipBee/features/user/home/service/ads_service.dart';
 import 'package:ZipBee/features/user/home/widgets/drawer.dart';
 import 'package:ZipBee/features/user/home/widgets/small_horizontal_slider_widget.dart';
-// import 'package:ZipBee/features/user/home/widgets/vehicle_cards_widget.dart';
 import 'package:ZipBee/features/user/home/controller/profile_controller.dart';
-// import 'package:ZipBee/features/user/home/widgets/vehicle_cards_widget.dart';
 import 'package:ZipBee/features/user/wallet/loyalty_and_rewards/screen/loyalty_and_rewards_screen.dart';
 import 'package:ZipBee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
-// import '../see_all_controller/see_all_controller.dart';
 
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
@@ -124,80 +120,46 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
                 SizedBox(width: 15),
-                Image.asset(
-                  IconPath.trunk1,
-                  height: 30,
-                  width: 30,
-                )
+                Image.asset(IconPath.trunk1, height: 30, width: 30),
               ],
             ),
             const SizedBox(height: 14),
 
             // Service Options Row
-            Row(
-              children: [
-                Expanded(
-                  child: Obx(
-                    () => buildServiceOptionCard(
-                      title: 'Express',
-                      subtitle: 'Delivery within 1 hour of collection',
-                      selected: ctrl.deliveryType.value == 'express',
-                      onTap: () => ctrl.selectDeliveryType('express'),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Obx(
-                    () => buildServiceOptionCard(
-                      title: 'Standard',
-                      subtitle: 'Delivery within 3 hours of collection',
-                      selected: ctrl.deliveryType.value == 'standard',
-                      onTap: () => ctrl.selectDeliveryType('standard'),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Obx(
-                    () => buildServiceOptionCard(
-                      title: 'Saver',
-                      subtitle: 'Delivery within 6 hours of collection',
-                      selected: ctrl.deliveryType.value == 'saver',
-                      onTap: () => ctrl.selectDeliveryType('saver'),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            Obx(() {
+              if (ctrl.isDeliveryLoading.value) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-            // SizedBox(height: 22),
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //   children: [
-            //     Text(
-            //       'Available Vehicles',
-            //       style: getTextStyle(
-            //         fontSize: 20,
-            //         fontWeight: FontWeight.w600,
-            //       ),
-            //     ),
-            //     TextButton(
-            //       onPressed: () {
-            //         final seeAllCtrl = Get.isRegistered<SeeAllOrderController>()
-            //             ? Get.find<SeeAllOrderController>()
-            //             : Get.put(SeeAllOrderController());
+              if (ctrl.deliveryTypes.isEmpty) {
+                return const Text("No service options available");
+              }
 
-            //         // Automatically select first vehicle and create order
-            //         seeAllCtrl.createOrderAuto();
-            //       },
-            //       child: Text('See All'),
-            //     ),
-            //   ],
-            // ),
+              return SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                physics: const BouncingScrollPhysics(),
+                child: Row(
+                  children: ctrl.deliveryTypes.map((type) {
+                    bool isSelected =
+                        ctrl.deliveryType.value == type.name.toLowerCase();
 
-            // SizedBox(height: 8),
-            // VehicleCards(ctrl: ctrl),
+                    return Container(
+                      // Ekhane fixed width set kora hoyeche jate 3er beshi hole scroll hoy
+                      width: MediaQuery.of(context).size.width * 0.35,
+                      margin: const EdgeInsets.only(right: 10),
+                      child: buildServiceOptionCard(
+                        title: type.name.capitalizeFirst ?? type.name,
+                        subtitle: type.formattedSubtitle,
+                        selected: isSelected,
+                        onTap: () =>
+                            ctrl.selectDeliveryType(type.name.toLowerCase()),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              );
+            }),
+            
             SizedBox(height: 35),
             FutureBuilder<List<Map<String, dynamic>>>(
               future: AdsService.fetchAds(),
