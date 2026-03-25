@@ -96,21 +96,6 @@ class StackedVehicleCard extends StatelessWidget {
                         style: getTextStyle(color: Colors.grey, fontSize: 13),
                       ),
                     ],
-                    const SizedBox(height: 8),
-                    // Pricing row
-                    // Row(
-                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    //   children: [
-                    //     Text(
-                    //       'Base: S\$${(vehicle.basePrice ?? vehicle.price).toStringAsFixed(0)}',
-                    //       style: getTextStyle(fontWeight: FontWeight.bold),
-                    //     ),
-                    //     Text(
-                    //       'Per km: S\$${(vehicle.perKmPrice ?? 0).toStringAsFixed(2)}/km',
-                    //       style: getTextStyle(color: Colors.grey),
-                    //     ),
-                    //   ],
-                    // ),
                   ],
                 ),
               ),

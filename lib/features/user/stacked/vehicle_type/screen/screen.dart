@@ -81,8 +81,9 @@ class StackedVehicleSelectionPage extends StatelessWidget {
               margin: const EdgeInsets.only(top: 5),
               child: TabBar(
                 indicator: BoxDecoration(
-                  color: Colors.yellow,
+                  // color: Colors.yellow,
                   borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.amber, width: 2),
                 ),
                 tabs: [
                   Tab(icon: Image.asset(IconPath.bike2, height: 60, width: 70)),
