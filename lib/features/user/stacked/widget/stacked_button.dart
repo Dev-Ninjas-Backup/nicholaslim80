@@ -68,7 +68,9 @@ class StackedButtonWidget extends StatelessWidget {
                           style: getTextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: !controller.isRoundTrip.value ? AppColors.primaryFontColor : Colors.grey.shade600,
+                            color: !controller.isRoundTrip.value
+                                ? AppColors.primaryFontColor
+                                : Colors.grey.shade600,
                           ),
                         ),
                       ),
@@ -108,7 +110,9 @@ class StackedButtonWidget extends StatelessWidget {
                           style: getTextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: controller.isRoundTrip.value ? AppColors.primaryFontColor : Colors.grey.shade600,
+                            color: controller.isRoundTrip.value
+                                ? AppColors.primaryFontColor
+                                : Colors.grey.shade600,
                           ),
                         ),
                       ),
@@ -224,8 +228,9 @@ class StackedButtonWidget extends StatelessWidget {
                   }),
 
                   // SizedBox(height: 8),
-                  Obx(
-                    () => GestureDetector(
+                  Obx(() {
+                    final orderController = Get.find<StackedOrderController>();
+                    return GestureDetector(
                       onTap: () => Get.dialog(const DeliveryTypeDialog()),
                       child: Container(
                         width: double.infinity,
@@ -244,7 +249,7 @@ class StackedButtonWidget extends StatelessWidget {
                             Column(
                               children: [
                                 Text(
-                                  'Delivery Type: ${Get.find<StackedOrderController>().deliveryType.value.capitalizeFirst}',
+                                  'Delivery Type: ${orderController.deliveryTypeDisplayName}',
                                   style: getTextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w600,
@@ -258,8 +263,8 @@ class StackedButtonWidget extends StatelessWidget {
                           ],
                         ),
                       ),
-                    ),
-                  ),
+                    );
+                  }),
                   SizedBox(height: 16),
 
                   /// =================== SENDER LIST ===================

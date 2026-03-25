@@ -65,6 +65,14 @@ class UpdateDetailsController extends GetxController {
         } catch (_) {}
       }
 
+      try {
+        final oc = Get.find<StackedOrderController>();
+        final orderLikeData = data['order'] is Map<String, dynamic>
+            ? data['order'] as Map<String, dynamic>
+            : data;
+        oc.syncOrderData(orderLikeData);
+      } catch (_) {}
+
       // Sync collect_time and scheduled_time if present
       try {
         String? ct;

@@ -37,7 +37,11 @@ class StackedVehicleCard extends StatelessWidget {
               Image.asset(
                 (() {
                   final vt = vehicle.type.toUpperCase();
-                  if (['MOTORCYCLE', 'BICYCLE', 'ELECTRIC_SCOOTER'].contains(vt)) {
+                  if ([
+                    'MOTORCYCLE',
+                    'BICYCLE',
+                    'ELECTRIC_SCOOTER',
+                  ].contains(vt)) {
                     return IconPath.courierIcon;
                   } else if (['CAR'].contains(vt)) {
                     return IconPath.realCar;
@@ -47,7 +51,8 @@ class StackedVehicleCard extends StatelessWidget {
                     return IconPath.trunk2;
                   } else if (vt == 'TRUCK') {
                     return IconPath.trunk3;
-                  } else if (vehicle.imageAsset != null && vehicle.imageAsset!.isNotEmpty) {
+                  } else if (vehicle.imageAsset != null &&
+                      vehicle.imageAsset!.isNotEmpty) {
                     return vehicle.imageAsset!;
                   } else {
                     return IconPath.bike;
@@ -65,53 +70,56 @@ class StackedVehicleCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      // format vehicle_type from API: e.g. 'ELECTRIC_SCOOTER' -> 'Electric Scooter'
-                      vehicle.name.replaceAll('_', ' ').toLowerCase().split(' ').map((s) => s.isEmpty ? s : (s[0].toUpperCase() + s.substring(1))).join(' '),
+                      vehicle.name,
                       style: getTextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                       ),
                     ),
-                    if (vehicle.dimension != null && vehicle.dimension!.isNotEmpty) ...[
-                      SizedBox(height: 4),
+                    if (vehicle.description.isNotEmpty) ...[
+                      const SizedBox(height: 4),
                       Text(
-                        vehicle.dimension!,
+                        vehicle.description,
+                        style: getTextStyle(color: Colors.grey, fontSize: 14),
+                      ),
+                    ],
+                    if ((vehicle.dimension?.isNotEmpty ?? false) ||
+                        (vehicle.maxLoad?.isNotEmpty ?? false)) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        [
+                          if (vehicle.dimension?.isNotEmpty ?? false)
+                            '${vehicle.dimension} m',
+                          if (vehicle.maxLoad?.isNotEmpty ?? false)
+                            'Up to ${vehicle.maxLoad} kg',
+                        ].join(' - '),
                         style: getTextStyle(color: Colors.grey, fontSize: 13),
                       ),
                     ],
-                    if (vehicle.maxLoad != null && vehicle.maxLoad!.isNotEmpty) ...[
-                      SizedBox(height: 4),
-                      Text(
-                        'Max load: ${vehicle.maxLoad}',
-                        style: getTextStyle(color: Colors.grey, fontSize: 13),
-                      ),
-                    ],
-                    const SizedBox(height: 6),
-                    Text(
-                      vehicle.details,
-                      style: getTextStyle(color: Colors.grey, fontSize: 14),
-                    ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     // Pricing row
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Base: S\$${(vehicle.basePrice ?? vehicle.price).toStringAsFixed(0)}',
-                          style: getTextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        Text(
-                          'Per km: S\$${(vehicle.perKmPrice ?? 0).toStringAsFixed(2)}/km',
-                          style: getTextStyle(color: Colors.grey),
-                        ),
-                      ],
-                    ),
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    //   children: [
+                    //     Text(
+                    //       'Base: S\$${(vehicle.basePrice ?? vehicle.price).toStringAsFixed(0)}',
+                    //       style: getTextStyle(fontWeight: FontWeight.bold),
+                    //     ),
+                    //     Text(
+                    //       'Per km: S\$${(vehicle.perKmPrice ?? 0).toStringAsFixed(2)}/km',
+                    //       style: getTextStyle(color: Colors.grey),
+                    //     ),
+                    //   ],
+                    // ),
                   ],
                 ),
               ),
 
               // Check icon if selected
-              if (isSelected) Icon(Icons.check_circle, color: Colors.green),
+              if (isSelected)
+                Icon(Icons.check_circle, color: Colors.green)
+              else
+                Icon(Icons.circle_outlined, color: Colors.grey),
             ],
           ),
         ),

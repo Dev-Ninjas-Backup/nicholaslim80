@@ -39,30 +39,16 @@ class StackedVehicleSelectionPage extends StatelessWidget {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           try {
             final orderCtrl = Get.find<StackedOrderController>();
-            final orderId = orderData['id'] as int?;
-            orderCtrl.lastOrderId = orderId;
-
-            final totalCost =
-                double.tryParse(orderData['total_cost']?.toString() ?? '') ??
-                0.0;
-            orderCtrl.totalAmount.value = totalCost;
-            orderCtrl.totalCost.value = totalCost;
-
-            debugPrint('✅ Order initialized: ID=$orderId, Total=$totalCost');
+            orderCtrl.syncOrderData(orderData);
+            debugPrint(
+              '✅ Order initialized: ID=${orderCtrl.lastOrderId}, Total=${orderCtrl.totalCost.value}',
+            );
           } catch (_) {
             try {
               final orderCtrl = Get.put(StackedOrderController());
-              final orderId = orderData['id'] as int?;
-              orderCtrl.lastOrderId = orderId;
-
-              final totalCost =
-                  double.tryParse(orderData['total_cost']?.toString() ?? '') ??
-                  0.0;
-              orderCtrl.totalAmount.value = totalCost;
-              orderCtrl.totalCost.value = totalCost;
-
+              orderCtrl.syncOrderData(orderData);
               debugPrint(
-                '✅ Order initialized (new controller): ID=$orderId, Total=$totalCost',
+                '✅ Order initialized (new controller): ID=${orderCtrl.lastOrderId}, Total=${orderCtrl.totalCost.value}',
               );
             } catch (e) {
               debugPrint('❌ Error setting order data: $e');

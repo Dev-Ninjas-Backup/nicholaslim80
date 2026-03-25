@@ -17,13 +17,19 @@ class OrderResponseModel {
 class OrderData {
   final int? id;
   final String? deliveryType;
+  final Map<String, dynamic>? rawJson;
 
-  OrderData({this.id, this.deliveryType});
+  OrderData({this.id, this.deliveryType, this.rawJson});
 
   factory OrderData.fromJson(Map<String, dynamic> json) {
+    final rawDeliveryType = json['delivery_type'];
+
     return OrderData(
       id: json['id'],
-      deliveryType: json['delivery_type'],
+      deliveryType: rawDeliveryType is Map<String, dynamic>
+          ? rawDeliveryType['name']?.toString()
+          : rawDeliveryType?.toString(),
+      rawJson: json,
     );
   }
 }

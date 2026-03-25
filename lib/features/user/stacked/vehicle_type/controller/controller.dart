@@ -58,43 +58,96 @@ class StackedVehicleController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    fetchAndCategorize();
+    // fetchAndCategorize();
   }
 
-  Future<void> fetchAndCategorize() async {
-    final res = await VehicleTypeService.fetchVehicleTypes();
-    if (res['statusCode'] != 200) return;
+  void syncFromOrderData(Map<String, dynamic> orderData) {
+    final deliveryType = orderData['delivery_type'] as Map<String, dynamic>?;
+    final rawVehicles = deliveryType?['vehicle_types'];
 
-    final body = res['body'];
-    if (body is Map && body['data'] is List) {
-      final list = body['data'] as List;
-      final parsed = list
-          .map((e) => StackVehicle.fromApi(e as Map<String, dynamic>))
-          .where((v) => v.isActive == true)
-          .toList();
+    if (rawVehicles is! List) return;
 
-      // clear previous
-      t1.clear();
-      t2.clear();
-      t3.clear();
-      t4.clear();
+    final parsed = rawVehicles
+        .map((item) {
+          final map = item as Map<String, dynamic>;
+          final nestedVehicle = map['vehicle_type'] as Map<String, dynamic>?;
+          if (nestedVehicle == null) return null;
+          return StackVehicle.fromApi(nestedVehicle);
+        })
+        .whereType<StackVehicle>()
+        .where((vehicle) => vehicle.isActive != false)
+        .toList();
 
-      for (var v in parsed) {
-        final vt = v.type.toUpperCase();
-        if (['MOTORCYCLE', 'BICYCLE', 'ELECTRIC_SCOOTER'].contains(vt)) {
-          t1.add(v);
-        } else if (['CAR', 'SUV'].contains(vt)) {
-          t2.add(v);
-        } else if (vt == 'VAN') {
-          t3.add(v);
-        } else if (vt == 'TRUCK') {
-          t4.add(v);
-        } else {
-          // skip other types
-        }
+    t1.clear();
+    t2.clear();
+    t3.clear();
+    t4.clear();
+
+    for (final vehicle in parsed) {
+      final type = vehicle.type.toUpperCase();
+      if (['MOTORCYCLE', 'BICYCLE', 'ELECTRIC_SCOOTER'].contains(type)) {
+        t1.add(vehicle);
+      } else if (['CAR', 'SUV'].contains(type)) {
+        t2.add(vehicle);
+      } else if (type == 'VAN') {
+        t3.add(vehicle);
+      } else if (type == 'TRUCK') {
+        t4.add(vehicle);
       }
     }
+
+    final selectedVehicleId = orderData['vehicle_type_id'];
+    final parsedSelectedVehicleId = selectedVehicleId is int
+        ? selectedVehicleId
+        : int.tryParse(selectedVehicleId?.toString() ?? '');
+
+    if (parsedSelectedVehicleId == null) return;
+
+    final allVehicles = [...t1, ...t2, ...t3, ...t4];
+    final matchedVehicle = allVehicles.firstWhereOrNull(
+      (vehicle) => vehicle.id == parsedSelectedVehicleId,
+    );
+
+    if (matchedVehicle != null) {
+      selectedVehicle.value = matchedVehicle;
+      _updateHistory();
+    }
   }
+
+  // Future<void> fetchAndCategorize() async {
+  //   final res = await VehicleTypeService.fetchVehicleTypes();
+  //   if (res['statusCode'] != 200) return;
+
+  //   final body = res['body'];
+  //   if (body is Map && body['data'] is List) {
+  //     final list = body['data'] as List;
+  //     final parsed = list
+  //         .map((e) => StackVehicle.fromApi(e as Map<String, dynamic>))
+  //         .where((v) => v.isActive == true)
+  //         .toList();
+
+  //     // clear previous
+  //     t1.clear();
+  //     t2.clear();
+  //     t3.clear();
+  //     t4.clear();
+
+  //     for (var v in parsed) {
+  //       final vt = v.type.toUpperCase();
+  //       if (['MOTORCYCLE', 'BICYCLE', 'ELECTRIC_SCOOTER'].contains(vt)) {
+  //         t1.add(v);
+  //       } else if (['CAR', 'SUV'].contains(vt)) {
+  //         t2.add(v);
+  //       } else if (vt == 'VAN') {
+  //         t3.add(v);
+  //       } else if (vt == 'TRUCK') {
+  //         t4.add(v);
+  //       } else {
+  //         // skip other types
+  //       }
+  //     }
+  //   }
+  // }
 
   List<StackVehicle> getVehiclesForType(String tabKey) {
     // map older tab keys to categorized lists
@@ -163,12 +216,8 @@ class StackedVehicleController extends GetxController {
         // Update order controller if available
         try {
           final orderCtrl = Get.find<StackedOrderController>();
-          final updatedTotal = body['data']?['total_cost'];
-          if (updatedTotal != null) {
-            final totalCost = double.tryParse(updatedTotal.toString()) ?? 0.0;
-            orderCtrl.totalCost.value = totalCost;
-            orderCtrl.totalAmount.value = totalCost;
-          }
+          final data = body['data'] as Map<String, dynamic>? ?? {};
+          orderCtrl.syncOrderData(data);
         } catch (_) {}
       } else {
         debugPrint("❌ Failed to update vehicle (Status: $status)");

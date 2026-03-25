@@ -34,7 +34,7 @@ class DeliveryTypeDialog extends StatelessWidget {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
-              
+
               // Dynamic list from HomeController
               Obx(() {
                 if (homeController.isDeliveryLoading.value) {
@@ -47,22 +47,34 @@ class DeliveryTypeDialog extends StatelessWidget {
 
                 return Column(
                   children: homeController.deliveryTypes.map((type) {
-                    bool isSelected = orderController.deliveryType.value == type.name;
-                    
+                    final normalizedTypeName = type.name.trim().toUpperCase();
+                    bool isSelected =
+                        orderController.deliveryType.value
+                            .trim()
+                            .toUpperCase() ==
+                        normalizedTypeName;
+
                     // Logic: Multiplier to Percentage
                     // 0.75 -> 75%
-                    double multiplier = double.tryParse(type.priceMultiplier ?? "0") ?? 0.0;
-                    String percentage = "${(multiplier * 100).toStringAsFixed(0)}%";
+                    double multiplier =
+                        double.tryParse(type.priceMultiplier ?? "0") ?? 0.0;
+                    String percentage =
+                        "${(multiplier * 100).toStringAsFixed(0)}%";
 
                     return Container(
                       margin: const EdgeInsets.only(bottom: 8),
                       decoration: BoxDecoration(
                         color: isSelected
-                            ? AppColors.primaryButtonColor.withOpacity(0.1) // Light highlight
+                            ? AppColors.primaryButtonColor.withValues(
+                                alpha: 0.1,
+                              )
+                            // Light highlight
                             : Colors.transparent,
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: isSelected ? Colors.amber : Colors.grey.shade300,
+                          color: isSelected
+                              ? Colors.amber
+                              : Colors.grey.shade300,
                           width: isSelected ? 2 : 1,
                         ),
                       ),
@@ -75,25 +87,35 @@ class DeliveryTypeDialog extends StatelessWidget {
                         trailing: Text(
                           percentage,
                           style: const TextStyle(
-                            fontWeight: FontWeight.bold, 
+                            fontWeight: FontWeight.bold,
                             fontSize: 16,
                             color: Colors.green,
                           ),
                         ),
                         onTap: () async {
-                          orderController.deliveryType.value = type.name;
+                          final previousDeliveryType =
+                              orderController.deliveryType.value;
+                          orderController.setDeliveryTypeName(type.name);
 
                           EasyLoading.show(status: 'Updating...');
-                          bool success = await updateController.patchDeliveryType(
-                            orderController.lastOrderId!,
-                            type.id,
-                          );
+                          bool success = false;
+                          if (orderController.lastOrderId != null) {
+                            success = await updateController.patchDeliveryType(
+                              orderController.lastOrderId!,
+                              type.id,
+                            );
+                          }
                           EasyLoading.dismiss();
 
                           if (success) {
                             Get.back();
                           } else {
-                            EasyLoading.showInfo("Failed to update delivery type. Please try again");
+                            orderController.setDeliveryTypeName(
+                              previousDeliveryType,
+                            );
+                            EasyLoading.showInfo(
+                              "Failed to update delivery type. Please try again",
+                            );
                           }
                         },
                       ),

@@ -13,8 +13,14 @@ import 'package:ZipBee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final HomeController ctrl = Get.put(HomeController());
   final PopupController popupCtrl = Get.put(PopupController());
@@ -22,13 +28,18 @@ class HomeScreen extends StatelessWidget {
   final UserProfileController profileCtrl = Get.put(UserProfileController());
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      popupCtrl.checkAndShowPopup(context);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     const padding = 16.0;
     final media = MediaQuery.of(context);
     final width = media.size.width;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      popupCtrl.checkAndShowPopup(context);
-    });
 
     return Scaffold(
       key: _scaffoldKey,
@@ -151,8 +162,7 @@ class HomeScreen extends StatelessWidget {
                         title: type.name.capitalizeFirst ?? type.name,
                         subtitle: type.formattedSubtitle,
                         selected: isSelected,
-                        onTap: () =>
-                            ctrl.selectDeliveryType(type),
+                        onTap: () => ctrl.selectDeliveryType(type),
                       ),
                     );
                   }).toList(),
