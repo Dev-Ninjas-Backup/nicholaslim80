@@ -86,7 +86,7 @@ class DeliveryTypeDialog extends StatelessWidget {
                           EasyLoading.show(status: 'Updating...');
                           bool success = await updateController.patchDeliveryType(
                             orderController.lastOrderId!,
-                            type.name,
+                            type.id,
                           );
                           EasyLoading.dismiss();
 

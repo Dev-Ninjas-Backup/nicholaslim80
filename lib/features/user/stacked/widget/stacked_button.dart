@@ -20,12 +20,12 @@ class StackedButtonWidget extends StatelessWidget {
     return Obx(() {
       return Container(
         decoration: BoxDecoration(
-          border: Border.all(
-            color: controller.isRoundTrip.value
-                ? AppColors.primaryButtonColor
-                : Colors.transparent,
-            width: 5,
-          ),
+          // border: Border.all(
+          //   color: controller.isRoundTrip.value
+          //       ? AppColors.primaryButtonColor
+          //       : Colors.transparent,
+          //   width: 5,
+          // ),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Column(
@@ -60,7 +60,7 @@ class StackedButtonWidget extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: !controller.isRoundTrip.value
                               ? AppColors.white
-                              : Colors.grey,
+                              : Colors.grey.shade400,
                           // borderRadius: BorderRadius.circular(10),
                         ),
                         child: Text(
@@ -68,6 +68,7 @@ class StackedButtonWidget extends StatelessWidget {
                           style: getTextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
+                            color: !controller.isRoundTrip.value ? AppColors.primaryFontColor : Colors.grey.shade600,
                           ),
                         ),
                       ),
@@ -99,7 +100,7 @@ class StackedButtonWidget extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: controller.isRoundTrip.value
                               ? AppColors.white
-                              : Colors.grey,
+                              : Colors.grey.shade400,
                           // borderRadius: BorderRadius.circular(10),
                         ),
                         child: Text(
@@ -107,6 +108,7 @@ class StackedButtonWidget extends StatelessWidget {
                           style: getTextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
+                            color: controller.isRoundTrip.value ? AppColors.primaryFontColor : Colors.grey.shade600,
                           ),
                         ),
                       ),

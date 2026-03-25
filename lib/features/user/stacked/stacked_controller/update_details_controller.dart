@@ -294,11 +294,11 @@ class UpdateDetailsController extends GetxController {
   }
 
   // Update delivery type
-  Future<bool> patchDeliveryType(int orderId, String deliveryType) async {
+  Future<bool> patchDeliveryType(int orderId, int deliveryTypeId) async {
     isLoading.value = true;
 
     final res = await OrderService.updateOrderDetails(orderId, {
-      'delivery_type_id': deliveryType.toUpperCase(),
+      'delivery_type_id': deliveryTypeId,
     });
 
     isLoading.value = false;
