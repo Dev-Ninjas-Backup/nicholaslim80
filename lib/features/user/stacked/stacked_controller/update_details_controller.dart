@@ -298,7 +298,7 @@ class UpdateDetailsController extends GetxController {
     isLoading.value = true;
 
     final res = await OrderService.updateOrderDetails(orderId, {
-      'delivery_type': deliveryType.toUpperCase(),
+      'delivery_type_id': deliveryType.toUpperCase(),
     });
 
     isLoading.value = false;

@@ -1,20 +1,16 @@
-import 'dart:convert';
-
-import 'package:ZipBee/core/api_end_point/api_end_point.dart';
-import 'package:ZipBee/core/shared_prefference_service/shared_pref.dart';
-import 'package:http/http.dart' as http;
-
 class DeliveryTypeModel {
   final int id;
   final String name;
   final int deliveryTime;
   final String deliveryUnit;
+  final String? priceMultiplier;
 
   DeliveryTypeModel({
     required this.id,
     required this.name,
     required this.deliveryTime,
     required this.deliveryUnit,
+    required this.priceMultiplier,
   });
 
   factory DeliveryTypeModel.fromJson(Map<String, dynamic> json) {
@@ -23,6 +19,7 @@ class DeliveryTypeModel {
       name: json['name'],
       deliveryTime: json['delivery_time'] ?? 0,
       deliveryUnit: json['delivery_unit'] ?? 'MINUTES',
+      priceMultiplier: json['price_multiplier'],
     );
   }
 

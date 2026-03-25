@@ -46,12 +46,12 @@ class HomeController extends GetxController {
   final isLoading = false.obs;
   final currentOrderId = RxnInt();
 
-  void selectDeliveryType(String type) async {
-    deliveryType.value = type;
-    await _createOrderApi(type);
+  void selectDeliveryType(DeliveryTypeModel selectedType) async {
+    deliveryType.value = selectedType.name.toLowerCase();
+    await _createOrderApi(selectedType.id);
   }
 
-  Future<void> _createOrderApi(String type) async {
+  Future<void> _createOrderApi(int deliveryTypeId) async {
     try {
       isLoading.value = true;
       EasyLoading.show(status: 'Processing...');
@@ -59,9 +59,9 @@ class HomeController extends GetxController {
       final response = await OrderService.createOrder({
         "route_type": "ONE_WAY",
         "isFixed": false,
-        "delivery_type": type.toUpperCase(),
+        "delivery_type_id": deliveryTypeId,
         "collect_time": "ASAP"
-      }, deliveryType: type);
+      }, deliveryType: deliveryType.value);
 
       if (response['statusCode'] == 201 || response['statusCode'] == 200) {
         final orderResponse = OrderResponseModel.fromJson(response['body']);
@@ -71,7 +71,7 @@ class HomeController extends GetxController {
 
           Get.toNamed(
             AppRoutes.stackedScreen,
-            arguments: {'orderId': currentOrderId.value, 'deliveryType': type.toUpperCase()},
+            arguments: {'orderId': currentOrderId.value, 'deliveryType': deliveryType.value},
           );
         } else {
           EasyLoading.showError(orderResponse.message ?? "Could not create order");

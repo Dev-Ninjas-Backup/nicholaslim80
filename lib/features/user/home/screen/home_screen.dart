@@ -145,21 +145,21 @@ class HomeScreen extends StatelessWidget {
 
                     return Container(
                       // Ekhane fixed width set kora hoyeche jate 3er beshi hole scroll hoy
-                      width: MediaQuery.of(context).size.width * 0.35,
+                      width: MediaQuery.of(context).size.width * 0.40,
                       margin: const EdgeInsets.only(right: 10),
                       child: buildServiceOptionCard(
                         title: type.name.capitalizeFirst ?? type.name,
                         subtitle: type.formattedSubtitle,
                         selected: isSelected,
                         onTap: () =>
-                            ctrl.selectDeliveryType(type.name.toLowerCase()),
+                            ctrl.selectDeliveryType(type),
                       ),
                     );
                   }).toList(),
                 ),
               );
             }),
-            
+
             SizedBox(height: 35),
             FutureBuilder<List<Map<String, dynamic>>>(
               future: AdsService.fetchAds(),
