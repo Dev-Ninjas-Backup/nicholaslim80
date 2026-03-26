@@ -17,6 +17,7 @@ class StackedOrderController extends GetxController {
   void onInit() {
     super.onInit();
     _handleArguments();
+    ensureInitialPricingLoaded();
   }
 
   // Last Oder ID & Delivery type
@@ -189,6 +190,7 @@ class StackedOrderController extends GetxController {
   var pricingAdditionalServiceCost = 0.0.obs;
   var deliveryTypeMultiplier = 1.0.obs;
   var pricingVehicleName = ''.obs;
+  var isBreakdownExpanded = false.obs;
   var redeemCoins = false.obs;
   var favoriteRiders = false.obs;
   int userCoinBalance = 0; // User's current coin balance from API
@@ -202,6 +204,7 @@ class StackedOrderController extends GetxController {
 
   // Loading states
   var isFetchingTotal = false.obs; // Track if currently fetching total
+  bool _hasRequestedInitialPricing = false;
 
   // Route options
   var isFixed = false.obs; // Fixed route toggle
@@ -214,6 +217,19 @@ class StackedOrderController extends GetxController {
   var receiverInfo = Rx<Map<String, dynamic>?>(null);
 
   var isCancelling = false.obs;
+
+  void toggleBreakdown() {
+    isBreakdownExpanded.value = !isBreakdownExpanded.value;
+  }
+
+  Future<void> ensureInitialPricingLoaded() async {
+    if (_hasRequestedInitialPricing) return;
+    if (lastOrderId == null) return;
+    if (totalCost.value > 0 || isFetchingTotal.value) return;
+
+    _hasRequestedInitialPricing = true;
+    await fetchOrderTotalCost();
+  }
 
   Future<void> handleOrderCancellation(String? reason) async {
     if (lastOrderId == null) {

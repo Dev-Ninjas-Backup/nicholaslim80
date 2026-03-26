@@ -8,32 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 
-class StackedOrderReviewButtonStatic extends StatefulWidget {
+class StackedOrderReviewButtonStatic extends StatelessWidget {
   const StackedOrderReviewButtonStatic({super.key});
-
-  @override
-  State<StackedOrderReviewButtonStatic> createState() =>
-      _StackedOrderReviewButtonStaticState();
-}
-
-class _StackedOrderReviewButtonStaticState
-    extends State<StackedOrderReviewButtonStatic> {
-  bool _showBreakdown = false;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      try {
-        final orderController = Get.find<StackedOrderController>();
-        if (orderController.lastOrderId != null &&
-            orderController.totalCost.value <= 0 &&
-            !orderController.isFetchingTotal.value) {
-          await orderController.fetchOrderTotalCost();
-        }
-      } catch (_) {}
-    });
-  }
 
   String _formatAmount(double value, {String? sign}) {
     final resolvedSign = sign ?? (value < 0 ? '-' : '+');
@@ -80,6 +56,7 @@ class _StackedOrderReviewButtonStaticState
     // ✅ Use Get.find() NOT Get.put() inside build
     final vehicleController = Get.find<StackedVehicleController>();
     final orderController = Get.find<StackedOrderController>();
+    orderController.ensureInitialPricingLoaded();
 
     return Container(
       margin: const EdgeInsets.only(bottom: 70),
@@ -100,6 +77,8 @@ class _StackedOrderReviewButtonStaticState
             final multiplier = orderController.deliveryTypeMultiplier.value;
             final vehicleName = orderController.pricingVehicleName.value;
             final isReady = vehicleController.selectedVehicle.value != null;
+            final isBreakdownExpanded =
+                orderController.isBreakdownExpanded.value;
 
             return Column(
               mainAxisSize: MainAxisSize.min,
@@ -109,18 +88,14 @@ class _StackedOrderReviewButtonStaticState
                     const SizedBox(width: 8),
                     Expanded(
                       child: InkWell(
-                        onTap: () {
-                          setState(() {
-                            _showBreakdown = !_showBreakdown;
-                          });
-                        },
+                        onTap: orderController.toggleBreakdown,
                         borderRadius: BorderRadius.circular(8),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 6),
                           child: Row(
                             children: [
                               Icon(
-                                _showBreakdown
+                                isBreakdownExpanded
                                     ? Icons.keyboard_arrow_down
                                     : Icons.keyboard_arrow_right,
                                 color: Colors.black87,
@@ -258,7 +233,7 @@ class _StackedOrderReviewButtonStaticState
                     const SizedBox(width: 8),
                   ],
                 ),
-                if (_showBreakdown)
+                if (isBreakdownExpanded)
                   Container(
                     width: double.infinity,
                     margin: const EdgeInsets.fromLTRB(12, 4, 12, 0),
