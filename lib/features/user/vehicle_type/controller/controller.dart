@@ -1,10 +1,9 @@
-import 'package:ZipBee/features/user/stacked/vehicle_type/model/model.dart';
-import 'package:ZipBee/features/user/stacked/vehicle_type/service/vehicle_type_service.dart';
+import 'package:ZipBee/features/user/stacked/order_stacked_delivery/controller/stacked_order_controller.dart';
+import 'package:ZipBee/features/user/vehicle_type/model/model.dart';
+import 'package:ZipBee/features/user/vehicle_type/service/vehicle_type_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
-
-import '../../order_stacked_delivery/controller/stacked_order_controller.dart';
 
 class StackedVehicleController extends GetxController {
   final selectedVehicle = Rxn<StackVehicle>();

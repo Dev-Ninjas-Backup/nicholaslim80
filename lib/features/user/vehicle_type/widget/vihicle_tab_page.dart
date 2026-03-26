@@ -1,9 +1,8 @@
 import 'package:ZipBee/core/utils/constants/app_colors.dart';
-import 'package:ZipBee/features/user/stacked/vehicle_type/widget/vehicle_card.dart';
+import 'package:ZipBee/features/user/stacked/order_stacked_delivery/controller/stacked_order_controller.dart';
+import 'package:ZipBee/features/user/vehicle_type/widget/vehicle_card.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
-import '../../order_stacked_delivery/controller/stacked_order_controller.dart';
 import '../controller/additional_controller.dart';
 import '../controller/controller.dart';
 import 'bottom_summery.dart';

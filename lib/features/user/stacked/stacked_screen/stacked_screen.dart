@@ -2,13 +2,13 @@ import 'package:ZipBee/core/common/styles/global_text_style.dart';
 import 'package:ZipBee/core/utils/constants/app_colors.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/controller/stacked_order_controller.dart';
 import 'package:ZipBee/features/user/stacked/widget/pic_date_time.dart';
+import 'package:ZipBee/features/user/vehicle_type/controller/controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ZipBee/features/user/home/controller/home_controller.dart';
+// import 'package:ZipBee/features/user/home/controller/home_controller.dart';
 import 'package:intl/intl.dart';
 
 import '../stacked_controller/stacked_controller.dart';
-import '../vehicle_type/controller/controller.dart';
 import '../widget/collect_time_widget.dart';
 import '../widget/select_location_widget.dart';
 import '../widget/stack_order_review_button_widget.dart';

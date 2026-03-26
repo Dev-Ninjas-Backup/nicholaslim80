@@ -1,5 +1,5 @@
 import 'package:ZipBee/core/common/styles/global_text_style.dart';
-import 'package:ZipBee/features/user/stacked/vehicle_type/screen/screen.dart';
+import 'package:ZipBee/features/user/vehicle_type/screen/screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../stacked_controller/stacked_controller.dart';

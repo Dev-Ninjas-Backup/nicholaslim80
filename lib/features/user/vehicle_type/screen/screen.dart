@@ -1,10 +1,9 @@
 import 'package:ZipBee/core/common/styles/global_text_style.dart';
 import 'package:ZipBee/core/utils/constants/app_colors.dart';
 import 'package:ZipBee/core/utils/constants/icon_path.dart';
+import 'package:ZipBee/features/user/stacked/order_stacked_delivery/controller/stacked_order_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
-import '../../order_stacked_delivery/controller/stacked_order_controller.dart';
 import '../controller/controller.dart';
 import '../widget/vihicle_tab_page.dart';
 
