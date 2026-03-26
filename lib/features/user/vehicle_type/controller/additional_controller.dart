@@ -115,15 +115,10 @@ class AdditionalServiceController extends GetxController {
               as Map<String, dynamic>?;
 
       if (data != null) {
-        final latestCost = data['total_cost'] is String
-            ? double.tryParse(data['total_cost']) ?? 0.0
-            : (data['total_cost'] as num?)?.toDouble() ?? 0.0;
-
-        oc.totalCost.value = latestCost;
-        oc.totalAmount.value = latestCost;
+        oc.syncOrderData(data);
 
         print(
-          '✅ [SERVICE CHANGE] Updated order total_cost to: \$${latestCost.toStringAsFixed(2)}',
+          '✅ [SERVICE CHANGE] Updated order total_cost to: \$${oc.totalCost.value.toStringAsFixed(2)}',
         );
       }
     } catch (e) {
@@ -224,6 +219,27 @@ class AdditionalServiceController extends GetxController {
   /// ===============================
   /// HELPERS
   /// ===============================
+  void syncSelectedServicesFromOrder(Map<String, dynamic> orderData) {
+    final rawAdditionalServices = orderData['additional_services'];
+    if (rawAdditionalServices is! List) {
+      selectedServiceIds.clear();
+      return;
+    }
+
+    final ids = rawAdditionalServices
+        .map((item) {
+          if (item is! Map<String, dynamic>) return null;
+          final id = item['id'];
+          return id is int ? id : int.tryParse(id?.toString() ?? '');
+        })
+        .whereType<int>()
+        .toSet();
+
+    selectedServiceIds
+      ..clear()
+      ..addAll(ids);
+  }
+
   bool isServiceSelected(int id) => selectedServiceIds.contains(id);
 
   double getSelectedServicesTotal() {

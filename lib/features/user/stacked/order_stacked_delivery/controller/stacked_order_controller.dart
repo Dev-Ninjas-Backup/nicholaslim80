@@ -5,6 +5,7 @@ import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/orde
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/widget/payment_method_widget.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/notify_rider.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/promo_service.dart';
+import 'package:ZipBee/features/user/vehicle_type/controller/additional_controller.dart';
 import 'package:ZipBee/features/user/vehicle_type/controller/controller.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -58,9 +59,19 @@ class StackedOrderController extends GetxController {
     return int.tryParse(value?.toString() ?? '');
   }
 
+  double _sumAdditionalServicePrices(dynamic rawServices) {
+    if (rawServices is! List) return 0.0;
+
+    return rawServices.fold<double>(0.0, (sum, item) {
+      if (item is! Map<String, dynamic>) return sum;
+      return sum + _toDouble(item['price']);
+    });
+  }
+
   void _syncPricingSummary(Map<String, dynamic> orderData) {
     final pricingSummary = orderData['pricingSummary'] as Map<String, dynamic>?;
     final deliveryTypeMap = orderData['delivery_type'] as Map<String, dynamic>?;
+    final additionalServices = orderData['additional_services'];
 
     final totalFromSummary = pricingSummary != null
         ? _toDouble(pricingSummary['totalCost'])
@@ -82,7 +93,19 @@ class StackedOrderController extends GetxController {
     pricingDeliveryTypeCharge.value = pricingSummary != null
         ? _toDouble(pricingSummary['deliveryTypeCharge'])
         : 0.0;
-    pricingAdditionalServiceCost.value = _toDouble(orderData['additional_cost']);
+    final additionalServiceFeeFromSummary = pricingSummary != null
+        ? _toDouble(pricingSummary['additionServiceFee'])
+        : 0.0;
+    final additionalServiceFeeFromOrder = _toDouble(orderData['additional_cost']);
+    final additionalServiceFeeFromList = _sumAdditionalServicePrices(
+      additionalServices,
+    );
+
+    pricingAdditionalServiceCost.value = additionalServiceFeeFromSummary > 0
+        ? additionalServiceFeeFromSummary
+        : additionalServiceFeeFromOrder > 0
+        ? additionalServiceFeeFromOrder
+        : additionalServiceFeeFromList;
     deliveryTypeMultiplier.value = _toDouble(deliveryTypeMap?['price_multiplier']);
 
     final selectedVehicleId = _toInt(orderData['vehicle_type_id']);
@@ -140,6 +163,11 @@ class StackedOrderController extends GetxController {
     try {
       final vehicleCtrl = Get.find<StackedVehicleController>();
       vehicleCtrl.syncFromOrderData(orderData);
+    } catch (_) {}
+
+    try {
+      final additionalCtrl = Get.find<AdditionalServiceController>();
+      additionalCtrl.syncSelectedServicesFromOrder(orderData);
     } catch (_) {}
   }
 
