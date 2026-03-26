@@ -68,7 +68,19 @@ class UpdateDetailsController extends GetxController {
       try {
         final oc = Get.find<StackedOrderController>();
         final orderLikeData = data['order'] is Map<String, dynamic>
-            ? data['order'] as Map<String, dynamic>
+            ? <String, dynamic>{
+                ...(data['order'] as Map<String, dynamic>),
+                if (data.containsKey('pricingSummary'))
+                  'pricingSummary': data['pricingSummary'],
+                if (data.containsKey('delivery_type'))
+                  'delivery_type': data['delivery_type'],
+                if (data.containsKey('delivery_type_id'))
+                  'delivery_type_id': data['delivery_type_id'],
+                if (data.containsKey('vehicle_type_id'))
+                  'vehicle_type_id': data['vehicle_type_id'],
+                if (data.containsKey('additional_cost'))
+                  'additional_cost': data['additional_cost'],
+              }
             : data;
         oc.syncOrderData(orderLikeData);
       } catch (_) {}

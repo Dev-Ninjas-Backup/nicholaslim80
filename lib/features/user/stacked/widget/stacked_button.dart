@@ -15,6 +15,66 @@ class StackedButtonWidget extends StatelessWidget {
 
   final StackedLocationController controller;
 
+  Widget _buildStopList({
+    required int count,
+    required bool Function(int index) hasDataAt,
+    required String Function(int index) nameAt,
+    required String Function(int index) addressAt,
+    required String titlePrefix,
+    required String iconPath,
+    required VoidCallback onEdit,
+  }) {
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: count,
+      itemBuilder: (context, index) {
+        final hasData = hasDataAt(index);
+        final name = nameAt(index);
+        final addr = addressAt(index);
+
+        return Column(
+          children: [
+            Row(
+              children: [
+                Image.asset(iconPath, width: 24, height: 24),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '$titlePrefix $name',
+                        style: getTextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Text(
+                        addr,
+                        style: getTextStyle(fontSize: 12, color: Colors.grey),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.edit, size: 18),
+                  onPressed: onEdit,
+                ),
+              ],
+            ),
+            if (!hasData) const SizedBox(height: 8),
+            if (hasData) const SizedBox(height: 8),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Obx(() {
@@ -273,85 +333,29 @@ class StackedButtonWidget extends StatelessWidget {
                         ? controller.collectedStops.length
                         : 1;
 
-                    return ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: count,
-                      itemBuilder: (context, index) {
-                        final hasData =
-                            controller.collectedStops.isNotEmpty &&
-                            index < controller.collectedStops.length;
-
-                        final name = hasData
-                            ? controller.collectedStops[index].contactName
-                            : controller.senderDisplayName;
-
-                        final addr = hasData
-                            ? controller.collectedStops[index].addressFromApr
-                            : controller.senderDisplayAddress;
-
-                        return Column(
-                          children: [
-                            Row(
-                              children: [
-                                Image.asset(
-                                  IconPath.collectIcon,
-                                  width: 24,
-                                  height: 24,
-                                ),
-                                const SizedBox(width: 8),
-
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Pick Up $name',
-                                        style: getTextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                      Text(
-                                        addr,
-                                        style: getTextStyle(
-                                          fontSize: 12,
-                                          color: Colors.grey,
-                                        ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-
-                                /// ✅ SENDER TICK
-                                // if (controller.senderData.value != null)
-                                //   const Icon(
-                                //     Icons.check_circle,
-                                //     color: Colors.green,
-                                //     size: 18,
-                                //   ),
-                                IconButton(
-                                  icon: const Icon(Icons.edit, size: 18),
-                                  onPressed: () {
-                                    Get.to(
-                                      () => StackedCollectFormScreen(
-                                        controller: Get.put(
-                                          StackedCollectFormController(),
-                                        ),
-                                        addressType: 'SENDER',
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-                          ],
+                    return _buildStopList(
+                      count: count,
+                      hasDataAt: (index) =>
+                          controller.collectedStops.isNotEmpty &&
+                          index < controller.collectedStops.length,
+                      nameAt: (index) =>
+                          controller.collectedStops.isNotEmpty &&
+                              index < controller.collectedStops.length
+                          ? controller.collectedStops[index].contactName
+                          : controller.senderDisplayName,
+                      addressAt: (index) =>
+                          controller.collectedStops.isNotEmpty &&
+                              index < controller.collectedStops.length
+                          ? controller.collectedStops[index].addressFromApr
+                          : controller.senderDisplayAddress,
+                      titlePrefix: 'Pick Up',
+                      iconPath: IconPath.collectIcon,
+                      onEdit: () {
+                        Get.to(
+                          () => StackedCollectFormScreen(
+                            controller: Get.put(StackedCollectFormController()),
+                            addressType: 'SENDER',
+                          ),
                         );
                       },
                     );
@@ -363,85 +367,67 @@ class StackedButtonWidget extends StatelessWidget {
                         ? controller.recipientStops.length
                         : 1;
 
-                    return ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: count,
-                      itemBuilder: (context, index) {
-                        final hasData =
-                            controller.recipientStops.isNotEmpty &&
-                            index < controller.recipientStops.length;
+                    return _buildStopList(
+                      count: count,
+                      hasDataAt: (index) =>
+                          controller.recipientStops.isNotEmpty &&
+                          index < controller.recipientStops.length,
+                      nameAt: (index) =>
+                          controller.recipientStops.isNotEmpty &&
+                              index < controller.recipientStops.length
+                          ? controller.recipientStops[index].contactName
+                          : controller.receiverDisplayName,
+                      addressAt: (index) =>
+                          controller.recipientStops.isNotEmpty &&
+                              index < controller.recipientStops.length
+                          ? controller.recipientStops[index].addressFromApr
+                          : controller.receiverDisplayAddress,
+                      titlePrefix: 'Drop Off',
+                      iconPath: IconPath.deliveredIcon,
+                      onEdit: () {
+                        Get.to(
+                          () => StackedCollectFormScreen(
+                            controller: Get.put(StackedCollectFormController()),
+                            addressType: 'RECEIVER',
+                          ),
+                        );
+                      },
+                    );
+                  }),
 
-                        final name = hasData
-                            ? controller.recipientStops[index].contactName
-                            : controller.receiverDisplayName;
+                  /// =================== RETURN LIST ===================
+                  Obx(() {
+                    if (!controller.isRoundTrip.value) {
+                      return const SizedBox.shrink();
+                    }
 
-                        final addr = hasData
-                            ? controller.recipientStops[index].addressFromApr
-                            : controller.receiverDisplayAddress;
+                    final count = controller.collectedStops.isNotEmpty
+                        ? controller.collectedStops.length
+                        : 1;
 
-                        return Column(
-                          children: [
-                            Row(
-                              children: [
-                                Image.asset(
-                                  IconPath.deliveredIcon,
-                                  width: 24,
-                                  height: 24,
-                                ),
-                                const SizedBox(width: 8),
-
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Drop Off $name',
-                                        style: getTextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                      Text(
-                                        addr,
-                                        style: getTextStyle(
-                                          fontSize: 12,
-                                          color: Colors.grey,
-                                        ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-
-                                /// ✅ RECEIVER TICK
-                                // if (controller.receiverData.value != null)
-                                //   const Icon(
-                                //     Icons.check_circle,
-                                //     color: Colors.green,
-                                //     size: 18,
-                                //   ),
-                                IconButton(
-                                  icon: const Icon(Icons.edit, size: 18),
-                                  onPressed: () {
-                                    Get.to(
-                                      () => StackedCollectFormScreen(
-                                        controller: Get.put(
-                                          StackedCollectFormController(),
-                                        ),
-                                        addressType: 'RECEIVER',
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-                          ],
+                    return _buildStopList(
+                      count: count,
+                      hasDataAt: (index) =>
+                          controller.collectedStops.isNotEmpty &&
+                          index < controller.collectedStops.length,
+                      nameAt: (index) =>
+                          controller.collectedStops.isNotEmpty &&
+                              index < controller.collectedStops.length
+                          ? controller.collectedStops[index].contactName
+                          : controller.senderDisplayName,
+                      addressAt: (index) =>
+                          controller.collectedStops.isNotEmpty &&
+                              index < controller.collectedStops.length
+                          ? controller.collectedStops[index].addressFromApr
+                          : controller.senderDisplayAddress,
+                      titlePrefix: 'Return',
+                      iconPath: IconPath.collectIcon,
+                      onEdit: () {
+                        Get.to(
+                          () => StackedCollectFormScreen(
+                            controller: Get.put(StackedCollectFormController()),
+                            addressType: 'SENDER',
+                          ),
                         );
                       },
                     );

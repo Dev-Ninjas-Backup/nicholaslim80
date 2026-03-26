@@ -8,6 +8,7 @@ import 'package:ZipBee/features/user/home/service/ads_service.dart';
 import 'package:ZipBee/features/user/home/widgets/drawer.dart';
 import 'package:ZipBee/features/user/home/widgets/small_horizontal_slider_widget.dart';
 import 'package:ZipBee/features/user/home/controller/profile_controller.dart';
+import 'package:ZipBee/features/user/wallet/loyalty_and_rewards/controller/loyalty_and_rewards_controller.dart';
 import 'package:ZipBee/features/user/wallet/loyalty_and_rewards/screen/loyalty_and_rewards_screen.dart';
 import 'package:ZipBee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +27,10 @@ class _HomeScreenState extends State<HomeScreen> {
   final PopupController popupCtrl = Get.put(PopupController());
   final AuthController authCtrl = Get.put(AuthController());
   final UserProfileController profileCtrl = Get.put(UserProfileController());
+  final LoyaltyAndRewardsController loyaltyCtrl = Get.put(
+    LoyaltyAndRewardsController(),
+    permanent: false,
+  );
 
   @override
   void initState() {
@@ -110,8 +115,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       onTap: () => Get.to(const LoyaltyAndRewardsScreen()),
                       child: borderedInfoCard(
                         title: 'Available Points',
-                        valueBuilder: () =>
-                            '${profileCtrl.availablePoints.value}',
+                        valueBuilder: () => loyaltyCtrl.points.value.toString(),
                         iconPath: IconPath.points,
                       ),
                     ),

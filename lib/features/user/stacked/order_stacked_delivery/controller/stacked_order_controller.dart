@@ -5,6 +5,7 @@ import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/orde
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/widget/payment_method_widget.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/notify_rider.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/promo_service.dart';
+import 'package:ZipBee/features/user/vehicle_type/controller/additional_controller.dart';
 import 'package:ZipBee/features/user/vehicle_type/controller/controller.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -17,15 +18,21 @@ class StackedOrderController extends GetxController {
   void onInit() {
     super.onInit();
     _handleArguments();
+    ensureInitialPricingLoaded();
   }
 
   // Last Oder ID & Delivery type
   int? lastOrderId;
   final deliveryType = ''.obs;
+  final deliveryTypeId = RxnInt();
 
   void setDeliveryTypeName(String? rawName) {
     if (rawName == null || rawName.trim().isEmpty) return;
     deliveryType.value = rawName.trim().toUpperCase();
+  }
+
+  void setDeliveryTypeId(int? id) {
+    deliveryTypeId.value = id;
   }
 
   String get deliveryTypeDisplayName {
@@ -42,6 +49,91 @@ class StackedOrderController extends GetxController {
         .join(' ');
   }
 
+  double _toDouble(dynamic value) {
+    if (value is num) return value.toDouble();
+    return double.tryParse(value?.toString() ?? '') ?? 0.0;
+  }
+
+  int? _toInt(dynamic value) {
+    if (value is int) return value;
+    return int.tryParse(value?.toString() ?? '');
+  }
+
+  double _sumAdditionalServicePrices(dynamic rawServices) {
+    if (rawServices is! List) return 0.0;
+
+    return rawServices.fold<double>(0.0, (sum, item) {
+      if (item is! Map<String, dynamic>) return sum;
+      return sum + _toDouble(item['price']);
+    });
+  }
+
+  void _syncPricingSummary(Map<String, dynamic> orderData) {
+    final pricingSummary = orderData['pricingSummary'] as Map<String, dynamic>?;
+    final deliveryTypeMap = orderData['delivery_type'] as Map<String, dynamic>?;
+    final additionalServices = orderData['additional_services'];
+
+    final totalFromSummary = pricingSummary != null
+        ? _toDouble(pricingSummary['totalCost'])
+        : null;
+    final feeFromSummary = pricingSummary != null
+        ? _toDouble(pricingSummary['totalFee'])
+        : null;
+
+    final resolvedTotalCost = totalFromSummary ?? _toDouble(orderData['total_cost']);
+    final resolvedTotalFee = feeFromSummary ?? _toDouble(orderData['total_fee']);
+
+    totalCost.value = resolvedTotalCost;
+    totalAmount.value = resolvedTotalCost;
+    totalFee.value = resolvedTotalFee;
+
+    pricingBasePrice.value = pricingSummary != null
+        ? _toDouble(pricingSummary['basePrice'])
+        : 0.0;
+    pricingDeliveryTypeCharge.value = pricingSummary != null
+        ? _toDouble(pricingSummary['deliveryTypeCharge'])
+        : 0.0;
+    final additionalServiceFeeFromSummary = pricingSummary != null
+        ? _toDouble(pricingSummary['additionServiceFee'])
+        : 0.0;
+    final additionalServiceFeeFromOrder = _toDouble(orderData['additional_cost']);
+    final additionalServiceFeeFromList = _sumAdditionalServicePrices(
+      additionalServices,
+    );
+
+    pricingAdditionalServiceCost.value = additionalServiceFeeFromSummary > 0
+        ? additionalServiceFeeFromSummary
+        : additionalServiceFeeFromOrder > 0
+        ? additionalServiceFeeFromOrder
+        : additionalServiceFeeFromList;
+    deliveryTypeMultiplier.value = _toDouble(deliveryTypeMap?['price_multiplier']);
+
+    final selectedVehicleId = _toInt(orderData['vehicle_type_id']);
+    final rawVehicleTypes = deliveryTypeMap?['vehicle_types'];
+    if (selectedVehicleId != null && rawVehicleTypes is List) {
+      for (final item in rawVehicleTypes) {
+        if (item is! Map<String, dynamic>) continue;
+        final nestedVehicle = item['vehicle_type'] as Map<String, dynamic>?;
+        if (_toInt(item['vehicle_type_id']) == selectedVehicleId ||
+            _toInt(nestedVehicle?['id']) == selectedVehicleId) {
+          pricingVehicleName.value =
+              nestedVehicle?['vehicle_name']?.toString() ??
+              nestedVehicle?['vehicle_type']?.toString() ??
+              '';
+          break;
+        }
+      }
+    }
+
+    if (pricingVehicleName.value.isEmpty) {
+      try {
+        final vehicleCtrl = Get.find<StackedVehicleController>();
+        pricingVehicleName.value =
+            vehicleCtrl.selectedVehicle.value?.name ?? pricingVehicleName.value;
+      } catch (_) {}
+    }
+  }
+
   void syncOrderData(Map<String, dynamic> orderData) {
     final orderId = orderData['id'];
     if (orderId != null) {
@@ -49,6 +141,13 @@ class StackedOrderController extends GetxController {
     }
 
     final deliveryTypeMap = orderData['delivery_type'] as Map<String, dynamic>?;
+    final rawDeliveryTypeId =
+        deliveryTypeMap?['id'] ?? orderData['delivery_type_id'];
+    setDeliveryTypeId(
+      rawDeliveryTypeId is int
+          ? rawDeliveryTypeId
+          : int.tryParse(rawDeliveryTypeId?.toString() ?? ''),
+    );
     setDeliveryTypeName(
       deliveryTypeMap?['name']?.toString() ??
           orderData['delivery_type']?.toString(),
@@ -59,24 +158,16 @@ class StackedOrderController extends GetxController {
       isFixed.value = isFixedValue == true || isFixedValue.toString() == 'true';
     }
 
-    final parsedTotalCost = double.tryParse(
-      orderData['total_cost']?.toString() ?? '',
-    );
-    final parsedTotalFee = double.tryParse(
-      orderData['total_fee']?.toString() ?? '',
-    );
-
-    if (parsedTotalCost != null) {
-      totalCost.value = parsedTotalCost;
-      totalAmount.value = parsedTotalCost;
-    }
-    if (parsedTotalFee != null) {
-      totalFee.value = parsedTotalFee;
-    }
+    _syncPricingSummary(orderData);
 
     try {
       final vehicleCtrl = Get.find<StackedVehicleController>();
       vehicleCtrl.syncFromOrderData(orderData);
+    } catch (_) {}
+
+    try {
+      final additionalCtrl = Get.find<AdditionalServiceController>();
+      additionalCtrl.syncSelectedServicesFromOrder(orderData);
     } catch (_) {}
   }
 
@@ -93,6 +184,15 @@ class StackedOrderController extends GetxController {
       // Set delivery type
       if (args.containsKey('deliveryType')) {
         setDeliveryTypeName(args['deliveryType']?.toString());
+      }
+
+      if (args.containsKey('deliveryTypeId')) {
+        final rawDeliveryTypeId = args['deliveryTypeId'];
+        setDeliveryTypeId(
+          rawDeliveryTypeId is int
+              ? rawDeliveryTypeId
+              : int.tryParse(rawDeliveryTypeId?.toString() ?? ''),
+        );
       }
 
       if (args['order'] is Map<String, dynamic>) {
@@ -113,6 +213,12 @@ class StackedOrderController extends GetxController {
   var totalAmount = 0.0.obs; // Will be set before showing dialog (server value)
   var totalFee = 0.0.obs; // server-side fee (preferred display when available)
   var totalCost = 0.0.obs; // total_cost from API response (direct from server)
+  var pricingBasePrice = 0.0.obs;
+  var pricingDeliveryTypeCharge = 0.0.obs;
+  var pricingAdditionalServiceCost = 0.0.obs;
+  var deliveryTypeMultiplier = 1.0.obs;
+  var pricingVehicleName = ''.obs;
+  var isBreakdownExpanded = false.obs;
   var redeemCoins = false.obs;
   var favoriteRiders = false.obs;
   int userCoinBalance = 0; // User's current coin balance from API
@@ -126,6 +232,7 @@ class StackedOrderController extends GetxController {
 
   // Loading states
   var isFetchingTotal = false.obs; // Track if currently fetching total
+  bool _hasRequestedInitialPricing = false;
 
   // Route options
   var isFixed = false.obs; // Fixed route toggle
@@ -138,6 +245,19 @@ class StackedOrderController extends GetxController {
   var receiverInfo = Rx<Map<String, dynamic>?>(null);
 
   var isCancelling = false.obs;
+
+  void toggleBreakdown() {
+    isBreakdownExpanded.value = !isBreakdownExpanded.value;
+  }
+
+  Future<void> ensureInitialPricingLoaded() async {
+    if (_hasRequestedInitialPricing) return;
+    if (lastOrderId == null) return;
+    if (totalCost.value > 0 || isFetchingTotal.value) return;
+
+    _hasRequestedInitialPricing = true;
+    await fetchOrderTotalCost();
+  }
 
   Future<void> handleOrderCancellation(String? reason) async {
     if (lastOrderId == null) {
@@ -540,6 +660,11 @@ class StackedOrderController extends GetxController {
     totalAmount.value = 0.0;
     totalFee.value = 0.0;
     totalCost.value = 0.0;
+    pricingBasePrice.value = 0.0;
+    pricingDeliveryTypeCharge.value = 0.0;
+    pricingAdditionalServiceCost.value = 0.0;
+    deliveryTypeMultiplier.value = 1.0;
+    pricingVehicleName.value = '';
     promoCode.value = '';
     discountAmount.value = 0.0;
     promoDiscount.value = 0.0;
@@ -572,6 +697,8 @@ class StackedOrderController extends GetxController {
     if (success) {
       final body = res['body'] as Map<String, dynamic>? ?? {};
       final data = body['data'] as Map<String, dynamic>? ?? {};
+
+      syncOrderData(data);
 
       /// Update totals and discount information from API
       totalAmount.value =
@@ -655,38 +782,10 @@ class StackedOrderController extends GetxController {
       final orderActualData = orderData['data'] as Map<String, dynamic>? ?? {};
 
       debugPrint('📦 Order Data Keys: ${orderActualData.keys.toList()}');
-
-      final totalCostRaw = orderActualData['total_cost'];
-      debugPrint(
-        '💰 Raw Total Cost: $totalCostRaw (Type: ${totalCostRaw.runtimeType})',
-      );
-
-      final fetchedTotalCost = totalCostRaw is String
-          ? double.tryParse(totalCostRaw) ?? 0.0
-          : (totalCostRaw as num?)?.toDouble() ?? 0.0;
-
-      debugPrint(
-        '✅ Parsed Total Cost: \$${fetchedTotalCost.toStringAsFixed(2)}',
-      );
-
-      // Only update if we have a valid non-zero cost
-      if (fetchedTotalCost > 0) {
-        totalAmount.value = fetchedTotalCost;
-        totalCost.value = fetchedTotalCost;
-        debugPrint('✅ VALUES UPDATED');
-        debugPrint('   totalAmount: \$${totalAmount.value.toStringAsFixed(2)}');
-        debugPrint('   totalCost: \$${totalCost.value.toStringAsFixed(2)}');
-      } else {
-        debugPrint('⚠️ Total cost is 0 or invalid, keeping previous values');
-        debugPrint(
-          '   Keeping totalAmount: \$${totalAmount.value.toStringAsFixed(2)}',
-        );
-        debugPrint(
-          '   Keeping totalCost: \$${totalCost.value.toStringAsFixed(2)}',
-        );
-        totalCost.value = previousTotalCost;
-        totalAmount.value = previousTotalAmount;
-      }
+      syncOrderData(orderActualData);
+      debugPrint('✅ VALUES UPDATED');
+      debugPrint('   totalAmount: \$${totalAmount.value.toStringAsFixed(2)}');
+      debugPrint('   totalCost: \$${totalCost.value.toStringAsFixed(2)}');
 
       debugPrint(
         '════════════════════════════════════════════════════════════\n',

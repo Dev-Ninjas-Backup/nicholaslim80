@@ -95,7 +95,10 @@ class DeliveryTypeDialog extends StatelessWidget {
                         onTap: () async {
                           final previousDeliveryType =
                               orderController.deliveryType.value;
+                          final previousDeliveryTypeId =
+                              orderController.deliveryTypeId.value;
                           orderController.setDeliveryTypeName(type.name);
+                          orderController.setDeliveryTypeId(type.id);
 
                           EasyLoading.show(status: 'Updating...');
                           bool success = false;
@@ -112,6 +115,9 @@ class DeliveryTypeDialog extends StatelessWidget {
                           } else {
                             orderController.setDeliveryTypeName(
                               previousDeliveryType,
+                            );
+                            orderController.setDeliveryTypeId(
+                              previousDeliveryTypeId,
                             );
                             EasyLoading.showInfo(
                               "Failed to update delivery type. Please try again",
