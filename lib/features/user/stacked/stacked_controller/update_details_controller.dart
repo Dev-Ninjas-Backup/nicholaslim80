@@ -65,6 +65,14 @@ class UpdateDetailsController extends GetxController {
         } catch (_) {}
       }
 
+      try {
+        final oc = Get.find<StackedOrderController>();
+        final orderLikeData = data['order'] is Map<String, dynamic>
+            ? data['order'] as Map<String, dynamic>
+            : data;
+        oc.syncOrderData(orderLikeData);
+      } catch (_) {}
+
       // Sync collect_time and scheduled_time if present
       try {
         String? ct;
@@ -294,11 +302,11 @@ class UpdateDetailsController extends GetxController {
   }
 
   // Update delivery type
-  Future<bool> patchDeliveryType(int orderId, String deliveryType) async {
+  Future<bool> patchDeliveryType(int orderId, int deliveryTypeId) async {
     isLoading.value = true;
 
     final res = await OrderService.updateOrderDetails(orderId, {
-      'delivery_type_id': deliveryType.toUpperCase(),
+      'delivery_type_id': deliveryTypeId,
     });
 
     isLoading.value = false;

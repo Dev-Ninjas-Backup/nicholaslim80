@@ -13,7 +13,6 @@ import 'package:ZipBee/features/user/stacked/vehicle_type/controller/controller.
 import 'package:ZipBee/features/user/stacked/widget/pic_date_time.dart';
 
 class StackedOrderController extends GetxController {
-
   @override
   void onInit() {
     super.onInit();
@@ -21,24 +20,88 @@ class StackedOrderController extends GetxController {
   }
 
   // Last Oder ID & Delivery type
-  int? lastOrderId; 
+  int? lastOrderId;
   final deliveryType = ''.obs;
+
+  void setDeliveryTypeName(String? rawName) {
+    if (rawName == null || rawName.trim().isEmpty) return;
+    deliveryType.value = rawName.trim().toUpperCase();
+  }
+
+  String get deliveryTypeDisplayName {
+    final raw = deliveryType.value.trim();
+    if (raw.isEmpty) return '';
+    return raw
+        .toLowerCase()
+        .split('_')
+        .map(
+          (part) => part.isEmpty
+              ? part
+              : '${part[0].toUpperCase()}${part.substring(1)}',
+        )
+        .join(' ');
+  }
+
+  void syncOrderData(Map<String, dynamic> orderData) {
+    final orderId = orderData['id'];
+    if (orderId != null) {
+      lastOrderId = orderId is int ? orderId : int.tryParse(orderId.toString());
+    }
+
+    final deliveryTypeMap = orderData['delivery_type'] as Map<String, dynamic>?;
+    setDeliveryTypeName(
+      deliveryTypeMap?['name']?.toString() ??
+          orderData['delivery_type']?.toString(),
+    );
+
+    final isFixedValue = orderData['isFixed'];
+    if (isFixedValue != null) {
+      isFixed.value = isFixedValue == true || isFixedValue.toString() == 'true';
+    }
+
+    final parsedTotalCost = double.tryParse(
+      orderData['total_cost']?.toString() ?? '',
+    );
+    final parsedTotalFee = double.tryParse(
+      orderData['total_fee']?.toString() ?? '',
+    );
+
+    if (parsedTotalCost != null) {
+      totalCost.value = parsedTotalCost;
+      totalAmount.value = parsedTotalCost;
+    }
+    if (parsedTotalFee != null) {
+      totalFee.value = parsedTotalFee;
+    }
+
+    try {
+      final vehicleCtrl = Get.find<StackedVehicleController>();
+      vehicleCtrl.syncFromOrderData(orderData);
+    } catch (_) {}
+  }
+
   // Get arguments from create order in Home controller
   void _handleArguments() {
     if (Get.arguments != null) {
       final args = Get.arguments as Map<String, dynamic>;
-      
+
       // Order ID set
       if (args.containsKey('orderId')) {
         lastOrderId = args['orderId'];
       }
 
-      // Set delivery type 
+      // Set delivery type
       if (args.containsKey('deliveryType')) {
-        deliveryType.value = args['deliveryType'];
+        setDeliveryTypeName(args['deliveryType']?.toString());
       }
 
-      debugPrint('StackedOrderController initialized with Order ID: $lastOrderId and Delivery Type: $deliveryType');
+      if (args['order'] is Map<String, dynamic>) {
+        syncOrderData(args['order'] as Map<String, dynamic>);
+      }
+
+      debugPrint(
+        'StackedOrderController initialized with Order ID: $lastOrderId and Delivery Type: $deliveryType',
+      );
     }
   }
 
@@ -233,7 +296,10 @@ class StackedOrderController extends GetxController {
 
     debugPrint('Placing order payload: $payload');
 
-    final res = await OrderService.createOrder(payload, deliveryType: 'STACKED');
+    final res = await OrderService.createOrder(
+      payload,
+      deliveryType: 'STACKED',
+    );
 
     // Debug print full response
     debugPrint('CreateOrder full response: ${res}');
@@ -302,6 +368,7 @@ class StackedOrderController extends GetxController {
               (getRes['body'] as Map<String, dynamic>?)?['data']
                   as Map<String, dynamic>?;
           if (getData != null) {
+            syncOrderData(getData);
             final fetchedTotalCost =
                 double.tryParse(getData['total_cost'].toString()) ?? 0.0;
             print('📥 Order Details Fetched from API:');
@@ -376,6 +443,7 @@ class StackedOrderController extends GetxController {
         placeOrderResponse.value = bodyData;
 
         final data = bodyData['data'] as Map<String, dynamic>? ?? {};
+        syncOrderData(data);
 
         // Extract order ID and update orderNumber
         final orderId = data['id'] as int? ?? lastOrderId;

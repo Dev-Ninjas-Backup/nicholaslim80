@@ -88,8 +88,14 @@ class StackedVehicleTabPage extends StatelessWidget {
                     );
                   }
 
+                  // if (services.isEmpty) {
+                  //   return const Center(child: CircularProgressIndicator());
+                  // }
+
                   if (services.isEmpty) {
-                    return const Center(child: CircularProgressIndicator());
+                    return const Center(
+                      child: Text("No additional services available"),
+                    );
                   }
 
                   return Column(
@@ -122,7 +128,7 @@ class StackedVehicleTabPage extends StatelessWidget {
                               if (isSelected)
                                 BoxShadow(
                                   color: AppColors.primaryButtonColor
-                                      .withOpacity(0.1),
+                                      .withValues(alpha: 0.1),
                                   blurRadius: 4,
                                   spreadRadius: 1,
                                 ),

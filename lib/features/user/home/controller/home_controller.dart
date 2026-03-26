@@ -9,6 +9,7 @@ import 'package:ZipBee/features/user/home/model/order_response_model.dart';
 import 'package:ZipBee/features/user/home/service/delivery_type_service.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/service/order_service.dart';
 import 'package:ZipBee/routes/app_routes.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 
@@ -22,7 +23,7 @@ class HomeController extends GetxController {
   final selectedVehicleId = RxnString();
   var drawerItem = <DrawerModel>[].obs;
 
-  // Delivery types 
+  // Delivery types
   final deliveryTypes = <DeliveryTypeModel>[].obs;
   final isDeliveryLoading = false.obs;
 
@@ -60,34 +61,44 @@ class HomeController extends GetxController {
         "route_type": "ONE_WAY",
         "isFixed": false,
         "delivery_type_id": deliveryTypeId,
-        "collect_time": "ASAP"
+        "collect_time": "ASAP",
       }, deliveryType: deliveryType.value);
 
       if (response['statusCode'] == 201 || response['statusCode'] == 200) {
         final orderResponse = OrderResponseModel.fromJson(response['body']);
         if (orderResponse.success == true) {
           currentOrderId.value = orderResponse.data?.id;
+          final resolvedDeliveryType =
+              orderResponse.data?.deliveryType?.toLowerCase() ??
+              deliveryType.value;
           EasyLoading.dismiss();
 
           Get.toNamed(
             AppRoutes.stackedScreen,
-            arguments: {'orderId': currentOrderId.value, 'deliveryType': deliveryType.value},
+            arguments: {
+              'orderId': currentOrderId.value,
+              'deliveryType': resolvedDeliveryType,
+              'order': orderResponse.data?.rawJson,
+            },
           );
         } else {
-          EasyLoading.showError(orderResponse.message ?? "Could not create order");
+          EasyLoading.showError(
+            orderResponse.message ?? "Could not create order",
+          );
         }
       } else {
         EasyLoading.showError("Server Error ${response['statusCode']}");
       }
     } catch (e) {
       EasyLoading.dismiss();
-      EasyLoading.showError("Something went wrong");
+      debugPrint('Error creating order: $e');
+      EasyLoading.showError("Something went wrong. $e");
     } finally {
       EasyLoading.dismiss();
       isLoading.value = false;
     }
   }
-  
+
   // Fetch delivery types
   Future<void> fetchDeliveryTypes() async {
     try {
@@ -97,7 +108,7 @@ class HomeController extends GetxController {
       if (response['statusCode'] == 200 && response['body'] != null) {
         final List rawData = response['body']['data']['data'];
         deliveryTypes.assignAll(
-          rawData.map((json) => DeliveryTypeModel.fromJson(json)).toList()
+          rawData.map((json) => DeliveryTypeModel.fromJson(json)).toList(),
         );
       }
     } finally {
@@ -145,3 +156,4 @@ class HomeController extends GetxController {
     ]);
   }
 }
+
