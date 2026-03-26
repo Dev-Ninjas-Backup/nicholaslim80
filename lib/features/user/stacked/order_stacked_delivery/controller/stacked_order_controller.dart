@@ -22,10 +22,15 @@ class StackedOrderController extends GetxController {
   // Last Oder ID & Delivery type
   int? lastOrderId;
   final deliveryType = ''.obs;
+  final deliveryTypeId = RxnInt();
 
   void setDeliveryTypeName(String? rawName) {
     if (rawName == null || rawName.trim().isEmpty) return;
     deliveryType.value = rawName.trim().toUpperCase();
+  }
+
+  void setDeliveryTypeId(int? id) {
+    deliveryTypeId.value = id;
   }
 
   String get deliveryTypeDisplayName {
@@ -49,6 +54,13 @@ class StackedOrderController extends GetxController {
     }
 
     final deliveryTypeMap = orderData['delivery_type'] as Map<String, dynamic>?;
+    final rawDeliveryTypeId =
+        deliveryTypeMap?['id'] ?? orderData['delivery_type_id'];
+    setDeliveryTypeId(
+      rawDeliveryTypeId is int
+          ? rawDeliveryTypeId
+          : int.tryParse(rawDeliveryTypeId?.toString() ?? ''),
+    );
     setDeliveryTypeName(
       deliveryTypeMap?['name']?.toString() ??
           orderData['delivery_type']?.toString(),
@@ -93,6 +105,15 @@ class StackedOrderController extends GetxController {
       // Set delivery type
       if (args.containsKey('deliveryType')) {
         setDeliveryTypeName(args['deliveryType']?.toString());
+      }
+
+      if (args.containsKey('deliveryTypeId')) {
+        final rawDeliveryTypeId = args['deliveryTypeId'];
+        setDeliveryTypeId(
+          rawDeliveryTypeId is int
+              ? rawDeliveryTypeId
+              : int.tryParse(rawDeliveryTypeId?.toString() ?? ''),
+        );
       }
 
       if (args['order'] is Map<String, dynamic>) {

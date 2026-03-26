@@ -185,7 +185,11 @@ class StackedVehicleController extends GetxController {
   }
 
   /// Toggle vehicle for order update (with API call)
-  Future<void> toggleVehicle(StackVehicle vehicle, int orderId) async {
+  Future<void> toggleVehicle(
+    StackVehicle vehicle,
+    int orderId,
+    int deliveryTypeId,
+  ) async {
     if (vehicle.id == null) {
       debugPrint("❌ Vehicle ID is null, cannot update");
       EasyLoading.showError("Invalid vehicle");
@@ -204,6 +208,7 @@ class StackedVehicleController extends GetxController {
       final res = await VehicleTypeService.updateVehicleType(
         orderId: orderId,
         vehicleTypeId: vehicle.id!,
+        deliveryTypeId: deliveryTypeId,
       );
 
       final status = res['statusCode'] as int? ?? 500;

@@ -10,6 +10,7 @@ class VehicleTypeService {
   static Future<Map<String, dynamic>> updateVehicleType({
     required int orderId,
     required int vehicleTypeId,
+    required int deliveryTypeId,
   }) async {
     try {
       final token = await SharedPreferencesHelper.getAccessToken();
@@ -19,7 +20,10 @@ class VehicleTypeService {
         orderId.toString(),
       );
 
-      final body = {'vehicle_type_id': vehicleTypeId};
+      final body = {
+        'delivery_type_id': deliveryTypeId,
+        'vehicle_type_id': vehicleTypeId,
+      };
 
       debugPrint('➡️ UPDATE VEHICLE URL: $url');
       debugPrint('➡️ UPDATE VEHICLE REQUEST BODY: ${jsonEncode(body)}');

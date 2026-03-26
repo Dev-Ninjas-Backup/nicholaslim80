@@ -50,11 +50,18 @@ class StackedVehicleTabPage extends StatelessWidget {
                                 vehicleController.selectedVehicle.value == v,
                             onTap: () {
                               final orderId = orderController.lastOrderId;
-                              if (orderId != null) {
-                                vehicleController.toggleVehicle(v, orderId);
+                              final deliveryTypeId =
+                                  orderController.deliveryTypeId.value;
+
+                              if (orderId != null && deliveryTypeId != null) {
+                                vehicleController.toggleVehicle(
+                                  v,
+                                  orderId,
+                                  deliveryTypeId,
+                                );
                               } else {
                                 debugPrint(
-                                  '❌ Order ID is null, cannot update vehicle',
+                                  '❌ Order ID or Delivery Type ID is null, cannot update vehicle',
                                 );
                               }
                             },

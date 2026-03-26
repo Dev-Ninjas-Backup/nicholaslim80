@@ -78,6 +78,7 @@ class HomeController extends GetxController {
             arguments: {
               'orderId': currentOrderId.value,
               'deliveryType': resolvedDeliveryType,
+              'deliveryTypeId': deliveryTypeId,
               'order': orderResponse.data?.rawJson,
             },
           );
@@ -156,4 +157,3 @@ class HomeController extends GetxController {
     ]);
   }
 }
-
