@@ -23,11 +23,12 @@ class ScheduleRecipientWidgetST extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Use a unique tag for additional stop to get a fresh controller instance
-    final String controllerTag = isAdditionalStop ? 'additional_stop' : 'primary';
-    final controller = Get.put(
-      RecipientController(),
-      tag: controllerTag,
-    );
+    final String controllerTag = isAdditionalStop
+        ? 'additional_stop'
+        : 'primary';
+    final controller = Get.isRegistered<RecipientController>(tag: controllerTag)
+        ? Get.find<RecipientController>(tag: controllerTag)
+        : Get.put(RecipientController(), tag: controllerTag);
 
     // Initialize controller on first build with proper separation
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -42,6 +43,27 @@ class ScheduleRecipientWidgetST extends StatelessWidget {
           style: getTextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
         SizedBox(height: 10),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: const Color(0xFFFFF8E1),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Row(
+            children: [
+              Icon(Icons.map_outlined, color: Colors.amber.shade800, size: 18),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Use the map above to search by postal code, building, or road and auto-fill the address.',
+                  style: getTextStyle(fontSize: 12, color: Colors.black87),
+                ),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(height: 12),
 
         CustomTextField(
           controller: controller.postalCodeController,
@@ -106,9 +128,7 @@ class ScheduleRecipientWidgetST extends StatelessWidget {
           () => SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: controller.isFormValid.value
-                  ? onPressed
-                  : null,
+              onPressed: controller.isFormValid.value ? onPressed : null,
               style: ElevatedButton.styleFrom(
                 backgroundColor: controller.isFormValid.value
                     ? Colors.yellow.shade700

@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 
-
 class StackedSchedulRecepmenteScreen extends StatelessWidget {
   final StackedAddressModel? address;
 
@@ -17,6 +16,13 @@ class StackedSchedulRecepmenteScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final args = Get.arguments as Map<String, dynamic>?;
+    final isAdditionalStop = args?['isAdditionalStop'] ?? false;
+    final controllerTag = isAdditionalStop ? 'additional_stop' : 'primary';
+    final controller = Get.isRegistered<RecipientController>(tag: controllerTag)
+        ? Get.find<RecipientController>(tag: controllerTag)
+        : Get.put(RecipientController(), tag: controllerTag);
+
     return Scaffold(
       backgroundColor: AppColors.backgroungColor,
       appBar: AppBar(
@@ -36,7 +42,13 @@ class StackedSchedulRecepmenteScreen extends StatelessWidget {
               SizedBox(
                 height: 240,
                 width: double.infinity,
-                child: GoogleMapWidget(),
+                child: GoogleMapWidget(
+                  mode: GoogleMapWidgetMode.addressPicker,
+                  initialQuery: controller.postalCodeController.text.isNotEmpty
+                      ? controller.postalCodeController.text
+                      : controller.addressController.text,
+                  onLocationConfirmed: controller.applyResolvedLocation,
+                ),
               ),
 
               /// FORM Section
@@ -49,20 +61,22 @@ class StackedSchedulRecepmenteScreen extends StatelessWidget {
                 child: ScheduleRecipientWidgetST(
                   title: 'Recipient',
                   address: address,
-                  isAdditionalStop: (Get.arguments as Map<String, dynamic>?)?['isAdditionalStop'] ?? false,
+                  isAdditionalStop: isAdditionalStop,
                   onPressed: () async {
-                    // Get controller with the correct tag
-                    final String controllerTag = (Get.arguments as Map<String, dynamic>?)?['isAdditionalStop'] ?? false ? 'additional_stop' : 'primary';
-                    final controller = Get.find<RecipientController>(tag: controllerTag);
                     final orderController = Get.find<StackedOrderController>();
                     final orderId = orderController.lastOrderId;
-                    
+
                     if (orderId == null) {
-                      EasyLoading.showError('Order ID not found. Please try again.');
+                      EasyLoading.showError(
+                        'Order ID not found. Please try again.',
+                      );
                       return;
                     }
 
-                    final res = await controller.saveDestination(type: 'RECEIVER', orderId: orderId);
+                    final res = await controller.saveDestination(
+                      type: 'RECEIVER',
+                      orderId: orderId,
+                    );
                     if (res != null) {
                       final data = res;
 
@@ -71,25 +85,39 @@ class StackedSchedulRecepmenteScreen extends StatelessWidget {
 
                       // Update total cost in order controller
                       if (controller.totalCost.value > 0) {
-                        orderController.totalAmount.value = controller.totalCost.value;
+                        orderController.totalAmount.value =
+                            controller.totalCost.value;
                       }
 
                       // Extract and store data in StackedLocationController
-                      final locationController = Get.find<StackedLocationController>();
+                      final locationController =
+                          Get.find<StackedLocationController>();
 
                       final savedAddress = AddressData(
                         id: (data['id'] as int?) ?? 0,
-                        address: data['address'] ?? controller.addressController.text,
-                        addressFromApr: data['address'] ?? controller.addressController.text,
-                        floorUnit: data['floor_unit'] ?? controller.floorController.text,
-                        contactName: data['contact_name'] ?? controller.nameController.text,
-                        contactNumber: data['contact_number'] ?? controller.numberController.text,
-                        noteToDriver: data['note_to_driver'] ?? controller.noteController.text,
-                        isSaved: (data['is_saved'] as bool?) ?? controller.saveAddress.value,
+                        address:
+                            data['address'] ??
+                            controller.addressController.text,
+                        addressFromApr:
+                            data['address'] ??
+                            controller.addressController.text,
+                        floorUnit:
+                            data['floor_unit'] ??
+                            controller.floorController.text,
+                        contactName:
+                            data['contact_name'] ??
+                            controller.nameController.text,
+                        contactNumber:
+                            data['contact_number'] ??
+                            controller.numberController.text,
+                        noteToDriver:
+                            data['note_to_driver'] ??
+                            controller.noteController.text,
+                        isSaved:
+                            (data['is_saved'] as bool?) ??
+                            controller.saveAddress.value,
                         type: data['type'] ?? 'RECEIVER',
                       );
-
-                      final args = Get.arguments as Map<String, dynamic>?;
 
                       if (args != null && args['addAsStop'] == true) {
                         // Add as additional recipient stop

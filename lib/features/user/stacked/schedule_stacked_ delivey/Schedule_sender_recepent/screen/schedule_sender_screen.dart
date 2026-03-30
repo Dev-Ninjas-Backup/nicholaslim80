@@ -14,7 +14,6 @@ import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 
-
 class StackedSenderScheduleScreen extends StatelessWidget {
   final StackedAddressModel? address;
 
@@ -29,11 +28,16 @@ class StackedSenderScheduleScreen extends StatelessWidget {
     // Prefill if address provided and fields empty
     if (address != null) {
       if (controller.addressController.text.isEmpty) {
-        controller.addressController.text = address!.addressFromApr.isNotEmpty ? address!.addressFromApr : address!.address;
+        controller.addressController.text = address!.addressFromApr.isNotEmpty
+            ? address!.addressFromApr
+            : address!.address;
       }
-      if (controller.floorController.text.isEmpty) controller.floorController.text = address!.floorUnit;
-      if (controller.nameController.text.isEmpty) controller.nameController.text = address!.contactName;
-      if (controller.numberController.text.isEmpty) controller.numberController.text = address!.contactNumber;
+      if (controller.floorController.text.isEmpty)
+        controller.floorController.text = address!.floorUnit;
+      if (controller.nameController.text.isEmpty)
+        controller.nameController.text = address!.contactName;
+      if (controller.numberController.text.isEmpty)
+        controller.numberController.text = address!.contactNumber;
       controller.saveAddress.value = address!.isSaved;
     }
 
@@ -56,7 +60,13 @@ class StackedSenderScheduleScreen extends StatelessWidget {
               SizedBox(
                 height: 240,
                 width: double.infinity,
-                child: GoogleMapWidget(),
+                child: GoogleMapWidget(
+                  mode: GoogleMapWidgetMode.addressPicker,
+                  initialQuery: controller.postalCodeController.text.isNotEmpty
+                      ? controller.postalCodeController.text
+                      : controller.addressController.text,
+                  onLocationConfirmed: controller.applyResolvedLocation,
+                ),
               ),
 
               /// FORM SECTION
@@ -140,15 +150,21 @@ class StackedSenderScheduleScreen extends StatelessWidget {
                         child: ElevatedButton(
                           onPressed: controller.isFormValid.value
                               ? () async {
-                                  final orderController = Get.find<StackedOrderController>();
+                                  final orderController =
+                                      Get.find<StackedOrderController>();
                                   final orderId = orderController.lastOrderId;
-                                  
+
                                   if (orderId == null) {
-                                    EasyLoading.showError('Order ID not found. Please try again.');
+                                    EasyLoading.showError(
+                                      'Order ID not found. Please try again.',
+                                    );
                                     return;
                                   }
 
-                                  final res = await controller.saveDestination(type: 'SENDER', orderId: orderId);
+                                  final res = await controller.saveDestination(
+                                    type: 'SENDER',
+                                    orderId: orderId,
+                                  );
                                   if (res != null) {
                                     final data = res;
 
@@ -157,30 +173,54 @@ class StackedSenderScheduleScreen extends StatelessWidget {
 
                                     // Update total cost in order controller
                                     if (controller.totalCost.value > 0) {
-                                      orderController.totalAmount.value = controller.totalCost.value;
+                                      orderController.totalAmount.value =
+                                          controller.totalCost.value;
                                     }
 
                                     // Extract and store data in StackedLocationController
-                                    final locationController = Get.find<StackedLocationController>();
+                                    final locationController =
+                                        Get.find<StackedLocationController>();
                                     final savedAddress = AddressData(
                                       id: (data['id'] as int?) ?? 0,
-                                      address: data['address'] ?? controller.addressController.text,
-                                      addressFromApr: data['address'] ?? controller.addressController.text,
-                                      floorUnit: data['floor_unit'] ?? controller.floorController.text,
-                                      contactName: data['contact_name'] ?? controller.nameController.text,
-                                      contactNumber: data['contact_number'] ?? controller.numberController.text,
-                                      noteToDriver: data['note_to_driver'] ?? controller.noteController.text,
-                                      isSaved: (data['is_saved'] as bool?) ?? controller.saveAddress.value,
+                                      address:
+                                          data['address'] ??
+                                          controller.addressController.text,
+                                      addressFromApr:
+                                          data['address'] ??
+                                          controller.addressController.text,
+                                      floorUnit:
+                                          data['floor_unit'] ??
+                                          controller.floorController.text,
+                                      contactName:
+                                          data['contact_name'] ??
+                                          controller.nameController.text,
+                                      contactNumber:
+                                          data['contact_number'] ??
+                                          controller.numberController.text,
+                                      noteToDriver:
+                                          data['note_to_driver'] ??
+                                          controller.noteController.text,
+                                      isSaved:
+                                          (data['is_saved'] as bool?) ??
+                                          controller.saveAddress.value,
                                       type: data['type'] ?? 'SENDER',
                                     );
 
-                                    locationController.updateSenderData(savedAddress);
+                                    locationController.updateSenderData(
+                                      savedAddress,
+                                    );
 
                                     // If Add Stop flow requested, navigate to recipient screen to add a recipient stop
-                                    final args = Get.arguments as Map<String, dynamic>?;
-                                    if (args != null && args['navigateNextToRecipient'] == true) {
+                                    final args =
+                                        Get.arguments as Map<String, dynamic>?;
+                                    if (args != null &&
+                                        args['navigateNextToRecipient'] ==
+                                            true) {
                                       debugPrint('if executed');
-                                      Get.off(() => StackedSchedulRecepmenteScreen(), arguments: {'addAsStop': true});
+                                      Get.off(
+                                        () => StackedSchedulRecepmenteScreen(),
+                                        arguments: {'addAsStop': true},
+                                      );
                                     } else {
                                       // Regular flow: back to stacked screen
                                       debugPrint('else executed');
