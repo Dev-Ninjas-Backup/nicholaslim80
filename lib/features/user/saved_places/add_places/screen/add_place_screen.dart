@@ -1,4 +1,5 @@
 import 'package:ZipBee/features/user/saved_places/add_places/controller/saved_places_controller.dart';
+import 'package:ZipBee/features/user/saved_places/controller/saved_places_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -9,6 +10,7 @@ import 'package:ZipBee/features/user/google_map/widget/google_map_widget.dart';
 class AddPlaceScreen extends StatelessWidget {
   // final AddPlaceController controller = Get.put(AddPlaceController());
   final controller = Get.put(AddPlaceController());
+  final savedPlaceController = Get.find<SavedPlaceController>();
 
   AddPlaceScreen({super.key});
 
@@ -17,7 +19,10 @@ class AddPlaceScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.backgroungColor,
       appBar: AppBar(
-        title: Text('Add Place', style: getTextStyle(fontSize: 20.sp)),
+        title: Text(
+          savedPlaceController.isEditing ? 'Edit Place' : 'Add Place',
+          style: getTextStyle(fontSize: 20.sp),
+        ),
         backgroundColor: AppColors.backgroungColor,
         elevation: 1,
       ),
@@ -52,6 +57,10 @@ class AddPlaceScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(18),
                 child: GoogleMapWidget(
                   mode: GoogleMapWidgetMode.addressPicker,
+                  initialQuery:
+                      savedPlaceController.selectedPostalCode.value.isNotEmpty
+                      ? savedPlaceController.selectedPostalCode.value
+                      : savedPlaceController.selectedAddress.value,
                   onLocationConfirmed: controller.onLocationSelected,
                 ),
               ),

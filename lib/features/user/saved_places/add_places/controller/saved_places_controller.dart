@@ -16,7 +16,10 @@ class AddPlaceController extends GetxController {
     final savedPlaceController = Get.isRegistered<SavedPlaceController>()
         ? Get.find<SavedPlaceController>()
         : Get.put(SavedPlaceController());
-    savedPlaceController.selectAddress(location.address);
+    savedPlaceController.selectLocation(
+      location,
+      type: savedPlaceController.selectedType.value,
+    );
     Get.to(() => NamePlaceScreen());
   }
 }

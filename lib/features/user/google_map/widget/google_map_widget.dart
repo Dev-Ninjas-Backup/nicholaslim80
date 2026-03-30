@@ -302,6 +302,28 @@ class GoogleMapContentState extends State<GoogleMapContent> {
     await moveCamera(target, zoom: 17);
   }
 
+  String _displaySuggestionText(String value) {
+    final trimmed = value.trim();
+    if (trimmed.isEmpty) return trimmed;
+
+    final hasLetters = RegExp(r'[A-Za-z]').hasMatch(trimmed);
+    final isAllUppercase = hasLetters && trimmed == trimmed.toUpperCase();
+    if (!isAllUppercase) return trimmed;
+
+    return trimmed.split(RegExp(r'(\s+)')).map((part) {
+      if (part.trim().isEmpty) return part;
+
+      return part
+          .split('-')
+          .map((segment) {
+            if (segment.isEmpty) return segment;
+            final lower = segment.toLowerCase();
+            return '${lower[0].toUpperCase()}${lower.substring(1)}';
+          })
+          .join('-');
+    }).join();
+  }
+
   void _setSearchField(String value) {
     isMutatingSearchField = true;
     searchController
@@ -487,9 +509,11 @@ class GoogleMapContentState extends State<GoogleMapContent> {
                   color: isSelected ? Colors.amber.shade700 : Colors.grey,
                 ),
                 title: Text(
-                  suggestion.building.isNotEmpty
-                      ? suggestion.building
-                      : suggestion.road,
+                  _displaySuggestionText(
+                    suggestion.building.isNotEmpty
+                        ? suggestion.building
+                        : suggestion.road,
+                  ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
@@ -498,7 +522,7 @@ class GoogleMapContentState extends State<GoogleMapContent> {
                   ),
                 ),
                 subtitle: Text(
-                  suggestion.label,
+                  _displaySuggestionText(suggestion.label),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(fontSize: 12),

@@ -88,6 +88,29 @@ class SavedPlaceScreen extends StatelessWidget {
                                       p.address,
                                       style: getTextStyle(fontSize: 13),
                                     ),
+                                    trailing: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        IconButton(
+                                          onPressed: () {
+                                            controller.startEditing(p);
+                                            Get.to(() => AddPlaceScreen());
+                                          },
+                                          icon: const Icon(
+                                            Icons.edit_outlined,
+                                            color: Colors.amber,
+                                          ),
+                                        ),
+                                        IconButton(
+                                          onPressed: () =>
+                                              controller.removePlace(p.id),
+                                          icon: const Icon(
+                                            Icons.delete_outline,
+                                            color: Colors.redAccent,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
@@ -104,7 +127,10 @@ class SavedPlaceScreen extends StatelessWidget {
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),
-                                  onTap: () => Get.to(() => AddPlaceScreen()),
+                                  onTap: () {
+                                    controller.clearSelectedPlace();
+                                    Get.to(() => AddPlaceScreen());
+                                  },
                                   trailing: Icon(
                                     Icons.chevron_right,
                                     color: Colors.grey,
