@@ -23,6 +23,7 @@ class StackedButtonWidget extends StatelessWidget {
     required String titlePrefix,
     required String iconPath,
     required VoidCallback onEdit,
+    bool showTickWhenHasData = false,
   }) {
     return ListView.builder(
       shrinkWrap: true,
@@ -52,11 +53,28 @@ class StackedButtonWidget extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      Text(
-                        addr,
-                        style: getTextStyle(fontSize: 12, color: Colors.grey),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              addr,
+                              style: getTextStyle(
+                                fontSize: 12,
+                                color: Colors.grey,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          if (showTickWhenHasData && hasData) ...[
+                            const SizedBox(width: 6),
+                            const Icon(
+                              Icons.check_circle,
+                              color: Colors.green,
+                              size: 16,
+                            ),
+                          ],
+                        ],
                       ),
                     ],
                   ),
@@ -350,6 +368,7 @@ class StackedButtonWidget extends StatelessWidget {
                           : controller.senderDisplayAddress,
                       titlePrefix: 'Pick Up',
                       iconPath: IconPath.collectIcon,
+                      showTickWhenHasData: true,
                       onEdit: () {
                         Get.to(
                           () => StackedCollectFormScreen(
@@ -384,6 +403,7 @@ class StackedButtonWidget extends StatelessWidget {
                           : controller.receiverDisplayAddress,
                       titlePrefix: 'Drop Off',
                       iconPath: IconPath.deliveredIcon,
+                      showTickWhenHasData: true,
                       onEdit: () {
                         Get.to(
                           () => StackedCollectFormScreen(
