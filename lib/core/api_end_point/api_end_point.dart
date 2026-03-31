@@ -66,6 +66,7 @@ class ApiEndPoint {
       '$baseUrl/order/{order_id}/remove-addition/{serviceId}';
   static const String cancelOrder = '$baseUrl/order/{orderId}/cancel';
   static const String notifyOrder = '$baseUrl/order/{orderId}/notify-rider';
+  static const String isFirstOrder = '$baseUrl/order/{orderId}/is-first-order';
 
   static const String getUserProfile = '$baseUrl/users/me';
   static const String rating = '$baseUrl/ratings';

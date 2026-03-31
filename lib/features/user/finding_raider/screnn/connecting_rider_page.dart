@@ -134,6 +134,7 @@ class ConnectingRiderPage extends StatelessWidget {
                         OrderLocationInfoWidget(
                           pickupStops: controller.pickupStops,
                           dropStops: controller.dropStops,
+                          routeType: controller.routeType,
                         ),
 
                       
@@ -183,9 +184,9 @@ Track your ride live on the ZipBee app.
 *Safe travels!*
 ''';
 
-                            // Share using the share_plus package
-                            // Note: Ensure 'import 'package:share_plus/share_plus.dart';' is added at the top
-                            Share.share(shareMessage);
+                            SharePlus.instance.share(
+                              ShareParams(text: shareMessage),
+                            );
                           },
                         ),
                       ],

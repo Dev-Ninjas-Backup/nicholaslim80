@@ -6,11 +6,13 @@ import 'package:ZipBee/features/user/finding_raider/widget/location_row_widget.d
 class OrderLocationInfoWidget extends StatelessWidget {
   final RxList<Map<String, String>> pickupStops;
   final RxList<Map<String, String>> dropStops;
+  final RxString routeType;
 
   const OrderLocationInfoWidget({
     super.key,
     required this.pickupStops,
     required this.dropStops,
+    required this.routeType,
   });
 
   @override
@@ -58,6 +60,38 @@ class OrderLocationInfoWidget extends StatelessWidget {
                   );
                 },
               )),
+
+          Obx(() {
+            final isRoundTrip = routeType.value.toUpperCase() == 'ROUND';
+            if (!isRoundTrip || pickupStops.isEmpty) {
+              return const SizedBox.shrink();
+            }
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: 8),
+                Padding(
+                  padding: EdgeInsets.only(left: 12, top: 2, bottom: 2),
+                  child: Icon(Icons.more_vert, size: 20, color: Colors.grey),
+                ),
+                SizedBox(height: 8),
+                ListView.builder(
+                  padding: EdgeInsets.zero,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: pickupStops.length,
+                  itemBuilder: (context, index) {
+                    return LocationRowWidget(
+                      iconPath: IconPath.collectIcon,
+                      title: 'Return (Sender: ${pickupStops[index]['name']})',
+                      address: pickupStops[index]['address'] ?? '-',
+                    );
+                  },
+                ),
+              ],
+            );
+          }),
         ],
       ),
     );

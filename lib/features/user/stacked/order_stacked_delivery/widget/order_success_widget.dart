@@ -10,8 +10,12 @@ import '../controller/stacked_order_controller.dart';
 class StackedOrderSuccessDialog {
   static final StackedOrderController controller = Get.find<StackedOrderController>();
   static final RxBool wantsConfirmationCall = true.obs;
+  static final RxBool isSubmitting = false.obs;
 
   static void show() {
+    wantsConfirmationCall.value = true;
+    isSubmitting.value = false;
+
     Get.dialog(
       Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -53,7 +57,7 @@ class StackedOrderSuccessDialog {
                 SizedBox(height: 24),
 
                 Text(
-                  'There is confirmation call from the assigned driver once your order is scheduled. \nThanks.',
+                  'Would you like the assigned driver to call you once your order is accepted? ',
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.black54,
@@ -64,76 +68,38 @@ class StackedOrderSuccessDialog {
 
                 SizedBox(height: 20),
 
-                // Show UI based on collect_time and isAutoConfirmation
                 Obx(
-                  () {
-                    final isAsap = controller.collectTime.value == 'ASAP';
-                    final isAuto = controller.isAutoConfirmation.value;
-                    
-                    // If ASAP or auto confirmation: show progress bar (no buttons, auto navigate)
-                    if (isAsap || isAuto) {
-                      return Padding(
-                        padding: EdgeInsets.only(top: 20),
-                        child: SizedBox(
-                          width: double.infinity,
-                          height: 50,
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: LinearProgressIndicator(
-                              minHeight: 50,
-                              backgroundColor: Colors.grey[300],
-                              valueColor: AlwaysStoppedAnimation<Color>(Colors.amber),
-                            ),
-                          ),
-                        ),
-                      );
-                    } else {
-                      // SCHEDULED: show Yes/No buttons
-                      return Obx(
-                        () => Row(
+                  () => IgnorePointer(
+                    ignoring: isSubmitting.value,
+                    child: Opacity(
+                      opacity: isSubmitting.value ? 0.6 : 1,
+                      child: RadioGroup<bool>(
+                        groupValue: wantsConfirmationCall.value,
+                        onChanged: (value) async {
+                          if (value != null) {
+                            await _selectConfirmation(value);
+                          }
+                        },
+                        child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
                             GestureDetector(
-                              onTap: () async {
-                                wantsConfirmationCall.value = true;
-                                await _handleConfirmation(true);
-                              },
+                              onTap: () async => _selectConfirmation(true),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Radio<bool>(
-                                    value: true,
-                                    groupValue: wantsConfirmationCall.value,
-                                    onChanged: (value) {
-                                      if (value != null) {
-                                        wantsConfirmationCall.value = value;
-                                      }
-                                    },
-                                    activeColor: Colors.blue,
-                                  ),
+                                  Radio<bool>(value: true, activeColor: Colors.blue),
                                   SizedBox(width: 4),
                                   Text('Yes', style: TextStyle(fontSize: 16)),
                                 ],
                               ),
                             ),
                             GestureDetector(
-                              onTap: () async {
-                                wantsConfirmationCall.value = false;
-                                await _handleConfirmation(false);
-                              },
+                              onTap: () async => _selectConfirmation(false),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Radio<bool>(
-                                    value: false,
-                                    groupValue: wantsConfirmationCall.value,
-                                    onChanged: (value) {
-                                      if (value != null) {
-                                        wantsConfirmationCall.value = value;
-                                      }
-                                    },
-                                    activeColor: Colors.blue,
-                                  ),
+                                  Radio<bool>(value: false, activeColor: Colors.blue),
                                   SizedBox(width: 4),
                                   Text('No', style: TextStyle(fontSize: 16)),
                                 ],
@@ -141,9 +107,9 @@ class StackedOrderSuccessDialog {
                             ),
                           ],
                         ),
-                      );
-                    }
-                  },
+                      ),
+                    ),
+                  ),
                 ),
 
                 SizedBox(height: 24),
@@ -154,20 +120,20 @@ class StackedOrderSuccessDialog {
       ),
       barrierDismissible: false, // Prevent closing on outside tap
     );
+  }
 
-    // Auto navigate if ASAP or auto confirmation (no API call needed)
-    if (controller.isAutoConfirmation.value || controller.collectTime.value == 'ASAP') {
-      Future.delayed(Duration(seconds: 3), () {
-        debugPrint('✅ Auto-navigating to FindingRiderPage');
-        debugPrint('✅ OrderId: ${controller.lastOrderId}');
-        debugPrint('✅ OrderNumber: ${controller.orderNumber.value}');
-        Get.back(); // Close dialog
-        Get.to(() => FindingRiderPage());
-      });
-    }
+  static Future<void> _selectConfirmation(bool wantsCall) async {
+    if (isSubmitting.value) return;
+
+    wantsConfirmationCall.value = wantsCall;
+    await _handleConfirmation(wantsCall);
   }
 
   static Future<void> _handleConfirmation(bool wantsCall) async {
+    if (isSubmitting.value) return;
+
+    var loadingShown = false;
+
     try {
       final orderId = controller.lastOrderId?.toString();
       if (orderId == null) {
@@ -177,14 +143,19 @@ class StackedOrderSuccessDialog {
 
       debugPrint('📢 Notifying Rider - OrderId: $orderId, WantsCall: $wantsCall');
 
+      isSubmitting.value = true;
       EasyLoading.show(status: 'Processing...');
+      loadingShown = true;
 
       final res = await NotifyRider.notifyRider(
         orderId: orderId,
         notifyRider: wantsCall,
       );
 
-      EasyLoading.dismiss();
+      if (loadingShown) {
+        EasyLoading.dismiss();
+        loadingShown = false;
+      }
 
       final success = res['success'] as bool? ?? false;
       if (success) {
@@ -196,9 +167,13 @@ class StackedOrderSuccessDialog {
         EasyLoading.showError('Failed to process your response');
       }
     } catch (e) {
-      EasyLoading.dismiss();
+      if (loadingShown) {
+        EasyLoading.dismiss();
+      }
       debugPrint('❌ Error in _handleConfirmation: $e');
       EasyLoading.showError('An error occurred');
+    } finally {
+      isSubmitting.value = false;
     }
   }
 }
