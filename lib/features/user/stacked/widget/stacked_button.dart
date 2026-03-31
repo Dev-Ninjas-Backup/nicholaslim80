@@ -15,6 +15,31 @@ class StackedButtonWidget extends StatelessWidget {
 
   final StackedLocationController controller;
 
+  bool _hasText(String value, {String? placeholder}) {
+    final trimmed = value.trim();
+    if (trimmed.isEmpty) return false;
+    if (placeholder != null && trimmed == placeholder) return false;
+    return true;
+  }
+
+  bool _hasPickupData() {
+    return controller.collectedStops.isNotEmpty ||
+        (_hasText(controller.senderDisplayName) &&
+            _hasText(
+              controller.senderDisplayAddress,
+              placeholder: 'Sender Address',
+            ));
+  }
+
+  bool _hasDropOffData() {
+    return controller.recipientStops.isNotEmpty ||
+        (_hasText(controller.receiverDisplayName) &&
+            _hasText(
+              controller.receiverDisplayAddress,
+              placeholder: 'Delivered Address',
+            ));
+  }
+
   Widget _buildStopList({
     required int count,
     required bool Function(int index) hasDataAt,
@@ -217,10 +242,7 @@ class StackedButtonWidget extends StatelessWidget {
                   Obx(() {
                     final orderController = Get.put(StackedOrderController());
                     final isSelected = orderController.isFixed.value;
-
-                    final isDataValid =
-                        controller.senderDisplayName.isNotEmpty &&
-                        controller.receiverDisplayName.isNotEmpty;
+                    final isDataValid = _hasPickupData() && _hasDropOffData();
                     final textColor = isDataValid
                         ? Colors.black
                         : Colors.grey.shade400;
@@ -442,6 +464,7 @@ class StackedButtonWidget extends StatelessWidget {
                           : controller.senderDisplayAddress,
                       titlePrefix: 'Return',
                       iconPath: IconPath.collectIcon,
+                      showTickWhenHasData: true,
                       onEdit: () {
                         Get.to(
                           () => StackedCollectFormScreen(

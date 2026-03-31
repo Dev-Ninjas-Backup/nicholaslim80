@@ -50,7 +50,7 @@ class RiderController extends GetxController {
   Timer? _pollTimer;
 
   // fareOptions এখন রিয়েল-টাইম আপডেট হবে এবং ক্যাশ থেকে ডাটা নিবে
-  final RxList<double> fareOptions = <double>[1.2, 2.5, 4.5, 6.5].obs;
+  final RxList<double> fareOptions = <double>[5, 10, 15, 20].obs;
 
   @override
   void onInit() {

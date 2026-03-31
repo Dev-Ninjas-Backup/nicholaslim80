@@ -43,33 +43,33 @@ class ScheduleRecipientWidgetST extends StatelessWidget {
           style: getTextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
         SizedBox(height: 10),
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: const Color(0xFFFFF8E1),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Row(
-            children: [
-              Icon(Icons.map_outlined, color: Colors.amber.shade800, size: 18),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  'Use the map above to search by postal code, building, or road and auto-fill the address.',
-                  style: getTextStyle(fontSize: 12, color: Colors.black87),
-                ),
-              ),
-            ],
-          ),
-        ),
-        SizedBox(height: 12),
+        // Container(
+        //   width: double.infinity,
+        //   padding: const EdgeInsets.all(12),
+        //   decoration: BoxDecoration(
+        //     color: const Color(0xFFFFF8E1),
+        //     borderRadius: BorderRadius.circular(10),
+        //   ),
+        //   child: Row(
+        //     children: [
+        //       Icon(Icons.map_outlined, color: Colors.amber.shade800, size: 18),
+        //       const SizedBox(width: 8),
+        //       Expanded(
+        //         child: Text(
+        //           'Use the map above to search by postal code, building, or road and auto-fill the address.',
+        //           style: getTextStyle(fontSize: 12, color: Colors.black87),
+        //         ),
+        //       ),
+        //     ],
+        //   ),
+        // ),
+        // SizedBox(height: 12),
 
-        CustomTextField(
-          controller: controller.postalCodeController,
-          label: "Postal Code*",
-        ),
-        SizedBox(height: 10),
+        // CustomTextField(
+        //   controller: controller.postalCodeController,
+        //   label: "Postal Code*",
+        // ),
+        // SizedBox(height: 10),
 
         CustomTextField(
           controller: controller.addressController,

@@ -40,7 +40,7 @@ class StackedSchedulRecepmenteScreen extends StatelessWidget {
             children: [
               /// MAP Section
               SizedBox(
-                height: 240,
+                height: 400,
                 width: double.infinity,
                 child: GoogleMapWidget(
                   mode: GoogleMapWidgetMode.addressPicker,

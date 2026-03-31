@@ -58,7 +58,7 @@ class StackedSenderScheduleScreen extends StatelessWidget {
             children: [
               /// MAP SECTION
               SizedBox(
-                height: 240,
+                height: 400,
                 width: double.infinity,
                 child: GoogleMapWidget(
                   mode: GoogleMapWidgetMode.addressPicker,
@@ -86,11 +86,11 @@ class StackedSenderScheduleScreen extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: 10),
-                    CustomTextField(
-                      controller: controller.postalCodeController,
-                      label: "Postal Code*",
-                    ),
+                    // SizedBox(height: 10),
+                    // CustomTextField(
+                    //   controller: controller.postalCodeController,
+                    //   label: "Postal Code*",
+                    // ),
                     SizedBox(height: 10),
                     CustomTextField(
                       controller: controller.addressController,
@@ -107,7 +107,7 @@ class StackedSenderScheduleScreen extends StatelessWidget {
                     CustomTextField(
                       controller: controller.nameController,
                       label: "Contact name*",
-                      suffixIcon: Icon(Icons.person_outline),
+                      // suffixIcon: Icon(Icons.person_outline),
                     ),
                     SizedBox(height: 10),
                     CustomTextField(
