@@ -1,9 +1,13 @@
 import 'dart:async';
 
+// ignore_for_file: deprecated_member_use
+
 import 'package:ZipBee/features/user/finding_raider/controller/rider_controller.dart';
 import 'package:ZipBee/features/user/google_map/service/one_map_service.dart';
 import 'package:ZipBee/features/user/google_map/service/service_zone_service.dart';
+import 'package:ZipBee/features/user/google_map/widget/consts.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
@@ -119,8 +123,10 @@ class GoogleMapContentState extends State<GoogleMapContent> {
 
   StreamSubscription<LocationData>? locSub;
   Timer? debounce;
+  Worker? routeWorker;
 
   late LatLng currentPosition;
+  List<LatLng> routePolylinePoints = const [];
   Marker? selectedMarker;
   OneMapResolvedAddress? pendingSelection;
 
@@ -129,6 +135,9 @@ class GoogleMapContentState extends State<GoogleMapContent> {
   bool showSuggestions = false;
   bool didRunInitialQuery = false;
   bool isMutatingSearchField = false;
+  bool hasUserMovedMap = false;
+  bool isProgrammaticCameraMove = false;
+  int routeRequestId = 0;
 
   String? helperMessage;
 
@@ -139,6 +148,7 @@ class GoogleMapContentState extends State<GoogleMapContent> {
     currentPosition = widget.data.currentPosition ?? widget.data.initialFocus;
     hasDeviceLocation = widget.data.currentPosition != null;
     listenLocation();
+    _listenRouteStops();
   }
 
   @override
@@ -178,11 +188,18 @@ class GoogleMapContentState extends State<GoogleMapContent> {
 
   Future<void> moveCamera(LatLng position, {double zoom = 16}) async {
     final controller = await mapController.future;
+    isProgrammaticCameraMove = true;
     await controller.animateCamera(
       CameraUpdate.newCameraPosition(
         CameraPosition(target: position, zoom: zoom),
       ),
     );
+  }
+
+  Future<void> _changeZoom(double delta) async {
+    final controller = await mapController.future;
+    isProgrammaticCameraMove = true;
+    await controller.animateCamera(CameraUpdate.zoomBy(delta));
   }
 
   void dropPin(LatLng position) {
@@ -192,6 +209,175 @@ class GoogleMapContentState extends State<GoogleMapContent> {
         position: position,
       );
     });
+  }
+
+  void _listenRouteStops() {
+    if (widget.mode != GoogleMapWidgetMode.display ||
+        widget.data.riderController == null) {
+      return;
+    }
+
+    routeWorker = ever<List<OrderStopMapPoint>>(
+      widget.data.riderController!.routeStops,
+      (stops) async {
+        if (!mounted) return;
+        await _refreshRoutePolyline(stops);
+        if (stops.isEmpty || !mapController.isCompleted || hasUserMovedMap) {
+          return;
+        }
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            _fitCameraToRoute(stops);
+          }
+        });
+      },
+    );
+  }
+
+  Future<void> _refreshRoutePolyline(List<OrderStopMapPoint> stops) async {
+    final requestId = ++routeRequestId;
+
+    if (stops.length < 2) {
+      if (!mounted) return;
+      setState(() {
+        routePolylinePoints = const [];
+      });
+      return;
+    }
+
+    try {
+      final polylinePoints = PolylinePoints.legacy(GoogleMapAPIKey);
+      final result = await polylinePoints.getRouteBetweenCoordinates(
+        request: PolylineRequest(
+          origin: PointLatLng(stops.first.latitude, stops.first.longitude),
+          destination: PointLatLng(stops.last.latitude, stops.last.longitude),
+          mode: TravelMode.driving,
+          wayPoints: stops
+              .sublist(1, stops.length - 1)
+              .map(
+                (stop) => PolylineWayPoint(
+                  location: '${stop.latitude},${stop.longitude}',
+                ),
+              )
+              .toList(),
+        ),
+      );
+
+      if (!mounted || requestId != routeRequestId) return;
+
+      final points = result.points
+          .map((point) => LatLng(point.latitude, point.longitude))
+          .toList();
+
+      setState(() {
+        routePolylinePoints = points;
+      });
+    } catch (_) {
+      if (!mounted || requestId != routeRequestId) return;
+      setState(() {
+        routePolylinePoints = const [];
+      });
+    }
+  }
+
+  Future<void> _fitCameraToRoute(List<OrderStopMapPoint> stops) async {
+    if (stops.isEmpty) return;
+
+    if (stops.length == 1) {
+      await moveCamera(
+        LatLng(stops.first.latitude, stops.first.longitude),
+        zoom: 14,
+      );
+      return;
+    }
+
+    double minLat = stops.first.latitude;
+    double maxLat = stops.first.latitude;
+    double minLng = stops.first.longitude;
+    double maxLng = stops.first.longitude;
+
+    for (final stop in stops.skip(1)) {
+      if (stop.latitude < minLat) minLat = stop.latitude;
+      if (stop.latitude > maxLat) maxLat = stop.latitude;
+      if (stop.longitude < minLng) minLng = stop.longitude;
+      if (stop.longitude > maxLng) maxLng = stop.longitude;
+    }
+
+    final controller = await mapController.future;
+    isProgrammaticCameraMove = true;
+    await controller.animateCamera(
+      CameraUpdate.newLatLngBounds(
+        LatLngBounds(
+          southwest: LatLng(minLat, minLng),
+          northeast: LatLng(maxLat, maxLng),
+        ),
+        60,
+      ),
+    );
+  }
+
+  Set<Marker> _buildDisplayMarkers() {
+    final markers = <Marker>{};
+
+    if (hasDeviceLocation) {
+      markers.add(
+        Marker(
+          markerId: const MarkerId('current'),
+          position: currentPosition,
+          icon: BitmapDescriptor.defaultMarkerWithHue(
+            BitmapDescriptor.hueAzure,
+          ),
+        ),
+      );
+    }
+
+    if (selectedMarker != null) {
+      markers.add(selectedMarker!);
+    }
+
+    final riderController = widget.data.riderController;
+    if (widget.mode != GoogleMapWidgetMode.display || riderController == null) {
+      return markers;
+    }
+
+    for (final stop in riderController.routeStops) {
+      final isPickup = stop.stopType == 'PICKUP';
+      markers.add(
+        Marker(
+          markerId: MarkerId('order_stop_${stop.sequence}_${stop.stopType}'),
+          position: LatLng(stop.latitude, stop.longitude),
+          icon: BitmapDescriptor.defaultMarkerWithHue(
+            isPickup ? BitmapDescriptor.hueGreen : BitmapDescriptor.hueRed,
+          ),
+          infoWindow: InfoWindow(
+            title: isPickup ? 'Pickup' : 'Drop off',
+            snippet: stop.address,
+          ),
+        ),
+      );
+    }
+
+    return markers;
+  }
+
+  Set<Polyline> _buildDisplayPolylines() {
+    final riderController = widget.data.riderController;
+    if (widget.mode != GoogleMapWidgetMode.display ||
+        riderController == null ||
+        riderController.routeStops.length < 2 ||
+        routePolylinePoints.isEmpty) {
+      return const <Polyline>{};
+    }
+
+    return {
+      Polyline(
+        polylineId: const PolylineId('order_route'),
+        color: Colors.amber.shade700,
+        width: 5,
+        geodesic: true,
+        points: routePolylinePoints,
+      ),
+    };
   }
 
   Future<void> handleMapTap(LatLng latLng) async {
@@ -364,13 +550,21 @@ class GoogleMapContentState extends State<GoogleMapContent> {
       });
     }
 
-    return Stack(
+    Widget buildMapStack() => Stack(
       children: [
         GoogleMap(
           initialCameraPosition: CameraPosition(
             target: widget.data.currentPosition ?? widget.data.initialFocus,
             zoom: widget.mode == GoogleMapWidgetMode.addressPicker ? 13 : 11,
           ),
+          onCameraMoveStarted: () {
+            if (!isProgrammaticCameraMove) {
+              hasUserMovedMap = true;
+            }
+          },
+          onCameraIdle: () {
+            isProgrammaticCameraMove = false;
+          },
           onMapCreated: (controller) async {
             if (!mapController.isCompleted) {
               mapController.complete(controller);
@@ -379,21 +573,34 @@ class GoogleMapContentState extends State<GoogleMapContent> {
               widget.data.currentPosition ?? widget.data.initialFocus,
               zoom: widget.mode == GoogleMapWidgetMode.addressPicker ? 13 : 11,
             );
+            if (widget.mode == GoogleMapWidgetMode.display &&
+                widget.data.riderController != null &&
+                widget.data.riderController!.routeStops.isNotEmpty) {
+              await _refreshRoutePolyline(
+                widget.data.riderController!.routeStops,
+              );
+              await _fitCameraToRoute(widget.data.riderController!.routeStops);
+            }
           },
           myLocationEnabled: hasDeviceLocation,
           myLocationButtonEnabled: true,
           onTap: handleMapTap,
-          markers: {
-            if (hasDeviceLocation)
-              Marker(
-                markerId: const MarkerId('current'),
-                position: currentPosition,
-                icon: BitmapDescriptor.defaultMarkerWithHue(
-                  BitmapDescriptor.hueAzure,
-                ),
+          markers: _buildDisplayMarkers(),
+          polylines: _buildDisplayPolylines(),
+        ),
+        Positioned(
+          right: 12,
+          top: widget.mode == GoogleMapWidgetMode.addressPicker ? 84 : 24,
+          child: Column(
+            children: [
+              _buildZoomButton(icon: Icons.add, onTap: () => _changeZoom(1)),
+              const SizedBox(height: 10),
+              _buildZoomButton(
+                icon: Icons.remove,
+                onTap: () => _changeZoom(-1),
               ),
-            if (selectedMarker != null) selectedMarker!,
-          },
+            ],
+          ),
         ),
         if (widget.mode == GoogleMapWidgetMode.addressPicker) ...[
           _buildSearchOverlay(),
@@ -403,6 +610,33 @@ class GoogleMapContentState extends State<GoogleMapContent> {
           _buildBottomSelectionCard(),
         ],
       ],
+    );
+
+    if (widget.mode == GoogleMapWidgetMode.display &&
+        widget.data.riderController != null) {
+      return Obx(buildMapStack);
+    }
+
+    return buildMapStack();
+  }
+
+  Widget _buildZoomButton({
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: Colors.white,
+      elevation: 6,
+      borderRadius: BorderRadius.circular(14),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(14),
+        child: SizedBox(
+          width: 42,
+          height: 42,
+          child: Icon(icon, color: Colors.black87),
+        ),
+      ),
     );
   }
 
@@ -666,6 +900,7 @@ class GoogleMapContentState extends State<GoogleMapContent> {
   void dispose() {
     debounce?.cancel();
     locSub?.cancel();
+    routeWorker?.dispose();
     searchController.dispose();
     super.dispose();
   }
