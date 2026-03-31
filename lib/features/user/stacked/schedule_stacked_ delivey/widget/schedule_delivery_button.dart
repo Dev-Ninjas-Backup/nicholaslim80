@@ -1,3 +1,4 @@
+// Unused file
 import 'package:ZipBee/core/common/styles/global_text_style.dart';
 import 'package:ZipBee/core/utils/constants/app_colors.dart';
 import 'package:ZipBee/core/utils/constants/icon_path.dart';
@@ -51,16 +52,16 @@ class ScheduleDeliveryButton extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    StackedOneWayRoundWidget(
-                      controller: StackedLocationController(),
-                      title: 'Collected from (Sender: Athena Lin)',
-                      subtitle: 'Sender Address',
-                      icon: Image.asset(
-                        IconPath.collectIcon,
-                        width: 14,
-                        height: 14,
-                      ),
-                    ),
+                    // StackedOneWayRoundWidget(
+                    //   controller: StackedLocationController(),
+                    //   title: 'Collected from (Sender: Athena Lin)',
+                    //   subtitle: 'Sender Address',
+                    //   icon: Image.asset(
+                    //     IconPath.collectIcon,
+                    //     width: 14,
+                    //     height: 14,
+                    //   ),
+                    // ),
                     Icon(
                       Icons.fiber_manual_record,
                       size: 10,
@@ -71,20 +72,20 @@ class ScheduleDeliveryButton extends StatelessWidget {
                       size: 10,
                       color: Colors.grey,
                     ),
-                    StackedOneWayRoundWidget(
-                      controller: StackedLocationController(),
-                      title: isRound
-                          ? 'Delivered from (Sender: Athena Lin)'
-                          : 'Deliver to (Recipient: Joseph Low)',
-                      subtitle: isRound
-                          ? 'Delivered Address'
-                          : 'Blk 222 Sengkang Ave 2, S530222',
-                      icon: Image.asset(
-                        IconPath.deliveredIcon,
-                        width: 14,
-                        height: 14,
-                      ),
-                    ),
+                    // StackedOneWayRoundWidget(
+                    //   controller: StackedLocationController(),
+                    //   title: isRound
+                    //       ? 'Delivered from (Sender: Athena Lin)'
+                    //       : 'Deliver to (Recipient: Joseph Low)',
+                    //   subtitle: isRound
+                    //       ? 'Delivered Address'
+                    //       : 'Blk 222 Sengkang Ave 2, S530222',
+                    //   icon: Image.asset(
+                    //     IconPath.deliveredIcon,
+                    //     width: 14,
+                    //     height: 14,
+                    //   ),
+                    // ),
                   ],
                 ),
                 SizedBox(height: 10),

@@ -79,9 +79,7 @@ class FindingRiderPage extends StatelessWidget {
               return Container(
                 decoration: const BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.vertical(
-                    top: Radius.circular(20),
-                  ),
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black26,
@@ -143,51 +141,58 @@ class FindingRiderPage extends StatelessWidget {
 
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Button(
-                            buttonText: 'Priority order',
-                            backgroundColor: Colors.amber,
-                            textColor: Colors.black,
-                            onPressed: controller.priorityOrder,
-                          ),
-                        ),
-                        const SizedBox(height: 24),
-
-                        Center(
-                          child: FilledButton(
-                            onPressed: () => showCancelOrderDialog(context),
-                            style: FilledButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 8,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(6),
-                                side: const BorderSide(
-                                  color: Colors.red,
-                                  width: 1.5,
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Button(
+                                  buttonText: 'Priority order',
+                                  backgroundColor: Colors.amber,
+                                  textColor: Colors.black,
+                                  onPressed: controller.priorityOrder,
                                 ),
                               ),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  'Cancel order',
-                                  style: getTextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.red,
+                              const SizedBox(width: 16),
+                              Flexible(
+                                child: FilledButton(
+                                  onPressed: () =>
+                                      showCancelOrderDialog(context),
+                                  style: FilledButton.styleFrom(
+                                    backgroundColor: Colors.white,
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 8,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(6),
+                                      side: const BorderSide(
+                                        color: Colors.red,
+                                        width: 1.5,
+                                      ),
+                                    ),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Flexible(
+                                        child: Text(
+                                          'Cancel order',
+                                          overflow: TextOverflow.ellipsis,
+                                          style: getTextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
+                                            color: Colors.red,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 3),
+                                      Image.asset(
+                                        IconPath.cancel,
+                                      ),
+                                    ],
                                   ),
                                 ),
-                                const SizedBox(width: 3),
-                                Image.asset(
-                                  IconPath.cancel,
-                                  height: 14,
-                                  width: 14,
-                                ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ),
                       ],

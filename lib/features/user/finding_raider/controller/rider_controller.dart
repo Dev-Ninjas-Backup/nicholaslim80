@@ -11,6 +11,24 @@ import 'package:ZipBee/features/user/finding_raider/screnn/connecting_rider_page
 import 'package:ZipBee/features/user/finding_raider/services/place_order_service.dart';
 import 'package:ZipBee/features/user/finding_raider/services/get_order_api_service.dart';
 
+class OrderStopMapPoint {
+  final String stopType;
+  final String address;
+  final String name;
+  final double latitude;
+  final double longitude;
+  final int sequence;
+
+  const OrderStopMapPoint({
+    required this.stopType,
+    required this.address,
+    required this.name,
+    required this.latitude,
+    required this.longitude,
+    required this.sequence,
+  });
+}
+
 class RiderController extends GetxController {
   final _box = GetStorage(); // GetStorage instance
   RxInt orderId = 0.obs;
@@ -36,6 +54,7 @@ class RiderController extends GetxController {
   // --- New Lists for Multiple Stops ---
   RxList<Map<String, String>> pickupStops = <Map<String, String>>[].obs;
   RxList<Map<String, String>> dropStops = <Map<String, String>>[].obs;
+  RxList<OrderStopMapPoint> routeStops = <OrderStopMapPoint>[].obs;
 
   // New loading state for API
   RxBool isLoading = false.obs;
@@ -50,7 +69,7 @@ class RiderController extends GetxController {
   Timer? _pollTimer;
 
   // fareOptions এখন রিয়েল-টাইম আপডেট হবে এবং ক্যাশ থেকে ডাটা নিবে
-  final RxList<double> fareOptions = <double>[1.2, 2.5, 4.5, 6.5].obs;
+  final RxList<double> fareOptions = <double>[5, 10, 15, 20].obs;
 
   @override
   void onInit() {
@@ -153,14 +172,42 @@ class RiderController extends GetxController {
 
         pickupStops.clear();
         dropStops.clear();
+        routeStops.clear();
 
         for (var stop in orderStops) {
           final destination = stop['destination'];
 
-          if (destination != null) {
-            final String type = destination['type'] ?? '';
+          if (destination != null && stop is Map<String, dynamic>) {
+            final String stopType = (stop['type'] ?? '').toString();
+            final lat =
+                (stop['latitude'] as num?)?.toDouble() ??
+                (destination['latitude'] as num?)?.toDouble();
+            final lng =
+                (stop['longitude'] as num?)?.toDouble() ??
+                (destination['longitude'] as num?)?.toDouble();
+            final sequence = (stop['sequence'] as num?)?.toInt() ?? 0;
 
-            if (type == 'SENDER') {
+            if (lat != null && lng != null) {
+              routeStops.add(
+                OrderStopMapPoint(
+                  stopType: stopType,
+                  address:
+                      (destination['addressFromApr'] ??
+                              destination['address'] ??
+                              '')
+                          .toString(),
+                  name: (destination['contact_name'] ?? '').toString(),
+                  latitude: lat,
+                  longitude: lng,
+                  sequence: sequence,
+                ),
+              );
+            }
+
+            final String destinationType = (destination['type'] ?? '')
+                .toString();
+
+            if (destinationType == 'SENDER') {
               pickupStops.add({
                 'name': destination['contact_name'] ?? '',
                 'address': destination['address'] ?? '',
@@ -170,7 +217,7 @@ class RiderController extends GetxController {
               pickupAddress.value = destination['address'] ?? '';
 
               debugPrint('✅ Pickup Set: ${pickupName.value}');
-            } else if (type == 'RECEIVER') {
+            } else if (destinationType == 'RECEIVER') {
               dropStops.add({
                 'name': destination['contact_name'] ?? '',
                 'address': destination['address'] ?? '',
@@ -183,6 +230,8 @@ class RiderController extends GetxController {
             }
           }
         }
+
+        routeStops.sort((a, b) => a.sequence.compareTo(b.sequence));
 
         debugPrint(
           '📦 Total Pickups: ${pickupStops.length}, Total Drops: ${dropStops.length}',

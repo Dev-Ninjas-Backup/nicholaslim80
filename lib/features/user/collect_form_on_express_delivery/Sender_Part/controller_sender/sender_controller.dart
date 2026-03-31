@@ -1,8 +1,9 @@
 import 'dart:convert';
+import 'package:ZipBee/features/user/google_map/service/one_map_service.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:ZipBee/features/user/stacked/schedule_stacked_%20delivey/Schedule_recepent/service/destination_service.dart';
+import 'package:get/get.dart';
 
 class SenderController extends GetxController {
   final postalCodeController = TextEditingController();
@@ -17,10 +18,15 @@ class SenderController extends GetxController {
   final isLoading = false.obs;
   final totalCost = 0.0.obs;
 
+  bool _isApplyingResolvedLocation = false;
+
   @override
   void onInit() {
     super.onInit();
-    postalCodeController.addListener(validateForm);
+    postalCodeController.addListener(() {
+      onPostalCodeChanged(postalCodeController.text);
+      validateForm();
+    });
     addressController.addListener(validateForm);
     floorController.addListener(validateForm);
     nameController.addListener(validateForm);
@@ -37,6 +43,7 @@ class SenderController extends GetxController {
   }
 
   void clearForm() {
+    postalCodeController.clear();
     addressController.clear();
     floorController.clear();
     nameController.clear();
@@ -44,6 +51,34 @@ class SenderController extends GetxController {
     noteController.clear();
     saveAddress.value = false;
     isFormValid.value = false;
+  }
+
+  void onPostalCodeChanged(String value) async {
+    if (_isApplyingResolvedLocation) return;
+
+    final query = value.trim();
+    if (query.length < 3) return;
+
+    try {
+      final resolved = await OneMapService.resolveQuery(query);
+      if (postalCodeController.text.trim() != query || resolved == null) {
+        return;
+      }
+
+      if (addressController.text != resolved.address) {
+        addressController.text = resolved.address;
+      }
+    } catch (e) {
+      debugPrint("Postal Code lookup error: $e");
+    }
+  }
+
+  void applyResolvedLocation(OneMapResolvedAddress resolved) {
+    _isApplyingResolvedLocation = true;
+    postalCodeController.text = resolved.postalCode;
+    addressController.text = resolved.address;
+    _isApplyingResolvedLocation = false;
+    validateForm();
   }
 
   /// Creates a destination record on the server and links it to order. Returns destination data on success, otherwise null.

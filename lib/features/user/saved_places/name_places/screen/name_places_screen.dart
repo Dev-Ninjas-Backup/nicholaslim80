@@ -14,13 +14,39 @@ class NamePlaceScreen extends StatelessWidget {
   final SavedPlaceController controller = Get.find<SavedPlaceController>();
   final TextEditingController nameController = TextEditingController();
 
+  String _formatDisplayText(String value) {
+    final trimmed = value.trim();
+    if (trimmed.isEmpty) return trimmed;
+
+    final hasLetters = RegExp(r'[A-Za-z]').hasMatch(trimmed);
+    final isAllUppercase = hasLetters && trimmed == trimmed.toUpperCase();
+    if (!isAllUppercase) return trimmed;
+
+    return trimmed.split(RegExp(r'(\s+)')).map((part) {
+      if (part.trim().isEmpty) return part;
+
+      return part
+          .split('-')
+          .map((segment) {
+            if (segment.isEmpty) return segment;
+            final lower = segment.toLowerCase();
+            return '${lower[0].toUpperCase()}${lower.substring(1)}';
+          })
+          .join('-');
+    }).join();
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (controller.isEditing && nameController.text.isEmpty) {
+      nameController.text = controller.editingPlaceName.value;
+    }
+
     return Scaffold(
       backgroundColor: AppColors.backgroungColor,
       appBar: AppBar(
         title: Text(
-          'Name this Place',
+          controller.isEditing ? 'Edit this Place' : 'Name this Place',
           style: getTextStyle(fontSize: 20.sp, fontWeight: FontWeight.w600),
         ),
         backgroundColor: AppColors.backgroungColor,
@@ -56,7 +82,7 @@ class NamePlaceScreen extends StatelessWidget {
                 leading: const Icon(Icons.location_on, color: Colors.amber),
                 title: Text(
                   address.isNotEmpty
-                      ? address.split(',').first
+                      ? _formatDisplayText(address.split(',').first)
                       : 'No address selected',
                   style: getTextStyle(
                     fontWeight: FontWeight.w600,
@@ -64,7 +90,7 @@ class NamePlaceScreen extends StatelessWidget {
                   ),
                 ),
                 subtitle: Text(
-                  address.isNotEmpty ? address : '',
+                  address.isNotEmpty ? _formatDisplayText(address) : '',
                   style: getTextStyle(fontSize: 12),
                 ),
               );
@@ -73,7 +99,7 @@ class NamePlaceScreen extends StatelessWidget {
             const Spacer(),
 
             CustomButton(
-              label: 'Save Place',
+              label: controller.isEditing ? 'Update Place' : 'Save Place',
               color: AppColors.primaryButtonColor,
               textColor: AppColors.primaryFontColor,
               onPressed: () async {
@@ -93,7 +119,7 @@ class NamePlaceScreen extends StatelessWidget {
 
                 final ok = await controller.savePlace(name);
                 if (ok) {
-                  Get.to(SavedPlaceScreen());
+                  Get.offAll(() => SavedPlaceScreen());
                 }
               },
             ),

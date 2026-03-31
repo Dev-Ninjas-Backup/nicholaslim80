@@ -16,7 +16,7 @@ class ApiEndPoint {
   static const String notificationID = '$baseUrl/notifications/{id}';
   static const String notification = '$baseUrl/notifications';
   static const String notificationFCM = '$baseUrl/notifications/fcm-token';
-  
+
   static const String order = '$baseUrl/order/mine';
   static const String addRaider = '$baseUrl/my-raider';
   static const String getRaider = '$baseUrl/my-raider/my-raider';
@@ -32,16 +32,18 @@ class ApiEndPoint {
   static const String referLoyalty = '$baseUrl/referloyality';
   static const String vehicleTypes = '$baseUrl/admin/vehicle-types';
   static const String serviceZone = '$baseUrl/service-zone';
-  
-  static const String support ='$baseUrl/additional-services/service-email-number';
+
+  static const String support =
+      '$baseUrl/additional-services/service-email-number';
   static const String addRider = '$baseUrl/my-raider';
   static const String getDestination = '$baseUrl/destination';
   static const String homePageAd = '$baseUrl/advertise/role-based';
   static const String adImpression = '$baseUrl/advertise/{id}/impression';
   static const String adClick = '$baseUrl/advertise/{id}/click';
-  static const String walletHistory ='$baseUrl/wallet/user/walletHistory/{userId}';
+  static const String walletHistory =
+      '$baseUrl/wallet/user/walletHistory/{userId}';
   static const String createOrder = '$baseUrl/order/indivitual';
-  
+
   // Canonical create order endpoint (public)
   static const String orderCreate = '$baseUrl/order';
   static const String orderUpdateDetails = '$baseUrl/order/{id}/update-details';
@@ -51,7 +53,9 @@ class ApiEndPoint {
 
   // Destination endpoints
   static const String createDestination = '$baseUrl/destination';
-  static const String addDestinationToOrder = '$baseUrl/order/{orderId}/destinations/add';
+  static const String addDestinationToOrder =
+      '$baseUrl/order/{orderId}/destinations/add';
+  static String destinationById(int id) => '$baseUrl/destination/$id';
 
   // Order GET endpoints
   static const String getOrder = '$baseUrl/order/{orderId}';
