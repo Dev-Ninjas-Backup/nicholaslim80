@@ -1,10 +1,9 @@
 import 'dart:convert';
-import 'package:ZipBee/features/user/google_map/widget/consts.dart';
+import 'package:ZipBee/features/user/google_map/service/one_map_service.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:ZipBee/features/user/stacked/schedule_stacked_%20delivey/Schedule_recepent/service/destination_service.dart';
-import 'package:http/http.dart' as http;
+import 'package:get/get.dart';
 
 class RecipientController extends GetxController {
   final postalCodeController = TextEditingController();
@@ -18,6 +17,8 @@ class RecipientController extends GetxController {
   final saveAddress = false.obs;
   final isLoading = false.obs;
   final totalCost = 0.0.obs;
+
+  bool _isApplyingResolvedLocation = false;
 
   @override
   void onInit() {
@@ -42,6 +43,7 @@ class RecipientController extends GetxController {
   }
 
   void clearForm() {
+    postalCodeController.clear();
     addressController.clear();
     floorController.clear();
     nameController.clear();
@@ -52,27 +54,31 @@ class RecipientController extends GetxController {
   }
 
   void onPostalCodeChanged(String value) async {
-    if (value.length >= 5) {
-      try {
-        final String url =
-            "https://maps.googleapis.com/maps/api/geocode/json?address=$value&key=$GoogleMapAPIKey";
+    if (_isApplyingResolvedLocation) return;
 
-        final response = await http.get(Uri.parse(url));
+    final query = value.trim();
+    if (query.length < 3) return;
 
-        if (response.statusCode == 200) {
-          final data = json.decode(response.body);
-          if (data['status'] == 'OK') {
-            String formattedAddress = data['results'][0]['formatted_address'];
-
-            if (addressController.text != formattedAddress) {
-              addressController.text = formattedAddress;
-            }
-          }
-        }
-      } catch (e) {
-        debugPrint("Postal Code lookup error: $e");
+    try {
+      final resolved = await OneMapService.resolveQuery(query);
+      if (postalCodeController.text.trim() != query || resolved == null) {
+        return;
       }
+
+      if (addressController.text != resolved.address) {
+        addressController.text = resolved.address;
+      }
+    } catch (e) {
+      debugPrint("Postal Code lookup error: $e");
     }
+  }
+
+  void applyResolvedLocation(OneMapResolvedAddress resolved) {
+    _isApplyingResolvedLocation = true;
+    postalCodeController.text = resolved.postalCode;
+    addressController.text = resolved.address;
+    _isApplyingResolvedLocation = false;
+    validateForm();
   }
 
   /// Creates a destination record on the server and links it to order. Returns destination data on success, otherwise null.

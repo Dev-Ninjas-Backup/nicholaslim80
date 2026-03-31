@@ -1,3 +1,4 @@
+import 'package:ZipBee/features/user/google_map/service/one_map_service.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import '../model/place_model.dart';
@@ -8,6 +9,12 @@ class SavedPlaceController extends GetxController {
 
   final RxList<PlaceModel> savedPlaces = <PlaceModel>[].obs;
   final RxString selectedAddress = ''.obs;
+  final RxString selectedPostalCode = ''.obs;
+  final RxDouble selectedLatitude = 0.0.obs;
+  final RxDouble selectedLongitude = 0.0.obs;
+  final RxString selectedType = 'SENDER'.obs;
+  final RxInt editingPlaceId = 0.obs;
+  final RxString editingPlaceName = ''.obs;
   final RxBool isLoading = false.obs;
 
   @override
@@ -34,8 +41,37 @@ class SavedPlaceController extends GetxController {
     }
   }
 
-  void selectAddress(String address) {
-    selectedAddress.value = address;
+  bool get isEditing => editingPlaceId.value != 0;
+
+  void selectLocation(
+    OneMapResolvedAddress location, {
+    String type = 'SENDER',
+  }) {
+    selectedAddress.value = location.address;
+    selectedPostalCode.value = location.postalCode;
+    selectedLatitude.value = location.lat;
+    selectedLongitude.value = location.lng;
+    selectedType.value = type;
+  }
+
+  void startEditing(PlaceModel place) {
+    editingPlaceId.value = place.id;
+    editingPlaceName.value = place.name;
+    selectedAddress.value = place.address;
+    selectedPostalCode.value = place.postalCode;
+    selectedLatitude.value = place.latitude;
+    selectedLongitude.value = place.longitude;
+    selectedType.value = place.type.isEmpty ? 'SENDER' : place.type;
+  }
+
+  void clearSelectedPlace() {
+    selectedAddress.value = '';
+    selectedPostalCode.value = '';
+    selectedLatitude.value = 0.0;
+    selectedLongitude.value = 0.0;
+    selectedType.value = 'SENDER';
+    editingPlaceId.value = 0;
+    editingPlaceName.value = '';
   }
 
   Future<bool> savePlace(String name) async {
@@ -44,16 +80,41 @@ class SavedPlaceController extends GetxController {
       return false;
     }
 
+    if (selectedPostalCode.value.isEmpty) {
+      EasyLoading.showError('Postal code not selected');
+      return false;
+    }
+
     try {
       isLoading.value = true;
 
-      await service.addPlace(name: name, address: selectedAddress.value);
+      if (isEditing) {
+        await service.updatePlace(
+          id: editingPlaceId.value,
+          name: name,
+          address: selectedAddress.value,
+          postalCode: selectedPostalCode.value,
+          latitude: selectedLatitude.value,
+          longitude: selectedLongitude.value,
+          type: selectedType.value,
+        );
+      } else {
+        await service.addPlace(
+          name: name,
+          address: selectedAddress.value,
+          postalCode: selectedPostalCode.value,
+          latitude: selectedLatitude.value,
+          longitude: selectedLongitude.value,
+          type: selectedType.value,
+        );
+      }
 
-      EasyLoading.showSuccess('Place saved successfully');
+      EasyLoading.showSuccess(
+        isEditing ? 'Place updated successfully' : 'Place saved successfully',
+      );
 
-      selectedAddress.value = '';
-
-      fetchPlaces();
+      clearSelectedPlace();
+      await fetchPlaces();
 
       return true;
     } catch (e) {

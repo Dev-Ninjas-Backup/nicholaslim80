@@ -1,13 +1,16 @@
 import 'package:ZipBee/features/user/saved_places/add_places/controller/saved_places_controller.dart';
+import 'package:ZipBee/features/user/saved_places/controller/saved_places_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:ZipBee/core/common/styles/global_text_style.dart';
 import 'package:ZipBee/core/utils/constants/app_colors.dart';
+import 'package:ZipBee/features/user/google_map/widget/google_map_widget.dart';
 
 class AddPlaceScreen extends StatelessWidget {
   // final AddPlaceController controller = Get.put(AddPlaceController());
   final controller = Get.put(AddPlaceController());
+  final savedPlaceController = Get.find<SavedPlaceController>();
 
   AddPlaceScreen({super.key});
 
@@ -16,68 +19,52 @@ class AddPlaceScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.backgroungColor,
       appBar: AppBar(
-        title: Text('Add Place', style: getTextStyle(fontSize: 20.sp)),
+        title: Text(
+          savedPlaceController.isEditing ? 'Edit Place' : 'Add Place',
+          style: getTextStyle(fontSize: 20.sp),
+        ),
         backgroundColor: AppColors.backgroungColor,
         elevation: 1,
       ),
       body: Padding(
         padding: EdgeInsets.all(16),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TextField(
-              onChanged: (value) => controller.searchAddress(value),
-              decoration: InputDecoration(
-                hintText: 'Search an address',
-                prefixIcon: Icon(Icons.search),
-                filled: true,
-                fillColor: Colors.white,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide.none,
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFFF8E1),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.map_outlined, color: Colors.amber.shade800),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      'Search by postal code, building, or road. You can also tap the map and press Use to continue.',
+                      style: getTextStyle(fontSize: 12, color: Colors.black87),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            Expanded(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(18),
+                child: GoogleMapWidget(
+                  mode: GoogleMapWidgetMode.addressPicker,
+                  initialQuery:
+                      savedPlaceController.selectedPostalCode.value.isNotEmpty
+                      ? savedPlaceController.selectedPostalCode.value
+                      : savedPlaceController.selectedAddress.value,
+                  onLocationConfirmed: controller.onLocationSelected,
                 ),
               ),
             ),
-            SizedBox(height: 10),
-            Expanded(
-              child: Obx(() {
-                if (controller.isLoading.value) {
-                  return Center(child: CircularProgressIndicator());
-                }
-
-                if (controller.suggestions.isEmpty) {
-                  return Center(child: Text("No results found"));
-                }
-
-                return ListView.builder(
-                  itemCount: controller.suggestions.length,
-                  itemBuilder: (context, index) {
-                    final suggestion = controller.suggestions[index];
-                    return InkWell(
-                      onTap: () => controller.onLocationSelected(suggestion),
-                      child: Card(
-                        color: Color(0XFFFFFDF5),
-                        margin: EdgeInsets.symmetric(vertical: 6),
-                        child: ListTile(
-                          title: Text(
-                            suggestion['structured_formatting']?['main_text'] ??
-                                "Unknown",
-                            style: getTextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 16,
-                            ),
-                          ),
-                          subtitle: Text(
-                            suggestion['description'] ?? "",
-                            style: getTextStyle(fontSize: 12),
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                );
-              }),
-            ),
-            // Use current location
           ],
         ),
       ),

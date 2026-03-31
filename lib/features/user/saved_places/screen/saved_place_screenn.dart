@@ -1,11 +1,12 @@
 import 'package:ZipBee/core/common/styles/global_text_style.dart';
 import 'package:ZipBee/core/utils/constants/app_colors.dart';
+import 'package:ZipBee/features/user/bottom_navbar/controller/bottom_navabr_cotroller.dart';
+import 'package:ZipBee/features/user/bottom_navbar/screen/bottom_navbar_screen.dart';
 import 'package:ZipBee/features/user/saved_places/add_places/screen/add_place_screen.dart';
 import 'package:ZipBee/features/user/saved_places/controller/saved_places_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-
 
 class SavedPlaceScreen extends StatelessWidget {
   final SavedPlaceController controller = Get.put(SavedPlaceController());
@@ -27,7 +28,11 @@ class SavedPlaceScreen extends StatelessWidget {
         leading: GestureDetector(
           child: Icon(Icons.arrow_back_ios),
           onTap: () {
-            Get.back();
+            final navController = Get.isRegistered<BottomNavbarController>()
+                ? Get.find<BottomNavbarController>()
+                : Get.put(BottomNavbarController(), permanent: true);
+            navController.changeTab(0);
+            Get.offAll(() => BottomNavbarScreen());
           },
         ),
       ),
@@ -75,12 +80,36 @@ class SavedPlaceScreen extends StatelessWidget {
                                   child: ListTile(
                                     title: Text(
                                       p.name,
-                                      style:
-                                          getTextStyle(fontWeight: FontWeight.w600),
+                                      style: getTextStyle(
+                                        fontWeight: FontWeight.w600,
+                                      ),
                                     ),
                                     subtitle: Text(
                                       p.address,
                                       style: getTextStyle(fontSize: 13),
+                                    ),
+                                    trailing: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        IconButton(
+                                          onPressed: () {
+                                            controller.startEditing(p);
+                                            Get.to(() => AddPlaceScreen());
+                                          },
+                                          icon: const Icon(
+                                            Icons.edit_outlined,
+                                            color: Colors.amber,
+                                          ),
+                                        ),
+                                        IconButton(
+                                          onPressed: () =>
+                                              controller.removePlace(p.id),
+                                          icon: const Icon(
+                                            Icons.delete_outline,
+                                            color: Colors.redAccent,
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),
@@ -94,9 +123,14 @@ class SavedPlaceScreen extends StatelessWidget {
                                   leading: Icon(Icons.add, color: Colors.amber),
                                   title: Text(
                                     "Add Place",
-                                    style: getTextStyle(fontWeight: FontWeight.w500),
+                                    style: getTextStyle(
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                   ),
-                                  onTap: () => Get.to(() => AddPlaceScreen()),
+                                  onTap: () {
+                                    controller.clearSelectedPlace();
+                                    Get.to(() => AddPlaceScreen());
+                                  },
                                   trailing: Icon(
                                     Icons.chevron_right,
                                     color: Colors.grey,

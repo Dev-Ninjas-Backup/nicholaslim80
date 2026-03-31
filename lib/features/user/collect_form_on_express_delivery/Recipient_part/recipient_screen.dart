@@ -34,7 +34,7 @@ class RecipientView extends StatelessWidget {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.12),
+                    color: Colors.black.withValues(alpha: 0.12),
                     blurRadius: 6,
                     offset: const Offset(0, 2),
                   ),
@@ -52,7 +52,13 @@ class RecipientView extends StatelessWidget {
             SizedBox(
               height: 240,
               width: double.infinity,
-              child: GoogleMapWidget(),
+              child: GoogleMapWidget(
+                mode: GoogleMapWidgetMode.addressPicker,
+                initialQuery: controller.postalCodeController.text.isNotEmpty
+                    ? controller.postalCodeController.text
+                    : controller.addressController.text,
+                onLocationConfirmed: controller.applyResolvedLocation,
+              ),
             ),
 
             Container(
@@ -70,6 +76,13 @@ class RecipientView extends StatelessWidget {
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                     ),
+                  ),
+                  const SizedBox(height: 10),
+
+                  CustomTextField(
+                    controller: controller.postalCodeController,
+                    label: "Postal Code*",
+                    keyboardType: TextInputType.number,
                   ),
                   const SizedBox(height: 10),
 
