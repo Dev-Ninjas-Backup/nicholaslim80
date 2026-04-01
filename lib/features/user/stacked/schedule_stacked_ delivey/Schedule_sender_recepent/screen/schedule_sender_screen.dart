@@ -7,6 +7,7 @@ import 'package:ZipBee/features/user/stacked/stacked_collect_from/model/model.da
 import 'package:ZipBee/features/user/stacked/schedule_stacked_ delivey/Schedule_recepent/screen/schedule_recepent_screen1.dart';
 import 'package:ZipBee/features/user/stacked/stacked_controller/stacked_controller.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/controller/stacked_order_controller.dart';
+import 'package:ZipBee/features/user/stacked/widget/country_code_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get_core/src/get_main.dart';
@@ -37,7 +38,7 @@ class StackedSenderScheduleScreen extends StatelessWidget {
       if (controller.nameController.text.isEmpty)
         controller.nameController.text = address!.contactName;
       if (controller.numberController.text.isEmpty)
-        controller.numberController.text = address!.contactNumber;
+        controller.setContactNumber(address!.contactNumber);
       controller.saveAddress.value = address!.isSaved;
     }
 
@@ -107,13 +108,14 @@ class StackedSenderScheduleScreen extends StatelessWidget {
                     CustomTextField(
                       controller: controller.nameController,
                       label: "Contact name*",
-                      // suffixIcon: Icon(Icons.person_outline),
                     ),
                     SizedBox(height: 10),
-                    CustomTextField(
+                    CountryCodeTextField(
                       controller: controller.numberController,
                       label: "Contact number*",
                       keyboardType: TextInputType.phone,
+                      selectedCountryCode: controller.selectedCountryCode,
+                      onCountryCodeChanged: controller.updateCountryCode,
                     ),
                     SizedBox(height: 10),
                     CustomTextField(
@@ -196,7 +198,7 @@ class StackedSenderScheduleScreen extends StatelessWidget {
                                           controller.nameController.text,
                                       contactNumber:
                                           data['contact_number'] ??
-                                          controller.numberController.text,
+                                          controller.fullContactNumber,
                                       noteToDriver:
                                           data['note_to_driver'] ??
                                           controller.noteController.text,

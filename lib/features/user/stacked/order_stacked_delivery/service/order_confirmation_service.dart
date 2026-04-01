@@ -60,4 +60,37 @@ class OrderConfirmationService {
       return {'statusCode': 500, 'success': false, 'body': {}};
     }
   }
+
+  /// Check whether the given order is the user's first order
+  static Future<Map<String, dynamic>> getFirstOrderStatus(int orderId) async {
+    try {
+      final token = await SharedPreferencesHelper.getAccessToken();
+      final url = ApiEndPoint.isFirstOrder.replaceAll(
+        '{orderId}',
+        orderId.toString(),
+      );
+
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+          if (token != null) 'Authorization': 'Bearer $token',
+        },
+      );
+
+      debugPrint(
+        '✅ GET FIRST ORDER STATUS RESPONSE: ${response.statusCode}\n${response.body}',
+      );
+
+      final decoded = jsonDecode(response.body);
+      return {
+        'statusCode': response.statusCode,
+        'success': decoded['success'] ?? false,
+        'body': decoded,
+      };
+    } catch (e) {
+      debugPrint('❌ OrderConfirmationService.getFirstOrderStatus error: $e');
+      return {'statusCode': 500, 'success': false, 'body': {}};
+    }
+  }
 }

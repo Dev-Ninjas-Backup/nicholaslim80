@@ -62,6 +62,7 @@ class RiderController extends GetxController {
   // Order Payment Information
   RxDouble totalCost = 0.0.obs;
   RxString paymentType = ''.obs; // COD, WALLET, ONLINE_PAY
+  RxString routeType = 'ONE_WAY'.obs;
   RxBool assignRiderNull = true.obs;
   Rx<dynamic> assignRiderData = Rx<dynamic>(null);
   RxString orderCreatedAt = ''.obs;
@@ -130,6 +131,7 @@ class RiderController extends GetxController {
         totalCost.value =
             double.tryParse(data['total_cost']?.toString() ?? '0') ?? 0.0;
         paymentType.value = data['pay_type'] ?? '';
+        routeType.value = (data['route_type'] ?? 'ONE_WAY').toString();
         orderCreatedAt.value = data['created_at'] ?? '';
 
         // =========================
@@ -163,6 +165,7 @@ class RiderController extends GetxController {
         debugPrint('   - Order ID: $id');
         debugPrint('   - Total Cost: ${totalCost.value}');
         debugPrint('   - Payment Type: ${paymentType.value}');
+        debugPrint('   - Route Type: ${routeType.value}');
         debugPrint('   - Created At: ${orderCreatedAt.value}');
 
         // =========================

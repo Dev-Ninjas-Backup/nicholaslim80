@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:ZipBee/features/user/google_map/service/one_map_service.dart';
+import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:ZipBee/features/user/stacked/schedule_stacked_%20delivey/Schedule_recepent/service/destination_service.dart';
@@ -10,9 +11,10 @@ class RecipientController extends GetxController {
   final addressController = TextEditingController();
   final floorController = TextEditingController();
   final nameController = TextEditingController();
-  final numberController = TextEditingController(text: "+65");
+  final numberController = TextEditingController();
   final noteController = TextEditingController();
 
+  final selectedCountryCode = '+65'.obs;
   final isFormValid = false.obs;
   final saveAddress = false.obs;
   final isLoading = false.obs;
@@ -47,6 +49,7 @@ class RecipientController extends GetxController {
     addressController.clear();
     floorController.clear();
     nameController.clear();
+    selectedCountryCode.value = '+65';
     numberController.clear();
     noteController.clear();
     saveAddress.value = false;
@@ -81,6 +84,45 @@ class RecipientController extends GetxController {
     validateForm();
   }
 
+  void updateCountryCode(String code) {
+    selectedCountryCode.value = code;
+    validateForm();
+  }
+
+  String get fullContactNumber =>
+      '${selectedCountryCode.value}${numberController.text.trim()}';
+
+  void setContactNumber(String contactNumber) {
+    final normalizedNumber = contactNumber.trim().replaceAll(' ', '');
+
+    if (normalizedNumber.isEmpty) {
+      selectedCountryCode.value = '+65';
+      numberController.clear();
+      return;
+    }
+
+    if (!normalizedNumber.startsWith('+')) {
+      numberController.text = normalizedNumber;
+      return;
+    }
+
+    final maxDialCodeLength = normalizedNumber.length < 5
+        ? normalizedNumber.length
+        : 5;
+
+    for (int end = maxDialCodeLength; end >= 2; end--) {
+      final dialCode = normalizedNumber.substring(0, end);
+      if (CountryCode.tryFromDialCode(dialCode) != null) {
+        selectedCountryCode.value = dialCode;
+        numberController.text = normalizedNumber.substring(end);
+        return;
+      }
+    }
+
+    selectedCountryCode.value = '+65';
+    numberController.text = normalizedNumber.replaceFirst('+', '');
+  }
+
   /// Creates a destination record on the server and links it to order. Returns destination data on success, otherwise null.
   Future<Map<String, dynamic>?> saveDestination({
     String type = 'RECEIVER',
@@ -95,7 +137,7 @@ class RecipientController extends GetxController {
       'postal_code': postalCodeController.text,
       'floor_unit': floorController.text,
       'contact_name': nameController.text,
-      'contact_number': numberController.text,
+      'contact_number': fullContactNumber,
       'note_to_driver': noteController.text,
       'is_saved': saveAddress.value,
       'type': type, // SENDER / RECEIVER

@@ -2,6 +2,7 @@ import 'package:ZipBee/core/common/styles/global_text_style.dart';
 import 'package:ZipBee/features/user/collect_form_on_express_delivery/Sender_Part/widget_sender/text_filed_widget.dart';
 import 'package:ZipBee/features/user/stacked/schedule_stacked_%20delivey/Schedule_recepent/controller/recepent_controller.dart';
 import 'package:ZipBee/features/user/stacked/stacked_collect_from/model/model.dart';
+import 'package:ZipBee/features/user/stacked/widget/country_code_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -43,6 +44,7 @@ class ScheduleRecipientWidgetST extends StatelessWidget {
           style: getTextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
         SizedBox(height: 10),
+
         // Container(
         //   width: double.infinity,
         //   padding: const EdgeInsets.all(12),
@@ -70,7 +72,6 @@ class ScheduleRecipientWidgetST extends StatelessWidget {
         //   label: "Postal Code*",
         // ),
         // SizedBox(height: 10),
-
         CustomTextField(
           controller: controller.addressController,
           label: "Address*",
@@ -92,10 +93,12 @@ class ScheduleRecipientWidgetST extends StatelessWidget {
         ),
         SizedBox(height: 10),
 
-        CustomTextField(
+        CountryCodeTextField(
           controller: controller.numberController,
           label: "Contact number*",
           keyboardType: TextInputType.phone,
+          selectedCountryCode: controller.selectedCountryCode,
+          onCountryCodeChanged: controller.updateCountryCode,
         ),
         SizedBox(height: 10),
 
@@ -162,6 +165,7 @@ class ScheduleRecipientWidgetST extends StatelessWidget {
       controller.postalCodeController.clear();
       controller.floorController.clear();
       controller.nameController.clear();
+      controller.selectedCountryCode.value = '+65';
       controller.numberController.clear();
       controller.noteController.clear();
       controller.saveAddress.value = false;
@@ -180,7 +184,7 @@ class ScheduleRecipientWidgetST extends StatelessWidget {
         controller.nameController.text = address!.contactName;
       }
       if (controller.numberController.text.isEmpty) {
-        controller.numberController.text = address!.contactNumber;
+        controller.setContactNumber(address!.contactNumber);
       }
       controller.saveAddress.value = address!.isSaved;
       controller.validateForm();

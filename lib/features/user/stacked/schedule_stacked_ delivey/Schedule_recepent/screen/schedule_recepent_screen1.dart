@@ -109,7 +109,7 @@ class StackedSchedulRecepmenteScreen extends StatelessWidget {
                             controller.nameController.text,
                         contactNumber:
                             data['contact_number'] ??
-                            controller.numberController.text,
+                            controller.fullContactNumber,
                         noteToDriver:
                             data['note_to_driver'] ??
                             controller.noteController.text,

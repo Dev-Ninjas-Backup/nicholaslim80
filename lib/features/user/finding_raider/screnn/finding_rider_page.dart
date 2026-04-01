@@ -131,6 +131,7 @@ class FindingRiderPage extends StatelessWidget {
                         OrderLocationInfoWidget(
                           pickupStops: controller.pickupStops,
                           dropStops: controller.dropStops,
+                          routeType: controller.routeType,
                         ),
 
                         const SizedBox(height: 20),

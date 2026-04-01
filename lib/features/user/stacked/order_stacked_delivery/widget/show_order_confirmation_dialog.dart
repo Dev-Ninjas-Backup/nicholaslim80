@@ -95,7 +95,7 @@ void showStackedOrderConfirmationDialog(
                                     width: 2,
                                   ),
                                   borderRadius: BorderRadius.circular(4),
-                                  color: Colors.green.withOpacity(0.1),
+                                  color: Colors.green.withValues(alpha: 0.1),
                                 ),
                                 child: Text(
                                   controller.promoCode.value.toUpperCase(),
@@ -497,12 +497,7 @@ void showStackedOrderConfirmationDialog(
                           return;
                         }
 
-                        // Show confirmation dialog
-                        StackedOrderConfirmationDialog.show();
-                        await Future.delayed(const Duration(seconds: 2));
-
-                        // Show success dialog
-                        StackedOrderSuccessDialog.show();
+                        await _handlePostOrderSuccessDialogFlow(controller);
                       } else {
                         // Handle WALLET and CASH
                         String paymentMethodApi;
@@ -538,12 +533,7 @@ void showStackedOrderConfirmationDialog(
                             'Final placed total: ${controller.totalAmount.value}',
                           );
 
-                          // Show confirmation dialog
-                          StackedOrderConfirmationDialog.show();
-                          await Future.delayed(const Duration(seconds: 2));
-
-                          // Show success dialog
-                          StackedOrderSuccessDialog.show();
+                          await _handlePostOrderSuccessDialogFlow(controller);
                         } else {
                           EasyLoading.showError('Failed to place order');
                         }
@@ -575,6 +565,39 @@ void showStackedOrderConfirmationDialog(
       ),
     ),
   );
+}
+
+Future<void> _handlePostOrderSuccessDialogFlow(
+  StackedOrderController controller,
+) async {
+  final orderId = controller.lastOrderId;
+  var shouldShowFirstOrderDialog = false;
+
+  if (orderId != null && orderId != 0) {
+    final firstOrderRes = await OrderConfirmationService.getFirstOrderStatus(
+      orderId,
+    );
+    final success = firstOrderRes['success'] as bool? ?? false;
+    final body = firstOrderRes['body'] as Map<String, dynamic>? ?? {};
+    final data = body['data'] as Map<String, dynamic>? ?? {};
+    final isFirstOrderData = data['isFirstOrder'] as Map<String, dynamic>? ?? {};
+
+    shouldShowFirstOrderDialog =
+        success && (isFirstOrderData['isFirstOrder'] == true);
+
+    debugPrint(
+      '✅ First order check - OrderId: $orderId, IsFirstOrder: $shouldShowFirstOrderDialog',
+    );
+  } else {
+    debugPrint('⚠️ First order check skipped - invalid order id: $orderId');
+  }
+
+  if (shouldShowFirstOrderDialog) {
+    StackedOrderConfirmationDialog.show();
+    return;
+  }
+
+  StackedOrderSuccessDialog.show();
 }
 
 /// Helper - with discount styling for red text

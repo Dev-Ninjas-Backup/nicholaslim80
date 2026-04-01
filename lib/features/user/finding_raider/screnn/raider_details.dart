@@ -182,6 +182,7 @@ class RaiderDetails extends StatelessWidget {
                           OrderLocationInfoWidget(
                             pickupStops: controller.pickupStops,
                             dropStops: controller.dropStops,
+                            routeType: controller.routeType,
                           ),
                           SizedBox(height: 20),
                           Button(
@@ -240,7 +241,9 @@ Track your ride live on the ZipBee app.
 *Safe travels!*
 ''';
 
-                              Share.share(shareMessage);
+                              SharePlus.instance.share(
+                                ShareParams(text: shareMessage),
+                              );
                             },
                           ),
                         ],
