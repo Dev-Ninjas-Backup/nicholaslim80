@@ -4,7 +4,6 @@ import 'package:ZipBee/core/utils/constants/app_colors.dart';
 import 'package:ZipBee/core/utils/constants/icon_path.dart';
 import 'package:ZipBee/features/user/stacked/schedule_stacked_%20delivey/Schedule_sender_recepent/screen/schedule_sender_screen.dart';
 import 'package:ZipBee/features/user/stacked/stacked_controller/stacked_controller.dart';
-import 'package:ZipBee/features/user/stacked/widget/stacked_one_way_round_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

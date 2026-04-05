@@ -28,6 +28,7 @@ class PhoneField extends StatelessWidget {
             favorite: const ['+65'],
           ),
           Container(width: 1, height: 32, color: Colors.grey.shade400),
+          SizedBox(width: 8),
           Expanded(
             child: TextField(
               controller: controller.phoneController,
