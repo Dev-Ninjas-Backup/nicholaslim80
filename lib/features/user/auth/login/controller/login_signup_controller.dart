@@ -10,6 +10,7 @@ class LoginSignupController extends GetxController {
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final phoneController = TextEditingController();
+  final referralCodeController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
 
@@ -45,10 +46,12 @@ class LoginSignupController extends GetxController {
   void clearFields() {
     nameController.clear();
     emailController.clear();
-    // phoneController.text = '+65'; 
+    phoneController.clear();
+    referralCodeController.clear();
+    // phoneController.text = '+65';
     passwordController.clear();
     confirmPasswordController.clear();
-    
+
     // UI test reset
     isLogin.value = true;
     isLoginPasswordVisible.value = false;
@@ -136,10 +139,12 @@ class LoginSignupController extends GetxController {
     final name = nameController.text.trim();
     final email = emailController.text.trim();
     final phone = phoneController.text.trim();
+    final referralCode = referralCodeController.text.trim();
     final password = passwordController.text.trim();
     final confirm = confirmPasswordController.text.trim();
 
-    final fullPhoneNumber = "${selectedCountryCode.value}${phoneController.text.trim()}";
+    final fullPhoneNumber =
+        "${selectedCountryCode.value}${phoneController.text.trim()}";
 
     if (name.isEmpty) {
       EasyLoading.showError("User Name is required");
@@ -179,6 +184,7 @@ class LoginSignupController extends GetxController {
         username: name,
         email: email,
         phone: fullPhoneNumber,
+        referralCode: referralCode,
         password: password,
       );
 
@@ -210,10 +216,11 @@ class LoginSignupController extends GetxController {
 
   @override
   void onClose() {
-    clearFields();  
+    clearFields();
     nameController.dispose();
     emailController.dispose();
     phoneController.dispose();
+    referralCodeController.dispose();
     passwordController.dispose();
     confirmPasswordController.dispose();
     super.onClose();
@@ -223,11 +230,7 @@ class LoginSignupController extends GetxController {
     if (body is! Map) return null;
 
     final root = Map<String, dynamic>.from(body);
-    final directCandidates = [
-      root['userId'],
-      root['user_id'],
-      root['id'],
-    ];
+    final directCandidates = [root['userId'], root['user_id'], root['id']];
     for (final candidate in directCandidates) {
       final value = candidate?.toString().trim();
       if (value != null && value.isNotEmpty) return value;
