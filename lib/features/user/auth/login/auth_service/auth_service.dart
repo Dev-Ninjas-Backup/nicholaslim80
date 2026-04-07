@@ -11,6 +11,7 @@ class AuthService {
     required String email,
     required String phone,
     required String password,
+    String? referralCode,
     String roleName = "USER",
   }) async {
     try {
@@ -22,6 +23,7 @@ class AuthService {
           "email": email,
           "phone": phone,
           "password": password,
+          "referral_code": referralCode ?? "",
           "role_name": roleName,
         }),
       );

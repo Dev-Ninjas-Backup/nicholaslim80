@@ -14,7 +14,9 @@ class LoginSignupScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.put(LoginSignupController(), permanent: true);
 
-    WidgetsBinding.instance.addPostFrameCallback((_) => controller.clearFields());
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => controller.clearFields(),
+    );
 
     return Scaffold(
       body: Stack(
@@ -307,6 +309,18 @@ class LoginSignupScreen extends StatelessWidget {
         //   'Phone Number',
         //   keyboardType: TextInputType.phone,
         // ),
+        const SizedBox(height: 10),
+
+        Text(
+          "Referral Code (Optional)",
+          style: getTextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+            color: AppColors.subtitleFontColor,
+          ),
+        ),
+        const SizedBox(height: 5),
+        buildTextField(controller.referralCodeController, 'Referral Code'),
         const SizedBox(height: 10),
 
         Text(
