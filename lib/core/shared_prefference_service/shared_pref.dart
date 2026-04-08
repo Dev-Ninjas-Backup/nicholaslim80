@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPreferencesHelper {
@@ -32,6 +33,7 @@ class SharedPreferencesHelper {
   /// Get access token (primary)
   static Future<String?> getAccessToken() async {
     final prefs = await SharedPreferences.getInstance();
+    debugPrint('Access token retrieved: ${prefs.getString(_accessTokenKey)}');
     return prefs.getString(_accessTokenKey);
   }
 

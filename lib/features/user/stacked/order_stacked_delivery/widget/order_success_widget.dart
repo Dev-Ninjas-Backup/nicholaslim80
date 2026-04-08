@@ -8,7 +8,8 @@ import 'package:get/get.dart';
 import '../controller/stacked_order_controller.dart';
 
 class StackedOrderSuccessDialog {
-  static final StackedOrderController controller = Get.find<StackedOrderController>();
+  static final StackedOrderController controller =
+      Get.find<StackedOrderController>();
   static final RxBool wantsConfirmationCall = true.obs;
   static final RxBool isSubmitting = false.obs;
 
@@ -88,7 +89,10 @@ class StackedOrderSuccessDialog {
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Radio<bool>(value: true, activeColor: Colors.blue),
+                                  Radio<bool>(
+                                    value: true,
+                                    activeColor: Colors.blue,
+                                  ),
                                   SizedBox(width: 4),
                                   Text('Yes', style: TextStyle(fontSize: 16)),
                                 ],
@@ -99,7 +103,10 @@ class StackedOrderSuccessDialog {
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Radio<bool>(value: false, activeColor: Colors.blue),
+                                  Radio<bool>(
+                                    value: false,
+                                    activeColor: Colors.blue,
+                                  ),
                                   SizedBox(width: 4),
                                   Text('No', style: TextStyle(fontSize: 16)),
                                 ],
@@ -126,10 +133,15 @@ class StackedOrderSuccessDialog {
     if (isSubmitting.value) return;
 
     wantsConfirmationCall.value = wantsCall;
-    await _handleConfirmation(wantsCall);
+    if (wantsCall) {
+      _goToNextFlow();
+      return;
+    }
+
+    await _handleConfirmation();
   }
 
-  static Future<void> _handleConfirmation(bool wantsCall) async {
+  static Future<void> _handleConfirmation() async {
     if (isSubmitting.value) return;
 
     var loadingShown = false;
@@ -141,7 +153,7 @@ class StackedOrderSuccessDialog {
         return;
       }
 
-      debugPrint('📢 Notifying Rider - OrderId: $orderId, WantsCall: $wantsCall');
+      debugPrint('📢 Notifying Rider - OrderId: $orderId, WantsCall: false');
 
       isSubmitting.value = true;
       EasyLoading.show(status: 'Processing...');
@@ -149,7 +161,7 @@ class StackedOrderSuccessDialog {
 
       final res = await NotifyRider.notifyRider(
         orderId: orderId,
-        notifyRider: wantsCall,
+        notifyRider: false,
       );
 
       if (loadingShown) {
@@ -159,10 +171,9 @@ class StackedOrderSuccessDialog {
 
       final success = res['success'] as bool? ?? false;
       if (success) {
-        debugPrint('✅ Rider notification sent: $wantsCall');
+        debugPrint('✅ Rider notification sent: false');
         debugPrint('✅ Navigating to FindingRiderPage with OrderId: $orderId');
-        Get.back(); // Close dialog
-        Get.to(() => FindingRiderPage());
+        _goToNextFlow();
       } else {
         EasyLoading.showError('Failed to process your response');
       }
@@ -175,5 +186,10 @@ class StackedOrderSuccessDialog {
     } finally {
       isSubmitting.value = false;
     }
+  }
+
+  static void _goToNextFlow() {
+    Get.back();
+    Get.to(() => FindingRiderPage());
   }
 }

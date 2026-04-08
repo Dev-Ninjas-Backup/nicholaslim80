@@ -51,166 +51,169 @@ class FindingRiderPage extends StatelessWidget {
       }
     });
 
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: GestureDetector(
-          onTap: () {
-            controller.stopPollingAssignRider();
-            Get.offAll(() => BottomNavbarScreen());
-          },
-          child: Padding(
-            padding: const EdgeInsets.all(8),
-            child: Image.asset(IconPath.colorFullArrow, width: 24, height: 24),
+    return SafeArea(
+      child: Scaffold(
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          leading: GestureDetector(
+            onTap: () {
+              controller.stopPollingAssignRider();
+              Get.offAll(() => BottomNavbarScreen());
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(8),
+              child: Image.asset(IconPath.colorFullArrow, width: 24, height: 24),
+            ),
           ),
         ),
-      ),
-      body: Stack(
-        children: [
-          const SizedBox.expand(child: GoogleMapWidget()),
-
-          DraggableScrollableSheet(
-            initialChildSize: 0.4,
-            minChildSize: 0.3,
-            maxChildSize: 0.7,
-            builder: (_, scrollController) {
-              return Container(
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black26,
-                      blurRadius: 10,
-                      spreadRadius: 2,
-                    ),
-                  ],
-                ),
-                child: SingleChildScrollView(
-                  controller: scrollController,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        dragHandle(),
-                        const SizedBox(height: 16),
-                        Center(
-                          child: Text(
-                            'Finding your rider',
-                            style: getTextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            stepBar(active: true),
-                            stepBar(active: false),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        Center(
-                          child: Obx(
-                            () => Text(
-                              'Order ${orderController.orderNumber.value}',
+        body: Stack(
+          children: [
+            const SizedBox.expand(child: GoogleMapWidget()),
+      
+            DraggableScrollableSheet(
+              initialChildSize: 0.4,
+              minChildSize: 0.3,
+              maxChildSize: 0.7,
+              builder: (_, scrollController) {
+                return Container(
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 10,
+                        spreadRadius: 2,
+                      ),
+                    ],
+                  ),
+                  child: SingleChildScrollView(
+                    controller: scrollController,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          dragHandle(),
+                          const SizedBox(height: 16),
+                          Center(
+                            child: Text(
+                              'Finding your rider',
                               style: getTextStyle(
-                                fontSize: 12,
+                                fontSize: 20,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 20),
-
-                        OrderLocationInfoWidget(
-                          pickupStops: controller.pickupStops,
-                          dropStops: controller.dropStops,
-                          routeType: controller.routeType,
-                        ),
-
-                        const SizedBox(height: 20),
-                        buildFareOptions(),
-                        const SizedBox(height: 20),
-                        Center(child: addAmountButton(context)),
-                        const SizedBox(height: 20),
-
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Row(
+                          const SizedBox(height: 20),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Expanded(
-                                child: Button(
-                                  buttonText: 'Priority order',
-                                  backgroundColor: Colors.amber,
-                                  textColor: Colors.black,
-                                  onPressed: controller.priorityOrder,
-                                ),
-                              ),
-                              const SizedBox(width: 16),
-                              Flexible(
-                                child: FilledButton(
-                                  onPressed: () =>
-                                      showCancelOrderDialog(context),
-                                  style: FilledButton.styleFrom(
-                                    backgroundColor: Colors.white,
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                      vertical: 8,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(6),
-                                      side: const BorderSide(
-                                        color: Colors.red,
-                                        width: 1.5,
-                                      ),
-                                    ),
-                                  ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Flexible(
-                                        child: Text(
-                                          'Cancel order',
-                                          overflow: TextOverflow.ellipsis,
-                                          style: getTextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w500,
-                                            color: Colors.red,
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 3),
-                                      Image.asset(
-                                        IconPath.cancel,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
+                              stepBar(active: true),
+                              stepBar(active: false),
                             ],
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 10),
+                          Center(
+                            child: Obx(
+                              () => Text(
+                                'Order ${orderController.orderNumber.value}',
+                                style: getTextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+      
+                          OrderLocationInfoWidget(
+                            pickupStops: controller.pickupStops,
+                            dropStops: controller.dropStops,
+                            routeType: controller.routeType,
+                          ),
+      
+                          const SizedBox(height: 20),
+                          buildFareOptions(),
+                          const SizedBox(height: 20),
+                          Center(child: addAmountButton(context)),
+                          const SizedBox(height: 20),
+      
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Button(
+                                    buttonText: 'Priority order',
+                                    backgroundColor: Colors.amber,
+                                    textColor: Colors.black,
+                                    onPressed: controller.priorityOrder,
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Flexible(
+                                  child: FilledButton(
+                                    onPressed: () =>
+                                        showCancelOrderDialog(context),
+                                    style: FilledButton.styleFrom(
+                                      backgroundColor: Colors.white,
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                        vertical: 8,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(6),
+                                        side: const BorderSide(
+                                          color: Colors.red,
+                                          width: 1.5,
+                                        ),
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Flexible(
+                                          child: Text(
+                                            'Cancel order',
+                                            overflow: TextOverflow.ellipsis,
+                                            style: getTextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500,
+                                              color: Colors.red,
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 3),
+                                        Image.asset(
+                                          IconPath.cancel,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: 40),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              );
-            },
-          ),
-          Obx(
-            () => controller.isLoading.value
-                ? const Center(
-                    child: CircularProgressIndicator(color: Colors.amber),
-                  )
-                : const SizedBox.shrink(),
-          ),
-        ],
+                );
+              },
+            ),
+            Obx(
+              () => controller.isLoading.value
+                  ? const Center(
+                      child: CircularProgressIndicator(color: Colors.amber),
+                    )
+                  : const SizedBox.shrink(),
+            ),
+          ],
+        ),
       ),
     );
   }
