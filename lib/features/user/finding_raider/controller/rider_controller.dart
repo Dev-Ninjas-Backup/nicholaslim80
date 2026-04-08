@@ -68,6 +68,7 @@ class RiderController extends GetxController {
   RxString orderCreatedAt = ''.obs;
   RxString scheduledTime = ''.obs;
   RxString orderUpdatedAt = ''.obs;
+  RxString riderFormattedAverage = '0'.obs;
 
   Timer? _pollTimer;
 
@@ -126,17 +127,25 @@ class RiderController extends GetxController {
 
       if (result['success'] == true && result['data'] != null) {
         final data = result['data'];
+        final pricingSummary = data['pricingSummary'] as Map<String, dynamic>?;
 
         // =========================
         // Payment Information
         // =========================
         totalCost.value =
-            double.tryParse(data['total_cost']?.toString() ?? '0') ?? 0.0;
+            double.tryParse(
+              pricingSummary?['totalCost']?.toString() ??
+                  data['total_cost']?.toString() ??
+                  '0',
+            ) ??
+            0.0;
         paymentType.value = data['pay_type'] ?? '';
         routeType.value = (data['route_type'] ?? 'ONE_WAY').toString();
         orderCreatedAt.value = data['created_at'] ?? '';
         scheduledTime.value = data['scheduled_time'] ?? '';
         orderUpdatedAt.value = data['updated_at'] ?? '';
+        riderFormattedAverage.value = (data['formattedAverage'] ?? '0')
+            .toString();
 
         // =========================
         // Assign Rider Info
