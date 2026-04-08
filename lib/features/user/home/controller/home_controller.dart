@@ -47,6 +47,12 @@ class HomeController extends GetxController {
   final isLoading = false.obs;
   final currentOrderId = RxnInt();
 
+  void resetHomeSelection() {
+    deliveryType.value = '';
+    selectedVehicleId.value = null;
+    currentOrderId.value = null;
+  }
+
   void selectDeliveryType(DeliveryTypeModel selectedType) async {
     deliveryType.value = selectedType.name.toLowerCase();
     await _createOrderApi(selectedType.id);
@@ -73,7 +79,7 @@ class HomeController extends GetxController {
               deliveryType.value;
           EasyLoading.dismiss();
 
-          Get.toNamed(
+          await Get.toNamed(
             AppRoutes.stackedScreen,
             arguments: {
               'orderId': currentOrderId.value,
@@ -82,6 +88,8 @@ class HomeController extends GetxController {
               'order': orderResponse.data?.rawJson,
             },
           );
+
+          resetHomeSelection();
         } else {
           EasyLoading.showError(
             orderResponse.message ?? "Could not create order",
