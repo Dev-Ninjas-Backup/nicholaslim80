@@ -66,6 +66,8 @@ class RiderController extends GetxController {
   RxBool assignRiderNull = true.obs;
   Rx<dynamic> assignRiderData = Rx<dynamic>(null);
   RxString orderCreatedAt = ''.obs;
+  RxString scheduledTime = ''.obs;
+  RxString orderUpdatedAt = ''.obs;
 
   Timer? _pollTimer;
 
@@ -133,6 +135,8 @@ class RiderController extends GetxController {
         paymentType.value = data['pay_type'] ?? '';
         routeType.value = (data['route_type'] ?? 'ONE_WAY').toString();
         orderCreatedAt.value = data['created_at'] ?? '';
+        scheduledTime.value = data['scheduled_time'] ?? '';
+        orderUpdatedAt.value = data['updated_at'] ?? '';
 
         // =========================
         // Assign Rider Info

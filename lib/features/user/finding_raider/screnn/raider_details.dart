@@ -5,6 +5,7 @@ import 'package:ZipBee/core/utils/constants/icon_path.dart';
 import 'package:ZipBee/features/user/bottom_navbar/screen/bottom_navbar_screen.dart';
 import 'package:ZipBee/features/user/chat/screen/chat_screen.dart';
 import 'package:ZipBee/features/user/finding_raider/controller/rider_controller.dart';
+import 'package:ZipBee/features/user/finding_raider/utils/ride_share_message_builder.dart';
 import 'package:ZipBee/features/user/finding_raider/widget/button.dart';
 import 'package:ZipBee/features/user/finding_raider/widget/custom_icon_text_button.dart';
 import 'package:ZipBee/features/user/finding_raider/widget/order_location_info_widget.dart';
@@ -117,28 +118,33 @@ class RaiderDetails extends StatelessWidget {
                               ),
 
                               CustomIconTextButton(
-  text: 'Call',
-  iconPath: IconPath.call,
-  borderColor: Colors.black,
-  textColor: Colors.black,
-  backgroundColor: Colors.white,
-  onPressed: () {
-    // debugPrint("Call button pressed{$(phoneNumber)}");
-    String phoneNumber = controller.assignRiderData.value?['phone'] ?? '';
-    if (phoneNumber.isNotEmpty) {
-      ExternalLauncherService.openDialer(phoneNumber);
-    } else {
-      // Optional: show a message if phone number is empty
-      Get.snackbar(
-        "Error",
-        "Phone number not available",
-        backgroundColor: Colors.redAccent,
-        colorText: Colors.white,
-      );
-    }
-  },
-),
-
+                                text: 'Call',
+                                iconPath: IconPath.call,
+                                borderColor: Colors.black,
+                                textColor: Colors.black,
+                                backgroundColor: Colors.white,
+                                onPressed: () {
+                                  // debugPrint("Call button pressed{$(phoneNumber)}");
+                                  String phoneNumber =
+                                      controller
+                                          .assignRiderData
+                                          .value?['phone'] ??
+                                      '';
+                                  if (phoneNumber.isNotEmpty) {
+                                    ExternalLauncherService.openDialer(
+                                      phoneNumber,
+                                    );
+                                  } else {
+                                    // Optional: show a message if phone number is empty
+                                    Get.snackbar(
+                                      "Error",
+                                      "Phone number not available",
+                                      backgroundColor: Colors.redAccent,
+                                      colorText: Colors.white,
+                                    );
+                                  }
+                                },
+                              ),
                             ],
                           ),
                           SizedBox(height: 20),
@@ -201,45 +207,37 @@ class RaiderDetails extends StatelessWidget {
                                   ? assignRider['registrations'][0]
                                   : null;
 
-                              final riderName =
-                                  registration?['raider_name'] ??
-                                  'Not Assigned';
-                              final orderId = orderController.orderNumber.value;
-                              final pickup =
-                                  controller.pickupAddress.value.isEmpty
-                                  ? 'N/A'
-                                  : controller.pickupAddress.value;
-                              final destination =
-                                  controller.dropAddress.value.isEmpty
-                                  ? 'N/A'
-                                  : controller.dropAddress.value;
-                              final totalCost = controller.totalCost.value
-                                  .toStringAsFixed(2);
-
-                              String paymentMethod = 'Online Payment';
-                              if (controller.paymentType.value == 'COD')
-                                paymentMethod = 'Cash on Delivery';
-                              if (controller.paymentType.value == 'WALLET')
-                                paymentMethod = 'Wallet';
-
-                              final String shareMessage =
-                                  '''
-🐝 *ZipBee | Ride Details*
---------------------------------------
-🆔 *Order ID:* $orderId
-👤 *Assign Rider ID:* ${controller.assignRiderData.value?['id'] ?? 'N/A'}
-👤 *Rider:* $riderName
-💰 *Total Fare:* \$$totalCost ($paymentMethod)
-
-📍 *Pickup:* $pickup
-
-🏁 *Drop-off:* $destination
-
-📅 *Date & Time:* ${_formatDateTime(controller.orderCreatedAt.value)}
---------------------------------------
-Track your ride live on the ZipBee app.
-*Safe travels!*
-''';
+                              final String
+                              shareMessage = RideShareMessageBuilder.build(
+                                orderId: orderController.orderNumber.value,
+                                assignedRiderId:
+                                    controller.assignRiderData.value?['id']
+                                        ?.toString() ??
+                                    'N/A',
+                                riderName:
+                                    registration?['raider_name'] ??
+                                    'Not Assigned',
+                                totalFare: controller.totalCost.value
+                                    .toStringAsFixed(2),
+                                paymentType:
+                                    RideShareMessageBuilder.paymentMethodLabel(
+                                      controller.paymentType.value,
+                                    ),
+                                pickupStops: controller.pickupStops,
+                                dropStops: controller.dropStops,
+                                routeType: controller.routeType.value,
+                                scheduledDateTime:
+                                    RideShareMessageBuilder.scheduledDateTimeLabel(
+                                      scheduledTime:
+                                          controller.scheduledTime.value,
+                                      fallbackCreatedAt:
+                                          controller.orderCreatedAt.value,
+                                    ),
+                                jobAcceptedTime:
+                                    RideShareMessageBuilder.formatDateTime(
+                                      controller.orderUpdatedAt.value,
+                                    ),
+                              );
 
                               SharePlus.instance.share(
                                 ShareParams(text: shareMessage),
@@ -309,13 +307,6 @@ Track your ride live on the ZipBee app.
     });
   }
 
-  String _formatDateTime(String isoString) {
-    if (isoString.isEmpty) return 'N/A';
-    try {
-      final dateTime = DateTime.parse(isoString);
-      return '${dateTime.day}/${dateTime.month}/${dateTime.year} ${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}';
-    } catch (e) {
-      return 'N/A';
-    }
-  }
+  String _formatDateTime(String isoString) =>
+      RideShareMessageBuilder.formatDateTime(isoString);
 }

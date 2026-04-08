@@ -3,8 +3,10 @@ import 'package:ZipBee/features/user/order/active_order_details/widgets/order_ra
 import 'package:ZipBee/features/user/order/active_order_details/widgets/order_stops_list.dart';
 import 'package:ZipBee/features/user/order/active_order_details/widgets/payment_and_time_info.dart';
 import 'package:ZipBee/features/user/order/active_order_details/widgets/rider_details_card.dart';
+import 'package:ZipBee/features/user/finding_raider/utils/ride_share_message_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../../../../../core/common/styles/global_text_style.dart';
 import '../../../../../../core/common/widgets/custom_button.dart';
 import '../../../../../../core/utils/constants/app_colors.dart';
@@ -92,12 +94,45 @@ class CompletedOrderDetailsScreen extends StatelessWidget {
                         // --- ৪. একশন বাটনস ---
                         CustomButton(
                           label: 'Share Ride Information',
-                          onPressed: () {},
+                          onPressed: () {
+                            final shareMessage = RideShareMessageBuilder.build(
+                              orderId: '#${liveOrder.orderId}',
+                              assignedRiderId:
+                                  (liveOrder.assignedRiderId ??
+                                          liveOrder.riderId)
+                                      ?.toString() ??
+                                  'N/A',
+                              riderName: liveOrder.assignRiderName.isNotEmpty
+                                  ? liveOrder.assignRiderName
+                                  : 'Not Assigned',
+                              totalFare: liveOrder.total.toStringAsFixed(2),
+                              paymentType:
+                                  RideShareMessageBuilder.paymentMethodLabel(
+                                    liveOrder.paymentType,
+                                  ),
+                              pickupStops: controller.getPickupStops(liveOrder),
+                              dropStops: controller.getDropStops(liveOrder),
+                              routeType: liveOrder.routeType,
+                              scheduledDateTime:
+                                  RideShareMessageBuilder.scheduledDateTimeLabel(
+                                    scheduledTime: liveOrder.scheduledTime,
+                                    fallbackCreatedAt: liveOrder.createdAt,
+                                  ),
+                              jobAcceptedTime:
+                                  RideShareMessageBuilder.formatDateTime(
+                                    liveOrder.updatedAt,
+                                  ),
+                            );
+
+                            SharePlus.instance.share(
+                              ShareParams(text: shareMessage),
+                            );
+                          },
                           color: AppColors.primaryButtonColor,
                           textColor: AppColors.fontColor,
                         ),
                         const SizedBox(height: 12),
-                        
+
                         // Rating & Review Button (স্পেশাল পার্ট)
                         CustomButton(
                           label: 'Rating & Review',
@@ -155,10 +190,8 @@ class CompletedOrderDetailsScreen extends StatelessWidget {
   // Proof of Delivery উইজেট (আপনার অরিজিনাল লজিক)
   Widget _buildProofOfDelivery(OrderModel liveOrder) {
     return GestureDetector(
-      onTap: () => Get.toNamed(
-        '/ProofOfDeliveryScreen2',
-        arguments: liveOrder.orderId,
-      ),
+      onTap: () =>
+          Get.toNamed('/ProofOfDeliveryScreen2', arguments: liveOrder.orderId),
       child: Row(
         children: [
           const Icon(Icons.image_outlined, size: 20, color: Colors.black54),

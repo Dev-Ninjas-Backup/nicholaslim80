@@ -16,8 +16,13 @@ class OrderModel {
   final double assignRiderRating;
   final int assignRiderReviews;
   final int? riderId;
+  final int? assignedRiderId;
   final int? assignRiderUserId;
   final String scheduledTime;
+  final String createdAt;
+  final String updatedAt;
+  final String paymentType;
+  final String routeType;
 
   final double? pickupLat;
   final double? pickupLong;
@@ -44,8 +49,13 @@ class OrderModel {
     this.assignRiderRating = 0.0,
     this.assignRiderReviews = 0,
     this.riderId,
+    this.assignedRiderId,
     this.assignRiderUserId,
     required this.scheduledTime,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.paymentType,
+    required this.routeType,
     this.pickupLat,
     this.pickupLong,
     this.dropOffLat,
@@ -116,7 +126,14 @@ class OrderModel {
       riderId: json['assign_rider_id'] is int
           ? json['assign_rider_id']
           : int.tryParse((json['assign_rider_id'] ?? '').toString()),
+      assignedRiderId: riderMap?['id'] is int
+          ? riderMap!['id']
+          : int.tryParse(riderMap?['id']?.toString() ?? ''),
       scheduledTime: timeValue,
+      createdAt: (json['created_at'] ?? '').toString(),
+      updatedAt: (json['updated_at'] ?? '').toString(),
+      paymentType: (json['pay_type'] ?? '').toString(),
+      routeType: (json['route_type'] ?? '').toString(),
       pickupLat: double.tryParse(
         pickupStop?['latitude']?.toString() ??
             json['pickup_lat']?.toString() ??
@@ -182,8 +199,13 @@ class OrderModel {
       assignRiderRating: assignRiderRating ?? this.assignRiderRating,
       assignRiderReviews: assignRiderReviews ?? this.assignRiderReviews,
       riderId: riderId,
+      assignedRiderId: assignedRiderId,
       assignRiderUserId: assignRiderUserId ?? this.assignRiderUserId,
       scheduledTime: scheduledTime,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+      paymentType: paymentType,
+      routeType: routeType,
       pickupLat: pickupLat ?? this.pickupLat,
       pickupLong: pickupLong ?? this.pickupLong,
       dropOffLat: dropOffLat ?? this.dropOffLat,
