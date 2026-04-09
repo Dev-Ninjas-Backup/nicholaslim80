@@ -13,6 +13,7 @@ import 'package:ZipBee/features/user/finding_raider/widget/raider_info.dart';
 import 'package:ZipBee/features/user/google_map/widget/google_map_widget.dart';
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/controller/stacked_order_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -89,32 +90,35 @@ class RaiderDetails extends StatelessWidget {
                                 borderColor: Colors.black,
                                 textColor: Colors.black,
                                 backgroundColor: Colors.white,
-                                onPressed: () => Get.to(
-                                  () => const ChatScreen(),
-                                  arguments: {
-                                    "receiverId":
-                                        (controller
-                                                    .assignRiderData
-                                                    .value?['userId'] ??
-                                                0)
-                                            .toString(),
-                                    "senderName":
-                                        controller
-                                            .assignRiderData
-                                            .value?['name'] ??
-                                        '',
-                                    "orderId": controller.orderId.value
-                                        .toString(),
-                                    "totalCost": controller.totalCost.value
-                                        .toStringAsFixed(2),
-                                    "vehicleType": controller.vehicleType.value,
-                                    "assignRiderPhone":
-                                        controller
-                                            .assignRiderData
-                                            .value?['phone'] ??
-                                        '',
-                                  },
-                                ),
+                                onPressed: () {
+                                  if (controller
+                                      .assignRiderUserId
+                                      .value
+                                      .isEmpty) {
+                                    EasyLoading.showError(
+                                      'Rider information not available',
+                                    );
+                                    return;
+                                  }
+
+                                  Get.to(
+                                    () => const ChatScreen(),
+                                    arguments: {
+                                      "receiverId":
+                                          controller.assignRiderUserId.value,
+                                      "senderName":
+                                          controller.assignRiderName.value,
+                                      "orderId": controller.orderId.value
+                                          .toString(),
+                                      "totalCost": controller.totalCost.value
+                                          .toStringAsFixed(2),
+                                      "vehicleType":
+                                          controller.vehicleType.value,
+                                      "assignRiderPhone":
+                                          controller.assignRiderPhone.value,
+                                    },
+                                  );
+                                },
                               ),
 
                               CustomIconTextButton(
@@ -124,23 +128,16 @@ class RaiderDetails extends StatelessWidget {
                                 textColor: Colors.black,
                                 backgroundColor: Colors.white,
                                 onPressed: () {
-                                  // debugPrint("Call button pressed{$(phoneNumber)}");
-                                  String phoneNumber =
-                                      controller
-                                          .assignRiderData
-                                          .value?['phone'] ??
-                                      '';
+                                  final phoneNumber =
+                                      controller.assignRiderPhone.value;
                                   if (phoneNumber.isNotEmpty) {
                                     ExternalLauncherService.openDialer(
                                       phoneNumber,
                                     );
                                   } else {
                                     // Optional: show a message if phone number is empty
-                                    Get.snackbar(
-                                      "Error",
-                                      "Phone number not available",
-                                      backgroundColor: Colors.redAccent,
-                                      colorText: Colors.white,
+                                    EasyLoading.showError(
+                                      'Phone number not available',
                                     );
                                   }
                                 },

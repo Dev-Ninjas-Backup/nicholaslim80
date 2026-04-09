@@ -69,6 +69,9 @@ class RiderController extends GetxController {
   RxString scheduledTime = ''.obs;
   RxString orderUpdatedAt = ''.obs;
   RxString riderFormattedAverage = '0'.obs;
+  RxString assignRiderName = ''.obs;
+  RxString assignRiderPhone = ''.obs;
+  RxString assignRiderUserId = ''.obs;
 
   Timer? _pollTimer;
 
@@ -128,6 +131,8 @@ class RiderController extends GetxController {
       if (result['success'] == true && result['data'] != null) {
         final data = result['data'];
         final pricingSummary = data['pricingSummary'] as Map<String, dynamic>?;
+        final deliveryTypeData = data['delivery_type'] as Map<String, dynamic>?;
+        final vehicleTypeId = data['vehicle_type_id'];
 
         // =========================
         // Payment Information
@@ -147,14 +152,50 @@ class RiderController extends GetxController {
         riderFormattedAverage.value = (data['formattedAverage'] ?? '0')
             .toString();
 
+        final deliveryVehicles =
+            deliveryTypeData?['vehicle_types'] as List<dynamic>? ?? [];
+        Map<String, dynamic>? selectedVehicle;
+
+        for (final item in deliveryVehicles) {
+          if (item is! Map<String, dynamic>) continue;
+
+          if (item['vehicle_type_id'] == vehicleTypeId) {
+            selectedVehicle = item['vehicle_type'] as Map<String, dynamic>?;
+            break;
+          }
+        }
+
+        selectedVehicle ??=
+            deliveryVehicles.isNotEmpty &&
+                deliveryVehicles.first is Map<String, dynamic>
+            ? (deliveryVehicles.first as Map<String, dynamic>)['vehicle_type']
+                  as Map<String, dynamic>?
+            : null;
+
+        vehicleType.value =
+            selectedVehicle?['vehicle_name']?.toString().trim().isNotEmpty ==
+                true
+            ? selectedVehicle!['vehicle_name'].toString()
+            : (selectedVehicle?['vehicle_type']?.toString() ?? '');
+
         // =========================
         // Assign Rider Info
         // =========================
         assignRiderData.value = data['assign_rider'];
         assignRiderNull.value = data['assign_rider'] == null;
+        assignRiderName.value = '';
+        assignRiderPhone.value = '';
+        assignRiderUserId.value = '';
 
         // ✅ এই জায়গা থেকে আমরা assign_rider এর id এবং userId fetch করছি
         final assignRider = data['assign_rider'];
+        final riderRegistration =
+            assignRider != null &&
+                assignRider['registrations'] is List &&
+                (assignRider['registrations'] as List).isNotEmpty
+            ? (assignRider['registrations'] as List).first
+                  as Map<String, dynamic>?
+            : null;
 
         if (assignRider != null) {
           // 🚴 Assign Rider ID
@@ -162,6 +203,14 @@ class RiderController extends GetxController {
 
           // 👤 Assign Rider UserID
           final riderUserId = assignRider['userId'];
+
+          assignRiderUserId.value = riderUserId?.toString() ?? '';
+          assignRiderName.value =
+              riderRegistration?['raider_name']?.toString() ?? '';
+          assignRiderPhone.value =
+              riderRegistration?['contact_number']?.toString() ??
+              assignRider['phone']?.toString() ??
+              '';
 
           debugPrint('🚴 Assign Rider ID: $riderId'); // <-- এখানে
           debugPrint('👤 Assign Rider UserID: $riderUserId'); // <-- এখানে
