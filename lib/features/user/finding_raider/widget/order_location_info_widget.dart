@@ -39,8 +39,8 @@ class OrderLocationInfoWidget extends StatelessWidget {
 
           SizedBox(height: 8),
           // Connecting Dots
-          if (pickupStops.isNotEmpty && dropStops.isNotEmpty)
-            const Padding(
+          // if (pickupStops.isNotEmpty && dropStops.isNotEmpty)
+            Padding(
               padding: EdgeInsets.only(left: 12, top: 2, bottom: 2),
               child: Icon(Icons.more_vert, size: 20, color: Colors.grey),
             ),

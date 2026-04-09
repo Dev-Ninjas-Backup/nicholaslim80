@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:ZipBee/features/user/finding_raider/utils/ride_share_message_builder.dart';
 import '../../../../../../core/common/styles/global_text_style.dart';
 import '../../../../../../core/utils/constants/app_colors.dart';
 import '../../../../../core/common/widgets/custom_button.dart';
@@ -61,7 +63,40 @@ class ActiveOrderDetailsScreen extends StatelessWidget {
                         const SizedBox(height: 32),
                         CustomButton(
                           label: 'Share Ride Information',
-                          onPressed: () {},
+                          onPressed: () {
+                            final shareMessage = RideShareMessageBuilder.build(
+                              orderId: '#${liveOrder.orderId}',
+                              assignedRiderId:
+                                  (liveOrder.assignedRiderId ??
+                                          liveOrder.riderId)
+                                      ?.toString() ??
+                                  'N/A',
+                              riderName: liveOrder.assignRiderName.isNotEmpty
+                                  ? liveOrder.assignRiderName
+                                  : 'Not Assigned',
+                              totalFare: liveOrder.total.toStringAsFixed(2),
+                              paymentType:
+                                  RideShareMessageBuilder.paymentMethodLabel(
+                                    liveOrder.paymentType,
+                                  ),
+                              pickupStops: controller.getPickupStops(liveOrder),
+                              dropStops: controller.getDropStops(liveOrder),
+                              routeType: liveOrder.routeType,
+                              scheduledDateTime:
+                                  RideShareMessageBuilder.scheduledDateTimeLabel(
+                                    scheduledTime: liveOrder.scheduledTime,
+                                    fallbackCreatedAt: liveOrder.createdAt,
+                                  ),
+                              jobAcceptedTime:
+                                  RideShareMessageBuilder.formatDateTime(
+                                    liveOrder.updatedAt,
+                                  ),
+                            );
+
+                            SharePlus.instance.share(
+                              ShareParams(text: shareMessage),
+                            );
+                          },
                           color: AppColors.primaryButtonColor,
                           textColor: AppColors.fontColor,
                         ),

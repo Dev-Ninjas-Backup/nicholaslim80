@@ -9,7 +9,10 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 class BottomNavbarScreen extends StatelessWidget {
-  BottomNavbarScreen({super.key});
+  BottomNavbarScreen({super.key}) {
+    controller.changeTab(0);
+    homeController.resetHomeSelection();
+  }
 
   final BottomNavbarController controller = Get.put(
     BottomNavbarController(),

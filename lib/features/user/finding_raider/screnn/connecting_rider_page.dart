@@ -3,6 +3,7 @@ import 'package:ZipBee/core/utils/constants/icon_path.dart';
 import 'package:ZipBee/features/user/bottom_navbar/screen/bottom_navbar_screen.dart';
 import 'package:ZipBee/features/user/finding_raider/controller/rider_controller.dart';
 import 'package:ZipBee/features/user/finding_raider/screnn/raider_details.dart';
+import 'package:ZipBee/features/user/finding_raider/utils/ride_share_message_builder.dart';
 import 'package:ZipBee/features/user/finding_raider/widget/button.dart';
 import 'package:ZipBee/features/user/finding_raider/widget/order_location_info_widget.dart';
 import 'package:ZipBee/features/user/finding_raider/widget/payment_Info_widget.dart';
@@ -137,7 +138,6 @@ class ConnectingRiderPage extends StatelessWidget {
                           routeType: controller.routeType,
                         ),
 
-                      
                         SizedBox(height: 20),
 
                         Button(
@@ -145,44 +145,48 @@ class ConnectingRiderPage extends StatelessWidget {
                           backgroundColor: Colors.amber,
                           textColor: Colors.black,
                           onPressed: () {
-                            // Collect available data
+                            final assignRider =
+                                controller.assignRiderData.value;
+                            final registration =
+                                assignRider != null &&
+                                    assignRider['registrations'] != null &&
+                                    (assignRider['registrations'] as List)
+                                        .isNotEmpty
+                                ? assignRider['registrations'][0]
+                                : null;
+
                             final orderId = orderController.orderNumber.value;
-                            final pickup =
-                                controller.pickupAddress.value.isEmpty
-                                ? 'N/A'
-                                : controller.pickupAddress.value;
-                            final destination =
-                                controller.dropAddress.value.isEmpty
-                                ? 'N/A'
-                                : controller.dropAddress.value;
-                            final totalCost = controller.totalCost.value
-                                .toStringAsFixed(2);
-
-                            // Determine payment method
-                            String paymentMethod = 'Online Payment';
-                            if (controller.paymentType.value == 'COD')
-                              paymentMethod = 'Cash on Delivery';
-                            if (controller.paymentType.value == 'WALLET')
-                              paymentMethod = 'Wallet';
-
-                            // Professional English Share Message (Without Rider Info)
-                            final String shareMessage =
-                                '''
-🐝 *ZipBee | Ride Request*
---------------------------------------
-🆔 *Order ID:* $orderId
-💰 *Estimated Fare:* \$$totalCost ($paymentMethod)
-🔄 *Status:* Searching for Rider...
-
-📍 *Pickup:* $pickup
-
-🏁 *Drop-off:* $destination
-
-📅 *Requested on:* ${_formatDateTime(controller.orderCreatedAt.value)}
---------------------------------------
-Track your ride live on the ZipBee app.
-*Safe travels!*
-''';
+                            final riderId =
+                                assignRider?['id']?.toString() ?? 'N/A';
+                            final riderName =
+                                registration?['raider_name']?.toString() ??
+                                'Not Assigned';
+                            final String
+                            shareMessage = RideShareMessageBuilder.build(
+                              orderId: orderId,
+                              assignedRiderId: riderId,
+                              riderName: riderName,
+                              totalFare: controller.totalCost.value
+                                  .toStringAsFixed(2),
+                              paymentType:
+                                  RideShareMessageBuilder.paymentMethodLabel(
+                                    controller.paymentType.value,
+                                  ),
+                              pickupStops: controller.pickupStops,
+                              dropStops: controller.dropStops,
+                              routeType: controller.routeType.value,
+                              scheduledDateTime:
+                                  RideShareMessageBuilder.scheduledDateTimeLabel(
+                                    scheduledTime:
+                                        controller.scheduledTime.value,
+                                    fallbackCreatedAt:
+                                        controller.orderCreatedAt.value,
+                                  ),
+                              jobAcceptedTime:
+                                  RideShareMessageBuilder.formatDateTime(
+                                    controller.orderUpdatedAt.value,
+                                  ),
+                            );
 
                             SharePlus.instance.share(
                               ShareParams(text: shareMessage),
@@ -211,16 +215,8 @@ Track your ride live on the ZipBee app.
     });
   }
 
-  // Format datetime from ISO string
-  String _formatDateTime(String isoString) {
-    if (isoString.isEmpty) return 'N/A';
-    try {
-      final dateTime = DateTime.parse(isoString);
-      return '${dateTime.day}/${dateTime.month}/${dateTime.year} ${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}';
-    } catch (e) {
-      return 'N/A';
-    }
-  }
+  String _formatDateTime(String isoString) =>
+      RideShareMessageBuilder.formatDateTime(isoString);
 
   Widget dragHandle() => Center(
     child: Container(

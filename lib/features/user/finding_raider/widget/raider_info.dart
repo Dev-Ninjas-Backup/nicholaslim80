@@ -28,14 +28,18 @@ class RaiderInfoWidget extends StatelessWidget {
           : null;
 
       final riderName = registration?['raider_name'] ?? 'Unknown';
-      final vehicleType = assignRider['raider_status'] ?? 'ACTIVE';
+      final photoUrls = (registration?['driver_photos'] as List<dynamic>? ?? [])
+          .map((photo) => photo.toString())
+          .where((photo) => photo.isNotEmpty)
+          .toList();
+      final rating =
+          (double.tryParse(controller.riderFormattedAverage.value) ?? 0.0)
+              .clamp(0, 5)
+              .toDouble();
 
       return Row(
         children: [
-          CircleAvatar(
-            radius: 36,
-            backgroundImage: AssetImage(ImagePath.profileImage),
-          ),
+          _RiderAvatar(photoUrls: photoUrls),
           SizedBox(width: 11),
           Expanded(
             child: Column(
@@ -49,16 +53,30 @@ class RaiderInfoWidget extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  'Rank: ${assignRider['rank'] ?? 'BRONZE'}',
+                  'Order ID: ${orderController.orderNumber.value}',
                   style: getTextStyle(fontSize: 13),
                 ),
-                Text(
-                  'Orders: ${orderController.orderNumber.value}',
-                  style: getTextStyle(fontSize: 13),
-                ),
-                Text(
-                  'Status: ${vehicleType}',
-                  style: getTextStyle(fontSize: 13),
+                Row(
+                  children: [
+                    Text(
+                      'Rating: ',
+                      style: getTextStyle(fontSize: 13),
+                    ),
+                    SizedBox(width: 4),
+                    ...List.generate(5, (index) {
+                      final isFilled = index < rating.floor();
+                      return Icon(
+                        isFilled ? Icons.star : Icons.star_border,
+                        color: isFilled ? Colors.amber : Colors.grey,
+                        size: 16,
+                      );
+                    }),
+                    SizedBox(width: 8),
+                    Text(
+                      rating > 0 ? rating.toStringAsFixed(1) : '0.0',
+                      style: getTextStyle(fontSize: 13),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -66,5 +84,61 @@ class RaiderInfoWidget extends StatelessWidget {
         ],
       );
     });
+  }
+}
+
+class _RiderAvatar extends StatefulWidget {
+  final List<String> photoUrls;
+
+  const _RiderAvatar({required this.photoUrls});
+
+  @override
+  State<_RiderAvatar> createState() => _RiderAvatarState();
+}
+
+class _RiderAvatarState extends State<_RiderAvatar> {
+  int currentPhotoIndex = 0;
+
+  void _showNextPhoto() {
+    if (!mounted) return;
+    if (currentPhotoIndex >= widget.photoUrls.length - 1) return;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      setState(() {
+        currentPhotoIndex++;
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final hasPhoto =
+        widget.photoUrls.isNotEmpty &&
+        currentPhotoIndex < widget.photoUrls.length;
+
+    return ClipOval(
+      child: SizedBox(
+        width: 72,
+        height: 72,
+        child: hasPhoto
+            ? Image.network(
+                widget.photoUrls[currentPhotoIndex],
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) {
+                  _showNextPhoto();
+                  if (currentPhotoIndex >= widget.photoUrls.length - 1) {
+                    return Image.asset(
+                      ImagePath.profileImage,
+                      fit: BoxFit.cover,
+                    );
+                  }
+
+                  return Container(color: Colors.grey.shade200);
+                },
+              )
+            : Image.asset(ImagePath.profileImage, fit: BoxFit.cover),
+      ),
+    );
   }
 }
