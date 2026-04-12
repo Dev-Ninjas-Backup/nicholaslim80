@@ -109,5 +109,5 @@ class ApiEndPoint {
   static const String chatHistory = '$baseUrl/chat/messages';
 
   // Delivery types
-  static String deliveryTypes = '$baseUrl/delivery-types';
+  static String deliveryTypes = '$baseUrl/delivery-types?is_active=true';
 }
