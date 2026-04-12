@@ -1,8 +1,8 @@
 import 'package:ZipBee/core/common/styles/global_text_style.dart';
 import 'package:ZipBee/core/utils/constants/app_colors.dart';
 import 'package:ZipBee/core/utils/constants/icon_path.dart';
-import 'package:ZipBee/features/user/stacked/stacked_collect_from/screen/collect_from.dart';
-import 'package:ZipBee/features/user/stacked/stacked_collect_from/controller/controller.dart';
+import 'package:ZipBee/features/user/stacked/schedule_stacked_ delivey/Schedule_recepent/screen/schedule_recepent_screen1.dart';
+import 'package:ZipBee/features/user/stacked/schedule_stacked_ delivey/Schedule_sender_recepent/screen/schedule_sender_screen.dart';
 import 'package:ZipBee/features/user/stacked/stacked_controller/stacked_controller.dart';
 import 'package:ZipBee/features/user/stacked/widget/delivery_type_dialog.dart';
 import 'package:flutter/material.dart';
@@ -48,6 +48,7 @@ class StackedButtonWidget extends StatelessWidget {
     required String titlePrefix,
     required String iconPath,
     required VoidCallback onEdit,
+    required VoidCallback onTap,
     bool showTickWhenHasData = false,
   }) {
     return ListView.builder(
@@ -61,54 +62,61 @@ class StackedButtonWidget extends StatelessWidget {
 
         return Column(
           children: [
-            Row(
-              children: [
-                Image.asset(iconPath, width: 24, height: 24),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '$titlePrefix $name',
-                        style: getTextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      Row(
+            InkWell(
+              onTap: onTap,
+              borderRadius: BorderRadius.circular(8),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Row(
+                  children: [
+                    Image.asset(iconPath, width: 24, height: 24),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Expanded(
-                            child: Text(
-                              addr,
-                              style: getTextStyle(
-                                fontSize: 12,
-                                color: Colors.grey,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
+                          Text(
+                            '$titlePrefix $name',
+                            style: getTextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
                             ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          if (showTickWhenHasData && hasData) ...[
-                            const SizedBox(width: 6),
-                            const Icon(
-                              Icons.check_circle,
-                              color: Colors.green,
-                              size: 16,
-                            ),
-                          ],
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  addr,
+                                  style: getTextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              if (showTickWhenHasData && hasData) ...[
+                                const SizedBox(width: 6),
+                                const Icon(
+                                  Icons.check_circle,
+                                  color: Colors.green,
+                                  size: 16,
+                                ),
+                              ],
+                            ],
+                          ),
                         ],
                       ),
-                    ],
-                  ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.edit, size: 18),
+                      onPressed: onEdit,
+                    ),
+                  ],
                 ),
-                IconButton(
-                  icon: const Icon(Icons.edit, size: 18),
-                  onPressed: onEdit,
-                ),
-              ],
+              ),
             ),
             if (!hasData) const SizedBox(height: 8),
             if (hasData) const SizedBox(height: 8),
@@ -391,13 +399,11 @@ class StackedButtonWidget extends StatelessWidget {
                       titlePrefix: 'Pick Up',
                       iconPath: IconPath.collectIcon,
                       showTickWhenHasData: true,
+                      onTap: () {
+                        Get.to(() => const StackedSenderScheduleScreen());
+                      },
                       onEdit: () {
-                        Get.to(
-                          () => StackedCollectFormScreen(
-                            controller: Get.put(StackedCollectFormController()),
-                            addressType: 'SENDER',
-                          ),
-                        );
+                        Get.to(() => const StackedSenderScheduleScreen());
                       },
                     );
                   }),
@@ -426,13 +432,11 @@ class StackedButtonWidget extends StatelessWidget {
                       titlePrefix: 'Drop Off',
                       iconPath: IconPath.deliveredIcon,
                       showTickWhenHasData: true,
+                      onTap: () {
+                        Get.to(() => const StackedSchedulRecepmenteScreen());
+                      },
                       onEdit: () {
-                        Get.to(
-                          () => StackedCollectFormScreen(
-                            controller: Get.put(StackedCollectFormController()),
-                            addressType: 'RECEIVER',
-                          ),
-                        );
+                        Get.to(() => const StackedSchedulRecepmenteScreen());
                       },
                     );
                   }),
@@ -465,13 +469,11 @@ class StackedButtonWidget extends StatelessWidget {
                       titlePrefix: 'Return',
                       iconPath: IconPath.collectIcon,
                       showTickWhenHasData: true,
+                      onTap: () {
+                        Get.to(() => const StackedSenderScheduleScreen());
+                      },
                       onEdit: () {
-                        Get.to(
-                          () => StackedCollectFormScreen(
-                            controller: Get.put(StackedCollectFormController()),
-                            addressType: 'SENDER',
-                          ),
-                        );
+                        Get.to(() => const StackedSenderScheduleScreen());
                       },
                     );
                   }),
