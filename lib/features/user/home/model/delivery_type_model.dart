@@ -23,12 +23,7 @@ class DeliveryTypeModel {
     );
   }
 
-  // Subtitle logic: Convert minutes to hours if unit is HOURS
   String get formattedSubtitle {
-    if (deliveryUnit.toUpperCase() == "HOURS") {
-      int hours = deliveryTime ~/ 60; // 180 / 60 = 3
-      return "Delivery within $hours hours of collection";
-    }
-    return "Delivery within $deliveryTime minutes of collection";
+    return "Delivery within $deliveryTime ${deliveryUnit.toLowerCase()} of collection";
   }
 }
