@@ -110,4 +110,70 @@ class WalletPaymentMethodService {
       };
     }
   }
+
+  /// ==============================
+  /// GET SAVED CARDS
+  /// ==============================
+  static Future<Map<String, dynamic>> getSavedCards() async {
+    try {
+      final token = await SharedPreferencesHelper.getAccessToken();
+      final url = Uri.parse(ApiEndPoint.walletCards);
+
+      debugPrint("➡️ GET SAVED CARDS URL: $url");
+
+      final response = await http.get(
+        url,
+        headers: {
+          "accept": "*/*",
+          "Content-Type": "application/json",
+          if (token != null) "Authorization": "Bearer $token",
+        },
+      );
+
+      debugPrint("✅ RESPONSE: ${response.statusCode} | ${response.body}");
+
+      final decoded = response.body.isNotEmpty ? jsonDecode(response.body) : [];
+
+      return {"success": response.statusCode == 200, "body": decoded};
+    } catch (e) {
+      debugPrint("❌ getSavedCards error: $e");
+      return {"success": false, "body": <dynamic>[]};
+    }
+  }
+
+  /// ==============================
+  /// DELETE SAVED CARD
+  /// ==============================
+  static Future<Map<String, dynamic>> deleteSavedCard(int cardId) async {
+    try {
+      final token = await SharedPreferencesHelper.getAccessToken();
+      final url = Uri.parse(ApiEndPoint.walletCardById(cardId));
+
+      debugPrint("➡️ DELETE CARD URL: $url");
+
+      final response = await http.delete(
+        url,
+        headers: {
+          "accept": "*/*",
+          "Content-Type": "application/json",
+          if (token != null) "Authorization": "Bearer $token",
+        },
+      );
+
+      debugPrint("✅ RESPONSE: ${response.statusCode} | ${response.body}");
+
+      final decoded = response.body.isNotEmpty ? jsonDecode(response.body) : {};
+
+      return {
+        "success": response.statusCode == 200 || response.statusCode == 204,
+        "body": decoded,
+      };
+    } catch (e) {
+      debugPrint("❌ deleteSavedCard error: $e");
+      return {
+        "success": false,
+        "body": {"message": "Server error"},
+      };
+    }
+  }
 }

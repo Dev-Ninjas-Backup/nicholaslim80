@@ -21,29 +21,29 @@ class MyWalletUpperSection extends StatelessWidget {
         color: Color(0xFFFFFDF5),
         borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
       ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 26),
-        child: Column(
-          children: [
-            CustomAppBarUser(
-              title: "My Wallet",
-              onTap: () => Get.offNamed(AppRoutes.bottomNavbarScreen),
-              style: getTextStyle(),
+      child: Column(
+        children: [
+          CustomAppBarUser(
+            title: "My Wallet",
+            onTap: () => Get.offNamed(AppRoutes.bottomNavbarScreen),
+            style: getTextStyle(),
+          ),
+
+          const SizedBox(height: 16),
+          const Text("Current Balance"),
+
+          Obx(
+            () => Text(
+              "\$${controller.currentBalance.value}",
+              style: getTextStyle(fontSize: 32, fontWeight: FontWeight.w700),
             ),
+          ),
 
-            const SizedBox(height: 16),
-            const Text("Current Balance"),
+          const SizedBox(height: 20),
 
-            Obx(
-              () => Text(
-                "\$${controller.currentBalance.value}",
-                style: getTextStyle(fontSize: 32, fontWeight: FontWeight.w700),
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            Obx(
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            child: Obx(
               () => Row(
                 children: [
                   walletButton(
@@ -54,7 +54,7 @@ class MyWalletUpperSection extends StatelessWidget {
                       Get.toNamed(AppRoutes.getuserAddFund());
                     },
                   ),
-                  SizedBox(width: 20),
+                  const SizedBox(width: 20),
                   walletButton(
                     title: "Redeem Points",
                     selected: controller.selectFundsOrRedeen.value == 1,
@@ -66,8 +66,8 @@ class MyWalletUpperSection extends StatelessWidget {
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

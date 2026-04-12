@@ -1,4 +1,5 @@
 import 'package:ZipBee/features/user/wallet/manage_payment/service/wallet_payment_method_service.dart';
+import 'package:ZipBee/features/user/wallet/manage_payment/model/payment_card_model.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get/get.dart';
@@ -7,10 +8,14 @@ import 'package:ZipBee/core/constants/stripe_keys.dart';
 class ManagePaymentController extends GetxController {
   /// Loading State
   RxBool isAddingCard = false.obs;
+  RxBool isFetchingCards = false.obs;
+  RxInt deletingCardId = 0.obs;
 
   /// Card State
   RxBool hasCard = false.obs;
   RxString last4 = "".obs;
+  RxString defaultStripeMethodId = "".obs;
+  RxList<PaymentCardModel> savedCards = <PaymentCardModel>[].obs;
 
   @override
   void onInit() {
@@ -32,26 +37,42 @@ class ManagePaymentController extends GetxController {
   /// ===============================
   Future<void> fetchSavedCard() async {
     try {
-      final result = await WalletPaymentMethodService.getSavedCard();
+      isFetchingCards.value = true;
+      final result = await WalletPaymentMethodService.getSavedCards();
 
-      if (result['success'] == true) {
-        final data = result['body']?['data'];
+      if (result['success'] == true && result['body'] is List) {
+        final cards = (result['body'] as List)
+            .whereType<Map<String, dynamic>>()
+            .map(PaymentCardModel.fromJson)
+            .toList();
 
-        if (data != null) {
-          hasCard.value = true;
-          last4.value = data['last4']?.toString() ?? "";
-        } else {
-          hasCard.value = false;
-          last4.value = "";
-        }
+        savedCards.assignAll(cards);
+
+        final PaymentCardModel? primaryCard =
+            cards
+                .where((card) => card.isDefault)
+                .cast<PaymentCardModel?>()
+                .firstOrNull ??
+            cards.firstOrNull;
+
+        hasCard.value = primaryCard != null;
+        last4.value = primaryCard?.last4 ?? "";
+        defaultStripeMethodId.value = primaryCard?.stripeMethodId ?? "";
       } else {
-        hasCard.value = false;
-        last4.value = "";
+        _clearCardState();
       }
     } catch (e) {
-      hasCard.value = false;
-      last4.value = "";
+      _clearCardState();
+    } finally {
+      isFetchingCards.value = false;
     }
+  }
+
+  void _clearCardState() {
+    savedCards.clear();
+    hasCard.value = false;
+    last4.value = "";
+    defaultStripeMethodId.value = "";
   }
 
   /// ===============================
@@ -119,12 +140,7 @@ class ManagePaymentController extends GetxController {
         return;
       }
 
-      /// 🔥 SUCCESS → Update UI
-      final responseData = result['body'];
-
-      hasCard.value = true;
-      last4.value = responseData?['last4']?.toString() ?? "";
-
+      await fetchSavedCard();
       EasyLoading.showSuccess("Card added successfully");
     } on StripeException catch (e) {
       EasyLoading.dismiss();
@@ -134,6 +150,34 @@ class ManagePaymentController extends GetxController {
       EasyLoading.showError("Something went wrong");
     } finally {
       isAddingCard.value = false;
+    }
+  }
+
+  Future<void> deleteCard(PaymentCardModel card) async {
+    if (deletingCardId.value == card.id) return;
+
+    try {
+      deletingCardId.value = card.id;
+      EasyLoading.show(status: "Deleting card...");
+
+      final result = await WalletPaymentMethodService.deleteSavedCard(card.id);
+
+      if (result['success'] != true) {
+        EasyLoading.showError(
+          result['body']?['message'] ?? "Failed to delete card",
+        );
+        return;
+      }
+
+      await fetchSavedCard();
+      EasyLoading.showSuccess(
+        result['body']?['message']?.toString() ?? "Card deleted successfully",
+      );
+    } catch (e) {
+      EasyLoading.showError("Failed to delete card");
+    } finally {
+      deletingCardId.value = 0;
+      EasyLoading.dismiss();
     }
   }
 
