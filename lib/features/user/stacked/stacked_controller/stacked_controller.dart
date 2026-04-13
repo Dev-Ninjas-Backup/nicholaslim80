@@ -92,6 +92,44 @@ class StackedLocationController extends GetxController {
     selectedVehicle.value = vehicle;
   }
 
+  String? normalizeVehicleCategory(String? rawVehicleType) {
+    final type = rawVehicleType?.trim().toUpperCase();
+    if (type == null || type.isEmpty) return null;
+
+    if (['MOTORCYCLE', 'BICYCLE', 'ELECTRIC_SCOOTER'].contains(type)) {
+      return 'Bike';
+    }
+    if (['CAR', 'SUV'].contains(type)) {
+      return 'Car';
+    }
+    if (type == 'VAN') {
+      return 'Van';
+    }
+    if (type == 'TRUCK') {
+      return 'Truck';
+    }
+
+    return null;
+  }
+
+  void selectVehicleByCategory(String? category) {
+    if (category == null || category.trim().isEmpty) {
+      selectedVehicle.value = null;
+      return;
+    }
+
+    for (final vehicle in vehicleList) {
+      if (vehicle.vehicleType.toUpperCase() == category.toUpperCase()) {
+        selectedVehicle.value = vehicle;
+        return;
+      }
+    }
+  }
+
+  void selectVehicleByRawType(String? rawVehicleType) {
+    selectVehicleByCategory(normalizeVehicleCategory(rawVehicleType));
+  }
+
   /// Update sender data when saved from schedule sender screen
   void updateSenderData(AddressData data) {
     senderData.value = data;
@@ -126,9 +164,11 @@ class StackedLocationController extends GetxController {
 
   /// Get sender display text (name + address)
   String get senderDisplayName => senderData.value?.contactName ?? '';
-  String get senderDisplayAddress => senderData.value?.addressFromApr ?? 'Sender Address';
+  String get senderDisplayAddress =>
+      senderData.value?.addressFromApr ?? 'Sender Address';
 
   /// Get receiver display text (name + address)
   String get receiverDisplayName => receiverData.value?.contactName ?? '';
-  String get receiverDisplayAddress => receiverData.value?.addressFromApr ?? 'Delivered Address';
+  String get receiverDisplayAddress =>
+      receiverData.value?.addressFromApr ?? 'Delivered Address';
 }

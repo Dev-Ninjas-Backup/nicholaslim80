@@ -646,6 +646,7 @@ class StackedOrderController extends GetxController {
       final loc = Get.find<StackedLocationController>();
       loc.senderData.value = null;
       loc.receiverData.value = null;
+      loc.selectedVehicle.value = null;
     } catch (_) {}
 
     try {

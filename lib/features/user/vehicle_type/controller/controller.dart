@@ -1,4 +1,5 @@
 import 'package:ZipBee/features/user/stacked/order_stacked_delivery/controller/stacked_order_controller.dart';
+import 'package:ZipBee/features/user/stacked/stacked_controller/stacked_controller.dart';
 import 'package:ZipBee/features/user/vehicle_type/model/model.dart';
 import 'package:ZipBee/features/user/vehicle_type/service/vehicle_type_service.dart';
 import 'package:flutter/material.dart';
@@ -60,6 +61,13 @@ class StackedVehicleController extends GetxController {
     // fetchAndCategorize();
   }
 
+  void _syncTopVehicleCategory(String? rawVehicleType) {
+    try {
+      final locationController = Get.find<StackedLocationController>();
+      locationController.selectVehicleByRawType(rawVehicleType);
+    } catch (_) {}
+  }
+
   void syncFromOrderData(Map<String, dynamic> orderData) {
     final deliveryType = orderData['delivery_type'] as Map<String, dynamic>?;
     final rawVehicles = deliveryType?['vehicle_types'];
@@ -109,6 +117,7 @@ class StackedVehicleController extends GetxController {
 
     if (matchedVehicle != null) {
       selectedVehicle.value = matchedVehicle;
+      _syncTopVehicleCategory(matchedVehicle.type);
       _updateHistory();
     }
   }
@@ -175,10 +184,12 @@ class StackedVehicleController extends GetxController {
   void selectVehicle(StackVehicle vehicle) {
     if (selectedVehicle.value == vehicle) {
       selectedVehicle.value = null;
+      _syncTopVehicleCategory(null);
       selectedServices.clear();
       calculationHistory.clear();
     } else {
       selectedVehicle.value = vehicle;
+      _syncTopVehicleCategory(vehicle.type);
       selectedServices.clear();
       _updateHistory();
     }
@@ -199,6 +210,7 @@ class StackedVehicleController extends GetxController {
     try {
       // Optimistically update UI first
       selectedVehicle.value = vehicle;
+      _syncTopVehicleCategory(vehicle.type);
       selectedServices.clear();
       _updateHistory();
 
@@ -227,6 +239,7 @@ class StackedVehicleController extends GetxController {
         debugPrint("❌ Failed to update vehicle (Status: $status)");
         // Revert UI on failure
         selectedVehicle.value = null;
+        _syncTopVehicleCategory(null);
         selectedServices.clear();
         calculationHistory.clear();
 
@@ -238,6 +251,7 @@ class StackedVehicleController extends GetxController {
       debugPrint("❌ Error toggling vehicle: $e");
       // Revert UI on error
       selectedVehicle.value = null;
+      _syncTopVehicleCategory(null);
       selectedServices.clear();
       calculationHistory.clear();
       EasyLoading.showError("Error updating vehicle");
