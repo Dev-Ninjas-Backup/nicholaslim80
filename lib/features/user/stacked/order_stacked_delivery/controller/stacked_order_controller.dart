@@ -59,6 +59,34 @@ class StackedOrderController extends GetxController {
     return int.tryParse(value?.toString() ?? '');
   }
 
+  double _extractPreferredTotalCost(Map<String, dynamic> data) {
+    final pricingSummary = data['pricingSummary'] as Map<String, dynamic>?;
+    if (pricingSummary != null && pricingSummary['totalCost'] != null) {
+      return _toDouble(pricingSummary['totalCost']);
+    }
+
+    final orderMap = data['order'] as Map<String, dynamic>?;
+    if (orderMap != null && orderMap['total_cost'] != null) {
+      return _toDouble(orderMap['total_cost']);
+    }
+
+    return _toDouble(data['total_cost']);
+  }
+
+  double _extractPreferredTotalFee(Map<String, dynamic> data) {
+    final pricingSummary = data['pricingSummary'] as Map<String, dynamic>?;
+    if (pricingSummary != null && pricingSummary['totalFee'] != null) {
+      return _toDouble(pricingSummary['totalFee']);
+    }
+
+    final orderMap = data['order'] as Map<String, dynamic>?;
+    if (orderMap != null && orderMap['total_fee'] != null) {
+      return _toDouble(orderMap['total_fee']);
+    }
+
+    return _toDouble(data['total_fee']);
+  }
+
   double _sumAdditionalServicePrices(dynamic rawServices) {
     if (rawServices is! List) return 0.0;
 
@@ -80,8 +108,10 @@ class StackedOrderController extends GetxController {
         ? _toDouble(pricingSummary['totalFee'])
         : null;
 
-    final resolvedTotalCost = totalFromSummary ?? _toDouble(orderData['total_cost']);
-    final resolvedTotalFee = feeFromSummary ?? _toDouble(orderData['total_fee']);
+    final resolvedTotalCost =
+        totalFromSummary ?? _toDouble(orderData['total_cost']);
+    final resolvedTotalFee =
+        feeFromSummary ?? _toDouble(orderData['total_fee']);
 
     totalCost.value = resolvedTotalCost;
     totalAmount.value = resolvedTotalCost;
@@ -96,7 +126,9 @@ class StackedOrderController extends GetxController {
     final additionalServiceFeeFromSummary = pricingSummary != null
         ? _toDouble(pricingSummary['additionServiceFee'])
         : 0.0;
-    final additionalServiceFeeFromOrder = _toDouble(orderData['additional_cost']);
+    final additionalServiceFeeFromOrder = _toDouble(
+      orderData['additional_cost'],
+    );
     final additionalServiceFeeFromList = _sumAdditionalServicePrices(
       additionalServices,
     );
@@ -106,7 +138,9 @@ class StackedOrderController extends GetxController {
         : additionalServiceFeeFromOrder > 0
         ? additionalServiceFeeFromOrder
         : additionalServiceFeeFromList;
-    deliveryTypeMultiplier.value = _toDouble(deliveryTypeMap?['price_multiplier']);
+    deliveryTypeMultiplier.value = _toDouble(
+      deliveryTypeMap?['price_multiplier'],
+    );
 
     final selectedVehicleId = _toInt(orderData['vehicle_type_id']);
     final rawVehicleTypes = deliveryTypeMap?['vehicle_types'];
@@ -248,6 +282,33 @@ class StackedOrderController extends GetxController {
 
   void toggleBreakdown() {
     isBreakdownExpanded.value = !isBreakdownExpanded.value;
+  }
+
+  Future<bool> _refreshOrderPricingFromGet([int? orderId]) async {
+    final resolvedOrderId = orderId ?? lastOrderId;
+    if (resolvedOrderId == null || resolvedOrderId == 0) {
+      return false;
+    }
+
+    final orderRes = await OrderConfirmationService.getOrder(resolvedOrderId);
+    final orderSuccess = orderRes['success'] as bool? ?? false;
+    final orderStatus = orderRes['statusCode'] as int? ?? 500;
+
+    if (!orderSuccess || (orderStatus != 200 && orderStatus != 201)) {
+      debugPrint(
+        '❌ Failed to refresh order pricing from GET for orderId: $resolvedOrderId',
+      );
+      return false;
+    }
+
+    final orderData = orderRes['body'] as Map<String, dynamic>? ?? {};
+    final orderActualData = orderData['data'] as Map<String, dynamic>? ?? {};
+    if (orderActualData.isEmpty) {
+      return false;
+    }
+
+    syncOrderData(orderActualData);
+    return true;
   }
 
   Future<void> ensureInitialPricingLoaded() async {
@@ -430,35 +491,11 @@ class StackedOrderController extends GetxController {
       final body = res['body'] as Map<String, dynamic>;
       final data = body['data'] as Map<String, dynamic>? ?? {};
 
-      // Extract total cost - try order.total_cost then pricingSummary.totalCost
-      double serverTotal = 0.0;
-      try {
-        final orderMap = data['order'] as Map<String, dynamic>?;
-        if (orderMap != null && orderMap['total_cost'] != null) {
-          serverTotal =
-              double.tryParse(orderMap['total_cost'].toString()) ?? 0.0;
-        } else if (data['pricingSummary'] != null &&
-            data['pricingSummary']['totalCost'] != null) {
-          serverTotal = (data['pricingSummary']['totalCost'] as num).toDouble();
-        }
-      } catch (e) {
-        debugPrint('Error parsing server total: $e');
-      }
+      double serverTotal = _extractPreferredTotalCost(data);
 
       debugPrint('Server total_cost: $serverTotal');
 
-      // Parse server total_fee if present
-      double serverFee = 0.0;
-      try {
-        final orderMap = data['order'] as Map<String, dynamic>?;
-        if (orderMap != null && orderMap['total_fee'] != null) {
-          serverFee = double.tryParse(orderMap['total_fee'].toString()) ?? 0.0;
-        } else if (data['total_fee'] != null) {
-          serverFee = double.tryParse(data['total_fee'].toString()) ?? 0.0;
-        }
-      } catch (e) {
-        debugPrint('Error parsing server fee: $e');
-      }
+      double serverFee = _extractPreferredTotalFee(data);
 
       debugPrint('Server total_fee: $serverFee');
 
@@ -476,29 +513,14 @@ class StackedOrderController extends GetxController {
       if (orderId != null) {
         // save for later 'place' call
         lastOrderId = orderId;
-        final getRes = await OrderService.getOrder(orderId);
-        debugPrint(
-          '📥 Get order full response received (status: ${getRes['statusCode']})',
-        );
-        debugPrint("Order ID for GET request: $orderId");
-
-        // Parse the response to show what we got
-        try {
-          final getData =
-              (getRes['body'] as Map<String, dynamic>?)?['data']
-                  as Map<String, dynamic>?;
-          if (getData != null) {
-            syncOrderData(getData);
-            final fetchedTotalCost =
-                double.tryParse(getData['total_cost'].toString()) ?? 0.0;
-            print('📥 Order Details Fetched from API:');
-            print('   - total_cost: \$${fetchedTotalCost.toStringAsFixed(2)}');
-            print('   - total_fee: ${getData['total_fee']}');
-            print('   - delivery_type: ${getData['delivery_type']}');
-            print('   - pay_type: ${getData['pay_type']}');
-          }
-        } catch (e) {
-          print('📥 Could not parse fetched order details: $e');
+        final didRefresh = await _refreshOrderPricingFromGet(orderId);
+        if (didRefresh) {
+          serverTotal = totalAmount.value;
+          serverFee = totalFee.value;
+          print('📥 Order Details Fetched from GET API');
+          print(
+            '   - pricingSummary.totalCost: \$${serverTotal.toStringAsFixed(2)}',
+          );
         }
       }
 
@@ -565,9 +587,11 @@ class StackedOrderController extends GetxController {
         final data = bodyData['data'] as Map<String, dynamic>? ?? {};
         syncOrderData(data);
 
+        await _refreshOrderPricingFromGet();
+
         // Extract order ID and update orderNumber
         final orderId = data['id'] as int? ?? lastOrderId;
-        orderNumber.value = '#${orderId.toString().padLeft(6, '0')}';
+        orderNumber.value = '#$orderId';
 
         // Extract is_auto_confirmation flag
         isAutoConfirmation.value =
@@ -593,23 +617,11 @@ class StackedOrderController extends GetxController {
           }
         }
 
-        final serverTotal =
-            double.tryParse((data['total_cost'] ?? '').toString()) ??
-            totalAmount.value;
-        double serverFee = 0.0;
-        try {
-          serverFee =
-              double.tryParse((data['total_fee'] ?? '').toString()) ??
-              serverFee;
-        } catch (_) {}
+        final serverTotal = totalAmount.value;
+        final serverFee = totalFee.value;
         debugPrint(
           'Placed order total_cost: $serverTotal total_fee: $serverFee',
         );
-        totalAmount.value = serverTotal;
-        totalFee.value = serverFee;
-
-        totalCost.value = serverTotal; // Store total_cost from API response
-
         EasyLoading.showSuccess(
           'Order placed: S\$${serverTotal.toStringAsFixed(2)}',
         );
@@ -699,14 +711,9 @@ class StackedOrderController extends GetxController {
       final data = body['data'] as Map<String, dynamic>? ?? {};
 
       syncOrderData(data);
+      await _refreshOrderPricingFromGet();
 
       /// Update totals and discount information from API
-      totalAmount.value =
-          double.tryParse(data['total_cost']?.toString() ?? '0') ?? 0;
-
-      totalFee.value =
-          double.tryParse(data['total_fee']?.toString() ?? '0') ?? 0;
-
       // Store promo code details
       promoCode.value = data['promoCode']?.toString() ?? code.trim();
       discountAmount.value =

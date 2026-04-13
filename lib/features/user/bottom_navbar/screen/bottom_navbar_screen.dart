@@ -8,12 +8,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
-class BottomNavbarScreen extends StatelessWidget {
-  BottomNavbarScreen({super.key}) {
-    controller.changeTab(0);
-    homeController.resetHomeSelection();
-  }
+class BottomNavbarScreen extends StatefulWidget {
+  const BottomNavbarScreen({super.key});
 
+  @override
+  State<BottomNavbarScreen> createState() => _BottomNavbarScreenState();
+}
+
+class _BottomNavbarScreenState extends State<BottomNavbarScreen> {
   final BottomNavbarController controller = Get.put(
     BottomNavbarController(),
     permanent: true,
@@ -24,7 +26,20 @@ class BottomNavbarScreen extends StatelessWidget {
     permanent: true,
   );
 
-  final List<Widget> _screens = [HomeScreen(), OrderScreen(), ProfileScreen()];
+  late final List<Widget> _screens = [
+    HomeScreen(),
+    OrderScreen(),
+    ProfileScreen(),
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.changeTab(0);
+      homeController.resetHomeSelection();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
