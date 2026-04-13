@@ -37,7 +37,6 @@ class SenderScheduleController extends GetxController {
 
   void validateForm() {
     final isValid =
-        postalCodeController.text.isNotEmpty &&
         addressController.text.isNotEmpty &&
         floorController.text.isNotEmpty &&
         nameController.text.isNotEmpty &&
