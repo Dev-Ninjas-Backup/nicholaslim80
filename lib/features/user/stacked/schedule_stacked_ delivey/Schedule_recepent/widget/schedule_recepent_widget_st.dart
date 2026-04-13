@@ -1,4 +1,5 @@
 import 'package:ZipBee/core/common/styles/global_text_style.dart';
+import 'package:ZipBee/core/services/contact_picker_service.dart';
 import 'package:ZipBee/features/user/collect_form_on_express_delivery/Sender_Part/widget_sender/text_filed_widget.dart';
 import 'package:ZipBee/features/user/stacked/schedule_stacked_%20delivey/Schedule_recepent/controller/recepent_controller.dart';
 import 'package:ZipBee/features/user/stacked/stacked_collect_from/model/model.dart';
@@ -20,6 +21,17 @@ class ScheduleRecipientWidgetST extends StatelessWidget {
     this.address,
     this.isAdditionalStop = false,
   });
+
+  Future<void> _pickContact(RecipientController controller) async {
+    final pickedContact = await ContactPickerService.pickPhoneContact();
+    if (pickedContact == null) return;
+
+    if (pickedContact.name.isNotEmpty) {
+      controller.nameController.text = pickedContact.name;
+    }
+    controller.setContactNumber(pickedContact.phoneNumber);
+    controller.validateForm();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,7 +101,11 @@ class ScheduleRecipientWidgetST extends StatelessWidget {
         CustomTextField(
           controller: controller.nameController,
           label: "Contact name*",
-          suffixIcon: Icon(Icons.person_outline),
+          suffixIcon: IconButton(
+            onPressed: () => _pickContact(controller),
+            icon: const Icon(Icons.contacts_outlined),
+            tooltip: 'Pick from contacts',
+          ),
         ),
         SizedBox(height: 10),
 

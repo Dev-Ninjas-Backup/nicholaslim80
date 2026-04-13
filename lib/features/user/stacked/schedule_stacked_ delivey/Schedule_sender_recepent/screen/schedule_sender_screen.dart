@@ -1,4 +1,5 @@
 import 'package:ZipBee/core/common/styles/global_text_style.dart';
+import 'package:ZipBee/core/services/contact_picker_service.dart';
 import 'package:ZipBee/core/utils/constants/app_colors.dart';
 import 'package:ZipBee/features/user/google_map/widget/google_map_widget.dart';
 import 'package:ZipBee/features/user/collect_form_on_express_delivery/Sender_Part/widget_sender/text_filed_widget.dart';
@@ -19,6 +20,17 @@ class StackedSenderScheduleScreen extends StatelessWidget {
   final StackedAddressModel? address;
 
   const StackedSenderScheduleScreen({super.key, this.address});
+
+  Future<void> _pickContact(SenderScheduleController controller) async {
+    final pickedContact = await ContactPickerService.pickPhoneContact();
+    if (pickedContact == null) return;
+
+    if (pickedContact.name.isNotEmpty) {
+      controller.nameController.text = pickedContact.name;
+    }
+    controller.setContactNumber(pickedContact.phoneNumber);
+    controller.validateForm();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -108,6 +120,11 @@ class StackedSenderScheduleScreen extends StatelessWidget {
                     CustomTextField(
                       controller: controller.nameController,
                       label: "Contact name*",
+                      suffixIcon: IconButton(
+                        onPressed: () => _pickContact(controller),
+                        icon: const Icon(Icons.contacts_outlined),
+                        tooltip: 'Pick from contacts',
+                      ),
                     ),
                     SizedBox(height: 10),
                     CountryCodeTextField(
