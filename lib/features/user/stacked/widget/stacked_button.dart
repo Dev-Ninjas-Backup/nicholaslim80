@@ -4,6 +4,8 @@ import 'package:ZipBee/core/utils/constants/icon_path.dart';
 import 'package:ZipBee/features/user/stacked/stacked_collect_from/controller/controller.dart';
 import 'package:ZipBee/features/user/stacked/stacked_collect_from/screen/collect_from.dart';
 import 'package:ZipBee/features/user/stacked/stacked_controller/stacked_controller.dart';
+import 'package:ZipBee/features/user/stacked/schedule_stacked_ delivey/Schedule_recepent/screen/schedule_recepent_screen1.dart';
+import 'package:ZipBee/features/user/stacked/schedule_stacked_ delivey/Schedule_sender_recepent/screen/schedule_sender_screen.dart';
 import 'package:ZipBee/features/user/stacked/widget/delivery_type_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -47,6 +49,7 @@ class StackedButtonWidget extends StatelessWidget {
     required String Function(int index) addressAt,
     required String titlePrefix,
     required String iconPath,
+    required VoidCallback onTap,
     required VoidCallback onEdit,
     bool showTickWhenHasData = false,
   }) {
@@ -62,7 +65,7 @@ class StackedButtonWidget extends StatelessWidget {
         return Column(
           children: [
             InkWell(
-              onTap: onEdit,
+              onTap: onTap,
               borderRadius: BorderRadius.circular(8),
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 4),
@@ -398,6 +401,9 @@ class StackedButtonWidget extends StatelessWidget {
                       titlePrefix: 'Pick Up',
                       iconPath: IconPath.collectIcon,
                       showTickWhenHasData: true,
+                      onTap: () {
+                        Get.to(() => const StackedSenderScheduleScreen());
+                      },
                       onEdit: () {
                         Get.to(
                           () => StackedCollectFormScreen(
@@ -433,6 +439,9 @@ class StackedButtonWidget extends StatelessWidget {
                       titlePrefix: 'Drop Off',
                       iconPath: IconPath.deliveredIcon,
                       showTickWhenHasData: true,
+                      onTap: () {
+                        Get.to(() => const StackedSchedulRecepmenteScreen());
+                      },
                       onEdit: () {
                         Get.to(
                           () => StackedCollectFormScreen(
@@ -472,6 +481,14 @@ class StackedButtonWidget extends StatelessWidget {
                       titlePrefix: 'Return',
                       iconPath: IconPath.collectIcon,
                       showTickWhenHasData: true,
+                      onTap: () {
+                        Get.to(
+                          () => StackedCollectFormScreen(
+                            controller: Get.put(StackedCollectFormController()),
+                            addressType: 'SENDER',
+                          ),
+                        );
+                      },
                       onEdit: () {
                         Get.to(
                           () => StackedCollectFormScreen(

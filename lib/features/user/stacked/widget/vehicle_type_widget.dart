@@ -31,8 +31,6 @@ class StackedVehicleTypeWidget extends StatelessWidget {
                 InkWell(
                   borderRadius: BorderRadius.circular(12),
                   onTap: () {
-                    controller.selectVehicle(vehicle);
-
                     Get.to(
                       () => const StackedVehicleSelectionPage(),
                       arguments: {
