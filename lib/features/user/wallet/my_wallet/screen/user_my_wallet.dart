@@ -18,135 +18,146 @@ class UserMyWallet extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.backgroungColor,
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              MyWalletUpperSection(controller: controller),
+        child: RefreshIndicator(
+          onRefresh: controller.loadProfileAndWallet,
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Column(
+              children: [
+                MyWalletUpperSection(controller: controller),
 
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 30,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    GestureDetector(
-                      onTap: () => Get.to(ManagePaymentScreen()),
-                      child: rowItem("Manage Payment Methods"),
-                    ),
-                    const Divider(),
-
-                    GestureDetector(
-                      onTap: () => Get.to(LoyaltyAndRewardsScreen()),
-                      child: rowItem("Loyalty & Rewards"),
-                    ),
-
-                    const SizedBox(height: 30),
-
-                    Text(
-                      "Wallet Recent Transactions",
-                      style: getTextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 30,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      rowItem(
+                        "Manage Payment Methods",
+                        onTap: () => Get.to(ManagePaymentScreen()),
                       ),
-                    ),
-                    const SizedBox(height: 14),
+                      const Divider(),
 
-                    /// ================= TRANSACTION LIST =================
-                    Obx(() {
-                      if (controller.isLoading.value) {
-                        return const Center(
-                          child: Padding(
-                            padding: EdgeInsets.all(20),
-                            child: CircularProgressIndicator(),
-                          ),
-                        );
-                      }
+                      rowItem(
+                        "Loyalty & Rewards",
+                        onTap: () => Get.to(LoyaltyAndRewardsScreen()),
+                      ),
 
-                      if (controller.recentTransactionList.isEmpty) {
-                        return const Center(
-                          child: Padding(
-                            padding: EdgeInsets.all(20),
-                            child: Text("No transactions found"),
-                          ),
-                        );
-                      }
+                      const SizedBox(height: 30),
 
-                      return ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: controller.recentTransactionList.length,
-                        itemBuilder: (_, index) {
-                          final item = controller.recentTransactionList[index];
+                      Text(
+                        "Wallet Recent Transactions",
+                        style: getTextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 14),
 
-                          return Container(
-                            margin: const EdgeInsets.only(bottom: 16),
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(color: Colors.grey.shade300),
-                              color: Colors.white,
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      item['title'] ?? "",
-                                      style: getTextStyle(
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      item['orderId'] ?? "",
-                                      style: getTextStyle(fontSize: 12),
-                                    ),
-                                  ],
-                                ),
-                                Text(
-                                  item['amount'] ?? "",
-                                  style: getTextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    color: item['isCredit'] == true
-                                        ? Colors.green
-                                        : Colors.red,
-                                  ),
-                                ),
-                              ],
+                      /// ================= TRANSACTION LIST =================
+                      Obx(() {
+                        if (controller.isLoading.value) {
+                          return const Center(
+                            child: Padding(
+                              padding: EdgeInsets.all(20),
+                              child: CircularProgressIndicator(),
                             ),
                           );
-                        },
-                      );
-                    }),
-                  ],
+                        }
+
+                        if (controller.recentTransactionList.isEmpty) {
+                          return const Center(
+                            child: Padding(
+                              padding: EdgeInsets.all(20),
+                              child: Text("No transactions found"),
+                            ),
+                          );
+                        }
+
+                        return ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: controller.recentTransactionList.length,
+                          itemBuilder: (_, index) {
+                            final item =
+                                controller.recentTransactionList[index];
+
+                            return Container(
+                              margin: const EdgeInsets.only(bottom: 16),
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(color: Colors.grey.shade300),
+                                color: Colors.white,
+                              ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        item['title'] ?? "",
+                                        style: getTextStyle(
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        item['orderId'] ?? "",
+                                        style: getTextStyle(fontSize: 12),
+                                      ),
+                                    ],
+                                  ),
+                                  Text(
+                                    item['amount'] ?? "",
+                                    style: getTextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      color: item['isCredit'] == true
+                                          ? Colors.green
+                                          : Colors.red,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        );
+                      }),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget rowItem(String title) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            title,
-            style: getTextStyle(
-              fontWeight: FontWeight.w500,
-              color: AppColors.subtitleFontColor,
+  Widget rowItem(String title, {VoidCallback? onTap}) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              title,
+              style: getTextStyle(
+                fontWeight: FontWeight.w500,
+                color: AppColors.subtitleFontColor,
+              ),
             ),
-          ),
-          const Icon(Icons.arrow_forward_ios, size: 18),
-        ],
+            const Icon(Icons.arrow_forward_ios, size: 18),
+          ],
+        ),
       ),
     );
   }

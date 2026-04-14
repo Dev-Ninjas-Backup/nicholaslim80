@@ -91,6 +91,7 @@ class ApiEndPoint {
   static const String placeOrder = '$baseUrl/order/{orderId}/place';
 
   static const String addMoney = '$baseUrl/wallet/add-money/mobile';
+  static const String addMoneyDirect = '$baseUrl/wallet/add-money';
   static const String confirmSetupIntent =
       '$baseUrl/wallet/confirm-setup-intent';
 
@@ -98,6 +99,8 @@ class ApiEndPoint {
 
   static const String saveCard = '$baseUrl/wallet/save-card';
   static const String getSavedCard = "$baseUrl/wallet/get-saved-card";
+  static const String walletCards = '$baseUrl/wallet/wallet/cards';
+  static String walletCardById(int id) => '$baseUrl/wallet/wallet/cards/$id';
 
   //redeem-point
   static const String redeemPoint = '$baseUrl/referloyality/redeem-point';
@@ -109,5 +112,5 @@ class ApiEndPoint {
   static const String chatHistory = '$baseUrl/chat/messages';
 
   // Delivery types
-  static String deliveryTypes = '$baseUrl/delivery-types';
+  static String deliveryTypes = '$baseUrl/delivery-types?is_active=true';
 }

@@ -31,14 +31,51 @@ class _HomeScreenState extends State<HomeScreen> {
     LoyaltyAndRewardsController(),
     permanent: false,
   );
+  List<Map<String, dynamic>> _ads = [];
+  bool _isAdsLoading = true;
 
   @override
   void initState() {
     super.initState();
+    _loadAds();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ctrl.resetHomeSelection();
       popupCtrl.checkAndShowPopup(context);
     });
+  }
+
+  Future<void> _loadAds({bool showLoader = true}) async {
+    if (showLoader && mounted) {
+      setState(() {
+        _isAdsLoading = true;
+      });
+    }
+
+    try {
+      final ads = await AdsService.fetchAds();
+      if (!mounted) return;
+
+      setState(() {
+        _ads = ads;
+        _isAdsLoading = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+
+      setState(() {
+        _ads = [];
+        _isAdsLoading = false;
+      });
+    }
+  }
+
+  Future<void> _handleRefresh() async {
+    await Future.wait([
+      profileCtrl.fetchUserProfile(),
+      loyaltyCtrl.loadUserPoints(),
+      ctrl.fetchDeliveryTypes(showLoader: false),
+      _loadAds(showLoader: false),
+    ]);
   }
 
   @override
@@ -89,109 +126,104 @@ class _HomeScreenState extends State<HomeScreen> {
 
       drawer: drawer(ctrl),
 
-      body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: padding, vertical: 12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 30),
-            // Info Cards (Wallet & Points)
-            Obx(
-              () => Row(
+      body: RefreshIndicator(
+        onRefresh: _handleRefresh,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(
+            parent: BouncingScrollPhysics(),
+          ),
+          padding: const EdgeInsets.symmetric(
+            horizontal: padding,
+            vertical: 12,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 30),
+              Obx(
+                () => Row(
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () => Get.toNamed(AppRoutes.myWalletUser),
+                        child: borderedInfoCard(
+                          title: 'Wallet Balance',
+                          valueBuilder: () =>
+                              '\$${profileCtrl.walletBalance.value.toStringAsFixed(2)}',
+                          iconPath: IconPath.wallet,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () => Get.to(const LoyaltyAndRewardsScreen()),
+                        child: borderedInfoCard(
+                          title: 'Available Points',
+                          valueBuilder: () =>
+                              loyaltyCtrl.points.value.toString(),
+                          iconPath: IconPath.points,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 50),
+              Row(
                 children: [
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () => Get.toNamed(AppRoutes.myWalletUser),
-                      child: borderedInfoCard(
-                        title: 'Wallet Balance',
-                        valueBuilder: () =>
-                            '\$${profileCtrl.walletBalance.value.toStringAsFixed(2)}',
-                        iconPath: IconPath.wallet,
-                      ),
+                  Text(
+                    'Service Options',
+                    style: getTextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () => Get.to(const LoyaltyAndRewardsScreen()),
-                      child: borderedInfoCard(
-                        title: 'Available Points',
-                        valueBuilder: () => loyaltyCtrl.points.value.toString(),
-                        iconPath: IconPath.points,
-                      ),
-                    ),
-                  ),
+                  const SizedBox(width: 15),
+                  Image.asset(IconPath.trunk1, height: 30, width: 30),
                 ],
               ),
-            ),
-
-            const SizedBox(height: 50),
-            Row(
-              children: [
-                Text(
-                  'Service Options',
-                  style: getTextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                SizedBox(width: 15),
-                Image.asset(IconPath.trunk1, height: 30, width: 30),
-              ],
-            ),
-            const SizedBox(height: 14),
-
-            // Service Options Row
-            Obx(() {
-              if (ctrl.isDeliveryLoading.value) {
-                return const Center(child: CircularProgressIndicator());
-              }
-
-              if (ctrl.deliveryTypes.isEmpty) {
-                return const Text("No service options available");
-              }
-
-              return SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                physics: const BouncingScrollPhysics(),
-                child: Row(
-                  children: ctrl.deliveryTypes.map((type) {
-                    bool isSelected =
-                        ctrl.deliveryType.value == type.name.toLowerCase();
-
-                    return Container(
-                      // Ekhane fixed width set kora hoyeche jate 3er beshi hole scroll hoy
-                      width: MediaQuery.of(context).size.width * 0.40,
-                      margin: const EdgeInsets.only(right: 10),
-                      child: buildServiceOptionCard(
-                        title: type.name.capitalizeFirst ?? type.name,
-                        subtitle: type.formattedSubtitle,
-                        selected: isSelected,
-                        onTap: () => ctrl.selectDeliveryType(type),
-                      ),
-                    );
-                  }).toList(),
-                ),
-              );
-            }),
-
-            SizedBox(height: 35),
-            FutureBuilder<List<Map<String, dynamic>>>(
-              future: AdsService.fetchAds(),
-              builder: (context, snapshot) {
-                if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-                  return Column(
-                    children: [
-                      SmallHorizontalSlider(width: width),
-                      const SizedBox(height: 10),
-                    ],
-                  );
-                } else {
-                  return const SizedBox.shrink();
+              const SizedBox(height: 14),
+              Obx(() {
+                if (ctrl.isDeliveryLoading.value) {
+                  return const Center(child: CircularProgressIndicator());
                 }
-              },
-            ),
-          ],
+
+                if (ctrl.deliveryTypes.isEmpty) {
+                  return const Text("No service options available");
+                }
+
+                return SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  physics: const BouncingScrollPhysics(),
+                  child: Row(
+                    children: ctrl.deliveryTypes.map((type) {
+                      final isSelected =
+                          ctrl.deliveryType.value == type.name.toLowerCase();
+
+                      return Container(
+                        width: MediaQuery.of(context).size.width * 0.40,
+                        margin: const EdgeInsets.only(right: 10),
+                        child: buildServiceOptionCard(
+                          title: type.name.capitalizeFirst ?? type.name,
+                          subtitle: type.formattedSubtitle,
+                          selected: isSelected,
+                          onTap: () => ctrl.selectDeliveryType(type),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                );
+              }),
+              const SizedBox(height: 35),
+              if (_isAdsLoading)
+                const Center(child: CircularProgressIndicator())
+              else if (_ads.isNotEmpty) ...[
+                SmallHorizontalSlider(width: width, ads: _ads),
+                const SizedBox(height: 10),
+              ],
+            ],
+          ),
         ),
       ),
     );

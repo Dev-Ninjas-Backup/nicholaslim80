@@ -42,6 +42,12 @@
 @import flutter_local_notifications;
 #endif
 
+#if __has_include(<flutter_native_contact_picker/FlutterNativeContactPickerPlugin.h>)
+#import <flutter_native_contact_picker/FlutterNativeContactPickerPlugin.h>
+#else
+@import flutter_native_contact_picker;
+#endif
+
 #if __has_include(<google_maps_flutter_ios/FLTGoogleMapsPlugin.h>)
 #import <google_maps_flutter_ios/FLTGoogleMapsPlugin.h>
 #else
@@ -105,6 +111,7 @@
   [FLTFirebaseStoragePlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTFirebaseStoragePlugin"]];
   [FlutterKeyboardVisibilityPlugin registerWithRegistrar:[registry registrarForPlugin:@"FlutterKeyboardVisibilityPlugin"]];
   [FlutterLocalNotificationsPlugin registerWithRegistrar:[registry registrarForPlugin:@"FlutterLocalNotificationsPlugin"]];
+  [FlutterNativeContactPickerPlugin registerWithRegistrar:[registry registrarForPlugin:@"FlutterNativeContactPickerPlugin"]];
   [FLTGoogleMapsPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTGoogleMapsPlugin"]];
   [FLTImagePickerPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTImagePickerPlugin"]];
   [LocationPlugin registerWithRegistrar:[registry registrarForPlugin:@"LocationPlugin"]];

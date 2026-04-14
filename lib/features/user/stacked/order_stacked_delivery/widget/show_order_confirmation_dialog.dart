@@ -251,7 +251,7 @@ void showStackedOrderConfirmationDialog(
               Obx(
                 () => buildDetailRow(
                   "Total Cost:",
-                  "\$${controller.originalCost.value > 0 ? controller.originalCost.value.toStringAsFixed(2) : controller.totalAmount.value.toStringAsFixed(2)}",
+                  "\$${(controller.originalCost.value > 0 ? controller.originalCost.value : controller.totalCost.value).toStringAsFixed(2)}",
                 ),
               ),
 
@@ -291,7 +291,7 @@ void showStackedOrderConfirmationDialog(
               Obx(
                 () => buildDetailRow(
                   "SubTotal:",
-                  "\$${controller.totalAmount.value.toStringAsFixed(2)}",
+                  "\$${(controller.totalAmount.value > 0 ? controller.totalAmount.value : controller.totalCost.value).toStringAsFixed(2)}",
                   isTotal: true,
                 ),
               ),
@@ -387,32 +387,28 @@ void showStackedOrderConfirmationDialog(
                         EasyLoading.showError(
                           'Order ID not found. Please try again.',
                         );
-                        Get.off(() => BottomNavbarScreen());
-                        // return;
-                      } else {
-                        EasyLoading.show(status: 'Cancelling order .......');
-                        final res = await CancelOrderService.cancelOrder(
-                          orderId,
-                          "Hamara Marzee",
-                        );
-                        EasyLoading.dismiss();
-
-                        if (res['success'] == true) {
-                          EasyLoading.showSuccess(
-                            'Order cancelled successfully.',
-                          );
-                          Get.off(() => BottomNavbarScreen());
-                        } else {
-                          final msg =
-                              (res['body']
-                                  as Map<String, dynamic>?)?['message'] ??
-                              'Failed to cancel order';
-                          EasyLoading.showError(msg.toString());
-                        }
+                        return;
                       }
-                      // Get.back();
-                      // controller.cancelAndReset();
-                      Get.off(() => BottomNavbarScreen());
+
+                      EasyLoading.show(status: 'Cancelling order .......');
+                      final res = await CancelOrderService.cancelOrder(
+                        orderId,
+                        "Hamara Marzee",
+                      );
+                      EasyLoading.dismiss();
+
+                      if (res['success'] == true) {
+                        EasyLoading.showSuccess(
+                          'Order cancelled successfully.',
+                        );
+                        Get.offAll(() => const BottomNavbarScreen());
+                      } else {
+                        final msg =
+                            (res['body']
+                                as Map<String, dynamic>?)?['message'] ??
+                            'Failed to cancel order';
+                        EasyLoading.showError(msg.toString());
+                      }
                     },
                     style: FilledButton.styleFrom(
                       backgroundColor: Colors.white,
@@ -481,8 +477,7 @@ void showStackedOrderConfirmationDialog(
                         // Ensure orderNumber is properly set for FindingRiderPage
                         final orderId = controller.lastOrderId;
                         if (orderId != null && orderId != 0) {
-                          controller.orderNumber.value =
-                              '#${orderId.toString().padLeft(6, '0')}';
+                          controller.orderNumber.value = '#$orderId';
                           controller.isAutoConfirmation.value = true;
                           controller.collectTime.value = 'ASAP';
 
@@ -580,7 +575,8 @@ Future<void> _handlePostOrderSuccessDialogFlow(
     final success = firstOrderRes['success'] as bool? ?? false;
     final body = firstOrderRes['body'] as Map<String, dynamic>? ?? {};
     final data = body['data'] as Map<String, dynamic>? ?? {};
-    final isFirstOrderData = data['isFirstOrder'] as Map<String, dynamic>? ?? {};
+    final isFirstOrderData =
+        data['isFirstOrder'] as Map<String, dynamic>? ?? {};
 
     shouldShowFirstOrderDialog =
         success && (isFirstOrderData['isFirstOrder'] == true);

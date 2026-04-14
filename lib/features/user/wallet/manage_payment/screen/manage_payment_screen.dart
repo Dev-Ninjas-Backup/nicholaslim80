@@ -1,5 +1,6 @@
 import 'package:ZipBee/core/utils/constants/app_colors.dart';
 import 'package:ZipBee/core/utils/constants/icon_path.dart';
+import 'package:ZipBee/features/user/wallet/manage_payment/model/payment_card_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controller/manage_payment_controller.dart';
@@ -7,8 +8,7 @@ import '../controller/manage_payment_controller.dart';
 class ManagePaymentScreen extends StatelessWidget {
   ManagePaymentScreen({super.key});
 
-  final ManagePaymentController controller =
-      Get.put(ManagePaymentController());
+  final ManagePaymentController controller = Get.put(ManagePaymentController());
 
   @override
   Widget build(BuildContext context) {
@@ -33,14 +33,18 @@ class ManagePaymentScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-
               const SizedBox(height: 25),
 
               /// ===============================
               /// CARD SECTION (Show only if exists)
               /// ===============================
-              if (controller.hasCard.value) ...[
-                _cardTile(),
+              if (controller.isFetchingCards.value)
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 20),
+                  child: Center(child: CircularProgressIndicator()),
+                )
+              else if (controller.hasCard.value) ...[
+                ...controller.savedCards.map(_cardTile),
                 const SizedBox(height: 15),
                 _divider(),
               ],
@@ -59,10 +63,7 @@ class ManagePaymentScreen extends StatelessWidget {
               /// ===============================
               const Text(
                 "More Information",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
 
               const SizedBox(height: 12),
@@ -87,8 +88,9 @@ class ManagePaymentScreen extends StatelessWidget {
   /// ===============================
   /// CARD TILE
   /// ===============================
-  Widget _cardTile() {
+  Widget _cardTile(PaymentCardModel card) {
     return Container(
+      margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.symmetric(vertical: 15),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -98,23 +100,50 @@ class ManagePaymentScreen extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                "Card",
-                style: TextStyle(
+              // const Text(
+              //   "Card",
+              //   style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+              // ),
+              // const SizedBox(height: 4),
+              Text(
+                "${card.brandLabel} ****${card.last4}",
+                style: const TextStyle(
                   fontSize: 17,
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: 2),
               Text(
-                "Default ****${controller.last4.value}",
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: Colors.black54,
-                ),
+                "Expiry ${card.expiryLabel}",
+                style: const TextStyle(fontSize: 13, color: Colors.black45),
               ),
             ],
           ),
+          const Spacer(),
+          Obx(() {
+            final isDeleting = controller.deletingCardId.value == card.id;
+
+            if (isDeleting) {
+              return const SizedBox(
+                height: 20,
+                width: 20,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              );
+            }
+
+            return InkWell(
+              onTap: () => controller.deleteCard(card),
+              borderRadius: BorderRadius.circular(20),
+              child: const Padding(
+                padding: EdgeInsets.all(6),
+                child: Icon(
+                  Icons.delete_outline,
+                  color: Colors.redAccent,
+                  size: 22,
+                ),
+              ),
+            );
+          }),
         ],
       ),
     );
@@ -124,9 +153,10 @@ class ManagePaymentScreen extends StatelessWidget {
   /// ADD PAYMENT BUTTON
   /// ===============================
   Widget _addPaymentButton() {
-    return GestureDetector(
+    return InkWell(
       onTap: controller.onAddPayment,
       child: Container(
+        width: double.infinity,
         padding: const EdgeInsets.symmetric(vertical: 15),
         child: Row(
           children: [
@@ -136,10 +166,7 @@ class ManagePaymentScreen extends StatelessWidget {
               controller.hasCard.value
                   ? "Add another payment method"
                   : "Add payment method",
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-              ),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
             ),
             const Spacer(),
             const Icon(Icons.arrow_forward_ios, size: 18),
@@ -153,9 +180,6 @@ class ManagePaymentScreen extends StatelessWidget {
   /// DIVIDER
   /// ===============================
   Widget _divider() {
-    return const Divider(
-      thickness: 0.8,
-      color: Colors.black26,
-    );
+    return const Divider(thickness: 0.8, color: Colors.black26);
   }
 }

@@ -37,7 +37,6 @@ class RecipientController extends GetxController {
 
   void validateForm() {
     isFormValid.value =
-        postalCodeController.text.isNotEmpty &&
         addressController.text.isNotEmpty &&
         floorController.text.isNotEmpty &&
         nameController.text.isNotEmpty &&

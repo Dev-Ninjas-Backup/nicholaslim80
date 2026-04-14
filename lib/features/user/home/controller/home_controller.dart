@@ -109,9 +109,11 @@ class HomeController extends GetxController {
   }
 
   // Fetch delivery types
-  Future<void> fetchDeliveryTypes() async {
+  Future<void> fetchDeliveryTypes({bool showLoader = true}) async {
     try {
-      isDeliveryLoading.value = true;
+      if (showLoader) {
+        isDeliveryLoading.value = true;
+      }
       final response = await DeliveryTypeService.getDeliveryTypes();
 
       if (response['statusCode'] == 200 && response['body'] != null) {
@@ -121,7 +123,9 @@ class HomeController extends GetxController {
         );
       }
     } finally {
-      isDeliveryLoading.value = false;
+      if (showLoader) {
+        isDeliveryLoading.value = false;
+      }
     }
   }
 

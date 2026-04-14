@@ -88,10 +88,10 @@ class StackedVehicleSelectionPage extends StatelessWidget {
                   Tab(icon: Image.asset(IconPath.bike2, height: 60, width: 70)),
                   Tab(icon: Image.asset(IconPath.car2, height: 60, width: 70)),
                   Tab(
-                    icon: Image.asset(IconPath.shipment, height: 60, width: 70),
+                    icon: Image.asset(IconPath.shopcar, height: 60, width: 70),
                   ),
                   Tab(
-                    icon: Image.asset(IconPath.shopcar, height: 60, width: 70),
+                    icon: Image.asset(IconPath.shipment, height: 60, width: 70),
                   ),
                 ],
               ),
