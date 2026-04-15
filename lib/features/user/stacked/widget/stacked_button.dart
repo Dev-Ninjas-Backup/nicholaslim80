@@ -402,7 +402,12 @@ class StackedButtonWidget extends StatelessWidget {
                       iconPath: IconPath.collectIcon,
                       showTickWhenHasData: true,
                       onTap: () {
-                        Get.to(() => const StackedSenderScheduleScreen());
+                        Get.to(
+                          () => StackedCollectFormScreen(
+                            controller: Get.put(StackedCollectFormController()),
+                            addressType: 'SENDER',
+                          ),
+                        );
                       },
                       onEdit: () {
                         Get.to(
@@ -440,7 +445,12 @@ class StackedButtonWidget extends StatelessWidget {
                       iconPath: IconPath.deliveredIcon,
                       showTickWhenHasData: true,
                       onTap: () {
-                        Get.to(() => const StackedSchedulRecepmenteScreen());
+                        Get.to(
+                          () => StackedCollectFormScreen(
+                            controller: Get.put(StackedCollectFormController()),
+                            addressType: 'RECEIVER',
+                          ),
+                        );
                       },
                       onEdit: () {
                         Get.to(
